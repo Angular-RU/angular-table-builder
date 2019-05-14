@@ -1,14 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 .title {
-  background: transparent;
-  color: #fff;
+    background: transparent;
+    color: #fff;
 }
 
 .menu__item a {
-  color: #fff;
-  text-decoration: none;
+    color: #fff;
+    text-decoration: none;
+}
+
+.dashboard__content.mat-drawer-content {
+    padding: 10px;
+    height: calc(100% - 20px);
+    background: whitesmoke;
 }
