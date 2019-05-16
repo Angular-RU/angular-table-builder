@@ -1,7 +1,46 @@
-<mat-toolbar>
-  <span>Simple table</span>
+<mat-toolbar class="simple-toolbar">
+    <span>Simple table</span>
 </mat-toolbar>
 
-<div class="content">
+<form>
+    <mat-form-field>
+        <mat-label>Table width</mat-label>
+        <label>
+            <input matInput name="width" [(ngModel)]="width" />
+        </label>
+    </mat-form-field>
 
+    <mat-form-field>
+        <mat-label>Table height (px)</mat-label>
+        <label>
+            <input matInput name="height" [(ngModel)]="height" />
+        </label>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table row height</mat-label>
+        <label>
+            <input matInput name="rowHeight" [(ngModel)]="rowHeight" />
+        </label>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table cell width</mat-label>
+        <label>
+            <input matInput name="cellWidth" [(ngModel)]="cellWidth" />
+        </label>
+    </mat-form-field>
+
+    <mat-checkbox [checked]="cellFullWidth" (change)="cellFullWidth = $event.checked">Set cell full width</mat-checkbox>
+</form>
+
+<div class="content">
+    <ngx-table-builder
+        [source]="simple"
+        [width]="width"
+        [height]="height"
+        [rowHeight]="rowHeight"
+        [cellWidth]="cellWidth"
+        [cellFullWidth]="cellFullWidth"
+    ></ngx-table-builder>
 </div>

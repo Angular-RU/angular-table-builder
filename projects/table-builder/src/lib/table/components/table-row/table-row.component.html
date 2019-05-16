@@ -1,0 +1,12 @@
+<div
+    class="table-grid__row"
+    [class.table-grid__row--full-width]="cellFullWidth"
+    [class.table-grid__row--fixed]="fixed"
+    [style.min-width]="cellWidth"
+    [style.max-width]="cellWidth"
+    [style.min-height]="rowHeight"
+    [style.height]="rowHeight"
+    [style.line-height]="rowHeight"
+>
+    <p class="cell-content" [class.cell-content--bold]="bold">{{ text }}</p>
+</div>

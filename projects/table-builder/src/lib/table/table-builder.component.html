@@ -1,0 +1,24 @@
+<div class="table-grid__wrapper" [style.height]="height" [style.width]="width">
+    <div class="table-grid">
+        <div class="table-grid__col" *ngFor="let key of columnKeys">
+            <ng-container *ngFor="let item of source; let isHeader = first">
+                <table-row
+                    *ngIf="isHeader"
+                    [cellFullWidth]="cellFullWidth"
+                    [cellWidth]="cellWidth"
+                    [rowHeight]="rowHeight"
+                    [text]="key"
+                    [fixed]="true"
+                    [bold]="true"
+                ></table-row>
+
+                <table-row
+                    [text]="item[key]"
+                    [cellFullWidth]="cellFullWidth"
+                    [cellWidth]="cellWidth"
+                    [rowHeight]="rowHeight"
+                ></table-row>
+            </ng-container>
+        </div>
+    </div>
+</div>

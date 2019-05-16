@@ -1,0 +1,55 @@
+@import './styles/variables';
+
+.cell-box {
+    min-height: $minHeight;
+    height: $minHeight;
+    line-height: $minHeight;
+    min-width: $minWidth;
+    max-width: $minWidth;
+}
+
+.table-grid__wrapper {
+    position: relative;
+    box-shadow: 0 0 10px -2px $borderColor;
+    border: 1px solid $borderColor;
+    overflow: auto;
+}
+
+.table-grid {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+
+    &__row {
+        @extend .cell-box;
+        padding: 0 25px;
+        white-space: nowrap;
+        box-sizing: border-box;
+        border-bottom: 1px solid $borderColor;
+        border-right: 1px solid $borderColor;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background: $backgroundColor;
+
+        &--fixed {
+            top: 0;
+            position: sticky;
+        }
+
+        &--full-width {
+            max-width: none;
+        }
+    }
+
+    .cell-content {
+        margin: 0;
+        text-align: center;
+        height: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        &--bold {
+            font-weight: bold;
+        }
+    }
+}

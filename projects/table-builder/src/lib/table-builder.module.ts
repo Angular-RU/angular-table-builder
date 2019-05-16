@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
-import { TableBuilderComponent } from './table-builder.component';
+import { CommonModule } from '@angular/common';
+import { TableBuilderComponent } from './table/table-builder.component';
+import { TableRowComponent } from './table/components/table-row/table-row.component';
 
 @NgModule({
-  declarations: [TableBuilderComponent],
-  exports: [TableBuilderComponent]
+    imports: [CommonModule],
+    declarations: [TableBuilderComponent, TableRowComponent],
+    exports: [TableBuilderComponent]
 })
-export class TableBuilderModule { }
+export class TableBuilderModule {}

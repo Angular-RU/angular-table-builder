@@ -108,7 +108,7 @@
       "root": "projects/table-builder",
       "sourceRoot": "projects/table-builder/src",
       "projectType": "library",
-      "prefix": "lib",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",

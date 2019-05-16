@@ -1,4 +1,4 @@
-import { ObjectKeyMap } from '../app/shared/types/symbol';
+import { ObjectKeyMap } from '../app/shared/symbol';
 
 export const environment: ObjectKeyMap = {
     production: true

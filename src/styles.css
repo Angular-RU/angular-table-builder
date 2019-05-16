@@ -1,5 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
 html,
 body {
     height: 100%;
@@ -8,6 +6,16 @@ body {
 body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.dashboard {
+    height: 100%;
+}
+
+.dashboard__menu {
+    background: #0040a7;
+    color: #fff;
+    width: 250px;
 }
 
 .title {
@@ -21,7 +29,20 @@ body {
 }
 
 .dashboard__content.mat-drawer-content {
-    padding: 10px;
+    padding: 10px 16px;
     height: calc(100% - 20px);
     background: whitesmoke;
+}
+
+.mat-toolbar.simple-toolbar {
+    padding: 0;
+}
+
+.mat-form-field {
+    margin-right: 20px;
+}
+
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+    background-color: #0040a7;
 }
