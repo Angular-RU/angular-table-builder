@@ -11,8 +11,10 @@ import {
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TableBuilderModule } from '@angular-ru/table-builder';
 import { FormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
+    imports: [TableBuilderModule.forFeature()],
     exports: [
         FormsModule,
         MatCheckboxModule,
@@ -23,6 +25,7 @@ import { FormsModule } from '@angular/forms';
         MatListModule,
         DragDropModule,
         MatCardModule,
+        ScrollingModule,
         TableBuilderModule
     ]
 })

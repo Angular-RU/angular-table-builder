@@ -38,7 +38,8 @@ body {
     padding: 0;
 }
 
-.mat-form-field {
+.mat-form-field,
+.mat-checkbox {
     margin-right: 20px;
 }
 

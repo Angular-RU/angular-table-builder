@@ -4,4 +4,4 @@
 
 export { TableBuilderModule } from './lib/table-builder.module';
 export { TableBuilderComponent } from './lib/table/table-builder.component';
-export { TableRow } from './lib/table-builder.interface';
+export * from './lib/table-builder.interfaces';

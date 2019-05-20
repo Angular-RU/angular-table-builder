@@ -1,24 +1,109 @@
-<div class="table-grid__wrapper" [style.height]="height" [style.width]="width">
-    <div class="table-grid">
-        <div class="table-grid__col" *ngFor="let key of columnKeys">
-            <ng-container *ngFor="let item of source; let isHeader = first">
-                <table-row
-                    *ngIf="isHeader"
-                    [cellFullWidth]="cellFullWidth"
-                    [cellWidth]="cellWidth"
-                    [rowHeight]="rowHeight"
-                    [text]="key"
-                    [fixed]="true"
-                    [bold]="true"
-                ></table-row>
-
-                <table-row
-                    [text]="item[key]"
-                    [cellFullWidth]="cellFullWidth"
-                    [cellWidth]="cellWidth"
-                    [rowHeight]="rowHeight"
-                ></table-row>
-            </ng-container>
+<div
+    class="table-grid"
+    [style.height]="height"
+    [style.width]="width"
+    #tableViewport
+    virtualScroll
+    (scrollDelta)="scrollWheel = $event"
+>
+    <div class="table-grid__header">
+        <div
+            *ngFor="let key of columnKeys; let index = index"
+            class="table-grid__header-cell"
+            [style.left.px]="index * 200"
+            [style.height.px]="45"
+            [style.width.px]="200"
+        >
+            <b>{{ key }}</b>
         </div>
     </div>
+
+    <div
+        #column
+        inViewport
+        class="table-grid__column column-is-{{ column['visible'] ? 'visible' : 'invisible' }}"
+        *ngFor="let key of columnKeys; let index = index"
+        [inViewportOptions]="{ threshold: [0] }"
+        (inViewportAction)="column['visible'] = $event.visible"
+        [style.left.px]="index * 200"
+        [style.height.px]="source.length * 45"
+    >
+        <ng-container *ngIf="column['visible']">
+            <virtual-scroller
+                #scroll
+                [items]="source"
+                [style.height]="height"
+                [parentScroll]="tableViewport"
+                [scrollAnimationTime]="0"
+                [bufferAmount]="30"
+                [checkResizeInterval]="5000"
+                [useMarginInsteadOfTranslate]="true"
+                [executeRefreshOutsideAngularZone]="true"
+                [resizeBypassRefreshThreshold]="100"
+                (vsChange)="updateViewport()"
+            >
+                <div *ngFor="let item of scroll.viewPortItems" class="table-grid__cell">{{ item[key] }}</div>
+            </virtual-scroller>
+        </ng-container>
+    </div>
+
+    <!-- 
+    
+    
+    <ng-container *ngIf="column['visible']">
+            <virtual-scroller #scroll [items]="source" [style.height]="height" [parentScroll]="tableViewport">
+                <div *ngFor="let item of scroll.viewPortItems" class="table-grid__cell">{{ item[key] }}</div>
+            </virtual-scroller>
+        </ng-container>
+    
+    
+    <virtual-scroller #scroll [items]="source" [style.height]="height" [parentScroll]="tableViewport">
+            <div *ngFor="let item of scroll.viewPortItems" class="table-grid__cell">
+                {{ item[key] }}
+            </div>
+        </virtual-scroller>
+        
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    <virtual-scroller
+        #scroll
+        virtualScroll
+        [items]="source"
+        [style.height]="height"
+        [scrollAnimationTime]="0"
+        [checkResizeInterval]="5000"
+        [useMarginInsteadOfTranslate]="true"
+        [executeRefreshOutsideAngularZone]="true"
+        [resizeBypassRefreshThreshold]="100"
+        (scrollDelta)="scrollWheel = $event"
+        (vsChange)="updateViewport()"
+    >
+        <div
+            class="table-grid__row"
+            *ngFor="let item of scroll.viewPortItems; trackBy: trackByIdx.bind(this)"
+            style="position: relative; height: 45px"
+        >
+            <ng-container *ngFor="let key of columnKeys; let index = index">
+                <div
+                    #cell
+                    inViewport
+                    (inViewportAction)="cell['visible'] = $event.visible"
+                    class="table-grid__cell table-grid-relative inactive"
+                    [class.cell-nowrap]="nowrap"
+                    [style.min-width]="cellMinWidth"
+                    [style.left.px]="index * maxWidth"
+                >
+                    <p *ngIf="cell['visible']" class="content">{{ cell['visible'] }} {{ item[key] }}</p>
+                </div>
+            </ng-container>
+        </div>
+    </virtual-scroller>-->
 </div>

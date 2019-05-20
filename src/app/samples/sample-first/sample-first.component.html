@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Simple table</span>
+    <span>Simple table ({{ simple.length }}x{{ table.columnKeys.length }})</span>
 </mat-toolbar>
 
 <form>
@@ -27,20 +27,29 @@
     <mat-form-field>
         <mat-label>Table cell width</mat-label>
         <label>
-            <input matInput name="cellWidth" [(ngModel)]="cellWidth" />
+            <input matInput name="cellWidth" placeholder="max-content, auto, px" [(ngModel)]="cellWidth" />
         </label>
     </mat-form-field>
 
-    <mat-checkbox [checked]="cellFullWidth" (change)="cellFullWidth = $event.checked">Set cell full width</mat-checkbox>
+    <mat-form-field>
+        <mat-label>Visible count columns</mat-label>
+        <label>
+            <input matInput name="visibleColumns" [(ngModel)]="visibleColumns" />
+        </label>
+    </mat-form-field>
+
+    <mat-checkbox [checked]="nowrap" (change)="nowrap = $event.checked">Set nowrap</mat-checkbox>
 </form>
 
 <div class="content">
     <ngx-table-builder
+        #table
         [source]="simple"
         [width]="width"
         [height]="height"
-        [rowHeight]="rowHeight"
-        [cellWidth]="cellWidth"
-        [cellFullWidth]="cellFullWidth"
+        [row-height]="rowHeight"
+        [nowrap]="nowrap"
+        [visible-columns]="visibleColumns"
+        [cell-min-width]="cellWidth"
     ></ngx-table-builder>
 </div>
