@@ -73,23 +73,6 @@
             "browserTarget": "ng-table-builder:build"
           }
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.css"
-            ],
-            "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ]
-          }
-        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
@@ -115,14 +98,6 @@
           "options": {
             "tsConfig": "projects/table-builder/tsconfig.lib.json",
             "project": "projects/table-builder/ng-package.json"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/table-builder/src/test.ts",
-            "tsConfig": "projects/table-builder/tsconfig.spec.json",
-            "karmaConfig": "projects/table-builder/karma.conf.js"
           }
         },
         "lint": {
