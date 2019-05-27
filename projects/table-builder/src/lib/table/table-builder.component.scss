@@ -1,13 +1,5 @@
 @import './styles/variables';
 
-.cell-box {
-    min-height: $minHeight;
-    height: $minHeight;
-    width: 100%;
-    min-width: $minWidth;
-    max-width: $minWidth;
-}
-
 .table-grid {
     position: relative;
     box-shadow: 0 0 10px -2px $borderColor;
@@ -18,129 +10,34 @@
     backface-visibility: hidden;
 
     &__column {
-        top: 0;
-        position: absolute;
-        max-width: 200px;
-        min-width: 200px;
-        z-index: 1;
+        width: 100%;
+        border-right: 1px solid #e0e0e0;
+        box-sizing: border-box;
     }
 
-    &__header {
-        width: 100%;
-        position: sticky;
-        top: 0;
-        height: 45px;
-        z-index: 10;
+    &__body {
+        display: flex;
     }
 
     &__header-cell {
-        position: absolute;
-        z-index: 2;
+        position: sticky;
+        z-index: 1;
         top: 0;
-
-
-      min-width: 200px;
-      max-width: 200px;
-      box-sizing: border-box;
-      padding: 5px 20px;
-      min-height: 45px;
-      max-height: 45px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border-bottom: 1px solid #e0e0e0;
-      border-right: 1px solid #e0e0e0;
-      background: #fff;
-    }
-
-    &__cell {
-        min-width: 200px;
-        max-width: 200px;
         box-sizing: border-box;
         padding: 5px 20px;
-        min-height: 45px;
-        max-height: 45px;
         overflow: hidden;
         text-overflow: ellipsis;
         border-bottom: 1px solid #e0e0e0;
-        border-right: 1px solid #e0e0e0;
-    }
-}
-
-/*
-
-
-
-
-
-
-
-.table-grid__line-pattern {
-    display: flex;
-
-    .line-pattern--item {
-        background: red;
-        @extend .cell-box;
-    }
-}
-
-.table-grid {
-    position: relative;
-    box-shadow: 0 0 10px -2px $borderColor;
-    border: 1px solid $borderColor;
-    overflow: auto;
-    background: $backgroundColor;
-    will-change: scroll-position;
-    backface-visibility: hidden;
-
-    &__row {
-        display: flex;
-        &--header {
-            z-index: 1;
-            position: sticky;
-            will-change: transform;
-            backface-visibility: hidden;
-        }
+        background: #fff;
     }
 
     &__cell {
-        @extend .cell-box;
-        padding: 10px 25px;
-        border-bottom: 1px solid $borderColor;
-        border-right: 1px solid $borderColor;
+        width: 100%;
         box-sizing: border-box;
-        overflow: hidden;
-        position: relative;
-        background: $backgroundColor;
-
-        &::after {
-            content: '';
-            display: block;
-            position: absolute;
-            width: 100%;
-            bottom: 0;
-            left: 0;
-            height: 6px;
-            background: #fff;
-            box-shadow: 0 -4px 10px 0px #fff;
-        }
-    }
-
-    &__cell.cell-nowrap {
-        white-space: nowrap;
-        padding: 0 25px;
-        line-height: $minHeight;
-    }
-
-    .table-grid-relative {
-        top: 0;
-        position: absolute;
-    }
-
-    .content {
-        margin: 0;
+        padding: 0 20px;
         text-align: center;
-        text-overflow: ellipsis;
         overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid #e0e0e0;
     }
 }
-*/

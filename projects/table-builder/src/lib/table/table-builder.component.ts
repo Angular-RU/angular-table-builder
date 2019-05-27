@@ -2,44 +2,60 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    Input,
+    Inject,
     OnChanges,
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { PrimaryKey, TableRow } from '../table-builder.interfaces';
-import { TableBase } from './table.base';
+
+import { TableRow } from '../table-builder.interfaces';
+import { TableBuilderApiImpl } from './table-builder.api';
+import { fadeAnimation } from './core/fade.animation';
+import { BUFFER_AMOUNT, OUTSIDE_ZONE, COL_WIDTH, ROW_HEIGHT } from '../table-builder.tokens';
 
 @Component({
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    animations: [fadeAnimation]
 })
-export class TableBuilderComponent extends TableBase implements OnInit, OnChanges {
-    @Input() public height: string;
-    @Input() public width: string;
-    @Input() public nowrap: boolean = true;
-    @Input() public source: TableRow[] = [];
-    @Input() public primaryKey: string = PrimaryKey.ID;
-    @Input('cell-min-width') public cellMinWidth: string;
-    @Input('visible-columns') public visibleColumns: number;
-    @Input('row-height') public rowHeight: string;
-    public scrollWheel: number = 0;
+export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
     public columnKeys: string[] = [];
 
-    private id: number = null;
-
-    public maxWidth: number = 200;
-
-    constructor(private cd: ChangeDetectorRef) {
+    constructor(
+        @Inject(OUTSIDE_ZONE) public outsideZone: boolean,
+        @Inject(BUFFER_AMOUNT) public defaultBufferAmount: number,
+        @Inject(ROW_HEIGHT) public defaultRowHeight: number,
+        @Inject(COL_WIDTH) public defaultColumnWidth: number,
+        private cd: ChangeDetectorRef
+    ) {
         super();
     }
 
+    public get clientRowHeight(): number {
+        return Number(this.rowHeight) || this.defaultRowHeight;
+    }
+
+    public get clientColWidth(): number {
+        return Number(this.columnWidth) || this.defaultColumnWidth;
+    }
+
+    public get clientBufferAmount(): number {
+        return Number(this.bufferAmount) || this.defaultBufferAmount;
+    }
+
+    public get columnVirtualHeight(): number {
+        return this.source.length * this.clientRowHeight + this.clientRowHeight;
+    }
+
     private get modelKeys(): string[] {
-        const value: TableRow = this.source[0];
-        return Object.keys(value);
+        return Object.keys(this.rowKeyValue);
+    }
+
+    private get rowKeyValue(): TableRow {
+        return (this.source && this.source[0]) || {};
     }
 
     public ngOnInit(): void {
@@ -47,7 +63,7 @@ export class TableBuilderComponent extends TableBase implements OnInit, OnChange
     }
 
     public ngOnChanges(): void {
-        this.columnKeys = this.modelKeys.slice(0, this.visibleColumns ? this.visibleColumns : Infinity);
+        this.columnKeys = this.modelKeys.slice(0, this.maxVisibleColumns ? this.maxVisibleColumns : Infinity);
     }
 
     public trackByIdx(index: number, item: TableRow): number {
@@ -55,13 +71,7 @@ export class TableBuilderComponent extends TableBase implements OnInit, OnChange
     }
 
     public updateViewport(): void {
-        window.clearInterval(this.id);
-
-        if (this.scrollWheel > 50) {
-            this.id = window.setTimeout(() => {
-                this.cd.detectChanges();
-            }, 100);
-        } else {
+        if (this.outsideZone) {
             this.cd.detectChanges();
         }
     }

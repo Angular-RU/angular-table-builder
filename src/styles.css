@@ -47,3 +47,12 @@ body {
 .mat-checkbox-checked.mat-accent .mat-checkbox-background {
     background-color: #0040a7;
 }
+
+.red {
+    color: red;
+}
+
+.spinner.mat-progress-spinner {
+    position: absolute;
+    left: 250px;
+}

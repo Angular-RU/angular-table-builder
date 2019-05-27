@@ -5,6 +5,8 @@ import {
     MatDividerModule,
     MatInputModule,
     MatListModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
     MatSidenavModule,
     MatToolbarModule
 } from '@angular/material';
@@ -14,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
-    imports: [TableBuilderModule.forFeature()],
+    imports: [TableBuilderModule.forRoot()],
     exports: [
         FormsModule,
         MatCheckboxModule,
@@ -26,6 +28,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
         DragDropModule,
         MatCardModule,
         ScrollingModule,
+        MatSelectModule,
+        MatProgressSpinnerModule,
         TableBuilderModule
     ]
 })

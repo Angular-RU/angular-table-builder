@@ -1,8 +1,20 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Simple table ({{ simple.length }}x{{ table.columnKeys.length }})</span>
+    <span>Simple table ({{ simple?.length }}x{{ table?.columnKeys?.length }})</span>
+    <mat-spinner *ngIf="loading" class="spinner" strokeWidth="5" [diameter]="30"></mat-spinner>
 </mat-toolbar>
 
 <form>
+    <mat-form-field>
+        <mat-label>Data size</mat-label>
+        <mat-select [(value)]="dataSize" (selectionChange)="updateTable()">
+            <mat-option value="10x5">10 x 5</mat-option>
+            <mat-option value="100x20">100 x 20</mat-option>
+            <mat-option value="1000x30">1000 x 30</mat-option>
+            <mat-option value="10000x50">10 000 x 50</mat-option>
+            <mat-option value="100000x100"><span class="red">100 000 x 100 (1.5Gb memory usage)</span></mat-option>
+        </mat-select>
+    </mat-form-field>
+
     <mat-form-field>
         <mat-label>Table width</mat-label>
         <label>
@@ -27,18 +39,18 @@
     <mat-form-field>
         <mat-label>Table cell width</mat-label>
         <label>
-            <input matInput name="cellWidth" placeholder="max-content, auto, px" [(ngModel)]="cellWidth" />
+            <input matInput name="columnWidth" [(ngModel)]="columnWidth" />
         </label>
     </mat-form-field>
 
     <mat-form-field>
-        <mat-label>Visible count columns</mat-label>
+        <mat-label>Max visible columns (n)</mat-label>
         <label>
             <input matInput name="visibleColumns" [(ngModel)]="visibleColumns" />
         </label>
     </mat-form-field>
 
-    <mat-checkbox [checked]="nowrap" (change)="nowrap = $event.checked">Set nowrap</mat-checkbox>
+    <!--    <mat-checkbox [checked]="nowrap" (change)="nowrap = $event.checked">Set nowrap</mat-checkbox>-->
 </form>
 
 <div class="content">
@@ -48,8 +60,7 @@
         [width]="width"
         [height]="height"
         [row-height]="rowHeight"
-        [nowrap]="nowrap"
-        [visible-columns]="visibleColumns"
-        [cell-min-width]="cellWidth"
+        [max-visible-columns]="visibleColumns"
+        [column-width]="columnWidth"
     ></ngx-table-builder>
 </div>
