@@ -1,3 +1,4 @@
+@import './styles/common';
 @import './styles/variables';
 
 .table-grid {
@@ -6,29 +7,28 @@
     border: 1px solid $borderColor;
     overflow: auto;
     background: $backgroundColor;
-    will-change: scroll-position;
+    will-change: auto;
     backface-visibility: hidden;
+    scroll-behavior: smooth;
+    display: flex;
 
     &__column {
         width: 100%;
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid $borderColor;
         box-sizing: border-box;
     }
 
-    &__body {
-        display: flex;
-    }
-
     &__header-cell {
-        position: sticky;
-        z-index: 1;
         top: 0;
+        z-index: 100;
+        position: sticky;
         box-sizing: border-box;
         padding: 5px 20px;
         overflow: hidden;
         text-overflow: ellipsis;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid $borderColor;
         background: #fff;
+        float: left;
     }
 
     &__cell {
@@ -38,6 +38,10 @@
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid $borderColor;
+    }
+
+    &__cell:not(&__header-cell):nth-child(odd) {
+        background: $backgroundOddLineColor;
     }
 }

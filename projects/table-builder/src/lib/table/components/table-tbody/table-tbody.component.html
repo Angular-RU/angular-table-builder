@@ -1,0 +1,22 @@
+<virtual-scroller
+    #scroll
+    [items]="source"
+    [@fadeAnimation]="'in'"
+    [scrollAnimationTime]="0"
+    [checkResizeInterval]="0"
+    (vsUpdate)="updateViewport()"
+    [parentScroll]="tableViewport"
+    [bufferAmount]="clientBufferAmount"
+    [style.height.px]="columnVirtualHeight"
+    [executeRefreshOutsideAngularZone]="outsideZone"
+>
+    <div
+        class="table-grid__cell"
+        *ngFor="let item of scroll.viewPortItems; trackBy: trackByIdx.bind(this)"
+        [style.min-height.px]="clientRowHeight"
+        [style.max-height.px]="clientRowHeight"
+        [style.line-height.px]="clientRowHeight"
+    >
+        {{ item[key] }}
+    </div>
+</virtual-scroller>

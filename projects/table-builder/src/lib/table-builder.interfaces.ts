@@ -13,3 +13,7 @@ export interface TableBuilderOptions {
 export enum PrimaryKey {
     ID = 'id'
 }
+
+export interface ScrollStatus {
+    overload: boolean;
+}

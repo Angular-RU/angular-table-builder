@@ -1,0 +1,13 @@
+.cell-nowrap {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.scrollable-content {
+    height: unset !important;
+    will-change: auto;
+}
+
+table-tbody {
+    display: block;
+}

@@ -3,15 +3,16 @@ import {
     ChangeDetectorRef,
     Component,
     Inject,
+    NgZone,
     OnChanges,
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
 
-import { TableRow } from '../table-builder.interfaces';
+import { ScrollStatus, TableRow } from '../table-builder.interfaces';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './core/fade.animation';
-import { BUFFER_AMOUNT, OUTSIDE_ZONE, COL_WIDTH, ROW_HEIGHT } from '../table-builder.tokens';
+import { COL_WIDTH, ROW_HEIGHT } from '../table-builder.tokens';
 
 @Component({
     selector: 'ngx-table-builder',
@@ -22,14 +23,15 @@ import { BUFFER_AMOUNT, OUTSIDE_ZONE, COL_WIDTH, ROW_HEIGHT } from '../table-bui
     animations: [fadeAnimation]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
+    public scrollStatus: ScrollStatus = { overload: false };
     public columnKeys: string[] = [];
+    private checkId: number;
 
     constructor(
-        @Inject(OUTSIDE_ZONE) public outsideZone: boolean,
-        @Inject(BUFFER_AMOUNT) public defaultBufferAmount: number,
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
-        private cd: ChangeDetectorRef
+        private cd: ChangeDetectorRef,
+        private zone: NgZone
     ) {
         super();
     }
@@ -42,12 +44,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
         return Number(this.columnWidth) || this.defaultColumnWidth;
     }
 
-    public get clientBufferAmount(): number {
-        return Number(this.bufferAmount) || this.defaultBufferAmount;
+    public get columnVirtualHeight(): number {
+        return this.source.length * this.clientRowHeight;
     }
 
-    public get columnVirtualHeight(): number {
+    public get columnHeight(): number {
         return this.source.length * this.clientRowHeight + this.clientRowHeight;
+    }
+
+    public ngOnChanges(): void {
+        this.columnKeys = this.modelKeys.slice();
     }
 
     private get modelKeys(): string[] {
@@ -62,17 +68,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
         this.columnKeys = this.modelKeys;
     }
 
-    public ngOnChanges(): void {
-        this.columnKeys = this.modelKeys.slice(0, this.maxVisibleColumns ? this.maxVisibleColumns : Infinity);
-    }
-
-    public trackByIdx(index: number, item: TableRow): number {
-        return item[this.primaryKey] ? item[this.primaryKey] : index;
-    }
-
-    public updateViewport(): void {
-        if (this.outsideZone) {
-            this.cd.detectChanges();
-        }
+    public checkOutsizeZoneUpdated(): void {
+        clearInterval(this.checkId);
+        this.zone.runOutsideAngular(() => {
+            this.checkId = setTimeout(() => this.cd.detectChanges());
+        });
     }
 }

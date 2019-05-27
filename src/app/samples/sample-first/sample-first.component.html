@@ -42,15 +42,6 @@
             <input matInput name="columnWidth" [(ngModel)]="columnWidth" />
         </label>
     </mat-form-field>
-
-    <mat-form-field>
-        <mat-label>Max visible columns (n)</mat-label>
-        <label>
-            <input matInput name="visibleColumns" [(ngModel)]="visibleColumns" />
-        </label>
-    </mat-form-field>
-
-    <!--    <mat-checkbox [checked]="nowrap" (change)="nowrap = $event.checked">Set nowrap</mat-checkbox>-->
 </form>
 
 <div class="content">
@@ -60,7 +51,6 @@
         [width]="width"
         [height]="height"
         [row-height]="rowHeight"
-        [max-visible-columns]="visibleColumns"
         [column-width]="columnWidth"
     ></ngx-table-builder>
 </div>

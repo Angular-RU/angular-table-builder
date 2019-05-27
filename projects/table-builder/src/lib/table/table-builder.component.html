@@ -1,55 +1,38 @@
 <div
     #tableViewport
-    *ngIf="source?.length"
-    class="table-grid"
-    [style.width]="width"
-    [style.height]="height"
     wheelThrottling
+    class="table-grid"
+    *ngIf="source?.length"
+    [style.width]="width"
+    [style.height.px]="height"
+    (scrollOverload)="scrollStatus.overload = $event"
 >
-    <div class="table-grid__body">
-        <div
-            #column
-            inViewport
-            *ngFor="let key of columnKeys"
-            class="table-grid__column column-is-{{ column['visible'] ? 'visible' : 'invisible' }}"
-            (inViewportAction)="column['visible'] = $event.visible"
-            [style.height.px]="columnVirtualHeight"
-            [style.min-width.px]="clientColWidth"
-        >
-            <div
-                class="table-grid__cell table-grid__header-cell"
-                [style.width.px]="column.clientWidth - 1"
-                [style.min-height.px]="clientRowHeight"
-                [style.max-height.px]="clientRowHeight"
-                [style.line-height.px]="clientRowHeight"
-                [@fadeAnimation]="'in'"
-            >
-                <b>{{ key }}</b>
-            </div>
+    <div
+        #column
+        inViewport
+        class="table-grid__column"
+        *ngFor="let key of columnKeys"
+        [style.height.px]="columnHeight"
+        [style.min-width.px]="clientColWidth"
+        [class.column-is-visible]="column['visible']"
+        [class.column-is-invisible]="!column['visible']"
+        (inViewportAction)="column['visible'] = $event.visible"
+    >
+        <table-thead [column-key]="key" [client-row-height]="clientRowHeight"></table-thead>
 
-            <virtual-scroller
-                #scroll
-                *ngIf="column['visible']"
-                [items]="source"
-                [@fadeAnimation]="'in'"
-                [scrollAnimationTime]="0"
-                [checkResizeInterval]="0"
-                (vsUpdate)="updateViewport()"
-                [parentScroll]="tableViewport"
-                [bufferAmount]="clientBufferAmount"
-                [style.height.px]="columnVirtualHeight"
-                [executeRefreshOutsideAngularZone]="outsideZone"
-            >
-                <div
-                    class="table-grid__cell"
-                    *ngFor="let item of scroll.viewPortItems; trackBy: trackByIdx.bind(this)"
-                    [style.min-height.px]="clientRowHeight"
-                    [style.max-height.px]="clientRowHeight"
-                    [style.line-height.px]="clientRowHeight"
-                >
-                    {{ item[key] }}
-                </div>
-            </virtual-scroller>
-        </div>
+        <table-tbody
+            *ngIf="column['visible']"
+            [source]="source"
+            [column-key]="key"
+            [primary-key]="primaryKey"
+            [scroll-status]="scrollStatus"
+            [buffer-amount]="bufferAmount"
+            [table-viewport]="tableViewport"
+            [client-row-height]="clientRowHeight"
+            [style.margin-top.px]="clientRowHeight"
+            [column-virtual-height]="columnVirtualHeight"
+            (outsideZoneUpdated)="checkOutsizeZoneUpdated()"
+        >
+        </table-tbody>
     </div>
 </div>

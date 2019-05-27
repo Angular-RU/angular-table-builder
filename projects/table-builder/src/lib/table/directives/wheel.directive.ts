@@ -1,8 +1,11 @@
-import { Directive, ElementRef, Inject, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { WHEEL_MAX_DELTA } from '../../table-builder.tokens';
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
+    @Output() public scrollOverload: EventEmitter<boolean> = new EventEmitter();
+    private overloadStatus: boolean = false;
+
     constructor(
         @Inject(WHEEL_MAX_DELTA) private readonly maxDelta: number,
         private elementRef: ElementRef,
@@ -29,7 +32,12 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
         const isLimitExceeded: boolean = deltaX > this.maxDelta || deltaY > this.maxDelta;
 
         if (isLimitExceeded) {
+            this.overloadStatus = true;
+            this.scrollOverload.emit(this.overloadStatus);
             $event.preventDefault();
+        } else if (this.overloadStatus) {
+            this.overloadStatus = false;
+            this.scrollOverload.emit(this.overloadStatus);
         }
     }
 }

@@ -1,18 +1,19 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { InViewportModule } from 'ng-in-viewport';
 import { CommonModule } from '@angular/common';
 
+import { BUFFER_AMOUNT, COL_WIDTH, OUTSIDE_ZONE, ROW_HEIGHT, WHEEL_MAX_DELTA } from './table-builder.tokens';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { TableBuilderOptions } from './table-builder.interfaces';
 import { TableBuilderConfig } from './table-builder.config';
-import { BUFFER_AMOUNT, COL_WIDTH, OUTSIDE_ZONE, ROW_HEIGHT, WHEEL_MAX_DELTA } from './table-builder.tokens';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
+import { TableTheadComponent } from './table/components/table-thead/table-thead.component';
+import { TableTbodyComponent } from './table/components/table-tbody/table-tbody.component';
 
 @NgModule({
-    imports: [CommonModule, VirtualScrollerModule, ScrollingModule, InViewportModule],
-    declarations: [TableBuilderComponent, WheelThrottlingDirective],
+    imports: [CommonModule, VirtualScrollerModule, InViewportModule],
+    declarations: [TableBuilderComponent, WheelThrottlingDirective, TableTheadComponent, TableTbodyComponent],
     exports: [TableBuilderComponent]
 })
 export class TableBuilderModule {
