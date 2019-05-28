@@ -44,6 +44,7 @@ describe('[TEST]: Simple table', () => {
         fixture.detectChanges();
 
         setTimeout(() => {
+            fixture.detectChanges();
             // wait table animation
             const html: HTMLDivElement = fixture.nativeElement as HTMLDivElement;
 
@@ -64,7 +65,7 @@ describe('[TEST]: Simple table', () => {
                   <div class="total-padding"></div>
                   <div class="scrollable-content">
                     <div class="table-grid__cell"> 1 </div>
-                    <div class="table-grid__cell"> 2 </div>
+                    <div class="table-grid__cell table-grid__cell-strip"> 2 </div>
                     <div class="table-grid__cell"> 3 </div>
                   </div>
                 </virtual-scroller>
