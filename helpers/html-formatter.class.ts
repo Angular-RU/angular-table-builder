@@ -1,7 +1,7 @@
 import * as pretty from 'pretty';
 
 export class HtmlFormatter {
-    private commentRegExp: RegExp = new RegExp(
+    private readonly commentRegExp: RegExp = new RegExp(
         '<!--[\\s\\S]*?(?:-->)?' +
         '<!---+>?' + // A comment with no body
             '|<!(?![dD][oO][cC][tT][yY][pP][eE]|\\[CDATA\\[)[^>]*>?' +
@@ -9,7 +9,7 @@ export class HtmlFormatter {
         'g'
     );
 
-    private ngAttr: RegExp = /ng-[^"\s]*="[^"]*"/g;
+    private readonly ngAttr: RegExp = /ng-[^"\s]*="[^"]*"/g;
 
     constructor(private htmlContent: string = '') {}
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TableBuilderModule, TableRow } from '@angular-ru/table-builder';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HtmlFormatter } from './helpers/html-formatter.class';
+import { HtmlFormatter } from '../../../../../helpers/html-formatter.class';
 
 describe('[TEST]: Simple table', () => {
     @Component({
@@ -58,7 +58,7 @@ describe('[TEST]: Simple table', () => {
 
             const actualColumnHtml: string = new HtmlFormatter(`
               <table-thead>
-                <div class="table-grid__cell table-grid__header-cell"><b class="cell-nowrap">id</b></div>
+                <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">id</strong></div>
               </table-thead>
               <table-tbody>
                 <virtual-scroller class="vertical">

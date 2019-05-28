@@ -5,8 +5,8 @@ import { WHEEL_MAX_DELTA } from '../../table-builder.tokens';
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
     constructor(
         @Inject(WHEEL_MAX_DELTA) private readonly maxDelta: number,
-        private elementRef: ElementRef,
-        private ngZone: NgZone
+        private readonly elementRef: ElementRef,
+        private readonly ngZone: NgZone
     ) {}
 
     private get element(): HTMLElement {
