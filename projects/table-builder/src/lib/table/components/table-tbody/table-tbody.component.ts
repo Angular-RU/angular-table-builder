@@ -1,20 +1,9 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    NgZone,
-    Output,
-    ViewEncapsulation,
-    ViewRef
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, ViewEncapsulation } from '@angular/core';
 
-import { ScrollStatus, TableRow } from '../../../table-builder.interfaces';
-import { BUFFER_AMOUNT, OUTSIDE_ZONE } from '../../../table-builder.tokens';
-import { fadeAnimation } from '../../core/fade.animation';
 import { TableLineRow } from '../common/table-line-row.class';
+import { ScrollStatus, TableRow } from '../../../table-builder.interfaces';
+import { BUFFER_AMOUNT } from '../../../table-builder.tokens';
+import { fadeAnimation } from '../../core/fade.animation';
 
 @Component({
     selector: 'table-tbody',
@@ -30,16 +19,8 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('buffer-amount') public bufferAmount: number;
-    @Output() public outsideZoneUpdated: EventEmitter<void> = new EventEmitter();
 
-    private idThrottle: number = null;
-
-    constructor(
-        @Inject(OUTSIDE_ZONE) public outsideZone: boolean,
-        @Inject(BUFFER_AMOUNT) public defaultBufferAmount: number,
-        private cd: ChangeDetectorRef,
-        private zone: NgZone
-    ) {
+    constructor(@Inject(BUFFER_AMOUNT) public defaultBufferAmount: number) {
         super();
     }
 
@@ -49,37 +30,5 @@ export class TableTbodyComponent extends TableLineRow {
 
     public trackByIdx(index: number, item: TableRow): number {
         return item[this.primaryKey] ? item[this.primaryKey] : index;
-    }
-
-    public updateViewport(): void {
-        if (this.outsideZone) {
-            this.markForCheck();
-
-            if (!this.scrollStatus.overload) {
-                this.detectChanges();
-            } else {
-                this.throttleUpdateViewport();
-            }
-        }
-    }
-
-    private throttleUpdateViewport(): void {
-        clearInterval(this.idThrottle);
-        this.zone.runOutsideAngular(() => {
-            this.idThrottle = window.setTimeout(() => this.detectChanges(), 100);
-        });
-    }
-
-    private markForCheck(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.markForCheck();
-        }
-    }
-
-    private detectChanges(): void {
-        this.outsideZoneUpdated.emit();
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
-        }
     }
 }

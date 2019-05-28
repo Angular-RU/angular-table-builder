@@ -1,11 +1,11 @@
 <div
     #tableViewport
+    *ngIf="source?.length"
     wheelThrottling
     class="table-grid"
-    *ngIf="source?.length"
     [style.width]="width"
     [style.height.px]="height"
-    (scrollOverload)="scrollStatus.overload = $event"
+    [class.table-grid__native-scrollbar]="nativeScrollbar"
 >
     <div
         #column
@@ -31,7 +31,6 @@
             [client-row-height]="clientRowHeight"
             [style.margin-top.px]="clientRowHeight"
             [column-virtual-height]="columnVirtualHeight"
-            (outsideZoneUpdated)="checkOutsizeZoneUpdated()"
         >
         </table-tbody>
     </div>

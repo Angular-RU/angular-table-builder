@@ -3,7 +3,6 @@ export interface TableRow<T = any> {
 }
 
 export interface TableBuilderOptions {
-    outsideZone: boolean;
     bufferAmount: number;
     rowHeight: number;
     columnWidth: number;

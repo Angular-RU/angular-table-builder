@@ -57,13 +57,14 @@ export class SampleFirstComponent implements OnInit {
 
     private generateTable(rows: number, cols: number): TableRow[] {
         return new Array(rows).fill(0).map((_: any, index: number) => {
-            const position: number = index + 1;
+            const idx: number = index + 1;
+
             const baseRow: TableRow = {
-                id: 'id__' + position,
-                name: 'Hello - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + position,
-                description: 'World - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + position,
-                _id: '5cdae5b2ba0a57f709b72142' + '__' + position,
-                ['About Big Text And More Powerful Label']: `
+                id: idx,
+                name: 'Hello - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
+                description: 'World - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
+                _id: '5cdae5b2ba0a57f709b72142' + '__' + idx,
+                ['About Big Text And More Powerful Label Fugiat tempor sunt nostrud']: `
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam
@@ -72,7 +73,7 @@ export class SampleFirstComponent implements OnInit {
 
             if (cols > 5) {
                 for (let i: number = 6; i <= cols; i++) {
-                    baseRow['column-' + i] = `$row-${position} $col-${i}`;
+                    baseRow['column-' + i] = `$row-${idx} $col-${i}`;
                 }
             }
 

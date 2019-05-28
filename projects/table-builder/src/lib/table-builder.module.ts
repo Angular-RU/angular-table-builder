@@ -7,7 +7,6 @@ import {
     BUFFER_AMOUNT,
     COL_WIDTH,
     ENABLE_INTERACTION_OBSERVER,
-    OUTSIDE_ZONE,
     ROW_HEIGHT,
     WHEEL_MAX_DELTA
 } from './table-builder.tokens';
@@ -29,7 +28,6 @@ export class TableBuilderModule {
         return {
             ngModule: TableBuilderModule,
             providers: [
-                { provide: OUTSIDE_ZONE, useValue: config.outsideZone },
                 { provide: ROW_HEIGHT, useValue: config.rowHeight },
                 { provide: COL_WIDTH, useValue: config.columnWidth },
                 { provide: BUFFER_AMOUNT, useValue: config.bufferAmount },

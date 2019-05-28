@@ -1,5 +1,6 @@
 @import './styles/common';
 @import './styles/variables';
+@import './styles/scrollbar';
 
 .table-grid {
     position: relative;
@@ -11,6 +12,10 @@
     backface-visibility: hidden;
     scroll-behavior: smooth;
     display: flex;
+    overflow-x: visible;
+
+    //noinspection CssOverwrittenProperties
+    overflow-y: auto;
 
     &__column {
         width: 100%;
@@ -32,6 +37,7 @@
     }
 
     &__cell {
+        color: rgba(0, 0, 0, 1);
         width: 100%;
         box-sizing: border-box;
         padding: 0 20px;
@@ -41,7 +47,7 @@
         border-bottom: 1px solid $borderColor;
     }
 
-    &__cell:not(&__header-cell):nth-child(odd) {
+    &__cell-strip {
         background: $backgroundOddLineColor;
     }
 }
