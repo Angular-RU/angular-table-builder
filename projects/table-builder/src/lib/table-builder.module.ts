@@ -3,7 +3,14 @@ import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { InViewportModule } from 'ng-in-viewport';
 import { CommonModule } from '@angular/common';
 
-import { BUFFER_AMOUNT, COL_WIDTH, OUTSIDE_ZONE, ROW_HEIGHT, WHEEL_MAX_DELTA } from './table-builder.tokens';
+import {
+    BUFFER_AMOUNT,
+    COL_WIDTH,
+    ENABLE_INTERACTION_OBSERVER,
+    OUTSIDE_ZONE,
+    ROW_HEIGHT,
+    WHEEL_MAX_DELTA
+} from './table-builder.tokens';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { TableBuilderOptions } from './table-builder.interfaces';
 import { TableBuilderConfig } from './table-builder.config';
@@ -26,7 +33,8 @@ export class TableBuilderModule {
                 { provide: ROW_HEIGHT, useValue: config.rowHeight },
                 { provide: COL_WIDTH, useValue: config.columnWidth },
                 { provide: BUFFER_AMOUNT, useValue: config.bufferAmount },
-                { provide: WHEEL_MAX_DELTA, useValue: config.wheelMaxDelta }
+                { provide: WHEEL_MAX_DELTA, useValue: config.wheelMaxDelta },
+                { provide: ENABLE_INTERACTION_OBSERVER, useValue: config.enableInteractionObserver }
             ]
         };
     }

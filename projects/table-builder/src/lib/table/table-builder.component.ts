@@ -12,7 +12,7 @@ import {
 import { ScrollStatus, TableRow } from '../table-builder.interfaces';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './core/fade.animation';
-import { COL_WIDTH, ROW_HEIGHT } from '../table-builder.tokens';
+import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from '../table-builder.tokens';
 
 @Component({
     selector: 'ngx-table-builder',
@@ -25,15 +25,18 @@ import { COL_WIDTH, ROW_HEIGHT } from '../table-builder.tokens';
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
     public scrollStatus: ScrollStatus = { overload: false };
     public columnKeys: string[] = [];
+    public importantVisible: boolean;
     private checkId: number;
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
+        @Inject(ENABLE_INTERACTION_OBSERVER) public enableInteractionObserver: boolean,
         private cd: ChangeDetectorRef,
         private zone: NgZone
     ) {
         super();
+        this.importantVisible = !this.enableInteractionObserver;
     }
 
     public get clientRowHeight(): number {
@@ -73,5 +76,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
         this.zone.runOutsideAngular(() => {
             this.checkId = setTimeout(() => this.cd.detectChanges());
         });
+    }
+
+    public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {
+        column['visible'] = $event.visible;
     }
 }

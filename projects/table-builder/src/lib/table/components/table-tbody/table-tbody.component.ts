@@ -66,7 +66,7 @@ export class TableTbodyComponent extends TableLineRow {
     private throttleUpdateViewport(): void {
         clearInterval(this.idThrottle);
         this.zone.runOutsideAngular(() => {
-            this.idThrottle = setTimeout(() => this.detectChanges(), 100);
+            this.idThrottle = window.setTimeout(() => this.detectChanges(), 100);
         });
     }
 

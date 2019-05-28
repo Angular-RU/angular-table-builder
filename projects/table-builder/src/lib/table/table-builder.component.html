@@ -14,14 +14,14 @@
         *ngFor="let key of columnKeys"
         [style.height.px]="columnHeight"
         [style.min-width.px]="clientColWidth"
-        [class.column-is-visible]="column['visible']"
+        [class.column-is-visible]="importantVisible || column['visible']"
         [class.column-is-invisible]="!column['visible']"
-        (inViewportAction)="column['visible'] = $event.visible"
+        (inViewportAction)="inViewportAction(column, $event)"
     >
         <table-thead [column-key]="key" [client-row-height]="clientRowHeight"></table-thead>
 
         <table-tbody
-            *ngIf="column['visible']"
+            *ngIf="importantVisible || column['visible']"
             [source]="source"
             [column-key]="key"
             [primary-key]="primaryKey"

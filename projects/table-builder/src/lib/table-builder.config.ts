@@ -6,4 +6,5 @@ export class TableBuilderConfig implements TableBuilderOptions {
     public readonly rowHeight: number = 45;
     public readonly columnWidth: number = 200;
     public readonly wheelMaxDelta: number = 100;
+    public readonly enableInteractionObserver: boolean = true;
 }

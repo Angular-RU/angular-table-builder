@@ -8,6 +8,7 @@ export interface TableBuilderOptions {
     rowHeight: number;
     columnWidth: number;
     wheelMaxDelta: number;
+    enableInteractionObserver: boolean;
 }
 
 export enum PrimaryKey {
