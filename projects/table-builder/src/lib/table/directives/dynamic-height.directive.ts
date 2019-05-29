@@ -29,12 +29,12 @@ export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {
         window.removeEventListener('resize', this.recalculateByResize.bind(this), true);
     }
 
-    public recalculateByResize(): void {
+    private recalculateByResize(): void {
         this.calculateHeight();
         this.app.tick();
     }
 
-    public calculateHeight(): void {
+    private calculateHeight(): void {
         this.setHeightByParent(this.element.nativeElement);
     }
 
@@ -43,9 +43,14 @@ export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private getStyleHeight(element: HTMLElement): string {
-        const height: string = this.height
-            ? `${this.height}px`
-            : `calc(${document.body.clientHeight}px - ${element.getBoundingClientRect().top}px - 10px)`;
-        return `display: block; height: ${height}`;
+        let height: string;
+
+        if (this.height) {
+            height = `${this.height}px`;
+        } else if (this.ngDynamicHeight.autoHeight) {
+            height = `calc(${document.body.clientHeight}px - ${element.getBoundingClientRect().top}px - 10px)`;
+        }
+
+        return height ? `display: block; height: ${height}` : '';
     }
 }

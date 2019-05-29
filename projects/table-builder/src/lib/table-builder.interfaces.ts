@@ -15,6 +15,7 @@ export enum PrimaryKey {
 }
 
 export interface DynamicHeightOptions {
+    autoHeight: boolean;
     height: number;
 }
 
