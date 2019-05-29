@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
+        "typedoc": "typedoc projects/table-builder/src",
         "test": "jest --config ./jest.config.js --coverage",
         "start": "ng serve --open --aot=false",
         "build": "ng build",
@@ -36,8 +37,6 @@
         "@angular/cli": "~7.3.9",
         "@angular/compiler-cli": "~7.2.0",
         "@angular/language-service": "~7.2.0",
-        "@types/jasmine": "~2.8.8",
-        "@types/jasminewd2": "~2.0.3",
         "@types/jest": "^24.0.13",
         "@types/node": "~8.9.4",
         "codelyzer": "~4.5.0",
@@ -55,6 +54,7 @@
         "tslint-eslint-rules": "^5.4.0",
         "tslint-microsoft-contrib": "^5.2.1",
         "tslint-sonarts": "^1.9.0",
+        "typedoc": "^0.14.2",
         "typescript": "~3.2.2"
     }
 }
