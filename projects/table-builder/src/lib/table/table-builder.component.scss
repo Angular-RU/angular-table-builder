@@ -2,10 +2,6 @@
 @import './styles/variables';
 @import './styles/scrollbar';
 
-.table-grid__root {
-  box-shadow: 0 0 10px -2px $borderColor;
-}
-
 .table-grid {
     position: relative;
     border: 1px solid $borderColor;
@@ -38,6 +34,7 @@
         border-bottom: 1px solid $borderColor;
         background: #fff;
         float: left;
+        transition: box-shadow 0.3s ease-in-out;
     }
 
     &__cell {
@@ -49,6 +46,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
         border-bottom: 1px solid $borderColor;
+    }
+
+    .table-head__offset {
+        .table-grid__header-cell {
+            transition: box-shadow 0.3s ease-in-out;
+            box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
+        }
     }
 
     &__cell-strip {

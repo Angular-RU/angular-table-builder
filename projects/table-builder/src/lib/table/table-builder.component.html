@@ -5,6 +5,7 @@
         wheelThrottling
         class="table-grid"
         [style.width]="width"
+        (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
         <div
@@ -18,7 +19,11 @@
             [class.column-is-invisible]="!column['visible']"
             (inViewportAction)="inViewportAction(column, $event)"
         >
-            <table-thead [column-key]="key" [client-row-height]="clientRowHeight"></table-thead>
+            <table-thead
+                [class.table-head__offset]="scrollOffset.offset"
+                [column-key]="key"
+                [client-row-height]="clientRowHeight"
+            ></table-thead>
 
             <table-tbody
                 *ngIf="!enabledObserver || column['visible']"

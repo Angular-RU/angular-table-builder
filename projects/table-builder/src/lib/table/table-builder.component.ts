@@ -1,7 +1,15 @@
-import { ChangeDetectionStrategy, Component, Inject, OnChanges, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    OnChanges,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 
 import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from '../table-builder.tokens';
-import { TableRow } from '../table-builder.interfaces';
+import { ScrollOffsetStatus, TableRow } from '../table-builder.interfaces';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './core/fade.animation';
 
@@ -14,12 +22,14 @@ import { fadeAnimation } from './core/fade.animation';
     animations: [fadeAnimation]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
+    public scrollOffset: ScrollOffsetStatus = { offset: false };
     public columnKeys: string[] = [];
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
-        @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean
+        @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean,
+        private cd: ChangeDetectorRef
     ) {
         super();
     }
@@ -54,6 +64,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
 
     public ngOnInit(): void {
         this.columnKeys = this.modelKeys;
+    }
+
+    public updateScrollOffset(offset: boolean): void {
+        this.scrollOffset = { offset };
+        this.cd.detectChanges();
     }
 
     public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {

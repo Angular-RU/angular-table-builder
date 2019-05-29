@@ -17,3 +17,7 @@ export enum PrimaryKey {
 export interface DynamicHeightOptions {
     height: number;
 }
+
+export interface ScrollOffsetStatus {
+    offset: boolean;
+}

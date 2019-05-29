@@ -1,3 +1,9 @@
+@import "./variables";
+
+.table-grid__root {
+    box-shadow: 0 0 10px -2px $borderColor;
+}
+
 .cell-nowrap {
     white-space: nowrap;
     text-overflow: ellipsis;
