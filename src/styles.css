@@ -56,3 +56,7 @@ body {
     position: absolute;
     left: 250px;
 }
+
+.dialog-close {
+    float: right;
+}

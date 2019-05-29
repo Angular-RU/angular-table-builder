@@ -1,24 +1,32 @@
 import { NgModule } from '@angular/core';
 import {
+    MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatDialogModule,
     MatDividerModule,
     MatInputModule,
     MatListModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     MatSidenavModule,
+    MatSnackBarModule,
     MatToolbarModule
 } from '@angular/material';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { TableBuilderModule } from '@angular-ru/table-builder';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TableBuilderModule } from '@angular-ru/table-builder';
+import { CodeDialogComponent } from './dialog/code-dialog.component';
 
 @NgModule({
-    imports: [TableBuilderModule.forRoot()],
+    imports: [TableBuilderModule.forRoot(), MatButtonModule],
+    entryComponents: [CodeDialogComponent],
+    declarations: [CodeDialogComponent],
     exports: [
         FormsModule,
+        MatButtonModule,
+        MatDialogModule,
         MatCheckboxModule,
         MatInputModule,
         MatSidenavModule,
@@ -30,7 +38,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
         ScrollingModule,
         MatSelectModule,
         MatProgressSpinnerModule,
-        TableBuilderModule
+        TableBuilderModule,
+        MatSnackBarModule,
+        CodeDialogComponent
     ]
 })
 export class SharedModule {}

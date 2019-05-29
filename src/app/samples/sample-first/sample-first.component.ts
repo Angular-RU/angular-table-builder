@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/table-builder';
+import { MatDialog } from '@angular/material';
+import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 
 @Component({
     selector: 'sample-first',
@@ -16,10 +18,31 @@ export class SampleFirstComponent implements OnInit {
     public loading: boolean = false;
     public simple: TableRow[];
 
-    constructor(private cd: ChangeDetectorRef) {}
+    constructor(private cd: ChangeDetectorRef, public dialog: MatDialog) {}
 
     public ngOnInit(): void {
         this.updateTable();
+    }
+
+    public showSample(): void {
+        this.dialog.open(CodeDialogComponent, {
+            data: {
+                title: 'Overview simple table (app.component.html)',
+                code:
+                    `<!-- simple - is Array any objects -->\n` +
+                    `<ngx-table-builder [source]="simple"></ngx-table-builder>\n\n` +
+                    `<!-- also you can set height, width for table -->\n` +
+                    `<ngx-table-builder\n` +
+                    `   [source]="simple"\n` +
+                    `   [width]="width"\n` +
+                    `   [height]="height"\n` +
+                    `   [row-height]="rowHeight"\n` +
+                    `   [column-width]="columnWidth"\n` +
+                    `></ngx-table-builder>\n`
+            },
+            height: '340px',
+            width: '600px'
+        });
     }
 
     public updateTable(): void {
