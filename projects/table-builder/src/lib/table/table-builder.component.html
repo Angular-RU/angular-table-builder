@@ -1,37 +1,37 @@
-<div
-    #tableViewport
-    *ngIf="source?.length"
-    wheelThrottling
-    class="table-grid"
-    [style.width]="width"
-    [style.height.px]="height"
-    [class.table-grid__native-scrollbar]="nativeScrollbar"
->
+<div class="table-grid__root" [ngDynamicHeight]="{ height: height }">
     <div
-        #column
-        inViewport
-        class="table-grid__column"
-        *ngFor="let key of columnKeys"
-        [style.height.px]="columnHeight"
-        [style.min-width.px]="clientColWidth"
-        [class.column-is-visible]="importantVisible || column['visible']"
-        [class.column-is-invisible]="!column['visible']"
-        (inViewportAction)="inViewportAction(column, $event)"
+        #tableViewport
+        *ngIf="source?.length"
+        wheelThrottling
+        class="table-grid"
+        [style.width]="width"
+        [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
-        <table-thead [column-key]="key" [client-row-height]="clientRowHeight"></table-thead>
-
-        <table-tbody
-            *ngIf="importantVisible || column['visible']"
-            [source]="source"
-            [column-key]="key"
-            [primary-key]="primaryKey"
-            [scroll-status]="scrollStatus"
-            [buffer-amount]="bufferAmount"
-            [table-viewport]="tableViewport"
-            [client-row-height]="clientRowHeight"
-            [style.margin-top.px]="clientRowHeight"
-            [column-virtual-height]="columnVirtualHeight"
+        <div
+            #column
+            inViewport
+            class="table-grid__column"
+            *ngFor="let key of columnKeys"
+            [style.height.px]="columnHeight"
+            [style.min-width.px]="clientColWidth"
+            [class.column-is-visible]="!enabledObserver || column['visible']"
+            [class.column-is-invisible]="!column['visible']"
+            (inViewportAction)="inViewportAction(column, $event)"
         >
-        </table-tbody>
+            <table-thead [column-key]="key" [client-row-height]="clientRowHeight"></table-thead>
+
+            <table-tbody
+                *ngIf="!enabledObserver || column['visible']"
+                [source]="source"
+                [column-key]="key"
+                [primary-key]="primaryKey"
+                [buffer-amount]="bufferAmount"
+                [table-viewport]="tableViewport"
+                [client-row-height]="clientRowHeight"
+                [style.margin-top.px]="clientRowHeight"
+                [column-virtual-height]="columnVirtualHeight"
+            >
+            </table-tbody>
+        </div>
     </div>
 </div>

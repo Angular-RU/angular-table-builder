@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, OnChanges, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from '../table-builder.tokens';
-import { ScrollStatus, TableRow } from '../table-builder.interfaces';
+import { TableRow } from '../table-builder.interfaces';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './core/fade.animation';
 
@@ -14,17 +14,14 @@ import { fadeAnimation } from './core/fade.animation';
     animations: [fadeAnimation]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
-    public scrollStatus: ScrollStatus = { overload: false };
     public columnKeys: string[] = [];
-    public importantVisible: boolean;
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
-        @Inject(ENABLE_INTERACTION_OBSERVER) public enableInteractionObserver: boolean
+        @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean
     ) {
         super();
-        this.importantVisible = !this.enableInteractionObserver;
     }
 
     public get clientRowHeight(): number {

@@ -14,6 +14,6 @@ export enum PrimaryKey {
     ID = 'id'
 }
 
-export interface ScrollStatus {
-    overload: boolean;
+export interface DynamicHeightOptions {
+    height: number;
 }

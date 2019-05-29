@@ -39,7 +39,7 @@ describe('[TEST]: Simple table', () => {
         fixture.detectChanges();
     });
 
-    it('should create ngx-table', (done: DoneFn) => {
+    it('should create ngx-table', (done) => {
         expect(component).toBeDefined();
         fixture.detectChanges();
 

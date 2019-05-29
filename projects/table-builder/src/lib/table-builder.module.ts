@@ -16,10 +16,17 @@ import { TableBuilderConfig } from './table-builder.config';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
 import { TableTheadComponent } from './table/components/table-thead/table-thead.component';
 import { TableTbodyComponent } from './table/components/table-tbody/table-tbody.component';
+import { DynamicHeightDirective } from './table/directives/dynamic-height.directive';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
-    declarations: [TableBuilderComponent, WheelThrottlingDirective, TableTheadComponent, TableTbodyComponent],
+    declarations: [
+        TableBuilderComponent,
+        WheelThrottlingDirective,
+        DynamicHeightDirective,
+        TableTheadComponent,
+        TableTbodyComponent
+    ],
     exports: [TableBuilderComponent]
 })
 export class TableBuilderModule {

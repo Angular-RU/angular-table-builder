@@ -2,9 +2,12 @@
 @import './styles/variables';
 @import './styles/scrollbar';
 
+.table-grid__root {
+  box-shadow: 0 0 10px -2px $borderColor;
+}
+
 .table-grid {
     position: relative;
-    box-shadow: 0 0 10px -2px $borderColor;
     border: 1px solid $borderColor;
     overflow: auto;
     background: $backgroundColor;
@@ -13,6 +16,7 @@
     scroll-behavior: smooth;
     display: flex;
     overflow-x: visible;
+    height: 100%;
 
     //noinspection CssOverwrittenProperties
     overflow-y: auto;

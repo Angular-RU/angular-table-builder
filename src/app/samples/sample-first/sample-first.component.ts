@@ -9,7 +9,7 @@ import { TableRow } from '@angular-ru/table-builder';
 })
 export class SampleFirstComponent implements OnInit {
     public width: string = '100%';
-    public height: number = 500;
+    public height: number;
     public rowHeight: string;
     public columnWidth: string;
     public dataSize: string = '100x20';
