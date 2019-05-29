@@ -29,7 +29,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
         @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean,
-        private cd: ChangeDetectorRef
+        private readonly cd: ChangeDetectorRef
     ) {
         super();
     }
