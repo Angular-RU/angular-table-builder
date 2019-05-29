@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { IntroductionComponent } from './samples/introduction/introduction.component';
 
 @NgModule({
     imports: [
@@ -8,7 +9,7 @@ import { RouterModule } from '@angular/router';
                 {
                     path: '',
                     pathMatch: 'full',
-                    redirectTo: 'samples'
+                    component: IntroductionComponent
                 },
                 {
                     path: 'samples',

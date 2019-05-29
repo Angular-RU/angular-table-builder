@@ -6,7 +6,6 @@ import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 @Component({
     selector: 'sample-first',
     templateUrl: './sample-first.component.html',
-    styleUrls: ['./sample-first.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFirstComponent implements OnInit {
@@ -28,10 +27,14 @@ export class SampleFirstComponent implements OnInit {
         this.dialog.open(CodeDialogComponent, {
             data: {
                 title: 'Overview simple table (app.component.html)',
+                description: 'If you want enabled virtual scroll, you need use auto-height or height attribute.',
                 code:
                     `<!-- simple - is Array any objects -->\n` +
-                    `<ngx-table-builder [source]="simple"></ngx-table-builder>\n\n` +
-                    `<!-- also you can set height, width for table -->\n` +
+                    `<ngx-table-builder\n` +
+                    `   [source]="simple"\n` +
+                    `   [auto-height]="true"\n` +
+                    `></ngx-table-builder>\n\n\n` +
+                    `<!-- also you can set height, width for cell in table -->\n` +
                     `<ngx-table-builder\n` +
                     `   [source]="simple"\n` +
                     `   [width]="width"\n` +
@@ -40,7 +43,7 @@ export class SampleFirstComponent implements OnInit {
                     `   [column-width]="columnWidth"\n` +
                     `></ngx-table-builder>\n`
             },
-            height: '340px',
+            height: '450px',
             width: '600px'
         });
     }
@@ -84,9 +87,9 @@ export class SampleFirstComponent implements OnInit {
 
             const baseRow: TableRow = {
                 id: idx,
-                name: 'Hello - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
-                description: 'World - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
-                _id: '5cdae5b2ba0a57f709b72142' + '__' + idx,
+                name: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
+                description: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
+                guid: '5cdae5b2ba0a57f709b72142' + '__' + idx,
                 ['About Big Text And More Powerful Label Fugiat tempor sunt nostrud']: `
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.

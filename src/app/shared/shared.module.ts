@@ -18,9 +18,10 @@ import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableBuilderModule } from '@angular-ru/table-builder';
 import { CodeDialogComponent } from './dialog/code-dialog.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
-    imports: [TableBuilderModule.forRoot(), MatButtonModule],
+    imports: [TableBuilderModule.forRoot(), CommonModule, MatButtonModule],
     entryComponents: [CodeDialogComponent],
     declarations: [CodeDialogComponent],
     exports: [

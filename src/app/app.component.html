@@ -1,10 +1,17 @@
 <mat-drawer-container class="dashboard">
     <mat-drawer mode="side" class="dashboard__menu" opened>
-        <mat-toolbar class="title">Table builder</mat-toolbar>
+        <mat-toolbar class="title">
+            <img class="logo" src="https://angular.io/assets/images/logos/angular/angular.svg" alt="angular" />
+            <a routerLink="/">Table builder</a>
+        </mat-toolbar>
 
         <mat-list class="menu">
             <mat-list-item class="menu__item">
-                <a routerLink="samples/first">Simple table</a>
+                <a routerLink="samples/guide">- <strong>Guide overview</strong></a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item class="menu__item">
+                <a routerLink="samples/first">- Example virtual scroll table</a>
             </mat-list-item>
             <mat-divider></mat-divider>
         </mat-list>

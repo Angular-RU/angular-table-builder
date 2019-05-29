@@ -1,7 +1,6 @@
-<div class="table-grid__root" [ngDynamicHeight]="{ height: height }">
+<div *ngIf="source?.length" class="table-grid__root" [ngDynamicHeight]="{ autoHeight: autoHeight, height: height }">
     <div
         #tableViewport
-        *ngIf="source?.length"
         wheelThrottling
         class="table-grid"
         [style.width]="width"

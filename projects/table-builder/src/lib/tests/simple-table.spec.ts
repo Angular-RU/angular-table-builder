@@ -39,7 +39,7 @@ describe('[TEST]: Simple table', () => {
         fixture.detectChanges();
     });
 
-    it('should create ngx-table', (done) => {
+    it('should create ngx-table', (done: any) => {
         expect(component).toBeDefined();
         fixture.detectChanges();
 
@@ -58,7 +58,7 @@ describe('[TEST]: Simple table', () => {
 
             const actualColumnHtml: string = new HtmlFormatter(`
               <table-thead>
-                <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">id</strong></div>
+                <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">Id</strong></div>
               </table-thead>
               <table-tbody>
                 <virtual-scroller class="vertical">
