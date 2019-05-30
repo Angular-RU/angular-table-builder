@@ -1,14 +1,7 @@
 import * as pretty from 'pretty';
 
 export class HtmlFormatter {
-    private readonly commentRegExp: RegExp = new RegExp(
-        '<!--[\\s\\S]*?(?:-->)?' +
-        '<!---+>?' + // A comment with no body
-            '|<!(?![dD][oO][cC][tT][yY][pP][eE]|\\[CDATA\\[)[^>]*>?' +
-            '|<[?][^>]*>?', // A pseudo-comment
-        'g'
-    );
-
+    private readonly commentRegExp: RegExp = /<!--[\s\S]*?(?:-->)/g;
     private readonly ngAttr: RegExp = /ng-[^"\s]*="[^"]*"/g;
 
     constructor(private htmlContent: string = '') {}

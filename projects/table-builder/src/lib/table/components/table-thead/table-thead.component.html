@@ -5,5 +5,11 @@
     [style.line-height.px]="clientRowHeight"
     [@fadeAnimation]="'in'"
 >
-    <strong class="cell-nowrap">{{ key | titlecase }}</strong>
+    <ng-container *ngIf="columnsSchema[key]?.th.template as templateTh; else defaultTh">
+        <ng-container *ngTemplateOutlet="templateTh"></ng-container>
+    </ng-container>
+
+    <ng-template #defaultTh>
+        <strong class="cell-nowrap">{{ key | titlecase }}</strong>
+    </ng-template>
 </div>

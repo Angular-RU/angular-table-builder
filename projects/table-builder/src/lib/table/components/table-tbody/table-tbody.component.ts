@@ -4,6 +4,7 @@ import { TableLineRow } from '../common/table-line-row.class';
 import { BUFFER_AMOUNT } from '../../config/table-builder.tokens';
 import { fadeAnimation } from '../../animations/fade.animation';
 import { TableRow } from '../../interfaces/table-builder.external';
+import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 
 @Component({
     selector: 'table-tbody',
@@ -19,8 +20,11 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('buffer-amount') public bufferAmount: number;
 
-    constructor(@Inject(BUFFER_AMOUNT) public defaultBufferAmount: number) {
-        super();
+    constructor(
+        @Inject(BUFFER_AMOUNT) public defaultBufferAmount: number,
+        protected templateParser: TemplateParserService
+    ) {
+        super(templateParser);
     }
 
     public get clientBufferAmount(): number {

@@ -14,18 +14,18 @@
             *ngFor="let key of columnKeys"
             [style.height.px]="columnHeight"
             [style.min-width.px]="clientColWidth"
-            [class.column-is-visible]="!enabledObserver || column['visible']"
+            [class.column-is-visible]="column['visible']"
             [class.column-is-invisible]="!column['visible']"
             (inViewportAction)="inViewportAction(column, $event)"
         >
             <table-thead
-                [class.table-head__offset]="scrollOffset.offset"
                 [column-key]="key"
                 [client-row-height]="clientRowHeight"
+                [class.table-head__offset]="scrollOffset.offset"
             ></table-thead>
 
             <table-tbody
-                *ngIf="!enabledObserver || column['visible']"
+                *ngIf="column['visible']"
                 [source]="source"
                 [column-key]="key"
                 [primary-key]="primaryKey"

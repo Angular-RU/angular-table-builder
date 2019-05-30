@@ -11,7 +11,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 
-import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from './config/table-builder.tokens';
+import { COL_WIDTH, ROW_HEIGHT } from './config/table-builder.tokens';
 import { ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './animations/fade.animation';
@@ -29,16 +29,13 @@ import { TableRow } from './interfaces/table-builder.external';
     animations: [fadeAnimation]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges, AfterContentInit {
-    public scrollOffset: ScrollOffsetStatus = { offset: false };
     public columnKeys: string[] = [];
-
-    @ContentChildren(NgxColumnComponent)
-    private readonly columnsList: QueryList<NgxColumnComponent>;
+    public scrollOffset: ScrollOffsetStatus = { offset: false };
+    @ContentChildren(NgxColumnComponent) private readonly columnsList: QueryList<NgxColumnComponent>;
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
-        @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean,
         private templateParser: TemplateParserService,
         private readonly cd: ChangeDetectorRef
     ) {
@@ -85,7 +82,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
     }
 
     public ngAfterContentInit(): void {
-        this.templateParser.parse(this.columnsList);
+        this.templateParser.parse(this.modelColumnKeys, this.columnsList);
         this.setupTableColumnKeys();
     }
 

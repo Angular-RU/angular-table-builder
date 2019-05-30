@@ -14,11 +14,15 @@
     <div
         class="table-grid__cell"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
-        [class.table-grid__cell-strip]="(item[this.primaryKey] || index) % 2 === 0"
+        [class.table-grid__cell-strip]="(item[primaryKey] || index) % 2 === 0"
         [style.min-height.px]="clientRowHeight"
         [style.max-height.px]="clientRowHeight"
         [style.line-height.px]="clientRowHeight"
     >
-        {{ item[key] }}
+        <ng-container *ngIf="columnsSchema[key]?.td.template as templateTd; else defaultTd">
+            <ng-container *ngTemplateOutlet="templateTd; context: { $implicit: item | deepPath: key }"></ng-container>
+        </ng-container>
+
+        <ng-template #defaultTd>{{ item[key] }}</ng-template>
     </div>
 </virtual-scroller>

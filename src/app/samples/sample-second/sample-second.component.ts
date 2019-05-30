@@ -1,9 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
 
-interface Data {
+interface LicenseSample {
     id: number;
     name: string;
-    description: string;
+    price: number;
 }
 
 declare const hljs: any;
@@ -14,26 +14,26 @@ declare const hljs: any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleSecondComponent implements AfterViewInit {
-    public data: Data[] = [
+    public licenses: LicenseSample[] = [
         {
             id: 1,
-            name: 'Hello',
-            description: 'World'
+            name: 'single',
+            price: 29.3
         },
         {
             id: 2,
-            name: 'Lorem',
-            description: 'Ipsum'
+            name: 'developer',
+            price: 49.8
         },
         {
             id: 3,
-            name: 'Angular',
-            description: 'The best'
+            name: 'premium',
+            price: 99.5
         },
         {
             id: 4,
-            name: 'React, Vue',
-            description: 'Losers'
+            name: 'enterprise',
+            price: 199
         }
     ];
 

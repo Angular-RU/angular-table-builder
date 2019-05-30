@@ -2,69 +2,90 @@
     <span>Define the column templates</span>
 </mat-toolbar>
 
+<h4>1. Override columns rendering</h4>
+
 <div class="column-samples">
     <div class="column">
         <pre><code class="javascript">
   // app.component.ts
   import &#123; Component } from "@angular/core";
 
+  interface LicenseSample &#123;
+    id: number;
+    name: string;
+    price: number;
+  }
+
   @Component(&#123;
     selector: 'app',
     templateUrl: './app.component.html'
   })
   export class AppComponent &#123;
-    data = [
+    public licenses: LicenseSample[] = [
       &#123;
         id: 1,
-        name: 'Hello',
-        description: 'World'
+        name: 'single',
+        price: 29.3
       },
       &#123;
         id: 2,
-        name: 'Lorem',
-        description: 'Ipsum'
+        name: 'developer',
+        price: 49.8
       },
       &#123;
         id: 3,
-        name: 'Angular',
-        description: 'The best'
+        name: 'premium',
+        price: 99.5
       },
       &#123;
         id: 4,
-        name: 'React, Vue',
-        description: 'Losers'
+        name: 'enterprise',
+        price: 199
       }
     ];
   }
+
+          
 </code></pre>
     </div>
 
     <div class="column">
         <pre><code class="javascript" ngNonBindable>
     &lt;!-- app.component.html -->
-    &lt;ngx-table-builder [source]="data">
+    &lt;ngx-table-builder [source]="licenses">
 
       &lt;ngx-column key="name">
-        &lt;ngx-th>Column name&lt;/ngx-th>
-        &lt;ngx-td let-name>&#123;&#123; name }}&lt;/ngx-td>
+          &lt;ng-template ngx-th>
+            &lt;b>License&lt;/b>
+          &lt;/ng-template>
+          &lt;ng-template ngx-td let-name>
+            &#123;&#123; name | uppercase }}
+          &lt;/ng-template>
       &lt;/ngx-column>
 
-      &lt;ngx-column key="description">
-        &lt;ngx-th>Column description&lt;/ngx-th>
-        &lt;ngx-td let-description>{{ description &#125;&#125; &lt;/ngx-td>
+      &lt;ngx-column key="price">
+          &lt;ng-template ngx-th>
+            &lt;b>Cost&lt;/b>
+          &lt;/ng-template>
+          &lt;ng-template ngx-td let-price>
+            {{ price | currency &#125;&#125;
+          &lt;/ng-template>
       &lt;/ngx-column>
 
     &lt;/ngx-table-builder>
 
 </code></pre>
 
-        <ngx-table-builder [source]="data">
+        <ngx-table-builder [source]="licenses">
             <ngx-column key="name">
-                <ng-template ngx-th>Column name</ng-template>
-                <ng-template ngx-td let-cell>{{ cell }}</ng-template>
+                <ng-template ngx-th><b>License</b></ng-template>
+                <ng-template ngx-td let-name>{{ name | uppercase }}</ng-template>
             </ngx-column>
 
-            <ngx-column key="description"></ngx-column>
+            <ngx-column key="price">
+                <ng-template ngx-th><b>Price</b></ng-template>
+                <ng-template ngx-td let-price>{{ price | currency }}</ng-template>
+            </ngx-column>
         </ngx-table-builder>
     </div>
 </div>

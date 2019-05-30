@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
 
 import { TableLineRow } from '../common/table-line-row.class';
 import { fadeAnimation } from '../../animations/fade.animation';
+import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 
 @Component({
     selector: 'table-thead',
@@ -10,4 +11,8 @@ import { fadeAnimation } from '../../animations/fade.animation';
     encapsulation: ViewEncapsulation.None,
     animations: [fadeAnimation]
 })
-export class TableTheadComponent extends TableLineRow {}
+export class TableTheadComponent extends TableLineRow {
+    constructor(protected templateParser: TemplateParserService) {
+        super(templateParser);
+    }
+}

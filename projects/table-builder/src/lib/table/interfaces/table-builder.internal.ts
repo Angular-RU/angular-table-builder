@@ -10,3 +10,9 @@ export interface DynamicHeightOptions {
 export interface ScrollOffsetStatus {
     offset: boolean;
 }
+
+export interface PlainObject<T = any> {
+    [key: string]: T;
+}
+
+export type Fn = (...args: any[]) => any;

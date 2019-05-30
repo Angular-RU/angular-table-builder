@@ -8,22 +8,24 @@ import { SchemaBuilder } from './schema-builder.class';
 export class TemplateParserService {
     public schema: TableSchema = new SchemaBuilder();
 
-    public parse(columns: QueryList<NgxColumnComponent>): void {
-        columns.forEach((column: NgxColumnComponent) => this.extractColumnTemplate(column));
+    public parse(modelKeys: string[], columns: QueryList<NgxColumnComponent>): void {
+        columns.forEach((column: NgxColumnComponent) => {
+            if (modelKeys.includes(column.key)) {
+                this.extractColumnTemplate(column);
+            }
+        });
     }
 
     private extractColumnTemplate(column: NgxColumnComponent): void {
-        const { key }: NgxColumnComponent = column;
+        const { key, th, td }: NgxColumnComponent = column;
         this.schema.columns[key] = {
             th: {
-                template: null
+                template: th && th.template
             },
             td: {
-                template: null
+                template: td && td.template
             }
         };
-
-        console.log(this.schema);
     }
 
     public get templateColumnKeys(): string[] {

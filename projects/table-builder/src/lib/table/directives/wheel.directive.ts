@@ -4,7 +4,7 @@ import { WHEEL_MAX_DELTA } from '../config/table-builder.tokens';
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
     @Output() public scrollOffset: EventEmitter<boolean> = new EventEmitter();
-    private scrollTopOffset: boolean = false;
+    public scrollTopOffset: boolean = false;
 
     constructor(
         @Inject(WHEEL_MAX_DELTA) private readonly maxDelta: number,
@@ -12,18 +12,34 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
         private readonly ngZone: NgZone
     ) {}
 
+    /**
+     * Firefox can't correct rendering when mouse wheel delta X, Y more then 200-500px
+     */
+    public static handlerOptions(userAgent: string = null): boolean | AddEventListenerOptions {
+        const isFirefox: boolean = (userAgent || navigator.userAgent).toLowerCase().indexOf('firefox') > -1;
+        return isFirefox ? true : { passive: true };
+    }
+
     private get element(): HTMLElement {
         return this.elementRef.nativeElement;
     }
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            this.element.addEventListener('wheel', this.onElementScroll.bind(this), true);
+            this.element.addEventListener(
+                'wheel',
+                this.onElementScroll.bind(this),
+                WheelThrottlingDirective.handlerOptions()
+            );
         });
     }
 
     public ngOnDestroy(): void {
-        this.element.removeEventListener('wheel', this.onElementScroll.bind(this), true);
+        this.element.removeEventListener(
+            'wheel',
+            this.onElementScroll.bind(this),
+            WheelThrottlingDirective.handlerOptions()
+        );
     }
 
     public onElementScroll($event: WheelEvent): void {
