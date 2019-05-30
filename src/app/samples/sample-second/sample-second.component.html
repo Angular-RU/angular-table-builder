@@ -1,0 +1,70 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Define the column templates</span>
+</mat-toolbar>
+
+<div class="column-samples">
+    <div class="column">
+        <pre><code class="javascript">
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html'
+  })
+  export class AppComponent &#123;
+    data = [
+      &#123;
+        id: 1,
+        name: 'Hello',
+        description: 'World'
+      },
+      &#123;
+        id: 2,
+        name: 'Lorem',
+        description: 'Ipsum'
+      },
+      &#123;
+        id: 3,
+        name: 'Angular',
+        description: 'The best'
+      },
+      &#123;
+        id: 4,
+        name: 'React, Vue',
+        description: 'Losers'
+      }
+    ];
+  }
+</code></pre>
+    </div>
+
+    <div class="column">
+        <pre><code class="javascript" ngNonBindable>
+    &lt;!-- app.component.html -->
+    &lt;ngx-table-builder [source]="data">
+
+      &lt;ngx-column key="name">
+        &lt;ngx-th>Column name&lt;/ngx-th>
+        &lt;ngx-td let-name>&#123;&#123; name }}&lt;/ngx-td>
+      &lt;/ngx-column>
+
+      &lt;ngx-column key="description">
+        &lt;ngx-th>Column description&lt;/ngx-th>
+        &lt;ngx-td let-description>{{ description &#125;&#125; &lt;/ngx-td>
+      &lt;/ngx-column>
+
+    &lt;/ngx-table-builder>
+
+</code></pre>
+
+        <ngx-table-builder [source]="data">
+            <ngx-column key="name">
+                <ng-template ngx-th>Column name</ng-template>
+                <ng-template ngx-td let-cell>{{ cell }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="description"></ngx-column>
+        </ngx-table-builder>
+    </div>
+</div>

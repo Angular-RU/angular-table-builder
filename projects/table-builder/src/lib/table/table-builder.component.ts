@@ -1,17 +1,23 @@
 import {
+    AfterContentInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ContentChildren,
     Inject,
     OnChanges,
     OnInit,
+    QueryList,
     ViewEncapsulation
 } from '@angular/core';
 
-import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from '../table-builder.tokens';
-import { ScrollOffsetStatus, TableRow } from '../table-builder.interfaces';
+import { COL_WIDTH, ENABLE_INTERACTION_OBSERVER, ROW_HEIGHT } from './config/table-builder.tokens';
+import { ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
-import { fadeAnimation } from './core/fade.animation';
+import { fadeAnimation } from './animations/fade.animation';
+import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
+import { TemplateParserService } from './services/template-parser/template-parser.service';
+import { TableRow } from './interfaces/table-builder.external';
 
 @Component({
     selector: 'ngx-table-builder',
@@ -19,16 +25,21 @@ import { fadeAnimation } from './core/fade.animation';
     styleUrls: ['./table-builder.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
+    providers: [TemplateParserService],
     animations: [fadeAnimation]
 })
-export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges {
+export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges, AfterContentInit {
     public scrollOffset: ScrollOffsetStatus = { offset: false };
     public columnKeys: string[] = [];
+
+    @ContentChildren(NgxColumnComponent)
+    private readonly columnsList: QueryList<NgxColumnComponent>;
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
         @Inject(ENABLE_INTERACTION_OBSERVER) public enabledObserver: boolean,
+        private templateParser: TemplateParserService,
         private readonly cd: ChangeDetectorRef
     ) {
         super();
@@ -50,7 +61,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
         return this.source.length * this.clientRowHeight + this.clientRowHeight;
     }
 
-    private get modelKeys(): string[] {
+    private get modelColumnKeys(): string[] {
         return Object.keys(this.rowKeyValue);
     }
 
@@ -59,12 +70,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
     }
 
     public ngOnChanges(): void {
-        this.columnKeys = this.modelKeys.slice();
+        this.setupTableColumnKeys();
     }
 
-    public ngOnInit(): void {
-        this.columnKeys = this.modelKeys;
-    }
+    public ngOnInit(): void {}
 
     public updateScrollOffset(offset: boolean): void {
         this.scrollOffset = { offset };
@@ -73,5 +82,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
 
     public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {
         column['visible'] = $event.visible;
+    }
+
+    public ngAfterContentInit(): void {
+        this.templateParser.parse(this.columnsList);
+        this.setupTableColumnKeys();
+    }
+
+    private setupTableColumnKeys(): void {
+        const templateColumnKeys: string[] = this.templateParser.templateColumnKeys;
+        const modelColumnKeys: string[] = this.modelColumnKeys;
+        this.columnKeys = templateColumnKeys.length ? templateColumnKeys.slice() : modelColumnKeys.slice();
     }
 }

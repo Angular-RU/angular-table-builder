@@ -1,5 +1,5 @@
 import { ApplicationRef, Directive, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { DynamicHeightOptions } from '../../table-builder.interfaces';
+import { DynamicHeightOptions } from '../interfaces/table-builder.internal';
 
 @Directive({ selector: '[ngDynamicHeight]' })
 export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {

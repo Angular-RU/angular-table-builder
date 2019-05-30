@@ -9,14 +9,17 @@ import {
     ENABLE_INTERACTION_OBSERVER,
     ROW_HEIGHT,
     WHEEL_MAX_DELTA
-} from './table-builder.tokens';
+} from './table/config/table-builder.tokens';
 import { TableBuilderComponent } from './table/table-builder.component';
-import { TableBuilderOptions } from './table-builder.interfaces';
-import { TableBuilderConfig } from './table-builder.config';
+import { TableBuilderConfig } from './table/config/table-builder.config';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
 import { TableTheadComponent } from './table/components/table-thead/table-thead.component';
 import { TableTbodyComponent } from './table/components/table-tbody/table-tbody.component';
 import { DynamicHeightDirective } from './table/directives/dynamic-height.directive';
+import { NgxColumnComponent } from './table/components/ngx-column/ngx-column.component';
+import { TableBuilderOptions } from './table/interfaces/table-builder.external';
+import { TemplateHeadThDirective } from './table/directives/rows/template-head-th.directive';
+import { TemplateBodyTdDirective } from './table/directives/rows/template-body-td.directive';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -25,9 +28,12 @@ import { DynamicHeightDirective } from './table/directives/dynamic-height.direct
         WheelThrottlingDirective,
         DynamicHeightDirective,
         TableTheadComponent,
-        TableTbodyComponent
+        TableTbodyComponent,
+        NgxColumnComponent,
+        TemplateHeadThDirective,
+        TemplateBodyTdDirective
     ],
-    exports: [TableBuilderComponent]
+    exports: [TableBuilderComponent, NgxColumnComponent, TemplateHeadThDirective, TemplateBodyTdDirective]
 })
 export class TableBuilderModule {
     public static forRoot(options: Partial<TableBuilderOptions> = {}): ModuleWithProviders {

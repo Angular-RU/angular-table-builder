@@ -22,6 +22,10 @@ import { IntroductionComponent } from './samples/introduction/introduction.compo
                         {
                             path: 'first',
                             loadChildren: './samples/sample-first/sample-first.module#SampleFirstModule'
+                        },
+                        {
+                            path: 'second',
+                            loadChildren: './samples/sample-second/sample-second.module#SampleSecondModule'
                         }
                     ]
                 }

@@ -9,7 +9,6 @@
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "allowJs": true,
         "esModuleInterop": true,
         "importHelpers": true,
         "target": "es5",

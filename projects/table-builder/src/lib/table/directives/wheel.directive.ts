@@ -1,5 +1,5 @@
 import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { WHEEL_MAX_DELTA } from '../../table-builder.tokens';
+import { WHEEL_MAX_DELTA } from '../config/table-builder.tokens';
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {

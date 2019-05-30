@@ -1,4 +1,4 @@
-import { TableBuilderOptions } from './table-builder.interfaces';
+import { TableBuilderOptions } from '../interfaces/table-builder.external';
 
 export class TableBuilderConfig implements TableBuilderOptions {
     public readonly bufferAmount: number = 10;

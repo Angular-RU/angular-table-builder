@@ -1,7 +1,7 @@
 module.exports = {
     mode: 'file',
     out: 'docs',
-    theme: 'default',
+    theme: 'markdown',
     ignoreCompilerErrors: true,
     excludePrivate: true,
     excludeProtected: true,

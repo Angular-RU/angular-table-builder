@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row.class';
-import { fadeAnimation } from '../../core/fade.animation';
+import { fadeAnimation } from '../../animations/fade.animation';
 
 @Component({
     selector: 'table-thead',

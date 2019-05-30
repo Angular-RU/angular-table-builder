@@ -1,5 +1,6 @@
 import { Input } from '@angular/core';
-import { PrimaryKey, TableRow } from '../table-builder.interfaces';
+import { PrimaryKey } from './interfaces/table-builder.internal';
+import { TableRow } from './interfaces/table-builder.external';
 
 export class TableBuilderApiImpl {
     @Input() public height: number;
