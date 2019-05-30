@@ -21,11 +21,17 @@ import { IntroductionComponent } from './samples/introduction/introduction.compo
                         },
                         {
                             path: 'first',
-                            loadChildren: './samples/sample-first/sample-first.module#SampleFirstModule'
+                            loadChildren: (): Promise<any> =>
+                                import('./samples/sample-first/sample-first.module').then(
+                                    (module: any) => module.SampleFirstModule
+                                )
                         },
                         {
                             path: 'second',
-                            loadChildren: './samples/sample-second/sample-second.module#SampleSecondModule'
+                            loadChildren: (): Promise<any> =>
+                                import('./samples/sample-second/sample-second.module').then(
+                                    (module: any) => module.SampleSecondModule
+                                )
                         }
                     ]
                 }
