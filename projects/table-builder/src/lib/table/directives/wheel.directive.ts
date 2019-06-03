@@ -17,7 +17,7 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
      */
     public static handlerOptions(userAgent: string = null): boolean | AddEventListenerOptions {
         const isFirefox: boolean = (userAgent || navigator.userAgent).toLowerCase().indexOf('firefox') > -1;
-        return isFirefox ? true : { passive: true };
+        return isFirefox ? true : { passive: false };
     }
 
     private get element(): HTMLElement {

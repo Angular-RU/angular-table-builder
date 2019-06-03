@@ -1,5 +1,6 @@
-import { WheelThrottlingDirective } from '../table/directives/wheel.directive';
 import { ElementRef, NgZone } from '@angular/core';
+
+import { WheelThrottlingDirective } from '../table/directives/wheel.directive';
 import { Fn } from '../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Wheel throttling', () => {
@@ -64,7 +65,7 @@ describe('[TEST]: Wheel throttling', () => {
     });
 
     it('check handler options', () => {
-        expect(WheelThrottlingDirective.handlerOptions()).toEqual({ passive: true });
+        expect(WheelThrottlingDirective.handlerOptions()).toEqual({ passive: false });
         expect(
             WheelThrottlingDirective.handlerOptions(
                 'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion'

@@ -1,16 +1,16 @@
 import { ApplicationRef, Directive, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { DynamicHeightOptions } from '../interfaces/table-builder.internal';
 
-@Directive({ selector: '[ngDynamicHeight]' })
-export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {
-    @Input() public ngDynamicHeight: Partial<DynamicHeightOptions> = {};
+@Directive({ selector: '[autoHeight]' })
+export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
+    @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
 
     constructor(private readonly element: ElementRef, public ngZone: NgZone, public app: ApplicationRef) {
         this.ngZone = ngZone;
     }
 
     private get height(): number {
-        return this.ngDynamicHeight.height;
+        return this.autoHeight.height;
     }
 
     public ngOnInit(): void {
@@ -29,12 +29,12 @@ export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {
         window.removeEventListener('resize', this.recalculateByResize.bind(this), true);
     }
 
-    private recalculateByResize(): void {
+    public recalculateByResize(): void {
         this.calculateHeight();
         this.app.tick();
     }
 
-    private calculateHeight(): void {
+    public calculateHeight(): void {
         this.setHeightByParent(this.element.nativeElement);
     }
 
@@ -47,7 +47,7 @@ export class DynamicHeightDirective implements OnInit, OnChanges, OnDestroy {
 
         if (this.height) {
             height = `${this.height}px`;
-        } else if (this.ngDynamicHeight.autoHeight) {
+        } else if (this.autoHeight.detect) {
             height = `calc(${document.body.clientHeight}px - ${element.getBoundingClientRect().top}px - 10px)`;
         }
 

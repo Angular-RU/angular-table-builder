@@ -9,7 +9,7 @@ import { TableBuilderConfig } from './table/config/table-builder.config';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
 import { TableTheadComponent } from './table/components/table-thead/table-thead.component';
 import { TableTbodyComponent } from './table/components/table-tbody/table-tbody.component';
-import { DynamicHeightDirective } from './table/directives/dynamic-height.directive';
+import { AutoHeightDirective } from './table/directives/auto-height.directive';
 import { NgxColumnComponent } from './table/components/ngx-column/ngx-column.component';
 import { TableBuilderOptions } from './table/interfaces/table-builder.external';
 import { TemplateHeadThDirective } from './table/directives/rows/template-head-th.directive';
@@ -21,7 +21,7 @@ import { DeepPathPipe } from './table/pipes/deep-path.pipe';
   declarations: [
     TableBuilderComponent,
     WheelThrottlingDirective,
-    DynamicHeightDirective,
+    AutoHeightDirective,
     TableTheadComponent,
     TableTbodyComponent,
     NgxColumnComponent,

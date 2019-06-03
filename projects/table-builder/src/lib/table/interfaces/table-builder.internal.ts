@@ -3,7 +3,7 @@ export enum PrimaryKey {
 }
 
 export interface DynamicHeightOptions {
-    autoHeight: boolean;
+    detect: boolean;
     height: number;
 }
 
@@ -15,4 +15,4 @@ export interface PlainObject<T = any> {
     [key: string]: T;
 }
 
-export type Fn = (...args: any[]) => any;
+export type Fn<T = any, U = any> = (...args: T[]) => U;
