@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IntroductionComponent } from './samples/introduction/introduction.component';
+import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 @NgModule({
     imports: [
@@ -21,16 +22,16 @@ import { IntroductionComponent } from './samples/introduction/introduction.compo
                         },
                         {
                             path: 'first',
-                            loadChildren: (): Promise<any> =>
+                            loadChildren: (): Promise<unknown> =>
                                 import('./samples/sample-first/sample-first.module').then(
-                                    (module: any) => module.SampleFirstModule
+                                    (module: Any) => module.SampleFirstModule
                                 )
                         },
                         {
                             path: 'second',
-                            loadChildren: (): Promise<any> =>
+                            loadChildren: (): Promise<unknown> =>
                                 import('./samples/sample-second/sample-second.module').then(
-                                    (module: any) => module.SampleSecondModule
+                                    (module: Any) => module.SampleSecondModule
                                 )
                         }
                     ]

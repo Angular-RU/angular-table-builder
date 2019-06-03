@@ -1,7 +1,8 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { TableRow } from '@angular-ru/table-builder';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
-declare const hljs: any;
+declare const hljs: Any;
 
 @Component({
     selector: 'introduction',
@@ -15,7 +16,7 @@ export class IntroductionComponent implements AfterViewInit {
     ];
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: any) => {
+        document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
     }

@@ -32,6 +32,6 @@ export class TableTbodyComponent extends TableLineRow {
     }
 
     public trackByIdx(index: number, item: TableRow): number {
-        return item[this.primaryKey] ? parseInt(item[this.primaryKey]) : index;
+        return item[this.primaryKey] ? parseInt(item[this.primaryKey] as string) : index;
     }
 }

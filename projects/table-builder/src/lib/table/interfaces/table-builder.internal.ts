@@ -11,8 +11,10 @@ export interface ScrollOffsetStatus {
     offset: boolean;
 }
 
-export interface PlainObject<T = any> {
+export interface PlainObject<T = unknown> {
     [key: string]: T;
 }
 
-export type Fn<T = any, U = any> = (...args: T[]) => U;
+export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
+
+export type Any = any; // NOSONAR

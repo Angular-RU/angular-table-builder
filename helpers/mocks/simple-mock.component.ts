@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TableRow } from '../../table/interfaces/table-builder.external';
+import { TableRow } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.external';
 
 // noinspection AngularMissingOrInvalidDeclarationInModule
 @Component({

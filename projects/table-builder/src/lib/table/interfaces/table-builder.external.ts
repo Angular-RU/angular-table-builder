@@ -1,6 +1,6 @@
 import { TemplateRef } from '@angular/core';
 
-export interface TableRow<T = any> {
+export interface TableRow<T = unknown> {
     [key: string]: T;
 }
 
@@ -15,7 +15,7 @@ export interface TableColumnOptions<T> {
     template: TemplateRef<T>;
 }
 
-export interface ColumnsSchema<T = any> {
+export interface ColumnsSchema<T = unknown> {
     [key: string]: {
         td: TableColumnOptions<T>;
         th: TableColumnOptions<T>;
@@ -23,6 +23,6 @@ export interface ColumnsSchema<T = any> {
     };
 }
 
-export interface TableSchema<T = any> {
+export interface TableSchema<T = unknown> {
     columns: ColumnsSchema;
 }

@@ -82,7 +82,7 @@ export class SampleFirstComponent implements OnInit {
     }
 
     private generateTable(rows: number, cols: number): TableRow[] {
-        return new Array(rows).fill(0).map((_: any, index: number) => {
+        return new Array(rows).fill(0).map((_: unknown, index: number) => {
             const idx: number = index + 1;
 
             const baseRow: TableRow = {

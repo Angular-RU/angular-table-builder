@@ -1,5 +1,5 @@
-import { DeepPathPipe } from '../table/pipes/deep-path.pipe';
-import { PlainObject } from '../table/interfaces/table-builder.internal';
+import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
+import { PlainObject } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Deep path pipe', () => {
     it('should be correct extract', () => {

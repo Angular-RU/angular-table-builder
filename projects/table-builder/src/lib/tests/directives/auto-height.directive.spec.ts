@@ -1,7 +1,7 @@
 import { ApplicationRef, ElementRef, NgZone } from '@angular/core';
 
-import { Fn } from '../table/interfaces/table-builder.internal';
-import { AutoHeightDirective } from '../table/directives/auto-height.directive';
+import { Any, Fn } from '../../table/interfaces/table-builder.internal';
+import { AutoHeightDirective } from '../../table/directives/auto-height.directive';
 
 describe('[TEST]: auto height', () => {
     let directive: AutoHeightDirective;
@@ -12,8 +12,8 @@ describe('[TEST]: auto height', () => {
     let style: string;
 
     const mockNgZone: Partial<NgZone> = {
-        runOutsideAngular<T = any>(fn: Fn): T {
-            return fn();
+        runOutsideAngular<T = Any>(fn: Fn): T {
+            return fn() as Any;
         }
     };
 

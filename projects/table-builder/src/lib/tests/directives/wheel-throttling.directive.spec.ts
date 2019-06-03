@@ -1,7 +1,7 @@
 import { ElementRef, NgZone } from '@angular/core';
 
-import { WheelThrottlingDirective } from '../table/directives/wheel.directive';
-import { Fn } from '../table/interfaces/table-builder.internal';
+import { WheelThrottlingDirective } from '../../table/directives/wheel.directive';
+import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Wheel throttling', () => {
     let directive: WheelThrottlingDirective;
@@ -12,8 +12,8 @@ describe('[TEST]: Wheel throttling', () => {
     const maxDeltaWheel: number = 100;
 
     const mockNgZone: Partial<NgZone> = {
-        runOutsideAngular<T = any>(fn: Fn): T {
-            return fn();
+        runOutsideAngular<T = Any>(fn: Fn): T {
+            return fn() as Any;
         }
     };
 

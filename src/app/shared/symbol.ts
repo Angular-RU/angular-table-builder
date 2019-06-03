@@ -1,3 +1,3 @@
-export interface ObjectKeyMap<T = any> {
+export interface ObjectKeyMap<T = unknown> {
     [key: string]: T;
 }

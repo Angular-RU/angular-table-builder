@@ -1,39 +1,39 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TableBuilderModule } from '@angular-ru/table-builder';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Delay } from '@helpers/utils/delay';
+import { TemplateMockComponent } from '@helpers/mocks/template-mock.component';
+import { HtmlFormatter } from '@helpers/utils/html-formatter.class';
+import { TableBuilderModule } from '../../../table-builder.module';
+import { ACTUAL_TEMPLATES } from './actual';
+import { Fn } from '../../../table/interfaces/table-builder.internal';
 
-import { HtmlFormatter } from '../../../../../../helpers/html-formatter.class';
-import { SpecTest } from '../../../../../../helpers/spec-test';
-import { SIMPLE_TABLE_TEMPLATE } from './actual';
-import { SimpleMockComponent } from './simple-mock.component';
-
-describe('[TEST]: Simple table', () => {
-    let fixture: ComponentFixture<SimpleMockComponent>;
-    let component: SimpleMockComponent;
+describe('[TEST]: Template mock table', () => {
+    let fixture: ComponentFixture<TemplateMockComponent>;
+    let component: TemplateMockComponent;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [BrowserAnimationsModule, TableBuilderModule.forRoot({})],
-            declarations: [SimpleMockComponent]
+            declarations: [TemplateMockComponent]
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SimpleMockComponent);
+        fixture = TestBed.createComponent(TemplateMockComponent);
         component = fixture.componentInstance;
         fixture.autoDetectChanges();
     });
 
-    it('should be correct create table', (done: any) => {
+    it('should be correct create table', (done: Fn) => {
         expect(component).toBeDefined();
-        SpecTest.tick(done, () => {
+        Delay.timeout(done, () => {
             const html: HTMLDivElement = fixture.debugElement.nativeElement;
             const tableTemplate: string = new HtmlFormatter(html.innerHTML)
                 .removeNgAttr(['style'])
                 .removeComments()
                 .prettyHtml();
 
-            const actualTableTemplate: string = new HtmlFormatter(SIMPLE_TABLE_TEMPLATE).prettyHtml();
+            const actualTableTemplate: string = new HtmlFormatter(ACTUAL_TEMPLATES).prettyHtml();
             expect(tableTemplate).toEqual(actualTableTemplate);
         });
     });

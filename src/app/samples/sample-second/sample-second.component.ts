@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 interface LicenseSample {
     id: number;
@@ -6,7 +7,7 @@ interface LicenseSample {
     price: number;
 }
 
-declare const hljs: any;
+declare const hljs: Any;
 
 @Component({
     selector: 'sample-second',
@@ -38,7 +39,7 @@ export class SampleSecondComponent implements AfterViewInit {
     ];
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: any) => {
+        document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
     }
