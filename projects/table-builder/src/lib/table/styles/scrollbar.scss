@@ -11,7 +11,7 @@
         border-radius: $tableScrollWidth;
         background-clip: padding-box;
         border: 2px solid transparent;
-        height: $tableScrollWidth;
+        height: $tableScrollWidth + 2;
     }
 
     &::-webkit-scrollbar-thumb {

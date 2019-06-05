@@ -33,6 +33,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                                 import('./samples/sample-second/sample-second.module').then(
                                     (module: Any) => module.SampleSecondModule
                                 )
+                        },
+                        {
+                            path: 'third',
+                            loadChildren: (): Promise<unknown> =>
+                                import('./samples/sample-third/sample-third.module').then(
+                                    (module: Any) => module.SampleThirdModule
+                                )
                         }
                     ]
                 }

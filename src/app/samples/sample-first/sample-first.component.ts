@@ -17,7 +17,7 @@ export class SampleFirstComponent implements OnInit {
     public loading: boolean = false;
     public simple: TableRow[];
 
-    constructor(private cd: ChangeDetectorRef, public dialog: MatDialog) {}
+    constructor(private readonly cd: ChangeDetectorRef, public readonly dialog: MatDialog) {}
 
     public ngOnInit(): void {
         this.updateTable();
