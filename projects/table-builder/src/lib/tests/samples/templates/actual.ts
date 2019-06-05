@@ -2,7 +2,7 @@ export const ACTUAL_TEMPLATES: string = `
 <ngx-table-builder>
   <div class="table-grid__root">
     <div class="table-grid" wheelthrottling="">
-      <div class="table-grid__column column-is-visible" inviewport="">
+      <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell"><b>License</b></div>
         </table-thead>
@@ -18,7 +18,7 @@ export const ACTUAL_TEMPLATES: string = `
           </virtual-scroller>
         </table-tbody>
       </div>
-      <div class="table-grid__column column-is-visible" inviewport="">
+      <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell"><b>Cost</b></div>
         </table-thead>

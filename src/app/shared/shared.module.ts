@@ -5,6 +5,7 @@ import {
     MatCheckboxModule,
     MatDialogModule,
     MatDividerModule,
+    MatIconModule,
     MatInputModule,
     MatListModule,
     MatProgressSpinnerModule,
@@ -41,7 +42,8 @@ import { CommonModule } from '@angular/common';
         MatProgressSpinnerModule,
         TableBuilderModule,
         MatSnackBarModule,
-        CodeDialogComponent
+        CodeDialogComponent,
+        MatIconModule
     ]
 })
 export class SharedModule {}

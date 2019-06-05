@@ -1,9 +1,9 @@
 import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
-import { PlainObject } from '../../table/interfaces/table-builder.internal';
+import { KeyMap } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Deep path pipe', () => {
     it('should be correct extract', () => {
-        const b: PlainObject = new DeepPathPipe().transform(
+        const b: KeyMap = new DeepPathPipe().transform(
             {
                 a: {
                     b: {
@@ -30,5 +30,10 @@ describe('[TEST]: Deep path pipe', () => {
         );
 
         expect(c).toEqual(1);
+    });
+
+    it('should be correct return object when set empty path', () => {
+        const result: KeyMap = new DeepPathPipe().transform({ a: { b: 1 } }, '');
+        expect(result).toEqual({ a: { b: 1 } });
     });
 });

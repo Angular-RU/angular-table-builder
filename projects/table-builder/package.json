@@ -6,6 +6,6 @@
         "@angular/core": "^7.2.0",
         "@angular/animation": "^7.2.0",
         "ng-in-viewport": "^6.0.3",
-        "ngx-virtual-scroller": "^3.0.0"
+        "ngx-virtual-scroller": "^3.0.1"
     }
 }

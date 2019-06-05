@@ -14,7 +14,7 @@ describe('[TEST]: Simple table', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [BrowserAnimationsModule, TableBuilderModule.forRoot({})],
+            imports: [BrowserAnimationsModule, TableBuilderModule.forRoot()],
             declarations: [SimpleMockComponent]
         }).compileComponents();
     });

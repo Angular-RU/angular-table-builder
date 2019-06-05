@@ -15,20 +15,21 @@ import { TemplateParserService } from '../../services/template-parser/template-p
 })
 export class TableTbodyComponent extends TableLineRow {
     @Input() public source: TableRow[];
+    @Input() public striped: boolean;
     @Input('primary-key') public primaryKey: string;
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('buffer-amount') public bufferAmount: number;
 
     constructor(
-        @Inject(BUFFER_AMOUNT) public defaultBufferAmount: number,
+        @Inject(BUFFER_AMOUNT) private readonly DEFAULT_BUFFER_AMOUNT: number,
         protected templateParser: TemplateParserService
     ) {
         super(templateParser);
     }
 
     public get clientBufferAmount(): number {
-        return Number(this.bufferAmount) || this.defaultBufferAmount;
+        return Number(this.bufferAmount) || this.DEFAULT_BUFFER_AMOUNT;
     }
 
     public trackByIdx(index: number, item: TableRow): number {

@@ -53,9 +53,19 @@ describe('[TEST]: Wheel throttling', () => {
     it('should be call preventDefault', () => {
         const deltaY: number = -150;
         mockElementRef.nativeElement.scrollTop = Math.abs(Number(deltaY));
-        const event: Partial<WheelEvent> = createEvent(0, deltaY, () => (mockElementRef.nativeElement.scrollTop = 0));
+        let event: Partial<WheelEvent> = createEvent(0, deltaY, () => (mockElementRef.nativeElement.scrollTop = 0));
+
         directive.onElementScroll(event as WheelEvent);
         expect(preventDefaulted).toEqual(1);
+        expect(directive.scrollTopOffset).toEqual(false);
+
+        event = createEvent(150, deltaY, () => {
+            mockElementRef.nativeElement.scrollTop = 0;
+            directive.scrollTopOffset = true;
+        });
+
+        directive.onElementScroll(event as WheelEvent);
+        expect(preventDefaulted).toEqual(2);
         expect(directive.scrollTopOffset).toEqual(false);
     });
 

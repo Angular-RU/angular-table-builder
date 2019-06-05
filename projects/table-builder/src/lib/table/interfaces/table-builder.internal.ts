@@ -1,3 +1,6 @@
+import { QueryList } from '@angular/core';
+import { NgxColumnComponent } from '@angular-ru/table-builder';
+
 export enum PrimaryKey {
     ID = 'id'
 }
@@ -11,10 +14,12 @@ export interface ScrollOffsetStatus {
     offset: boolean;
 }
 
-export interface PlainObject<T = unknown> {
+export interface KeyMap<T = unknown> {
     [key: string]: T;
 }
 
 export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
 
 export type Any = any; // NOSONAR
+
+export type ColumnList = QueryList<NgxColumnComponent> | NgxColumnComponent[];

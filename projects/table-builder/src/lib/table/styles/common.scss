@@ -1,7 +1,12 @@
-@import "./variables";
+@import './variables';
 
 .table-grid__root {
     box-shadow: 0 0 10px -2px $borderColor;
+    border: 1px solid $borderColor;
+}
+
+.table-grid__root-auto-height {
+    height: 0;
 }
 
 .cell-nowrap {
@@ -12,6 +17,7 @@
 .scrollable-content {
     height: unset !important;
     will-change: auto;
+    backface-visibility: hidden;
 }
 
 table-tbody {

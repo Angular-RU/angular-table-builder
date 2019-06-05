@@ -1,8 +1,8 @@
 export const SIMPLE_TABLE_TEMPLATE: string = `
 <ngx-table-builder>
-  <div class="table-grid__root">
+  <div class="table-grid__root table-grid__root-auto-height">
     <div class="table-grid" wheelthrottling="">
-      <div class="table-grid__column column-is-visible" inviewport="">
+      <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">Id</strong></div>
         </table-thead>
@@ -17,7 +17,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
           </virtual-scroller>
         </table-tbody>
       </div>
-      <div class="table-grid__column column-is-visible" inviewport="">
+      <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">Name</strong></div>
         </table-thead>
@@ -32,7 +32,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
           </virtual-scroller>
         </table-tbody>
       </div>
-      <div class="table-grid__column column-is-visible" inviewport="">
+      <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell"><strong class="cell-nowrap">Lastname</strong></div>
         </table-thead>

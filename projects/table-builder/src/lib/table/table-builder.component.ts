@@ -6,13 +6,12 @@ import {
     ContentChildren,
     Inject,
     OnChanges,
-    OnInit,
     QueryList,
     ViewEncapsulation
 } from '@angular/core';
 
 import { COL_WIDTH, ROW_HEIGHT } from './config/table-builder.tokens';
-import { ScrollOffsetStatus } from './interfaces/table-builder.internal';
+import { KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './animations/fade.animation';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
@@ -28,16 +27,17 @@ import { TableRow } from './interfaces/table-builder.external';
     providers: [TemplateParserService],
     animations: [fadeAnimation]
 })
-export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit, OnChanges, AfterContentInit {
-    public columnKeys: string[] = [];
+export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, AfterContentInit {
+    public isFirstRendered: boolean = false;
+    public displayedColumns: string[] = [];
     public scrollOffset: ScrollOffsetStatus = { offset: false };
     @ContentChildren(NgxColumnComponent) private readonly columnsList: QueryList<NgxColumnComponent>;
 
     constructor(
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
-        private templateParser: TemplateParserService,
-        private readonly cd: ChangeDetectorRef
+        protected templateParser: TemplateParserService,
+        protected readonly cd: ChangeDetectorRef
     ) {
         super();
     }
@@ -47,7 +47,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
     }
 
     public get clientColWidth(): number {
-        return Number(this.columnWidth) || this.defaultColumnWidth;
+        return this.autoWidth ? null : Number(this.columnWidth) || this.defaultColumnWidth;
     }
 
     public get columnVirtualHeight(): number {
@@ -59,18 +59,22 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
     }
 
     private get modelColumnKeys(): string[] {
-        return Object.keys(this.rowKeyValue);
+        return this.excluding(Object.keys(this.rowKeyValue));
+    }
+
+    private get customModelColumnsKeys(): string[] {
+        return this.excluding(this.keys);
     }
 
     private get rowKeyValue(): TableRow {
-        return (this.source && this.source[0]) || {};
+        return (this.source && this.source[0]);
     }
 
     public ngOnChanges(): void {
-        this.setupTableColumnKeys();
+        if (this.isFirstRendered) {
+            this.renderTable();
+        }
     }
-
-    public ngOnInit(): void {}
 
     public updateScrollOffset(offset: boolean): void {
         this.scrollOffset = { offset };
@@ -82,13 +86,34 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnInit
     }
 
     public ngAfterContentInit(): void {
-        this.templateParser.parse(this.modelColumnKeys, this.columnsList);
-        this.setupTableColumnKeys();
+        this.renderTable();
+        this.isFirstRendered = true;
     }
 
-    private setupTableColumnKeys(): void {
-        const templateColumnKeys: string[] = this.templateParser.templateColumnKeys;
-        const modelColumnKeys: string[] = this.modelColumnKeys;
-        this.columnKeys = templateColumnKeys.length ? templateColumnKeys.slice() : modelColumnKeys.slice();
+    public generateColumnsKeyMap(keys: string[]): KeyMap<boolean> {
+        const map: KeyMap<boolean> = {};
+        keys.forEach((key: string) => (map[key] = true));
+        return map;
+    }
+
+    private excluding(keys: string[]): string[] {
+        return keys.filter((key: string) => !this.excludeKeys.includes(key));
+    }
+
+    private renderTable(): void {
+        const modelsKeyMap: KeyMap<boolean> = this.keys.length
+            ? this.generateColumnsKeyMap(this.customModelColumnsKeys)
+            : this.generateColumnsKeyMap(this.modelColumnKeys);
+
+        this.templateParser.parse(modelsKeyMap, this.columnsList);
+        const keysFromTemplate: string[] = this.templateParser.keysFromTemplate;
+
+        if (this.keys.length) {
+            this.displayedColumns = this.customModelColumnsKeys;
+        } else if (keysFromTemplate.length) {
+            this.displayedColumns = keysFromTemplate;
+        } else {
+            this.displayedColumns = this.modelColumnKeys;
+        }
     }
 }

@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Virtual scroll table ({{ simple?.length }}x{{ table?.columnKeys?.length }})</span>
+    <span>Virtual scroll table ({{ simple?.length }}x{{ table?.displayedColumns?.length }})</span>
     <mat-spinner *ngIf="loading" class="spinner" strokeWidth="5" [diameter]="30"></mat-spinner>
 </mat-toolbar>
 

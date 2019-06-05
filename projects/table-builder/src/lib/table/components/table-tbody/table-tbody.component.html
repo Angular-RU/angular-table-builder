@@ -14,7 +14,7 @@
     <div
         class="table-grid__cell"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
-        [class.table-grid__cell-strip]="(item[primaryKey] || index) % 2 === 0"
+        [class.table-grid__cell-strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
         [style.min-height.px]="clientRowHeight"
         [style.max-height.px]="clientRowHeight"
         [style.line-height.px]="clientRowHeight"

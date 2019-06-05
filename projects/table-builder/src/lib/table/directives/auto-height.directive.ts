@@ -1,8 +1,18 @@
-import { ApplicationRef, Directive, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    ApplicationRef,
+    Directive,
+    ElementRef,
+    Input,
+    NgZone,
+    OnChanges,
+    OnDestroy,
+    OnInit
+} from '@angular/core';
 import { DynamicHeightOptions } from '../interfaces/table-builder.internal';
 
 @Directive({ selector: '[autoHeight]' })
-export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
+export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
 
     constructor(private readonly element: ElementRef, public ngZone: NgZone, public app: ApplicationRef) {
@@ -14,11 +24,13 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.calculateHeight();
-
         this.ngZone.runOutsideAngular(() => {
             window.addEventListener('resize', this.recalculateByResize.bind(this), true);
         });
+    }
+
+    public ngAfterViewInit(): void {
+        this.calculateHeight();
     }
 
     public ngOnChanges(): void {

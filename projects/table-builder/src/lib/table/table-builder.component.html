@@ -1,9 +1,14 @@
-<div *ngIf="source?.length" class="table-grid__root" [autoHeight]="{ detect: autoHeightDetect, height: height }">
+<div
+    *ngIf="source?.length"
+    class="table-grid__root"
+    [style.width]="width"
+    [class.table-grid__root-auto-height]="autoHeightDetect"
+    [autoHeight]="{ detect: autoHeightDetect, height: height }"
+>
     <div
         #tableViewport
         wheelThrottling
         class="table-grid"
-        [style.width]="width"
         (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
@@ -11,11 +16,15 @@
             #column
             inViewport
             class="table-grid__column"
-            *ngFor="let key of columnKeys"
+            *ngFor="let key of displayedColumns"
             [style.height.px]="columnHeight"
-            [style.min-width.px]="clientColWidth"
-            [class.column-is-visible]="column['visible']"
-            [class.column-is-invisible]="!column['visible']"
+            [ngStyle]="columnsSchema[key]?.cssStyle"
+            [ngClass]="columnsSchema[key]?.cssClass"
+            [style.min-width.px]="columnsSchema[key]?.width || clientColWidth"
+            [class.table-grid__column--sticky-left]="columnsSchema[key]?.stickyLeft"
+            [class.table-grid__column--sticky-right]="columnsSchema[key]?.stickyRight"
+            [class.table-grid__column--is-visible]="column['visible']"
+            [class.table-grid__column--is-invisible]="!column['visible']"
             (inViewportAction)="inViewportAction(column, $event)"
         >
             <table-thead
@@ -28,6 +37,7 @@
                 *ngIf="column['visible']"
                 [source]="source"
                 [column-key]="key"
+                [striped]="striped"
                 [primary-key]="primaryKey"
                 [buffer-amount]="bufferAmount"
                 [table-viewport]="tableViewport"

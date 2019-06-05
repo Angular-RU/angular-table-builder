@@ -1,39 +1,31 @@
 @import './styles/common';
 @import './styles/variables';
 @import './styles/scrollbar';
+@import './styles/columns';
 
 .table-grid {
     position: relative;
-    border: 1px solid $borderColor;
     overflow: auto;
     background: $backgroundColor;
     will-change: auto;
-    backface-visibility: hidden;
     scroll-behavior: smooth;
     display: flex;
     overflow-x: visible;
     height: 100%;
-
     //noinspection CssOverwrittenProperties
     overflow-y: auto;
-
-    &__column {
-        width: 100%;
-        border-right: 1px solid $borderColor;
-        box-sizing: border-box;
-    }
 
     &__header-cell {
         top: 0;
         z-index: 100;
+        float: left;
         position: sticky;
-        box-sizing: border-box;
-        padding: 5px 20px;
         overflow: hidden;
+        padding: 5px 20px;
+        background: #fff;
+        box-sizing: border-box;
         text-overflow: ellipsis;
         border-bottom: 1px solid $borderColor;
-        background: #fff;
-        float: left;
         transition: box-shadow 0.3s ease-in-out;
     }
 

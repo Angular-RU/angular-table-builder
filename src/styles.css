@@ -104,8 +104,13 @@ code {
 .column {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .column:nth-child(1) {
     margin-right: 45px;
+}
+
+pre {
+    margin: 0 auto 1em auto;
 }

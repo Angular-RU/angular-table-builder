@@ -37,7 +37,7 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                     ]
                 }
             ],
-            { useHash: true }
+            { useHash: true, scrollPositionRestoration: 'enabled' }
         )
     ],
     exports: [RouterModule]

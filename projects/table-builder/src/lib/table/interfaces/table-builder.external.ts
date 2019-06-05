@@ -19,7 +19,11 @@ export interface ColumnsSchema<T = unknown> {
     [key: string]: {
         td: TableColumnOptions<T>;
         th: TableColumnOptions<T>;
-        width?: string;
+        width: number;
+        cssStyle: string[];
+        cssClass: string[];
+        stickyLeft: boolean;
+        stickyRight: boolean;
     };
 }
 
