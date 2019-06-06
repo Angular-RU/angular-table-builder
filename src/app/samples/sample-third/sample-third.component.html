@@ -1,8 +1,22 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Selection model</span>
+    <span>Selection model ({{table.source?.length}}x{{table.displayedColumns?.length}})</span>
+    <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<div class="column-samples">
-    <div class="column">-</div>
-    <div class="column">-</div>
-</div>
+<ngx-table-builder #table [source]="data" [auto-height]="true">
+    <ngx-column key="selection" [sticky]="true" width="55" custom-key>
+        <ng-template ngx-th>
+            <mat-checkbox></mat-checkbox>
+        </ng-template>
+        <ng-template ngx-td>
+            <mat-checkbox></mat-checkbox>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
+        <ng-template ngx-th>
+            <b>{{ key }}</b>
+        </ng-template>
+        <ng-template ngx-td let-cell>{{ cell }}</ng-template>
+    </ngx-column>
+</ngx-table-builder>

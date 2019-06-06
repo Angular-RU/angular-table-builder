@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row.class';
 import { BUFFER_AMOUNT } from '../../config/table-builder.tokens';
@@ -23,7 +23,8 @@ export class TableTbodyComponent extends TableLineRow {
 
     constructor(
         @Inject(BUFFER_AMOUNT) private readonly DEFAULT_BUFFER_AMOUNT: number,
-        protected templateParser: TemplateParserService
+        protected templateParser: TemplateParserService,
+        public cd: ChangeDetectorRef
     ) {
         super(templateParser);
     }

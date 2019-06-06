@@ -14,8 +14,11 @@ export class TemplateParserService {
     }
 
     public parse(modelKeys: KeyMap<boolean>, columns: ColumnList): void {
-        (columns || []).forEach((column: NgxColumnComponent) => {
-            if (modelKeys[column.key]) {
+        const list: ColumnList = columns || [];
+        list.forEach((column: NgxColumnComponent) => {
+            const { key, customKey }: NgxColumnComponent = column;
+            const needTemplateCheck: boolean = modelKeys[key] || customKey !== false;
+            if (needTemplateCheck) {
                 this.compileMetadata(column);
             }
         });

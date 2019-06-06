@@ -12,6 +12,7 @@ import {
     MatSelectModule,
     MatSidenavModule,
     MatSnackBarModule,
+    MatTableModule,
     MatToolbarModule
 } from '@angular/material';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -43,7 +44,8 @@ import { CommonModule } from '@angular/common';
         TableBuilderModule,
         MatSnackBarModule,
         CodeDialogComponent,
-        MatIconModule
+        MatIconModule,
+        MatTableModule
     ]
 })
 export class SharedModule {}

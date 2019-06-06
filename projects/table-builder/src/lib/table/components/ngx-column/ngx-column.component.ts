@@ -15,6 +15,7 @@ export class NgxColumnComponent {
     @Input('css-style') public cssStyle: string[];
     @Input('sticky') public stickyLeft: boolean;
     @Input('sticky-end') public stickyRight: boolean;
+    @Input('custom-key') public customKey: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: true }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: true }) public td: TemplateBodyTdDirective;
 }

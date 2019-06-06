@@ -14,7 +14,7 @@ export abstract class TableBuilderApiImpl {
     @Input('auto-height') public autoHeightDetect: boolean = false;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
-    @Input('column-width') public columnWidth: string;
+    @Input('column-width') public columnWidth: string | number;
     @Input('row-height') public rowHeight: string | number;
     @Input('buffer-amount') public bufferAmount: number;
 

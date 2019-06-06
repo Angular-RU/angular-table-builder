@@ -2,7 +2,9 @@
     #scroll
     [items]="source"
     [@fadeAnimation]="'in'"
-    [scrollAnimationTime]="0"
+    [scrollAnimationTime]="1000"
+    [executeRefreshOutsideAngularZone]="true"
+    [scrollThrottlingTime]="10"
     [parentScroll]="tableViewport"
     [bufferAmount]="clientBufferAmount"
     [style.height.px]="columnVirtualHeight"
@@ -10,6 +12,7 @@
     [resizeBypassRefreshThreshold]="0"
     [enableUnequalChildrenSizes]="true"
     [modifyOverflowStyleOfParentScroll]="false"
+    (vsChange)="cd.detectChanges()"
 >
     <div
         class="table-grid__cell"
@@ -19,10 +22,13 @@
         [style.max-height.px]="clientRowHeight"
         [style.line-height.px]="clientRowHeight"
     >
-        <ng-container *ngIf="columnsSchema[key]?.td.template as templateTd; else defaultTd">
-            <ng-container *ngTemplateOutlet="templateTd; context: { $implicit: item | deepPath: key }"></ng-container>
-        </ng-container>
-
+        <ng-template
+            [ngIf]="columnsSchema[key]?.td.template"
+            [ngTemplateOutlet]="columnsSchema[key]?.td.template"
+            [ngTemplateOutletContext]="{ $implicit: item | deepPath: key }"
+            [ngIfElse]="defaultTd"
+        >
+        </ng-template>
         <ng-template #defaultTd>{{ item[key] }}</ng-template>
     </div>
 </virtual-scroller>

@@ -1,13 +1,13 @@
 import {
-    AfterContentInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ContentChildren,
-    Inject,
-    OnChanges,
-    QueryList,
-    ViewEncapsulation
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ContentChildren,
+  Inject,
+  OnChanges,
+  QueryList,
+  ViewEncapsulation
 } from '@angular/core';
 
 import { COL_WIDTH, ROW_HEIGHT } from './config/table-builder.tokens';
@@ -43,11 +43,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     public get clientRowHeight(): number {
-        return Number(this.rowHeight) || this.defaultRowHeight;
+        return parseInt(this.rowHeight as string) || this.defaultRowHeight;
     }
 
     public get clientColWidth(): number {
-        return this.autoWidth ? null : Number(this.columnWidth) || this.defaultColumnWidth;
+        return this.autoWidth ? null : parseInt(this.columnWidth as string) || this.defaultColumnWidth;
     }
 
     public get columnVirtualHeight(): number {
@@ -58,7 +58,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return this.source.length * this.clientRowHeight + this.clientRowHeight;
     }
 
-    private get modelColumnKeys(): string[] {
+    public get modelColumnKeys(): string[] {
         return this.excluding(Object.keys(this.rowKeyValue));
     }
 
@@ -67,7 +67,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private get rowKeyValue(): TableRow {
-        return (this.source && this.source[0]);
+        return this.source && this.source[0];
     }
 
     public ngOnChanges(): void {
