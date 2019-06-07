@@ -2,10 +2,9 @@
     #scroll
     [items]="source"
     [@fadeAnimation]="'in'"
-    [scrollAnimationTime]="1000"
-    [executeRefreshOutsideAngularZone]="true"
-    [scrollThrottlingTime]="10"
+    [scrollAnimationTime]="0"
     [parentScroll]="tableViewport"
+    [executeRefreshOutsideAngularZone]="true"
     [bufferAmount]="clientBufferAmount"
     [style.height.px]="columnVirtualHeight"
     [useMarginInsteadOfTranslate]="true"
@@ -16,19 +15,34 @@
 >
     <div
         class="table-grid__cell"
+        (click)="handleRow(item, $event)"
+        (selectstart)="(disableSelectText)"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
-        [class.table-grid__cell-strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
         [style.min-height.px]="clientRowHeight"
         [style.max-height.px]="clientRowHeight"
         [style.line-height.px]="clientRowHeight"
+        [class.table-grid__cell--strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
+        [class.table-grid__cell--enable-selection]="enableSelection"
+        [class.table-grid__cell--selected]="selectionMap[item[primaryKey]]"
+        [class.table-grid__cell--text-bold]="columnsSchema[key]?.td.textBold"
+        [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
     >
         <ng-template
             [ngIf]="columnsSchema[key]?.td.template"
             [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-            [ngTemplateOutletContext]="{ $implicit: item | deepPath: key }"
+            [ngTemplateOutletContext]="{
+                $implicit:
+                    columnsSchema[key]?.td.context === contextType.CELL
+                        ? columnsSchema[key]?.td.useDeepPath
+                            ? (item | deepPath: key)
+                            : item[key]
+                        : item
+            }"
             [ngIfElse]="defaultTd"
         >
         </ng-template>
-        <ng-template #defaultTd>{{ item[key] }}</ng-template>
+        <ng-template #defaultTd>
+            {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : item[key] }}
+        </ng-template>
     </div>
 </virtual-scroller>

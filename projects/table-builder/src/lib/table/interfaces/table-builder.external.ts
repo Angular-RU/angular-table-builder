@@ -1,6 +1,7 @@
 import { TemplateRef } from '@angular/core';
+import { Any } from './table-builder.internal';
 
-export interface TableRow<T = unknown> {
+export interface TableRow<T = Any> {
     [key: string]: T;
 }
 
@@ -11,8 +12,17 @@ export interface TableBuilderOptions {
     wheelMaxDelta: number;
 }
 
+export enum ImplicitContext {
+    ROW = 'ROW',
+    CELL = 'CELL'
+}
+
 export interface TableColumnOptions<T> {
     template: TemplateRef<T>;
+    context: ImplicitContext;
+    textBold: boolean;
+    nowrap: boolean;
+    useDeepPath: boolean;
 }
 
 export interface ColumnsSchema<T = unknown> {

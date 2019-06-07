@@ -25,7 +25,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            window.addEventListener('resize', this.recalculateByResize.bind(this), true);
+            window.addEventListener('resize', this.recalculateByResize.bind(this), { passive: true });
         });
     }
 
@@ -38,7 +38,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     public ngOnDestroy(): void {
-        window.removeEventListener('resize', this.recalculateByResize.bind(this), true);
+        window.removeEventListener('resize', this.recalculateByResize.bind(this));
     }
 
     public recalculateByResize(): void {

@@ -1,15 +1,16 @@
 <div
     class="table-grid__cell table-grid__header-cell"
+    [class.table-grid__cell--text-bold]="columnsSchema[key]?.th.textBold"
+    [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
     [style.min-height.px]="clientRowHeight"
     [style.max-height.px]="clientRowHeight"
     [style.line-height.px]="clientRowHeight"
     [@fadeAnimation]="'in'"
 >
-    <ng-container *ngIf="columnsSchema[key]?.th.template as templateTh; else defaultTh">
-        <ng-container *ngTemplateOutlet="templateTh"></ng-container>
-    </ng-container>
-
-    <ng-template #defaultTh>
-        <strong class="cell-nowrap">{{ key | titlecase }}</strong>
-    </ng-template>
+    <ng-template
+        [ngIf]="columnsSchema[key]?.th.template"
+        [ngTemplateOutlet]="columnsSchema[key]?.th.template"
+        [ngIfElse]="defaultTh"
+    ></ng-template>
+    <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
 </div>

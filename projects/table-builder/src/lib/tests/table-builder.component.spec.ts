@@ -1,8 +1,13 @@
-import { NgxColumnComponent, TableBuilderComponent, TableRow } from '@angular-ru/table-builder';
-import { TemplateParserService } from '../table/services/template-parser/template-parser.service';
-import { ChangeDetectorRef } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
+
+import { TemplateParserService } from '../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../table/components/table-tbody/table-tbody.component';
+import { SelectionService } from '../table/services/selection/selection.service';
+import { ImplicitContext, TableRow } from '../table/interfaces/table-builder.external';
+import { NgxColumnComponent } from '../table/components/ngx-column/ngx-column.component';
+import { TableBuilderComponent } from '../table/table-builder.component';
+import { Any } from '../table/interfaces/table-builder.internal';
 
 export interface PeriodicElement {
     name: string;
@@ -38,9 +43,20 @@ describe('[TEST]: TableBuilder', () => {
         detectChanges: (): void => {}
     };
 
+    const appRef: Partial<ApplicationRef> = {
+        tick: (): void => {}
+    };
+
+    const mockNgZone: Partial<NgZone> = {
+        runOutsideAngular: (): Any => {}
+    };
+
+    const selection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+
     beforeEach(() => {
         templateParser = new TemplateParserService();
         table = new TableBuilderComponent(
+            selection,
             rowHeight,
             columnWidth,
             templateParser,
@@ -77,13 +93,25 @@ describe('[TEST]: TableBuilder', () => {
         const name: NgxColumnComponent = FakeGeneratorTable.generateColumn('name');
         const weight: NgxColumnComponent = FakeGeneratorTable.generateColumn('weight');
 
-        templateParser.parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight]);
+        templateParser.parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight] as Any);
 
         expect(templateParser.schema).toEqual({
             columns: {
                 position: {
-                    th: { template: null },
-                    td: { template: null },
+                    th: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: true,
+                        useDeepPath: null
+                    },
+                    td: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: null,
+                        useDeepPath: null
+                    },
                     width: null,
                     stickyLeft: null,
                     stickyRight: null,
@@ -91,8 +119,20 @@ describe('[TEST]: TableBuilder', () => {
                     cssStyle: []
                 },
                 name: {
-                    th: { template: null },
-                    td: { template: null },
+                    th: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: true,
+                        useDeepPath: null
+                    },
+                    td: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: null,
+                        useDeepPath: null
+                    },
                     width: null,
                     stickyLeft: null,
                     stickyRight: null,
@@ -100,8 +140,20 @@ describe('[TEST]: TableBuilder', () => {
                     cssStyle: []
                 },
                 weight: {
-                    th: { template: null },
-                    td: { template: null },
+                    th: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: true,
+                        useDeepPath: null
+                    },
+                    td: {
+                        template: null,
+                        context: ImplicitContext.CELL,
+                        nowrap: true,
+                        textBold: null,
+                        useDeepPath: null
+                    },
                     width: null,
                     stickyLeft: null,
                     stickyRight: null,
@@ -142,7 +194,12 @@ describe('[TEST]: TableBuilder', () => {
         const index: number = 0;
         const DEFAULT_BUFFER_AMOUNT: number = 10;
         const item: TableRow = { id: 1, value: 'hello world' };
-        const tableBody: TableTbodyComponent = new TableTbodyComponent(DEFAULT_BUFFER_AMOUNT, null);
+        const tableBody: TableTbodyComponent = new TableTbodyComponent(
+            selection,
+            mockChangeDetector as ChangeDetectorRef,
+            DEFAULT_BUFFER_AMOUNT,
+            null
+        );
 
         tableBody.source = [item];
         expect(tableBody.trackByIdx(index, item)).toEqual(index);

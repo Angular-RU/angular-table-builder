@@ -20,6 +20,7 @@ module.exports = {
     modulePathIgnorePatterns: ['<rootDir>/dist/'],
     collectCoverage: true,
     globals: {
+        __TRANSFORM_HTML__: true,
         'ts-jest': {
             tsConfig: '<rootDir>/tsconfig.json',
             stringifyContentPathRegex: '\\.html$',

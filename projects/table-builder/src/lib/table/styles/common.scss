@@ -9,11 +9,6 @@
     height: 0;
 }
 
-.cell-nowrap {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
 .scrollable-content {
     height: unset !important;
     will-change: auto;

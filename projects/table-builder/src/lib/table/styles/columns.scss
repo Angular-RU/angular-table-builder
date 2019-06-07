@@ -22,6 +22,10 @@
         &--sticky-right {
             right: 0;
         }
+
+        &--selected-all {
+          background: $selectionColor;
+        }
     }
 
     &__column:nth-last-child(2) {

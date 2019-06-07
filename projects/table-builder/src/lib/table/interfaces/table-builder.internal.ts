@@ -18,8 +18,14 @@ export interface KeyMap<T = unknown> {
     [key: string]: T;
 }
 
+export type RowKey = string | number;
+
 export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
 
 export type Any = any; // NOSONAR
 
-export type ColumnList = QueryList<NgxColumnComponent> | NgxColumnComponent[];
+export type ColumnTemplates = QueryList<NgxColumnComponent>;
+
+export interface SelectionStatus {
+    status: boolean;
+}

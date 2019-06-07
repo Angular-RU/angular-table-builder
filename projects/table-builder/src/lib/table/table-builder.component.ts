@@ -1,39 +1,45 @@
 import {
-  AfterContentInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ContentChildren,
-  Inject,
-  OnChanges,
-  QueryList,
-  ViewEncapsulation
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ContentChildren,
+    Inject,
+    OnChanges,
+    OnInit,
+    QueryList,
+    ViewEncapsulation
 } from '@angular/core';
 
 import { COL_WIDTH, ROW_HEIGHT } from './config/table-builder.tokens';
 import { KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './animations/fade.animation';
+import { TableSchema } from './interfaces/table-builder.external';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
-import { TableRow } from './interfaces/table-builder.external';
+import { SortableService } from './services/sortable/sortable.service';
+import { SelectionService } from './services/selection/selection.service';
 
 @Component({
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
-    providers: [TemplateParserService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TemplateParserService, SortableService, SelectionService],
     animations: [fadeAnimation]
 })
-export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, AfterContentInit {
+export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
     public isFirstRendered: boolean = false;
     public displayedColumns: string[] = [];
     public scrollOffset: ScrollOffsetStatus = { offset: false };
-    @ContentChildren(NgxColumnComponent) private readonly columnsList: QueryList<NgxColumnComponent>;
+
+    @ContentChildren(NgxColumnComponent)
+    private readonly columnTemplates: QueryList<NgxColumnComponent>;
 
     constructor(
+        public selection: SelectionService,
         @Inject(ROW_HEIGHT) public defaultRowHeight: number,
         @Inject(COL_WIDTH) public defaultColumnWidth: number,
         protected templateParser: TemplateParserService,
@@ -42,38 +48,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         super();
     }
 
-    public get clientRowHeight(): number {
-        return parseInt(this.rowHeight as string) || this.defaultRowHeight;
-    }
-
-    public get clientColWidth(): number {
-        return this.autoWidth ? null : parseInt(this.columnWidth as string) || this.defaultColumnWidth;
-    }
-
-    public get columnVirtualHeight(): number {
-        return this.source.length * this.clientRowHeight;
-    }
-
-    public get columnHeight(): number {
-        return this.source.length * this.clientRowHeight + this.clientRowHeight;
-    }
-
-    public get modelColumnKeys(): string[] {
-        return this.excluding(Object.keys(this.rowKeyValue));
-    }
-
-    private get customModelColumnsKeys(): string[] {
-        return this.excluding(this.keys);
-    }
-
-    private get rowKeyValue(): TableRow {
-        return this.source && this.source[0];
-    }
-
     public ngOnChanges(): void {
         if (this.isFirstRendered) {
             this.renderTable();
         }
+    }
+
+    public ngOnInit(): void {
+        this.selection.primaryKey = this.primaryKey;
     }
 
     public updateScrollOffset(offset: boolean): void {
@@ -96,24 +78,46 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return map;
     }
 
-    private excluding(keys: string[]): string[] {
-        return keys.filter((key: string) => !this.excludeKeys.includes(key));
+    public get selectionMap(): KeyMap<boolean> {
+        return this.selection.selectionModel.map;
     }
 
     private renderTable(): void {
-        const modelsKeyMap: KeyMap<boolean> = this.keys.length
-            ? this.generateColumnsKeyMap(this.customModelColumnsKeys)
-            : this.generateColumnsKeyMap(this.modelColumnKeys);
-
-        this.templateParser.parse(modelsKeyMap, this.columnsList);
-        const keysFromTemplate: string[] = this.templateParser.keysFromTemplate;
+        const customModelColumnsKeys: string[] = this.customModelColumnsKeys;
+        const modelColumnKeys: string[] = this.modelColumnKeys;
+        const renderedTemplateKeys: string[] = this.compileTemplates(customModelColumnsKeys, modelColumnKeys);
 
         if (this.keys.length) {
-            this.displayedColumns = this.customModelColumnsKeys;
-        } else if (keysFromTemplate.length) {
-            this.displayedColumns = keysFromTemplate;
+            this.displayedColumns = customModelColumnsKeys;
+        } else if (renderedTemplateKeys.length) {
+            this.displayedColumns = renderedTemplateKeys;
         } else {
-            this.displayedColumns = this.modelColumnKeys;
+            this.displayedColumns = modelColumnKeys;
+        }
+
+        this.checkUnCompiledTemplates();
+    }
+
+    private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): string[] {
+        const allowedKeyMap: KeyMap<boolean> = this.keys.length
+            ? this.generateColumnsKeyMap(customModelColumnsKeys)
+            : this.generateColumnsKeyMap(modelColumnKeys);
+
+        this.templateParser.parse(allowedKeyMap, this.columnTemplates);
+        return this.templateParser.renderedTemplateKeys;
+    }
+
+    private checkUnCompiledTemplates(): void {
+        for (let i: number = 0; i < this.displayedColumns.length; i++) {
+            const schema: TableSchema = this.templateParser.schema;
+            const key: string = this.displayedColumns[i];
+            const notRendered: boolean = !schema.columns[key];
+
+            if (notRendered) {
+                const column: NgxColumnComponent = new NgxColumnComponent();
+                column.key = key;
+                this.templateParser.compileMetadata(column);
+            }
         }
     }
 }

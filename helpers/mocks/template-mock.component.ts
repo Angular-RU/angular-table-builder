@@ -14,21 +14,13 @@ interface LicenseSample {
         <!-- app.component.html -->
         <ngx-table-builder [source]="licenses">
             <ngx-column key="name">
-                <ng-template ngx-th>
-                    <b>License</b>
-                </ng-template>
-                <ng-template ngx-td let-name>
-                    {{ name | uppercase }}
-                </ng-template>
+                <ng-template ngx-th>License</ng-template>
+                <ng-template ngx-td let-name>{{ name | uppercase }}</ng-template>
             </ngx-column>
 
             <ngx-column key="price">
-                <ng-template ngx-th>
-                    <b>Cost</b>
-                </ng-template>
-                <ng-template ngx-td let-price>
-                    {{ price | currency }}
-                </ng-template>
+                <ng-template ngx-th>Cost</ng-template>
+                <ng-template ngx-td let-price>{{ price | currency }}</ng-template>
             </ngx-column>
         </ngx-table-builder>
     `

@@ -18,7 +18,7 @@ $ng-table-builder-accent: mat-palette($mat-pink, A200, A100, A400);
 // The warn palette is optional (defaults to red).
 $ng-table-builder-warn: mat-palette($mat-red);
 
-// Create the theme object (a Sass map containing all of the palettes).
+// Create the theme object (a Sass selectionModel containing all of the palettes).
 $ng-table-builder-theme: mat-light-theme($ng-table-builder-primary, $ng-table-builder-accent, $ng-table-builder-warn);
 
 // Include theme styles for core and each component used in your app.
