@@ -108,9 +108,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private checkUnCompiledTemplates(): void {
-        for (let i: number = 0; i < this.displayedColumns.length; i++) {
+        for (const key of this.displayedColumns) {
             const schema: TableSchema = this.templateParser.schema;
-            const key: string = this.displayedColumns[i];
             const notRendered: boolean = !schema.columns[key];
 
             if (notRendered) {
