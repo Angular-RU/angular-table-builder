@@ -36,6 +36,7 @@ describe('[TEST]: TableBuilder', () => {
     let table: TableBuilderComponent;
     let templateParser: TemplateParserService;
 
+    let preventDefaultInvoked: number = 0;
     const rowHeight: number = 40;
     const columnWidth: number = 200;
 
@@ -52,6 +53,12 @@ describe('[TEST]: TableBuilder', () => {
     };
 
     const selection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+
+    const mockPreventDefault: Partial<MouseEvent> = {
+        preventDefault: (): void => {
+            preventDefaultInvoked++;
+        }
+    };
 
     beforeEach(() => {
         templateParser = new TemplateParserService();
@@ -190,10 +197,14 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.displayedColumns).toEqual([]);
     });
 
-    it('should be correct table body', () => {
+    it('should be correct generate table body', () => {
         const index: number = 0;
         const DEFAULT_BUFFER_AMOUNT: number = 10;
         const item: TableRow = { id: 1, value: 'hello world' };
+        table.primaryKey = 'id';
+
+        table.ngOnInit();
+
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             selection,
             mockChangeDetector as ChangeDetectorRef,
@@ -206,5 +217,12 @@ describe('[TEST]: TableBuilder', () => {
 
         tableBody.primaryKey = 'id';
         expect(tableBody.trackByIdx(index, item)).toEqual(1);
+
+        expect(tableBody.canSelectTextInTable).toEqual(true);
+
+        tableBody.enableSelection = true;
+        tableBody.handleRow(item, mockPreventDefault as MouseEvent);
+
+        expect(table.selectionModel).toEqual({ map: { 1: true }, isAll: true });
     });
 });

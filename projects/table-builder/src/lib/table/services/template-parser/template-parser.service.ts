@@ -31,7 +31,7 @@ export class TemplateParserService {
                 nowrap: th.nowrap,
                 template: th.template,
                 useDeepPath: null,
-                context: th.row ? ImplicitContext.ROW : ImplicitContext.CELL,
+                context: th.row ? ImplicitContext.ROW : ImplicitContext.CELL
             },
             td: {
                 textBold: td.bold,

@@ -2,18 +2,24 @@ import { ApplicationRef, Injectable, NgZone, OnDestroy } from '@angular/core';
 import { SelectionMap } from './selection';
 import { SelectionRange } from './selection-range';
 import { TableRow } from '../../interfaces/table-builder.external';
-import { RowKey, SelectionStatus } from '../../interfaces/table-builder.internal';
+import { PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
 
 @Injectable()
 export class SelectionService implements OnDestroy {
     public selectionModel: SelectionMap = new SelectionMap();
     public range: SelectionRange = new SelectionRange();
     public selectionStart: SelectionStatus = { status: false };
-    public primaryKey: string;
+    public primaryKey: string = PrimaryKey.ID;
 
-    constructor(private app: ApplicationRef, private ngZone: NgZone) {
+    constructor(private readonly app: ApplicationRef, private readonly ngZone: NgZone) {
         this.listenShiftKeyByType('keydown');
         this.listenShiftKeyByType('keyup');
+    }
+
+    private static validateSelectionId(id: RowId): void {
+        if (!id) {
+            throw new Error(`Can't select item, make sure you pass the correct primary key`);
+        }
     }
 
     public ngOnDestroy(): void {
@@ -53,6 +59,16 @@ export class SelectionService implements OnDestroy {
         this.app.tick();
     }
 
+    public getIdByRow(row: TableRow): RowId {
+        const id: RowId = row[this.primaryKey];
+        SelectionService.validateSelectionId(id);
+        return id;
+    }
+
+    public shiftKeyDetectSelection({ shiftKey }: KeyboardEvent): void {
+        this.changeSelectionStart(shiftKey);
+    }
+
     private listenShiftKeyByType(type: string): void {
         this.ngZone.runOutsideAngular(() => {
             window.addEventListener(type, this.shiftKeyDetectSelection.bind(this), true);
@@ -65,10 +81,6 @@ export class SelectionService implements OnDestroy {
 
     private changeSelectionStart(shiftKey: boolean): void {
         this.selectionStart = { status: shiftKey };
-    }
-
-    private shiftKeyDetectSelection({ shiftKey }: KeyboardEvent): void {
-        this.changeSelectionStart(shiftKey);
     }
 
     private checkIsAllSelected(rows: TableRow[]): void {
@@ -100,9 +112,5 @@ export class SelectionService implements OnDestroy {
         this.selectionModel.select(this.getIdByRow(row));
         this.range.clear();
         this.range.start = index;
-    }
-
-    private getIdByRow(row: TableRow): RowKey {
-        return row[this.primaryKey];
     }
 }

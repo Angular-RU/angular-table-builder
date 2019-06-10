@@ -1,4 +1,4 @@
-import { KeyMap, RowKey } from '../../interfaces/table-builder.internal';
+import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
 
 export class SelectionMap {
     public map: KeyMap<boolean> = {};
@@ -12,7 +12,7 @@ export class SelectionMap {
         return this.length > 0;
     }
 
-    public select(key: RowKey): void {
+    public select(key: RowId): void {
         this.map[key] = true;
         this.map = { ...this.map };
     }
@@ -25,7 +25,7 @@ export class SelectionMap {
         }
     }
 
-    public has(key: RowKey): boolean {
+    public has(key: RowId): boolean {
         return this.map[key];
     }
 

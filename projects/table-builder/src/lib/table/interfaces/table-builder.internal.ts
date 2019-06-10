@@ -18,7 +18,7 @@ export interface KeyMap<T = unknown> {
     [key: string]: T;
 }
 
-export type RowKey = string | number;
+export type RowId = string | number;
 
 export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
 

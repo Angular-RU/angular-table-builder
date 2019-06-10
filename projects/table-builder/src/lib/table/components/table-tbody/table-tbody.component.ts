@@ -43,7 +43,7 @@ export class TableTbodyComponent extends TableLineRow {
         return item[this.primaryKey] ? parseInt(item[this.primaryKey] as string) : index;
     }
 
-    public get disableSelectText(): boolean {
+    public get canSelectTextInTable(): boolean {
         return !this.selection.selectionStart.status;
     }
 
