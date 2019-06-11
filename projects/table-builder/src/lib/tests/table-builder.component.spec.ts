@@ -1,3 +1,4 @@
+/* tslint:disable:no-big-function */
 import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
 
