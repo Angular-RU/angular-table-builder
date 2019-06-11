@@ -2,6 +2,7 @@
     *ngIf="source?.length"
     class="table-grid__root"
     [style.width]="width"
+    [class.table-grid__with-vertical-line]="verticalBorder"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [autoHeight]="{ detect: autoHeightDetect, height: height }"
 >

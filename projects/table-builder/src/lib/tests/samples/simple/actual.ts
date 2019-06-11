@@ -1,7 +1,7 @@
 /* tslint:disable */
 export const SIMPLE_TABLE_TEMPLATE: string = `
 <ngx-table-builder>
-  <div class="table-grid__root table-grid__root-auto-height">
+  <div class="table-grid__root table-grid__with-vertical-line table-grid__root-auto-height">
     <div class="table-grid" wheelthrottling="">
       <div class="table-grid__column table-grid__column--is-visible" inviewport="">
         <table-thead>

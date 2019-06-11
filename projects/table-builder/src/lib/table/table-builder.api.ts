@@ -11,6 +11,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
+    @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;

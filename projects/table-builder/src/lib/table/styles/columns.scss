@@ -3,7 +3,6 @@
 .table-grid {
     &__column {
         width: 100%;
-        border-right: 1px solid $borderColor;
         box-sizing: border-box;
         z-index: 1;
 
@@ -24,15 +23,23 @@
         }
 
         &--selected-all {
-          background: $selectionColor;
+            background: $selectionColor;
         }
     }
+}
 
-    &__column:nth-last-child(2) {
-        border-right: none;
-    }
+.table-grid__with-vertical-line {
+    .table-grid {
+        &__column {
+            border-right: 1px solid $borderColor;
+        }
 
-    &__column:last-child {
-        border-left: 1px solid $borderColor;
+        &__column:last-child {
+            border-left: 1px solid $borderColor;
+        }
+
+        &__column:nth-last-child(2) {
+            border-right: none;
+        }
     }
 }
