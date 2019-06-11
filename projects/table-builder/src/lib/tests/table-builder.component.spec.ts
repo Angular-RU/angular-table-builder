@@ -225,4 +225,19 @@ describe('[TEST]: TableBuilder', () => {
 
         expect(table.selectionModel).toEqual({ map: { 1: true }, isAll: true });
     });
+
+    it('should be correct selected items', () => {
+        table.primaryKey = 'position';
+        table.ngOnInit();
+
+        table.selection.selectRow(data[0], { ctrlKey: true } as MouseEvent, data);
+        table.selection.selectRow(data[1], { ctrlKey: true } as MouseEvent, data);
+        table.selection.selectRow(data[2], { ctrlKey: true } as MouseEvent, data);
+
+        expect(table.selectedItems).toEqual([
+            { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+            { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+            { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
+        ]);
+    });
 });

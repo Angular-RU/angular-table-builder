@@ -30,6 +30,10 @@ export abstract class TableBuilderApiImpl {
         return this.templateParser.schema.columns;
     }
 
+    public get selectedItems(): TableRow[] {
+        return this.source.filter((item: TableRow[]) => this.selectionModel.map[item[this.primaryKey]]);
+    }
+
     public get rowKeyValue(): TableRow {
         return this.source && this.source[0];
     }
