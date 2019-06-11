@@ -1,5 +1,5 @@
 import { QueryList } from '@angular/core';
-import { NgxColumnComponent } from '@angular-ru/table-builder';
+import { NgxColumnComponent } from '../components/ngx-column/ngx-column.component';
 
 export enum PrimaryKey {
     ID = 'id'
