@@ -35,6 +35,7 @@ const customKeys: string[] = ['position', 'name', 'symbol', 'position', 'name'];
 
 describe('[TEST]: TableBuilder', () => {
     let table: TableBuilderComponent;
+    let selection: SelectionService;
     let templateParser: TemplateParserService;
 
     let preventDefaultInvoked: number = 0;
@@ -53,8 +54,6 @@ describe('[TEST]: TableBuilder', () => {
         runOutsideAngular: (): Any => {}
     };
 
-    const selection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
-
     const mockPreventDefault: Partial<MouseEvent> = {
         preventDefault: (): void => {
             preventDefaultInvoked++;
@@ -62,6 +61,7 @@ describe('[TEST]: TableBuilder', () => {
     };
 
     beforeEach(() => {
+        selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         templateParser = new TemplateParserService();
         table = new TableBuilderComponent(
             selection,
@@ -70,8 +70,7 @@ describe('[TEST]: TableBuilder', () => {
             templateParser,
             mockChangeDetector as ChangeDetectorRef
         );
-
-        table.source = data;
+        table.source = JSON.parse(JSON.stringify(data));
     });
 
     it('should be correct displayedColumns', () => {

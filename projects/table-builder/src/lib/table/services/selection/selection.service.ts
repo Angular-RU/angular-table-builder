@@ -45,7 +45,7 @@ export class SelectionService implements OnDestroy {
 
     public selectRow(row: TableRow, event: MouseEvent, rows: TableRow[]): void {
         const { shiftKey, ctrlKey }: MouseEvent = event;
-        const index: number = rows.indexOf(row);
+        const index: number = rows.findIndex((item: TableRow) => item[this.primaryKey] === row[this.primaryKey]);
 
         if (shiftKey) {
             this.multipleSelectByShiftKeydown(index, rows);
