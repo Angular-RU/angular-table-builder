@@ -1,6 +1,5 @@
 import { TemplateRef } from '@angular/core';
-import { Any } from './table-builder.internal';
-import { ObjectKeyMap } from '../../../../../../src/app/shared/symbol';
+import { Any, KeyMap } from './table-builder.internal';
 
 export interface TableRow<T = Any> {
     [key: string]: T;
@@ -24,8 +23,8 @@ export interface TableColumnOptions<T> {
     textBold: boolean;
     nowrap: boolean;
     useDeepPath: boolean;
-    class: string | string[] | ObjectKeyMap<Any>;
-    style: ObjectKeyMap<Any>;
+    class: string | string[] | KeyMap<Any>;
+    style: KeyMap<Any>;
 }
 
 export interface ColumnsSchema<T = unknown> {
