@@ -110,14 +110,18 @@ describe('[TEST]: TableBuilder', () => {
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: true,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     td: {
                         template: null,
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: null,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     width: null,
                     stickyLeft: null,
@@ -131,14 +135,18 @@ describe('[TEST]: TableBuilder', () => {
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: true,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     td: {
                         template: null,
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: null,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     width: null,
                     stickyLeft: null,
@@ -152,14 +160,18 @@ describe('[TEST]: TableBuilder', () => {
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: true,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     td: {
                         template: null,
                         context: ImplicitContext.CELL,
                         nowrap: true,
                         textBold: null,
-                        useDeepPath: null
+                        useDeepPath: null,
+                        style: null,
+                        class: null
                     },
                     width: null,
                     stickyLeft: null,

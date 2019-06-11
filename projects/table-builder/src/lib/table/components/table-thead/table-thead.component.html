@@ -5,6 +5,8 @@
     [style.min-height.px]="clientRowHeight"
     [style.max-height.px]="clientRowHeight"
     [style.line-height.px]="clientRowHeight"
+    [ngClass]="columnsSchema[key]?.th.class"
+    [ngStyle]="columnsSchema[key]?.th.style"
     [@fadeAnimation]="'in'"
 >
     <ng-template

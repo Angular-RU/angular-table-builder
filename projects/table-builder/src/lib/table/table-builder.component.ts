@@ -115,7 +115,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
             if (notRendered) {
                 const column: NgxColumnComponent = new NgxColumnComponent();
                 column.key = key;
-                this.templateParser.compileMetadata(column);
+                this.templateParser.compileColumnMetadata(column);
             }
         }
     }

@@ -20,6 +20,7 @@
             [style.height.px]="columnHeight"
             [ngStyle]="columnsSchema[key]?.cssStyle"
             [ngClass]="columnsSchema[key]?.cssClass"
+            [style.width.px]="columnsSchema[key]?.width"
             [style.min-width.px]="columnsSchema[key]?.width || clientColWidth"
             [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
             [class.table-grid__column--sticky-left]="columnsSchema[key]?.stickyLeft"

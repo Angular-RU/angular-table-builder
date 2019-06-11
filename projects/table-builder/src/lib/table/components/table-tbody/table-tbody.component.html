@@ -26,6 +26,8 @@
         [class.table-grid__cell--selected]="selectionMap[item[primaryKey]]"
         [class.table-grid__cell--text-bold]="columnsSchema[key]?.td.textBold"
         [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
+        [ngClass]="columnsSchema[key]?.td.class"
+        [ngStyle]="columnsSchema[key]?.td.style"
     >
         <ng-template
             [ngIf]="columnsSchema[key]?.td.template"
