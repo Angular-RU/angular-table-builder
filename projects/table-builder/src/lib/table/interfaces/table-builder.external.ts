@@ -15,7 +15,7 @@ export enum ImplicitContext {
     CELL = 'CELL'
 }
 
-export interface TableColumnOptions<T> {
+export interface TableCellOptions<T = Any> {
     template: TemplateRef<T>;
     context: ImplicitContext;
     textBold: boolean;
@@ -27,16 +27,18 @@ export interface TableColumnOptions<T> {
     height: number;
 }
 
-export interface ColumnsSchema<T = unknown> {
-    [key: string]: {
-        td: TableColumnOptions<T>;
-        th: TableColumnOptions<T>;
-        width: number;
-        cssStyle: string[];
-        cssClass: string[];
-        stickyLeft: boolean;
-        stickyRight: boolean;
-    };
+export interface ColumnsSchema<T = Any> {
+    [key: string]: TableColumn<T>;
+}
+
+export interface TableColumn<T = Any> {
+    td: TableCellOptions<T>;
+    th: TableCellOptions<T>;
+    width: number;
+    cssStyle: string[];
+    cssClass: string[];
+    stickyLeft: boolean;
+    stickyRight: boolean;
 }
 
 export interface TableSchema<T = unknown> {

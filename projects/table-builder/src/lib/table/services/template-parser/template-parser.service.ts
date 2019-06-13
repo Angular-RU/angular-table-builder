@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
-import { ImplicitContext, TableColumnOptions, TableSchema } from '../../interfaces/table-builder.external';
+import { ImplicitContext, TableCellOptions, TableSchema } from '../../interfaces/table-builder.external';
 import { ColumnTemplates, KeyMap } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
@@ -11,7 +11,7 @@ export class TemplateParserService {
     public schema: TableSchema = new SchemaBuilder();
     public renderedTemplateKeys: string[] = [];
 
-    private static getCellTemplateContext(cellTemplate: TemplateCellCommon): TableColumnOptions<unknown> {
+    private static getCellTemplateContext(cellTemplate: TemplateCellCommon): TableCellOptions {
         return {
             textBold: cellTemplate.bold,
             nowrap: cellTemplate.nowrap,
