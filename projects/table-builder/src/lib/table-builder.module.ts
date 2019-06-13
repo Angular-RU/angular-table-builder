@@ -3,7 +3,7 @@ import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { InViewportModule } from 'ng-in-viewport';
 import { CommonModule } from '@angular/common';
 
-import { BUFFER_AMOUNT, COL_WIDTH, ROW_HEIGHT, WHEEL_MAX_DELTA } from './table/config/table-builder.tokens';
+import { BUFFER_AMOUNT, WHEEL_MAX_DELTA } from './table/config/table-builder.tokens';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { TableBuilderConfig } from './table/config/table-builder.config';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
@@ -37,8 +37,6 @@ export class TableBuilderModule {
         return {
             ngModule: TableBuilderModule,
             providers: [
-                { provide: ROW_HEIGHT, useValue: config.rowHeight },
-                { provide: COL_WIDTH, useValue: config.columnWidth },
                 { provide: BUFFER_AMOUNT, useValue: config.bufferAmount },
                 { provide: WHEEL_MAX_DELTA, useValue: config.wheelMaxDelta }
             ]

@@ -6,24 +6,22 @@ import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
 
 export abstract class TableBuilderApiImpl {
+    public static readonly rowHeight: number = 45;
     @Input() public height: number;
     @Input() public width: string;
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
-    @Input('enable-selection') public enableSelection: boolean;
+    @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = false;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
-    @Input('column-width') public columnWidth: string | number;
-    @Input('row-height') public rowHeight: string | number;
-    @Input('buffer-amount') public bufferAmount: number;
-
-    public defaultColumnWidth: number;
-    public defaultRowHeight: number;
+    @Input('column-width') public columnWidth: string | number = null;
+    @Input('row-height') public rowHeight: string | number = null;
+    @Input('buffer-amount') public bufferAmount: number = null;
     protected abstract templateParser: TemplateParserService;
     protected abstract selection: SelectionService;
 
@@ -44,19 +42,20 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get clientRowHeight(): number {
-        return parseInt(this.rowHeight as string) || this.defaultRowHeight;
+        return parseInt(this.rowHeight as string);
     }
 
     public get clientColWidth(): number {
-        return this.autoWidth ? null : parseInt(this.columnWidth as string) || this.defaultColumnWidth;
+        return this.autoWidth ? null : parseInt(this.columnWidth as string);
     }
 
     public get columnVirtualHeight(): number {
-        return this.source.length * this.clientRowHeight;
+        return this.source.length * (this.clientRowHeight || TableBuilderApiImpl.rowHeight);
     }
 
     public get columnHeight(): number {
-        return this.source.length * this.clientRowHeight + this.clientRowHeight;
+        const rowHeight: number = this.clientRowHeight || TableBuilderApiImpl.rowHeight;
+        return this.source.length * rowHeight + rowHeight;
     }
 
     public get modelColumnKeys(): string[] {

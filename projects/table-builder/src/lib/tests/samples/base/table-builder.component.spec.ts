@@ -2,13 +2,14 @@
 import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
 
-import { TemplateParserService } from '../table/services/template-parser/template-parser.service';
-import { TableTbodyComponent } from '../table/components/table-tbody/table-tbody.component';
-import { SelectionService } from '../table/services/selection/selection.service';
-import { ImplicitContext, TableRow } from '../table/interfaces/table-builder.external';
-import { NgxColumnComponent } from '../table/components/ngx-column/ngx-column.component';
-import { TableBuilderComponent } from '../table/table-builder.component';
-import { Any } from '../table/interfaces/table-builder.internal';
+import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
+import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
+import { SelectionService } from '../../../table/services/selection/selection.service';
+import { TableRow } from '../../../table/interfaces/table-builder.external';
+import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-column.component';
+import { TableBuilderComponent } from '../../../table/table-builder.component';
+import { Any } from '../../../table/interfaces/table-builder.internal';
+import { ACTUAL_TEMPLATE } from './actual.template';
 
 export interface PeriodicElement {
     name: string;
@@ -39,8 +40,6 @@ describe('[TEST]: TableBuilder', () => {
     let templateParser: TemplateParserService;
 
     let preventDefaultInvoked: number = 0;
-    const rowHeight: number = 40;
-    const columnWidth: number = 200;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
@@ -63,14 +62,22 @@ describe('[TEST]: TableBuilder', () => {
     beforeEach(() => {
         selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         templateParser = new TemplateParserService();
-        table = new TableBuilderComponent(
-            selection,
-            rowHeight,
-            columnWidth,
-            templateParser,
-            mockChangeDetector as ChangeDetectorRef
-        );
+        table = new TableBuilderComponent(selection, templateParser, mockChangeDetector as ChangeDetectorRef);
         table.source = JSON.parse(JSON.stringify(data));
+    });
+
+    it('should be correct height columns and width rows', () => {
+        expect(table.columnHeight).toEqual(495);
+        expect(table.columnVirtualHeight).toEqual(450);
+
+        table.rowHeight = 80;
+        table.columnWidth = 100;
+
+        expect(table.clientColWidth).toEqual(100);
+        expect(table.clientRowHeight).toEqual(80);
+        expect(table.columnWidth).toEqual(100);
+        expect(table.columnHeight).toEqual(880);
+        expect(table.columnVirtualHeight).toEqual(800);
     });
 
     it('should be correct displayedColumns', () => {
@@ -102,85 +109,7 @@ describe('[TEST]: TableBuilder', () => {
 
         templateParser.parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight] as Any);
 
-        expect(templateParser.schema).toEqual({
-            columns: {
-                position: {
-                    th: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: true,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    td: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: null,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    width: null,
-                    stickyLeft: null,
-                    stickyRight: null,
-                    cssClass: [],
-                    cssStyle: []
-                },
-                name: {
-                    th: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: true,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    td: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: null,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    width: null,
-                    stickyLeft: null,
-                    stickyRight: null,
-                    cssClass: [],
-                    cssStyle: []
-                },
-                weight: {
-                    th: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: true,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    td: {
-                        template: null,
-                        context: ImplicitContext.CELL,
-                        nowrap: true,
-                        textBold: null,
-                        useDeepPath: null,
-                        style: null,
-                        class: null
-                    },
-                    width: null,
-                    stickyLeft: null,
-                    stickyRight: null,
-                    cssClass: [],
-                    cssStyle: []
-                }
-            }
-        });
+        expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
 
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight']);

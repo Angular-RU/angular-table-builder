@@ -19,7 +19,9 @@ export class TemplateParserService {
             class: cellTemplate.cssClasses,
             style: cellTemplate.cssStyles,
             useDeepPath: cellTemplate.useDeepPath,
-            context: cellTemplate.row ? ImplicitContext.ROW : ImplicitContext.CELL
+            context: cellTemplate.row ? ImplicitContext.ROW : ImplicitContext.CELL,
+            width: cellTemplate.width,
+            height: cellTemplate.height
         };
     }
 

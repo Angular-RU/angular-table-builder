@@ -4,14 +4,12 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChildren,
-    Inject,
     OnChanges,
     OnInit,
     QueryList,
     ViewEncapsulation
 } from '@angular/core';
 
-import { COL_WIDTH, ROW_HEIGHT } from './config/table-builder.tokens';
 import { KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './animations/fade.animation';
@@ -40,12 +38,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     constructor(
         public selection: SelectionService,
-        @Inject(ROW_HEIGHT) public defaultRowHeight: number,
-        @Inject(COL_WIDTH) public defaultColumnWidth: number,
         protected templateParser: TemplateParserService,
         protected readonly cd: ChangeDetectorRef
     ) {
         super();
+    }
+
+    public get selectionMap(): KeyMap<boolean> {
+        return this.selection.selectionModel.map;
     }
 
     public ngOnChanges(): void {
@@ -76,10 +76,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         const map: KeyMap<boolean> = {};
         keys.forEach((key: string) => (map[key] = true));
         return map;
-    }
-
-    public get selectionMap(): KeyMap<boolean> {
-        return this.selection.selectionModel.map;
     }
 
     private renderTable(): void {

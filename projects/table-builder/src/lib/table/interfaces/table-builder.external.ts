@@ -7,8 +7,6 @@ export interface TableRow<T = Any> {
 
 export interface TableBuilderOptions {
     bufferAmount: number;
-    rowHeight: number;
-    columnWidth: number;
     wheelMaxDelta: number;
 }
 
@@ -25,6 +23,8 @@ export interface TableColumnOptions<T> {
     useDeepPath: boolean;
     class: string | string[] | KeyMap<Any>;
     style: KeyMap<Any>;
+    width: number;
+    height: number;
 }
 
 export interface ColumnsSchema<T = unknown> {

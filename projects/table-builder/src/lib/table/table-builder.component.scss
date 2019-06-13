@@ -18,7 +18,6 @@
     &__header-cell {
         top: 0;
         z-index: 100;
-        float: left;
         position: sticky;
         overflow: hidden;
         padding: 5px 20px;
@@ -38,6 +37,9 @@
         overflow: hidden;
         word-break: break-all;
         border-bottom: 1px solid $borderColor;
+        min-height: $cellHeight;
+        max-height: $cellHeight;
+        line-height: $cellHeight;
 
         &--text-bold {
             font-weight: bold;
