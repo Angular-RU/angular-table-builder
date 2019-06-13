@@ -37,8 +37,8 @@ export class TableBuilderModule {
         return {
             ngModule: TableBuilderModule,
             providers: [
-                { provide: BUFFER_AMOUNT, useValue: config.bufferAmount },
-                { provide: WHEEL_MAX_DELTA, useValue: config.wheelMaxDelta }
+                { provide: BUFFER_AMOUNT, useValue: config.BUFFER_AMOUNT },
+                { provide: WHEEL_MAX_DELTA, useValue: config.WHEEL_MAX_DELTA }
             ]
         };
     }
