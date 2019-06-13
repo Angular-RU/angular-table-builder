@@ -25,6 +25,12 @@ export class TemplateParserService {
         };
     }
 
+    public initialSchema(): TemplateParserService {
+        this.schema = new SchemaBuilder();
+        this.renderedTemplateKeys = [];
+        return this;
+    }
+
     public parse(allowedKeyMap: KeyMap<boolean>, templates: ColumnTemplates): void {
         if (templates) {
             templates.forEach((column: NgxColumnComponent) => {

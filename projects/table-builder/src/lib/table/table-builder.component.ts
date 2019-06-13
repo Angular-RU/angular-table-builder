@@ -4,13 +4,13 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChildren,
+    NgZone,
     OnChanges,
     OnInit,
-    QueryList,
     ViewEncapsulation
 } from '@angular/core';
 
-import { KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
+import { ColumnTemplates, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { fadeAnimation } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -29,17 +29,16 @@ import { SelectionService } from './services/selection/selection.service';
     animations: [fadeAnimation]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
+    @ContentChildren(NgxColumnComponent) public columnTemplates: ColumnTemplates = [];
     public isFirstRendered: boolean = false;
     public displayedColumns: string[] = [];
     public scrollOffset: ScrollOffsetStatus = { offset: false };
 
-    @ContentChildren(NgxColumnComponent)
-    private readonly columnTemplates: QueryList<NgxColumnComponent>;
-
     constructor(
-        public selection: SelectionService,
-        protected templateParser: TemplateParserService,
-        protected readonly cd: ChangeDetectorRef
+        public readonly selection: SelectionService,
+        protected readonly templateParser: TemplateParserService,
+        protected readonly cd: ChangeDetectorRef,
+        protected readonly ngZone: NgZone
     ) {
         super();
     }
@@ -79,6 +78,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private renderTable(): void {
+        if (this.async) {
+            this.ngZone.runOutsideAngular(() => {
+                window.requestAnimationFrame(() => this.syncRender());
+            });
+        } else {
+            this.syncRender();
+        }
+    }
+
+    private syncRender(): void {
         const customModelColumnsKeys: string[] = this.customModelColumnsKeys;
         const modelColumnKeys: string[] = this.modelColumnKeys;
         const renderedTemplateKeys: string[] = this.compileTemplates(customModelColumnsKeys, modelColumnKeys);
@@ -92,6 +101,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         }
 
         this.checkUnCompiledTemplates();
+        this.cd.detectChanges();
     }
 
     private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): string[] {
@@ -99,7 +109,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
             ? this.generateColumnsKeyMap(customModelColumnsKeys)
             : this.generateColumnsKeyMap(modelColumnKeys);
 
-        this.templateParser.parse(allowedKeyMap, this.columnTemplates);
+        this.templateParser.initialSchema().parse(allowedKeyMap, this.columnTemplates);
         return this.templateParser.renderedTemplateKeys;
     }
 

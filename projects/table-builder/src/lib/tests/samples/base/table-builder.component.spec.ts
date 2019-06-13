@@ -38,33 +38,45 @@ describe('[TEST]: TableBuilder', () => {
     let table: TableBuilderComponent;
     let selection: SelectionService;
     let templateParser: TemplateParserService;
-
     let preventDefaultInvoked: number = 0;
-
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
     };
-
     const appRef: Partial<ApplicationRef> = {
         tick: (): void => {}
     };
-
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular: (): Any => {}
     };
-
     const mockPreventDefault: Partial<MouseEvent> = {
         preventDefault: (): void => {
             preventDefaultInvoked++;
         }
     };
 
+    let position: NgxColumnComponent;
+    let name: NgxColumnComponent;
+    let weight: NgxColumnComponent;
+
     beforeEach(() => {
         selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         templateParser = new TemplateParserService();
-        table = new TableBuilderComponent(selection, templateParser, mockChangeDetector as ChangeDetectorRef);
-        table.source = JSON.parse(JSON.stringify(data));
+        table = new TableBuilderComponent(
+            selection,
+            templateParser,
+            mockChangeDetector as ChangeDetectorRef,
+            mockNgZone as NgZone
+        );
+        table.async = false;
     });
+
+    beforeEach(() => {
+        position = FakeGeneratorTable.generateColumn('position');
+        name = FakeGeneratorTable.generateColumn('name');
+        weight = FakeGeneratorTable.generateColumn('weight');
+    });
+
+    beforeEach(() => (table.source = JSON.parse(JSON.stringify(data))));
 
     it('should be correct height columns and width rows', () => {
         expect(table.columnHeight).toEqual(495);
@@ -103,14 +115,12 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct parse template', () => {
-        const position: NgxColumnComponent = FakeGeneratorTable.generateColumn('position');
-        const name: NgxColumnComponent = FakeGeneratorTable.generateColumn('name');
-        const weight: NgxColumnComponent = FakeGeneratorTable.generateColumn('weight');
-
-        templateParser.parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight] as Any);
-
+        templateParser.initialSchema().parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight]);
         expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
+    });
 
+    it('should be correct sync render', () => {
+        table.columnTemplates = [position, name, weight];
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight']);
     });

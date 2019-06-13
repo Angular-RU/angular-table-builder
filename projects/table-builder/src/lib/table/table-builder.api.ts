@@ -12,6 +12,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
+    @Input() public async: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];

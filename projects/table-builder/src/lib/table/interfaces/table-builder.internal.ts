@@ -24,7 +24,7 @@ export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
 
 export type Any = any; // NOSONAR
 
-export type ColumnTemplates = QueryList<NgxColumnComponent>;
+export type ColumnTemplates = QueryList<NgxColumnComponent> | NgxColumnComponent[];
 
 export interface SelectionStatus {
     status: boolean;
