@@ -38,6 +38,10 @@ describe('[TEST]: auto height', () => {
         value: 1000
     });
 
+    Object.defineProperty(window, 'requestAnimationFrame', {
+        value: (callback: Fn): unknown => callback()
+    });
+
     Object.defineProperties(window, {
         addEventListener: {
             value: (_: string, fn: Fn): void => {

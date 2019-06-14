@@ -43,7 +43,9 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public recalculateByResize(): void {
         this.calculateHeight();
-        this.app.tick();
+        this.ngZone.runOutsideAngular(() => {
+            window.requestAnimationFrame(() => this.app.tick());
+        });
     }
 
     public calculateHeight(): void {

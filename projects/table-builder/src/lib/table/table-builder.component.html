@@ -1,5 +1,5 @@
 <div
-    *ngIf="source?.length"
+    *ngIf="source?.length && isFirstRendered"
     class="table-grid__root"
     [style.width]="width"
     [class.table-grid__with-vertical-line]="verticalBorder"

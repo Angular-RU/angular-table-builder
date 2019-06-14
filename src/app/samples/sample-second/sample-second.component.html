@@ -149,20 +149,15 @@
         <p>
             <b>Note</b>: If you use the keys array, then the columns will be drawn to agree with their order (including
             repetitions). If you do not use the keys array, then the columns will be drawn to agree with the specified
-            templates (ngx-column). <br>
-
-
+            templates (ngx-column). <br />
         </p>
     </div>
 
     <div class="column">
         <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
-            <ngx-column key="name" [sticky]="true">
-                <ng-template ngx-th>Name</ng-template>
-                <ng-template ngx-td let-name>{{ name }}</ng-template>
-            </ngx-column>
+            <ngx-column key="name" [sticky]="true"> </ngx-column>
 
-            <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['my-status']">
+            <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
                 <ng-template ngx-th></ng-template>
                 <ng-template ngx-td>
                     <button class="button__done" mat-button>
@@ -177,17 +172,13 @@
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
   &lt;ngx-table-builder [source]="data" [striped]="false" [keys]="columns">
-
-      &lt;ngx-column key="name" [sticky]="true">
-          &lt;ng-template ngx-th>Name&lt;/ng-template>
-          &lt;ng-template ngx-td let-name>&#123;&#123; name }}&lt;/ng-template>
-      &lt;/ngx-column>
+      &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
 
       &lt;ngx-column
           width="50"
           key="status"
           [sticky-end]="true"
-          [css-class]="['my-status']">
+          [css-class]="['status-column']">
 
           &lt;ng-template ngx-th>&lt;/ng-template>
           &lt;ng-template ngx-td>
