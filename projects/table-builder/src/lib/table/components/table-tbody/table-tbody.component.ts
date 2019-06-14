@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row.class';
-import { BUFFER_AMOUNT } from '../../config/table-builder.tokens';
 import { fadeAnimation } from '../../animations/fade.animation';
 import { ImplicitContext, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap } from '../../interfaces/table-builder.internal';
+import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
+import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 
 @Component({
     selector: 'table-tbody',
@@ -29,14 +30,14 @@ export class TableTbodyComponent extends TableLineRow {
     constructor(
         public selection: SelectionService,
         public cd: ChangeDetectorRef,
-        @Inject(BUFFER_AMOUNT) private readonly DEFAULT_BUFFER_AMOUNT: number,
+        @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService
     ) {
         super(templateParser);
     }
 
     public get clientBufferAmount(): number {
-        return Number(this.bufferAmount) || this.DEFAULT_BUFFER_AMOUNT;
+        return Number(this.bufferAmount) || this.options.bufferAmount;
     }
 
     public trackByIdx(index: number, item: TableRow): number {

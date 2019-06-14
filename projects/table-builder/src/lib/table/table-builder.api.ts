@@ -4,8 +4,8 @@ import { ColumnsSchema, TableRow } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
-import { TableBuilderConfig } from './config/table-builder.config';
 import { UtilsService } from './services/utils/utils.service';
+import { TableBuilderOptionsImpl } from './config/table-builder-options';
 
 export abstract class TableBuilderApiImpl {
     @Input() public height: number;
@@ -53,11 +53,11 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get columnVirtualHeight(): number {
-        return this.source.length * (this.clientRowHeight || TableBuilderConfig.ROW_HEIGHT);
+        return this.source.length * (this.clientRowHeight || TableBuilderOptionsImpl.ROW_HEIGHT);
     }
 
     public get columnHeight(): number {
-        const rowHeight: number = this.clientRowHeight || TableBuilderConfig.ROW_HEIGHT;
+        const rowHeight: number = this.clientRowHeight || TableBuilderOptionsImpl.ROW_HEIGHT;
         return this.source.length * rowHeight + rowHeight;
     }
 

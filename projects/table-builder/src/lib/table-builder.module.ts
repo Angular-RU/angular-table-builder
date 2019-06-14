@@ -1,11 +1,10 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { InViewportModule } from 'ng-in-viewport';
 import { CommonModule } from '@angular/common';
 
-import { BUFFER_AMOUNT, WHEEL_MAX_DELTA } from './table/config/table-builder.tokens';
+import { NGX_TABLE_OPTIONS } from './table/config/table-builder.tokens';
 import { TableBuilderComponent } from './table/table-builder.component';
-import { TableBuilderConfig } from './table/config/table-builder.config';
 import { WheelThrottlingDirective } from './table/directives/wheel.directive';
 import { TableTheadComponent } from './table/components/table-thead/table-thead.component';
 import { TableTbodyComponent } from './table/components/table-tbody/table-tbody.component';
@@ -16,6 +15,7 @@ import { TemplateHeadThDirective } from './table/directives/rows/template-head-t
 import { TemplateBodyTdDirective } from './table/directives/rows/template-body-td.directive';
 import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { UtilsService } from './table/services/utils/utils.service';
+import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -34,18 +34,26 @@ import { UtilsService } from './table/services/utils/utils.service';
     exports: [TableBuilderComponent, NgxColumnComponent, TemplateHeadThDirective, TemplateBodyTdDirective]
 })
 export class TableBuilderModule {
-    public static forRoot(options: Partial<TableBuilderOptions> = {}): ModuleWithProviders {
-        const config: TableBuilderOptions = TableBuilderModule.getConfig(options);
+    private static readonly ROOT_OPTIONS: InjectionToken<string> = new InjectionToken<string>('NGX_TABLE_OPTIONS');
+
+    public static forRoot(config: Partial<TableBuilderOptions> = {}): ModuleWithProviders {
         return {
             ngModule: TableBuilderModule,
             providers: [
-                { provide: BUFFER_AMOUNT, useValue: config.BUFFER_AMOUNT },
-                { provide: WHEEL_MAX_DELTA, useValue: config.WHEEL_MAX_DELTA }
+                {
+                    provide: TableBuilderModule.ROOT_OPTIONS,
+                    useValue: config
+                },
+                {
+                    provide: NGX_TABLE_OPTIONS,
+                    useFactory: TableBuilderModule.loggerConfigFactory,
+                    deps: [TableBuilderModule.ROOT_OPTIONS]
+                }
             ]
         };
     }
 
-    private static getConfig(options: Partial<TableBuilderOptions>): TableBuilderOptions {
-        return { ...new TableBuilderConfig(), ...options };
+    private static loggerConfigFactory(config: Partial<TableBuilderOptions>): TableBuilderOptions {
+        return Object.assign(new TableBuilderOptionsImpl(), config);
     }
 }

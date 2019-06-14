@@ -11,6 +11,7 @@ import { TableBuilderComponent } from '../../../table/table-builder.component';
 import { Any } from '../../../table/interfaces/table-builder.internal';
 import { ACTUAL_TEMPLATE } from './actual.template';
 import { UtilsService } from '../../../table/services/utils/utils.service';
+import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
 
 export interface PeriodicElement {
     name: string;
@@ -152,7 +153,6 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct generate table body', () => {
         const index: number = 0;
-        const DEFAULT_BUFFER_AMOUNT: number = 10;
         const item: TableRow = { id: 1, value: 'hello world' };
         table.primaryKey = 'id';
 
@@ -161,7 +161,7 @@ describe('[TEST]: TableBuilder', () => {
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             selection,
             mockChangeDetector as ChangeDetectorRef,
-            DEFAULT_BUFFER_AMOUNT,
+            new TableBuilderOptionsImpl(),
             null
         );
 

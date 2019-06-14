@@ -6,8 +6,8 @@ export interface TableRow<T = Any> {
 }
 
 export interface TableBuilderOptions {
-    BUFFER_AMOUNT: number;
-    WHEEL_MAX_DELTA: number;
+    bufferAmount: number;
+    wheelMaxDelta: number;
 }
 
 export enum ImplicitContext {

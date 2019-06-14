@@ -2,6 +2,7 @@ import { ElementRef, NgZone } from '@angular/core';
 
 import { WheelThrottlingDirective } from '../../table/directives/wheel.directive';
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
+import { TableBuilderOptionsImpl } from '../../table/config/table-builder-options';
 
 describe('[TEST]: Wheel throttling', () => {
     let directive: WheelThrottlingDirective;
@@ -32,7 +33,9 @@ describe('[TEST]: Wheel throttling', () => {
     };
 
     beforeEach(() => {
-        directive = new WheelThrottlingDirective(maxDeltaWheel, mockElementRef, mockNgZone as NgZone);
+        const options: TableBuilderOptionsImpl = new TableBuilderOptionsImpl();
+        options.wheelMaxDelta = maxDeltaWheel;
+        directive = new WheelThrottlingDirective(options, mockElementRef, mockNgZone as NgZone);
         preventDefaulted = 0;
     });
 
