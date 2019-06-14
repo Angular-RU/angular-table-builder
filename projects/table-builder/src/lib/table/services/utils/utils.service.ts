@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
+
 import { TableRow } from '../../interfaces/table-builder.external';
 import { Any } from '../../interfaces/table-builder.internal';
+import { UtilsInterface } from './utils.interface';
 
 @Injectable()
-export class UtilsService {
+export class UtilsService implements UtilsInterface {
     public flattenKeysByRow(row: TableRow, parentKey: string = null, keys: string[] = []): string[] {
         for (const key in row) {
             if (!row.hasOwnProperty(key)) {
@@ -22,5 +24,10 @@ export class UtilsService {
         }
 
         return keys;
+    }
+
+    public checkValueIsEmpty(value: Any): boolean {
+        const val: string = typeof value === 'string' ? value.trim() : value;
+        return [undefined, null, NaN, '', 'null', Infinity].includes(val);
     }
 }

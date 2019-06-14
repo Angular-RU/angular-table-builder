@@ -16,6 +16,7 @@ import { TemplateBodyTdDirective } from './table/directives/rows/template-body-t
 import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
+import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -28,7 +29,8 @@ import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
         NgxColumnComponent,
         TemplateHeadThDirective,
         TemplateBodyTdDirective,
-        DeepPathPipe
+        DeepPathPipe,
+        DefaultValuePipe
     ],
     providers: [UtilsService],
     exports: [TableBuilderComponent, NgxColumnComponent, TemplateHeadThDirective, TemplateBodyTdDirective]

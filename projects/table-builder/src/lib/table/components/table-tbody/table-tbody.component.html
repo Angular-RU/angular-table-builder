@@ -2,15 +2,16 @@
     #scroll
     [items]="source"
     [@fadeAnimation]="'in'"
-    [scrollAnimationTime]="500"
+    [checkResizeInterval]="0"
+    [scrollAnimationTime]="1000"
     [parentScroll]="tableViewport"
-    [executeRefreshOutsideAngularZone]="true"
     [bufferAmount]="clientBufferAmount"
-    [style.height.px]="columnVirtualHeight"
+    [executeRefreshOutsideAngularZone]="true"
     [useMarginInsteadOfTranslate]="true"
     [resizeBypassRefreshThreshold]="0"
     [enableUnequalChildrenSizes]="true"
     [modifyOverflowStyleOfParentScroll]="false"
+    [style.height.px]="columnVirtualHeight"
     (vsChange)="cd.detectChanges()"
 >
     <div
@@ -37,14 +38,14 @@
                     columnsSchema[key]?.td.context === contextType.CELL
                         ? columnsSchema[key]?.td.useDeepPath
                             ? (item | deepPath: key)
-                            : item[key]
+                            : (item[key] | defaultValue)
                         : item
             }"
             [ngIfElse]="defaultTd"
         >
         </ng-template>
         <ng-template #defaultTd>
-            {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : item[key] }}
+            {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
         </ng-template>
     </div>
 </virtual-scroller>

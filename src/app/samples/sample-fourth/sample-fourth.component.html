@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Deep model</span>
+    <span>Special cases in the model</span>
 </mat-toolbar>
 
 <div class="column-samples">
@@ -63,9 +63,62 @@
         </ngx-table-builder>
 
         <p>
-            <b>Note</b>: If you want to override the template body of the table, you just use only ng-template with
+            <strong>Note</strong>: If you want to override the template body of the table, you just use only ng-template with
             ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the template in
             the order in which you want to display your columns.
+        </p>
+    </div>
+</div>
+
+<div class="column-samples">
+    <div class="column">
+        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys">
+            <ngx-column key="date">
+                <ng-template ngx-td let-date>
+                    {{ (date | date: 'dd.MM.yyyy HH:mm') || 'x' }}
+                </ng-template>
+            </ngx-column>
+        </ngx-table-builder>
+        <br />
+
+        <pre><code class="javascript" ngNonBindable>
+   &lt;!-- app.component.html -->
+
+   &lt;ngx-table-builder [keys]="keys" [source]="elements" [auto-width]="true">
+     &lt;ngx-column key="date">
+        &lt;ng-template ngx-td let-date>
+          &#123;&#123; (date | date: 'dd.MM.yyyy HH:mm') || 'x' }}
+        &lt;/ng-template>
+     &lt;/ngx-column>
+   &lt;/ngx-table-builder>
+
+        </code></pre>
+    </div>
+    <div class="column">
+        <pre><code class="javascript" ngNonBindable>
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+  import &#123; Elements } from "./elements.interface";
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html' 
+  })
+  export class AppComponent &#123;
+    public keys: string[] = ['position', 'name', 'date', 'symbol'];
+    public elements: Elements[] = [
+      &#123; position: null, name: 'Hydrogen', date: NaN, symbol: 'H' },
+      &#123; position: 2, name: '', date: new Date(), symbol: undefined },
+      &#123; position: 3, name: 'Lithium', date: Infinity, symbol: 'Li' },
+      &#123; position: 4, name: 'Beryllium', date: 0, symbol: '    ' }
+    ];
+  }
+
+</code></pre>
+
+        <p>
+            <strong>Note</strong>: By default, if the cell value is invalid, then the default separator is used. You can
+            override or disable it in the module settings.
         </p>
     </div>
 </div>

@@ -3,7 +3,6 @@
 .table-grid {
     &__column {
         width: 100%;
-        min-width: $cellWidth;
         box-sizing: border-box;
         z-index: 1;
 
@@ -25,6 +24,10 @@
 
         &--selected-all {
             background: $selectionColor;
+        }
+
+        &--default-width {
+            min-width: $cellWidth;
         }
     }
 }

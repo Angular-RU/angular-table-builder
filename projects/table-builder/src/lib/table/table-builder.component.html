@@ -29,6 +29,7 @@
             [class.table-grid__column--sticky-right]="columnsSchema[key]?.stickyRight"
             [class.table-grid__column--is-visible]="column['visible']"
             [class.table-grid__column--is-invisible]="!column['visible']"
+            [class.table-grid__column--default-width]="!autoWidth"
             (inViewportAction)="inViewportAction(column, $event)"
         >
             <table-thead
