@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row.class';
-import { fadeAnimation } from '../../animations/fade.animation';
+import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { TemplateParserService } from '../../services/template-parser/template-p
     templateUrl: './table-thead.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
-    animations: [fadeAnimation]
+    animations: [NGX_ANIMATION]
 })
 export class TableTheadComponent extends TableLineRow {
     constructor(protected templateParser: TemplateParserService) {

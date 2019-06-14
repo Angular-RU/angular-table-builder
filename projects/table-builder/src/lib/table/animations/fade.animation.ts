@@ -2,7 +2,7 @@ import { animate, AnimationTriggerMetadata, state, style, transition, trigger } 
 
 const DEFAULT_TIME_ANIMATION: number = 200;
 
-export const fadeAnimation: AnimationTriggerMetadata = trigger('fadeAnimation', [
+export const NGX_ANIMATION: AnimationTriggerMetadata = trigger('fadeAnimation', [
     // the "in" style determines the "resting" state of the element when it is visible.
     state('in', style({ opacity: 1 })),
 

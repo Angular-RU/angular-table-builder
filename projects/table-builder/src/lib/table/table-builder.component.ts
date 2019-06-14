@@ -12,7 +12,7 @@ import {
 
 import { ColumnTemplates, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
-import { fadeAnimation } from './animations/fade.animation';
+import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
@@ -27,7 +27,7 @@ import { UtilsService } from './services/utils/utils.service';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TemplateParserService, SortableService, SelectionService],
-    animations: [fadeAnimation]
+    animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
     @ContentChildren(NgxColumnComponent) public columnTemplates: ColumnTemplates = [];
