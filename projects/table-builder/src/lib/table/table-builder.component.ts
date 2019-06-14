@@ -18,6 +18,7 @@ import { NgxColumnComponent } from './components/ngx-column/ngx-column.component
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
+import { UtilsService } from './services/utils/utils.service';
 
 @Component({
     selector: 'ngx-table-builder',
@@ -38,7 +39,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         public readonly selection: SelectionService,
         protected readonly templateParser: TemplateParserService,
         protected readonly cd: ChangeDetectorRef,
-        protected readonly ngZone: NgZone
+        protected readonly ngZone: NgZone,
+        protected readonly utils: UtilsService
     ) {
         super();
     }

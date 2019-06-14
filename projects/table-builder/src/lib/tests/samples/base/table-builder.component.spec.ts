@@ -10,6 +10,7 @@ import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-col
 import { TableBuilderComponent } from '../../../table/table-builder.component';
 import { Any } from '../../../table/interfaces/table-builder.internal';
 import { ACTUAL_TEMPLATE } from './actual.template';
+import { UtilsService } from '../../../table/services/utils/utils.service';
 
 export interface PeriodicElement {
     name: string;
@@ -65,7 +66,8 @@ describe('[TEST]: TableBuilder', () => {
             selection,
             templateParser,
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone
+            mockNgZone as NgZone,
+            new UtilsService()
         );
         table.async = false;
     });

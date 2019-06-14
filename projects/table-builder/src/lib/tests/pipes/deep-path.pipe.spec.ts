@@ -2,8 +2,12 @@ import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Deep path pipe', () => {
+    let pipe: DeepPathPipe;
+
+    beforeEach(() => (pipe = new DeepPathPipe()));
+
     it('should be correct extract', () => {
-        const b: KeyMap = new DeepPathPipe().transform(
+        const b: KeyMap = pipe.transform(
             {
                 a: {
                     b: {
@@ -18,7 +22,7 @@ describe('[TEST]: Deep path pipe', () => {
             c: 1
         });
 
-        const c: number = new DeepPathPipe().transform(
+        const c: number = pipe.transform(
             {
                 a: {
                     b: {
@@ -33,7 +37,24 @@ describe('[TEST]: Deep path pipe', () => {
     });
 
     it('should be correct return object when set empty path', () => {
-        const result: KeyMap = new DeepPathPipe().transform({ a: { b: 1 } }, '');
+        const result: KeyMap = pipe.transform({ a: { b: 1 } }, '');
         expect(result).toEqual({ a: { b: 1 } });
+    });
+
+    it('should be correct create cache and invalidate', () => {
+        const a: KeyMap = { a: { b: 1 } };
+        const b: KeyMap = { a: { b: 2 } };
+
+        expect(pipe.refCount).toEqual(0);
+        expect(pipe.transform(a, 'a.b')).toEqual(1);
+        expect(pipe.transform(a, 'a.b')).toEqual(1);
+        expect(pipe.transform(a, 'a.b')).toEqual(1);
+        expect(pipe.refCount).toEqual(1);
+        expect(pipe.transform(b, 'a.b')).toEqual(2);
+        expect(pipe.transform(b, 'a.b')).toEqual(2);
+        expect(pipe.refCount).toEqual(2);
+        expect(pipe.transform(b, 'a')).toEqual({ b: 2 });
+        expect(pipe.transform(b, 'a')).toEqual({ b: 2 });
+        expect(pipe.refCount).toEqual(3);
     });
 });

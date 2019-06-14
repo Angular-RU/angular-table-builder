@@ -5,6 +5,7 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
 import { TableBuilderConfig } from './config/table-builder.config';
+import { UtilsService } from './services/utils/utils.service';
 
 export abstract class TableBuilderApiImpl {
     @Input() public height: number;
@@ -25,6 +26,7 @@ export abstract class TableBuilderApiImpl {
     @Input('buffer-amount') public bufferAmount: number = null;
     protected abstract templateParser: TemplateParserService;
     protected abstract selection: SelectionService;
+    protected abstract utils: UtilsService;
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;
@@ -60,7 +62,7 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get modelColumnKeys(): string[] {
-        return this.excluding(Object.keys(this.rowKeyValue));
+        return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
     }
 
     public get customModelColumnsKeys(): string[] {

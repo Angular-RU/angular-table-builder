@@ -3,7 +3,6 @@ import { Any, KeyMap } from '../../interfaces/table-builder.internal';
 
 export abstract class TemplateCellCommon {
     public type: string = null;
-    public useDeepPath: boolean = null;
     @Input() public row: boolean = null;
     @Input() public bold: boolean = null;
     @Input() public nowrap: boolean = true;

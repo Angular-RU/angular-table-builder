@@ -5,20 +5,22 @@ import { ImplicitContext, TableCellOptions, TableSchema } from '../../interfaces
 import { ColumnTemplates, KeyMap } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
+import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
+import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
 
 @Injectable()
 export class TemplateParserService {
     public schema: TableSchema = new SchemaBuilder();
     public renderedTemplateKeys: string[] = [];
 
-    private static getCellTemplateContext(cellTemplate: TemplateCellCommon): TableCellOptions {
+    private static getCellTemplateContext(key: string, cellTemplate: TemplateCellCommon): TableCellOptions {
         return {
             textBold: cellTemplate.bold,
             nowrap: cellTemplate.nowrap,
             template: cellTemplate.template,
             class: cellTemplate.cssClasses,
             style: cellTemplate.cssStyles,
-            useDeepPath: cellTemplate.useDeepPath,
+            useDeepPath: key.includes('.'),
             context: cellTemplate.row ? ImplicitContext.ROW : ImplicitContext.CELL,
             width: cellTemplate.width,
             height: cellTemplate.height
@@ -47,8 +49,8 @@ export class TemplateParserService {
     public compileColumnMetadata(column: NgxColumnComponent): void {
         const { key, th, td }: NgxColumnComponent = column;
         this.schema.columns[key] = {
-            th: TemplateParserService.getCellTemplateContext(th),
-            td: TemplateParserService.getCellTemplateContext(td),
+            th: TemplateParserService.getCellTemplateContext(key, th || new TemplateHeadThDirective(null)),
+            td: TemplateParserService.getCellTemplateContext(key, td || new TemplateBodyTdDirective(null)),
             width: column.width || null,
             stickyLeft: column.stickyLeft || null,
             stickyRight: column.stickyRight || null,

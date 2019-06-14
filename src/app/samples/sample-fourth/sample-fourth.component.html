@@ -1,0 +1,71 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Deep model</span>
+</mat-toolbar>
+
+<div class="column-samples">
+    <div class="column">
+        <pre><code class="javascript">
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+  import &#123; Pizza } from "./pizza.interface";
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html'
+  })
+  export class AppComponent &#123;
+    public keys: string[] = ['prices.small', 'prices.medium', 'prices.large'];
+
+    public pizzas: Pizza[] = [
+        &#123;
+            toppings: ['tomato sauce', 'mozzarella cheese'],
+            prices: &#123;
+              small: '5.00',
+              medium: '6.00',
+              large: '7.00'
+            }
+        },
+        &#123;
+            toppings: ['tomato sauce', 'mozzarella cheese', 'ham'],
+            prices: &#123;
+              small: '6.50',
+              medium: '7.50',
+              large: '8.50'
+            }
+        }
+    ];
+  }
+
+</code></pre>
+    </div>
+    <div class="column">
+        <pre><code class="javascript" ngNonBindable>
+  &lt;!-- app.component.html -->
+
+  &lt;ngx-table-builder [source]="data">
+    &lt;ngx-column key="toppings">&lt;/ngx-column>
+
+    &lt;ngx-column width="150" [key]="key" *ngFor="let key of keys">
+      &lt;ng-template ngx-td let-cell>
+          &#123;&#123; cell | currency &#125;&#125;
+      &lt;/ng-template>
+    &lt;/ngx-column>
+  &lt;/ngx-table-builder>
+
+</code></pre>
+
+        <ngx-table-builder [source]="data">
+            <ngx-column key="toppings"></ngx-column>
+
+            <ngx-column *ngFor="let key of ['prices.small', 'prices.medium', 'prices.large']" [key]="key" width="150">
+                <ng-template ngx-td let-cell>{{ cell | currency }}</ng-template>
+            </ngx-column>
+        </ngx-table-builder>
+
+        <p>
+            <b>Note</b>: If you want to override the template body of the table, you just use only ng-template with
+            ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the template in
+            the order in which you want to display your columns.
+        </p>
+    </div>
+</div>

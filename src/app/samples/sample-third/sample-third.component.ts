@@ -6,7 +6,7 @@ import { FakeGenerator } from '../../shared/fake-generator.class';
 declare const hljs: Any;
 
 @Component({
-    selector: 'sample-second',
+    selector: 'sample-third',
     templateUrl: './sample-third.component.html',
     styles: [
         `

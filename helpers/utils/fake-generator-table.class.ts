@@ -15,13 +15,13 @@ export class FakeGeneratorTable {
         return column;
     }
 
-    public static generateCell(textBold: boolean = null): TableCellOptions {
+    public static generateCell(textBold: boolean = null, useDeepPath: boolean = false): TableCellOptions {
         return {
             template: null,
             context: ImplicitContext.CELL,
             nowrap: true,
             textBold,
-            useDeepPath: null,
+            useDeepPath,
             style: null,
             class: null,
             height: null,

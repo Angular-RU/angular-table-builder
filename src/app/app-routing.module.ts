@@ -40,6 +40,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                                 import('./samples/sample-third/sample-third.module').then(
                                     (module: Any) => module.SampleThirdModule
                                 )
+                        },
+                        {
+                            path: 'fourth',
+                            loadChildren: (): Promise<unknown> =>
+                                import('./samples/sample-fourth/sample-fourth.module').then(
+                                    (module: Any) => module.SampleFourthModule
+                                )
                         }
                     ]
                 }
