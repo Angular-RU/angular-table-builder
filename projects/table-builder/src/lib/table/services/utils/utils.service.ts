@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableRow } from '../../interfaces/table-builder.external';
 import { Any } from '../../interfaces/table-builder.internal';
 
 @Injectable()
