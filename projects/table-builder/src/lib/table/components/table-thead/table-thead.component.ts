@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
 import { TableLineRow } from '../common/table-line-row.class';
 import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
+import { SelectionService } from '../../services/selection/selection.service';
 
 @Component({
     selector: 'table-thead',
@@ -12,7 +13,7 @@ import { TemplateParserService } from '../../services/template-parser/template-p
     animations: [NGX_ANIMATION]
 })
 export class TableTheadComponent extends TableLineRow {
-    constructor(protected templateParser: TemplateParserService) {
-        super(templateParser);
+    constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {
+        super(templateParser, selection);
     }
 }

@@ -45,8 +45,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         super();
     }
 
-    public get selectionMap(): KeyMap<boolean> {
-        return this.selection.selectionModel.map;
+    public get selectionEntries(): KeyMap<boolean> {
+        return this.selection.selectionModel.entries;
     }
 
     public ngOnChanges(): void {

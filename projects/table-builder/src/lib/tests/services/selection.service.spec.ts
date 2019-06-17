@@ -78,7 +78,8 @@ describe('[TEST]: Selection service', () => {
             data
         );
 
-        expect(selection.selectionModel).toEqual({ map: {}, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({});
+        expect(selection.selectionModel.isAll).toEqual(false);
         expect(selection.range).toEqual({ start: 2, end: null });
         expect(selection.range.selectedRange()).toEqual(false);
 
@@ -91,7 +92,8 @@ describe('[TEST]: Selection service', () => {
             data
         );
 
-        expect(selection.selectionModel).toEqual({ map: { 1: true, 2: true, 3: true }, isAll: true });
+        expect(selection.selectionModel.entries).toEqual({ 1: true, 2: true, 3: true });
+        expect(selection.selectionModel.isAll).toEqual(true);
         expect(selection.range).toEqual({ start: 0, end: 2 });
         expect(selection.range.selectedRange()).toEqual(true);
     });
@@ -111,7 +113,8 @@ describe('[TEST]: Selection service', () => {
             data
         );
 
-        expect(selection.selectionModel).toEqual({ map: { 3: true }, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({ 3: true });
+        expect(selection.selectionModel.isAll).toEqual(false);
         expect(selection.range).toEqual({ start: 2, end: null });
         expect(selection.range.selectedRange()).toEqual(false);
 
@@ -124,7 +127,8 @@ describe('[TEST]: Selection service', () => {
             data
         );
 
-        expect(selection.selectionModel).toEqual({ map: { 1: true, 3: true }, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({ 1: true, 3: true });
+        expect(selection.selectionModel.isAll).toEqual(false);
         expect(selection.range).toEqual({ start: 0, end: null });
         expect(selection.range.selectedRange()).toEqual(false);
     });
@@ -137,13 +141,15 @@ describe('[TEST]: Selection service', () => {
 
         selection.selectRow(data[lastIndex], mockPreventDefault as MouseEvent, data);
 
-        expect(selection.selectionModel).toEqual({ map: { 3: true }, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({ 3: true });
+        expect(selection.selectionModel.isAll).toEqual(false);
         expect(selection.range).toEqual({ start: 2, end: null });
         expect(selection.range.selectedRange()).toEqual(false);
 
         selection.selectRow(data[firstIndex], mockPreventDefault as MouseEvent, data);
 
-        expect(selection.selectionModel).toEqual({ map: { 1: true }, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({ 1: true });
+        expect(selection.selectionModel.isAll).toEqual(false);
         expect(selection.range).toEqual({ start: 0, end: null });
         expect(selection.range.selectedRange()).toEqual(false);
     });
@@ -171,16 +177,20 @@ describe('[TEST]: Selection service', () => {
         selection.primaryKey = 'position';
 
         selection.toggle(data[0]);
-        expect(selection.selectionModel).toEqual({ map: { 1: true }, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({ 1: true });
+        expect(selection.selectionModel.isAll).toEqual(false);
 
         selection.selectionModel.clear();
-        expect(selection.selectionModel).toEqual({ map: {}, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({});
+        expect(selection.selectionModel.isAll).toEqual(false);
 
         selection.toggleAll(data);
-        expect(selection.selectionModel).toEqual({ map: { 1: true, 2: true, 3: true }, isAll: true });
+        expect(selection.selectionModel.entries).toEqual({ 1: true, 2: true, 3: true });
+        expect(selection.selectionModel.isAll).toEqual(true);
 
         selection.toggleAll(data);
-        expect(selection.selectionModel).toEqual({ map: {}, isAll: false });
+        expect(selection.selectionModel.entries).toEqual({});
+        expect(selection.selectionModel.isAll).toEqual(false);
     });
 
     it('should be correct toggle', () => {
@@ -188,14 +198,14 @@ describe('[TEST]: Selection service', () => {
         const id: RowId = 5;
 
         expect(selectionMap.hasValue()).toEqual(false);
-        selectionMap.select(id);
+        selectionMap.select(id, true);
 
         expect(selectionMap.hasValue()).toEqual(true);
 
-        selectionMap.toggle(id);
-        expect(selectionMap.map).toEqual({});
+        selectionMap.toggle(id, true);
+        expect(selectionMap.entries).toEqual({});
 
-        selectionMap.toggle(id);
-        expect(selectionMap.map).toEqual({ 5: true });
+        selectionMap.toggle(id, true);
+        expect(selectionMap.entries).toEqual({ 5: true });
     });
 });

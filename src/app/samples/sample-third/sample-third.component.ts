@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableCellInfo, TableRow } from '@angular-ru/table-builder';
 import { FakeGenerator } from '../../shared/fake-generator.class';
 
 declare const hljs: Any;
@@ -28,6 +28,11 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
+    }
+
+    public handleCell(cellInfo: TableCellInfo): void {
+        // tslint:disable-next-line:no-console
+        console.log('Cell Info', cellInfo);
     }
 
     public showSample(): void {}

@@ -5,10 +5,10 @@ import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
 import { SelectionService } from '../../../table/services/selection/selection.service';
-import { TableRow } from '../../../table/interfaces/table-builder.external';
+import { TableCellInfo, TableRow } from '../../../table/interfaces/table-builder.external';
 import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-column.component';
 import { TableBuilderComponent } from '../../../table/table-builder.component';
-import { Any } from '../../../table/interfaces/table-builder.internal';
+import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { ACTUAL_TEMPLATE } from './actual.template';
 import { UtilsService } from '../../../table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
@@ -41,6 +41,7 @@ describe('[TEST]: TableBuilder', () => {
     let selection: SelectionService;
     let templateParser: TemplateParserService;
     let preventDefaultInvoked: number = 0;
+    let clearIntervalInvoked: number = 0;
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
     };
@@ -48,13 +49,23 @@ describe('[TEST]: TableBuilder', () => {
         tick: (): void => {}
     };
     const mockNgZone: Partial<NgZone> = {
-        runOutsideAngular: (): Any => {}
+        runOutsideAngular: (callback: Fn): Any => callback()
     };
     const mockPreventDefault: Partial<MouseEvent> = {
         preventDefault: (): void => {
             preventDefaultInvoked++;
         }
     };
+
+    Object.defineProperty(window, 'setTimeout', {
+        value: (callback: Fn): Any => callback()
+    });
+
+    Object.defineProperty(window, 'clearInterval', {
+        value: (): Any => {
+            clearIntervalInvoked++;
+        }
+    });
 
     let position: NgxColumnComponent;
     let name: NgxColumnComponent;
@@ -162,7 +173,8 @@ describe('[TEST]: TableBuilder', () => {
             selection,
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
-            null
+            null,
+            mockNgZone as NgZone
         );
 
         tableBody.source = [item];
@@ -174,9 +186,20 @@ describe('[TEST]: TableBuilder', () => {
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
         tableBody.enableSelection = true;
-        tableBody.handleRow(item, mockPreventDefault as MouseEvent);
+        tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, null);
 
-        expect(table.selectionModel).toEqual({ map: { 1: true }, isAll: true });
+        expect(table.selectionModel.entries).toEqual({ 1: true });
+        expect(table.selectionModel.isAll).toEqual(true);
+
+        const info: TableCellInfo = tableBody.generateTableCellInfo(item, mockPreventDefault as MouseEvent);
+        expect(info).toEqual({
+            ...info,
+            row: { id: 1, value: 'hello world' },
+            event: mockPreventDefault
+        });
+
+        info.preventDefault();
+        expect(clearIntervalInvoked).toEqual(1);
     });
 
     it('should be correct selected items', () => {

@@ -29,3 +29,5 @@ export type ColumnTemplates = QueryList<NgxColumnComponent> | NgxColumnComponent
 export interface SelectionStatus {
     status: boolean;
 }
+
+export type TableEvent = Event | MouseEvent | KeyboardEvent;

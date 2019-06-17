@@ -16,7 +16,7 @@
 >
     <div
         class="table-grid__cell"
-        (click)="handleRow(item, $event)"
+        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.click)"
         (selectstart)="(canSelectTextInTable)"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
         [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
@@ -24,7 +24,7 @@
         [style.line-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         [class.table-grid__cell--strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
         [class.table-grid__cell--enable-selection]="enableSelection"
-        [class.table-grid__cell--selected]="selectionMap[item[primaryKey]]"
+        [class.table-grid__cell--selected]="selectionEntries[item[primaryKey]]"
         [class.table-grid__cell--text-bold]="columnsSchema[key]?.td.textBold"
         [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
         [ngClass]="columnsSchema[key]?.td.class"

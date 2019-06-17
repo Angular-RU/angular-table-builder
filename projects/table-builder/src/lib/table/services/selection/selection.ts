@@ -1,36 +1,59 @@
 import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
 
 export class SelectionMap {
-    public map: KeyMap<boolean> = {};
     public isAll: boolean = false;
+    public entries: KeyMap<boolean> = {};
+    private map: Map<RowId, boolean> = new Map<RowId, boolean>();
 
-    public get length(): number {
-        return Object.keys(this.map).length;
+    public get size(): number {
+        return this.map.size;
+    }
+
+    public generateImmutableEntries(): void {
+        this.entries = Array.from(this.map.entries()).reduce(
+            (main: KeyMap<boolean>, [key, value]: [RowId, boolean]) => ({ ...main, [key]: value }),
+            {}
+        );
     }
 
     public hasValue(): boolean {
-        return this.length > 0;
+        return this.size > 0;
     }
 
-    public select(key: RowId): void {
-        this.map[key] = true;
-        this.map = { ...this.map };
+    public get(key: RowId): boolean {
+        return this.map.get(key);
     }
 
-    public toggle(key: string | number): void {
+    public select(key: RowId, emit: boolean): void {
+        this.map.set(key, true);
+
+        if (emit) {
+            this.generateImmutableEntries();
+        }
+    }
+
+    public toggle(key: string | number, emit: boolean): void {
         if (this.has(key)) {
-            delete this.map[key];
+            this.delete(key, emit);
         } else {
-            this.select(key);
+            this.select(key, emit);
+        }
+    }
+
+    public delete(key: RowId, emit: boolean): void {
+        this.map.delete(key);
+        if (emit) {
+            this.generateImmutableEntries();
         }
     }
 
     public has(key: RowId): boolean {
-        return this.map[key];
+        return this.map.has(key);
     }
 
     public clear(): void {
-        this.map = {};
+        this.map.clear();
+        this.generateImmutableEntries();
         this.isAll = false;
     }
 }

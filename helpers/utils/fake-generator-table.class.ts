@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import {
     ImplicitContext,
     TableCellOptions
@@ -25,7 +26,8 @@ export class FakeGeneratorTable {
             style: null,
             class: null,
             height: null,
-            width: null
+            width: null,
+            click: new EventEmitter<TableCellOptions>()
         };
     }
 }

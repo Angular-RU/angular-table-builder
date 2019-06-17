@@ -23,7 +23,8 @@ export class TemplateParserService {
             useDeepPath: key.includes('.'),
             context: cellTemplate.row ? ImplicitContext.ROW : ImplicitContext.CELL,
             width: cellTemplate.width,
-            height: cellTemplate.height
+            height: cellTemplate.height,
+            click: cellTemplate.onClick
         };
     }
 

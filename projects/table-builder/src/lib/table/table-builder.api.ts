@@ -33,7 +33,7 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get selectedItems(): TableRow[] {
-        return this.source.filter((item: TableRow[]) => this.selectionModel.map[item[this.primaryKey]]);
+        return this.source.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
     }
 
     public get rowKeyValue(): TableRow {

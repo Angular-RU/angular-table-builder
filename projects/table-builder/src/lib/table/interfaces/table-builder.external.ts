@@ -1,5 +1,5 @@
-import { TemplateRef } from '@angular/core';
-import { Any, KeyMap } from './table-builder.internal';
+import { EventEmitter, TemplateRef } from '@angular/core';
+import { Any, KeyMap, TableEvent } from './table-builder.internal';
 
 export interface TableRow<T = Any> {
     [key: string]: T;
@@ -26,6 +26,7 @@ export interface TableCellOptions<T = Any> {
     style: KeyMap<Any>;
     width: number;
     height: number;
+    click: EventEmitter<Any>;
 }
 
 export interface ColumnsSchema<T = Any> {
@@ -44,4 +45,10 @@ export interface TableColumn<T = Any> {
 
 export interface TableSchema<T = unknown> {
     columns: ColumnsSchema;
+}
+
+export interface TableCellInfo {
+    row: TableRow;
+    event: TableEvent;
+    preventDefault: () => void;
 }
