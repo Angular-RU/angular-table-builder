@@ -12,7 +12,10 @@ export class DeepPathPipe implements PipeTransform {
     private lastReference: KeyMap = null;
     private lastPath: string = null;
 
-    constructor(@Inject(NGX_TABLE_OPTIONS) private options: TableBuilderOptionsImpl, private utils: UtilsService) {}
+    constructor(
+        @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
+        private readonly utils: UtilsService
+    ) {}
 
     public transform(object: KeyMap, path: string): Any {
         const isInvalidCache: boolean = !this.value || this.lastReference !== object || this.lastPath !== path;

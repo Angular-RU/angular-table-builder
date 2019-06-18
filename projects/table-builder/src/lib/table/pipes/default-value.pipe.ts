@@ -6,7 +6,11 @@ import { UtilsService } from '../services/utils/utils.service';
 
 @Pipe({ name: 'defaultValue' })
 export class DefaultValuePipe implements PipeTransform {
-    constructor(@Inject(NGX_TABLE_OPTIONS) private options: TableBuilderOptionsImpl, private utils: UtilsService) {}
+    constructor(
+        @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
+        private readonly utils: UtilsService
+    ) {}
+
     public transform(value: Any): Any | string {
         const separator: string = this.options.defaultValueSeparator;
         let result: Any = value;

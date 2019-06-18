@@ -26,7 +26,7 @@ import { KeyMap } from '../../interfaces/table-builder.internal';
     animations: [NGX_ANIMATION]
 })
 export class TableTbodyComponent extends TableLineRow {
-    private static TIME_IDLE: number = 100;
+    private static readonly TIME_IDLE: number = 100;
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
     @Input('primary-key') public primaryKey: string;
@@ -42,7 +42,7 @@ export class TableTbodyComponent extends TableLineRow {
         public cd: ChangeDetectorRef,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService,
-        private ngZone: NgZone
+        private readonly ngZone: NgZone
     ) {
         super(templateParser, selection);
     }

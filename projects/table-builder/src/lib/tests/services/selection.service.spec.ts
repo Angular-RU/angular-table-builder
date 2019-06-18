@@ -4,6 +4,7 @@ import { SelectionService } from '../../table/services/selection/selection.servi
 import { TableRow } from '../../table/interfaces/table-builder.external';
 import { SelectionMap } from '../../table/services/selection/selection';
 
+// tslint:disable-next-line
 describe('[TEST]: Selection service', () => {
     const appRef: Partial<ApplicationRef> = {
         tick: (): void => {}

@@ -3,7 +3,7 @@ import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
 export class SelectionMap {
     public isAll: boolean = false;
     public entries: KeyMap<boolean> = {};
-    private map: Map<RowId, boolean> = new Map<RowId, boolean>();
+    private readonly map: Map<RowId, boolean> = new Map<RowId, boolean>();
 
     public get size(): number {
         return this.map.size;
