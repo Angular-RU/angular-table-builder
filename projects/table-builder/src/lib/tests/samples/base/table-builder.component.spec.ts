@@ -1,5 +1,5 @@
 /* tslint:disable:no-big-function */
-import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone } from '@angular/core';
 import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
 
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
@@ -35,6 +35,7 @@ const data: PeriodicElement[] = [
 
 const modelKeys: string[] = ['position', 'name', 'weight', 'symbol'];
 const customKeys: string[] = ['position', 'name', 'symbol', 'position', 'name'];
+const item: TableRow = { id: 1, value: 'hello world' };
 
 describe('[TEST]: TableBuilder', () => {
     let table: TableBuilderComponent;
@@ -81,7 +82,6 @@ describe('[TEST]: TableBuilder', () => {
             mockNgZone as NgZone,
             new UtilsService()
         );
-        table.async = false;
     });
 
     beforeEach(() => {
@@ -117,6 +117,7 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct displayedColumns when set custom keys', () => {
         table.keys = customKeys;
+        table.ngOnChanges();
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(customKeys);
     });
@@ -124,6 +125,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct displayedColumns when set custom keys and exclude keys', () => {
         table.keys = customKeys;
         table.excludeKeys = ['position'];
+        table.ngOnChanges();
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['name', 'symbol', 'name']);
     });
@@ -135,8 +137,10 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct sync render', () => {
         table.columnTemplates = [position, name, weight];
+        table.ngOnChanges();
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight']);
+        expect(table.isRendered).toEqual(true);
     });
 
     it('should be correct clientWidth when set autoWidth=true', () => {
@@ -164,7 +168,7 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct generate table body', () => {
         const index: number = 0;
-        const item: TableRow = { id: 1, value: 'hello world' };
+
         table.primaryKey = 'id';
 
         table.ngOnInit();
@@ -194,12 +198,24 @@ describe('[TEST]: TableBuilder', () => {
         const info: TableCellInfo = tableBody.generateTableCellInfo(item, mockPreventDefault as MouseEvent);
         expect(info).toEqual({
             ...info,
-            row: { id: 1, value: 'hello world' },
+            row: item,
             event: mockPreventDefault
         });
 
         info.preventDefault();
         expect(clearIntervalInvoked).toEqual(1);
+
+        const emitter: Partial<EventEmitter<TableCellInfo>> = {
+            emit(value?: TableCellInfo): void {
+                expect(value).toEqual({
+                    ...value,
+                    row: item,
+                    event: mockPreventDefault
+                });
+            }
+        };
+
+        tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, emitter as EventEmitter<TableCellInfo>);
     });
 
     it('should be correct selected items', () => {
@@ -214,6 +230,30 @@ describe('[TEST]: TableBuilder', () => {
             { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
             { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
             { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
+        ]);
+    });
+
+    it('should be correct lazy rendering', () => {
+        table.source = [{ a1: 1, a2: 2, a3: 3, a4: 4, a5: 5, a6: 6, a7: 7, a8: 8, a9: 9, a10: 10, a11: 11, a12: 12 }];
+        expect(table.isRendered).toEqual(false);
+
+        table.ngOnChanges();
+        table.ngAfterContentInit();
+
+        expect(table.isRendered).toEqual(true);
+        expect(table.displayedColumns).toEqual([
+            'a1',
+            'a2',
+            'a3',
+            'a4',
+            'a5',
+            'a6',
+            'a7',
+            'a8',
+            'a9',
+            'a10',
+            'a11',
+            'a12'
         ]);
     });
 });

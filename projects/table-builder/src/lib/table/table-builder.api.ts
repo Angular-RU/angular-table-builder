@@ -1,4 +1,4 @@
-import { Input } from '@angular/core';
+import { EventEmitter, Input, Output } from '@angular/core';
 import { PrimaryKey } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
@@ -13,7 +13,6 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public async: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
@@ -24,6 +23,9 @@ export abstract class TableBuilderApiImpl {
     @Input('column-width') public columnWidth: string | number = null;
     @Input('row-height') public rowHeight: string | number = null;
     @Input('buffer-amount') public bufferAmount: number = null;
+    @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
+    public modelColumnKeys: string[] = [];
+    public customModelColumnsKeys: string[] = [];
     protected abstract templateParser: TemplateParserService;
     protected abstract selection: SelectionService;
     protected abstract utils: UtilsService;
@@ -61,12 +63,12 @@ export abstract class TableBuilderApiImpl {
         return this.source.length * rowHeight + rowHeight;
     }
 
-    public get modelColumnKeys(): string[] {
-        return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
+    protected generateCustomModelColumnsKeys(): string[] {
+        return this.excluding(this.keys);
     }
 
-    public get customModelColumnsKeys(): string[] {
-        return this.excluding(this.keys);
+    protected generateModelColumnKeys(): string[] {
+        return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
     }
 
     private excluding(keys: string[]): string[] {

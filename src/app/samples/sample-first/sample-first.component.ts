@@ -27,7 +27,7 @@ export class SampleFirstComponent implements OnInit {
     public showSample(): void {
         this.dialog.open(CodeDialogComponent, {
             data: {
-                title: 'Overview simple table (app.component.html)',
+                title: 'Overview simple table',
                 description: 'If you want enabled virtual scroll, you need use auto-height or height attribute.',
                 code:
                     `<!-- simple - is Array any objects -->\n` +

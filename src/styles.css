@@ -46,6 +46,7 @@ a {
 
 .mat-toolbar.simple-toolbar {
     padding: 0;
+    position: relative;
 }
 
 .mat-form-field,

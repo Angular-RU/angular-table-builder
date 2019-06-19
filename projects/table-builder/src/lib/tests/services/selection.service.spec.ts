@@ -207,6 +207,7 @@ describe('[TEST]: Selection service', () => {
         expect(selectionMap.entries).toEqual({});
 
         selectionMap.toggle(id, true);
+        expect(selectionMap.get(5)).toEqual(true);
         expect(selectionMap.entries).toEqual({ 5: true });
     });
 });

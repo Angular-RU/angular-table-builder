@@ -38,6 +38,10 @@ describe('[TEST]: auto height', () => {
         value: 1000
     });
 
+    Object.defineProperty(window, 'setTimeout', {
+        value: (callback: Fn<void, void>): void => callback()
+    });
+
     Object.defineProperty(window, 'requestAnimationFrame', {
         value: (callback: Fn): unknown => callback()
     });

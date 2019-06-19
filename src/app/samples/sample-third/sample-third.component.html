@@ -1,5 +1,8 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Selection model ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
+    <span>
+        Selection model
+        <span *ngIf="table.isRendered"> ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
+    </span>
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
@@ -20,8 +23,5 @@
         </ng-template>
     </ngx-column>
 
-    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
-        <ng-template ngx-th>{{ key }}</ng-template>
-        <ng-template ngx-td let-cell>{{ cell }}</ng-template>
-    </ngx-column>
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
 </ngx-table-builder>

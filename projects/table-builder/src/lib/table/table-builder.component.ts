@@ -19,14 +19,15 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
+import { TableBuilderOptionsImpl } from './config/table-builder-options';
 
 @Component({
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TemplateParserService, SortableService, SelectionService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
@@ -34,6 +35,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     public isFirstRendered: boolean = false;
     public displayedColumns: string[] = [];
     public scrollOffset: ScrollOffsetStatus = { offset: false };
+    public isRendered: boolean = false;
 
     constructor(
         public readonly selection: SelectionService,
@@ -50,6 +52,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     public ngOnChanges(): void {
+        this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
+        this.modelColumnKeys = this.generateModelColumnKeys();
+
         if (this.isFirstRendered) {
             this.renderTable();
         }
@@ -80,30 +85,52 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private renderTable(): void {
-        if (this.async) {
-            this.ngZone.runOutsideAngular(() => {
-                window.requestAnimationFrame(() => this.syncRender());
-            });
+        this.displayedColumns = [];
+        const columnList: string[] = this.generateDisplayedColumns();
+        this.ngZone.runOutsideAngular(() => {
+            columnList.forEach((columnName: string, position: number) =>
+                this.drawColumn(columnList, columnName, position)
+            );
+        });
+    }
+
+    private drawColumn(list: string[], columnName: string, position: number): void {
+        const timeIdle: number = position + TableBuilderOptionsImpl.TIME_IDLE;
+        if (position > TableBuilderOptionsImpl.COUNT_SYNC_RENDERED_COLUMNS) {
+            window.setTimeout(() => {
+                this.displayedColumns.push(columnName);
+                this.cd.detectChanges();
+
+                const isLast: boolean = position + 1 === list.length;
+                if (isLast) {
+                    this.emitRendered();
+                }
+            }, timeIdle);
         } else {
-            this.syncRender();
+            this.displayedColumns.push(columnName);
+            this.emitRendered();
         }
     }
 
-    private syncRender(): void {
-        const customModelColumnsKeys: string[] = this.customModelColumnsKeys;
-        const modelColumnKeys: string[] = this.modelColumnKeys;
-        const renderedTemplateKeys: string[] = this.compileTemplates(customModelColumnsKeys, modelColumnKeys);
+    private emitRendered(): void {
+        this.isRendered = true;
+        this.afterRendered.emit(this.isRendered);
+    }
+
+    private generateDisplayedColumns(): string[] {
+        let generatedList: string[] = [];
+        const renderedTemplateKeys: string[] = this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
 
         if (this.keys.length) {
-            this.displayedColumns = customModelColumnsKeys;
+            generatedList = this.customModelColumnsKeys;
         } else if (renderedTemplateKeys.length) {
-            this.displayedColumns = renderedTemplateKeys;
+            generatedList = renderedTemplateKeys;
         } else {
-            this.displayedColumns = modelColumnKeys;
+            generatedList = this.modelColumnKeys;
         }
 
-        this.checkUnCompiledTemplates();
-        this.cd.detectChanges();
+        this.checkUnCompiledTemplates(generatedList);
+        return generatedList;
     }
 
     private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): string[] {
@@ -115,8 +142,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return this.templateParser.renderedTemplateKeys;
     }
 
-    private checkUnCompiledTemplates(): void {
-        for (const key of this.displayedColumns) {
+    private checkUnCompiledTemplates(generatedList: string[]): void {
+        for (const key of generatedList) {
             const schema: TableSchema = this.templateParser.schema;
             const notRendered: boolean = !schema.columns[key];
 

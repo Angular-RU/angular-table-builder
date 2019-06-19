@@ -10,6 +10,7 @@ import {
     OnInit
 } from '@angular/core';
 import { DynamicHeightOptions } from '../interfaces/table-builder.internal';
+import { TableBuilderOptionsImpl } from '../config/table-builder-options';
 
 @Directive({ selector: '[autoHeight]' })
 export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -43,9 +44,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public recalculateByResize(): void {
         this.calculateHeight();
-        this.ngZone.runOutsideAngular(() => {
-            window.requestAnimationFrame(() => this.app.tick());
-        });
+        this.ngZone.runOutsideAngular(() => setTimeout(() => this.app.tick(), TableBuilderOptionsImpl.TIME_IDLE));
     }
 
     public calculateHeight(): void {
