@@ -10,7 +10,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 
-import { ColumnTemplates, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
+import { ColumnTemplates, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -85,31 +85,41 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private renderTable(): void {
-        this.displayedColumns = [];
-        const columnList: string[] = this.generateDisplayedColumns();
         this.ngZone.runOutsideAngular(() => {
-            columnList.forEach((columnName: string, position: number) =>
-                this.drawColumn(columnList, columnName, position)
-            );
+            this.displayedColumns = [];
+            const columnList: string[] = this.generateDisplayedColumns();
+            columnList.forEach(async (name: string, index: number) => {
+                this.drawColumn(name, index).then((position: number) => {
+                    const isLast: boolean = position + 1 === columnList.length;
+                    if (isLast) {
+                        this.emitRendered();
+                    }
+                });
+            });
         });
     }
 
-    private drawColumn(list: string[], columnName: string, position: number): void {
-        const timeIdle: number = position + TableBuilderOptionsImpl.TIME_IDLE;
-        if (position > TableBuilderOptionsImpl.COUNT_SYNC_RENDERED_COLUMNS) {
-            window.setTimeout(() => {
-                this.displayedColumns.push(columnName);
-                this.cd.detectChanges();
+    private drawColumn(columnName: string, index: number): Promise<number> {
+        const {
+            COUNT_SYNC_RENDERED_COLUMNS,
+            TIME_IDLE,
+            SMOOTH_FPS
+        }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
-                const isLast: boolean = position + 1 === list.length;
-                if (isLast) {
-                    this.emitRendered();
+        return new Promise(
+            (resolve: Fn<number>): void => {
+                if (index > COUNT_SYNC_RENDERED_COLUMNS) {
+                    window.setTimeout(() => {
+                        this.displayedColumns.push(columnName);
+                        this.cd.detectChanges();
+                        resolve(index);
+                    }, index + TIME_IDLE + SMOOTH_FPS);
+                } else {
+                    this.displayedColumns.push(columnName);
+                    resolve(index);
                 }
-            }, timeIdle);
-        } else {
-            this.displayedColumns.push(columnName);
-            this.emitRendered();
-        }
+            }
+        );
     }
 
     private emitRendered(): void {

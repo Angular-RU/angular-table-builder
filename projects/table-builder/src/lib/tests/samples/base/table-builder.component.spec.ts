@@ -1,4 +1,5 @@
 /* tslint:disable:no-big-function */
+import { fakeAsync, tick } from '@angular/core/testing';
 import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone } from '@angular/core';
 import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
 
@@ -58,16 +59,6 @@ describe('[TEST]: TableBuilder', () => {
         }
     };
 
-    Object.defineProperty(window, 'setTimeout', {
-        value: (callback: Fn): Any => callback()
-    });
-
-    Object.defineProperty(window, 'clearInterval', {
-        value: (): Any => {
-            clearIntervalInvoked++;
-        }
-    });
-
     let position: NgxColumnComponent;
     let name: NgxColumnComponent;
     let weight: NgxColumnComponent;
@@ -91,6 +82,35 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     beforeEach(() => (table.source = JSON.parse(JSON.stringify(data))));
+
+    beforeEach(() => {
+        Object.defineProperty(window, 'setTimeout', {
+            value: (callback: Fn): Any => {
+                callback();
+            }
+        });
+
+        Object.defineProperty(window, 'clearInterval', {
+            value: (): Any => {
+                clearIntervalInvoked++;
+            }
+        });
+    });
+
+    it('should be correct selected items', () => {
+        table.primaryKey = 'position';
+        table.ngOnInit();
+
+        table.selection.selectRow(data[0], { ctrlKey: true } as MouseEvent, data);
+        table.selection.selectRow(data[1], { ctrlKey: true } as MouseEvent, data);
+        table.selection.selectRow(data[2], { ctrlKey: true } as MouseEvent, data);
+
+        expect(table.selectedItems).toEqual([
+            { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+            { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+            { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
+        ]);
+    });
 
     it('should be correct height columns and width rows', () => {
         expect(table.columnHeight).toEqual(495);
@@ -135,13 +155,16 @@ describe('[TEST]: TableBuilder', () => {
         expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
     });
 
-    it('should be correct sync render', () => {
+    it('should be correct rendered', fakeAsync(() => {
         table.columnTemplates = [position, name, weight];
         table.ngOnChanges();
         table.ngAfterContentInit();
+
+        tick(100);
+
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight']);
         expect(table.isRendered).toEqual(true);
-    });
+    }));
 
     it('should be correct clientWidth when set autoWidth=true', () => {
         table.autoWidth = true;
@@ -166,15 +189,40 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.displayedColumns).toEqual([]);
     });
 
-    it('should be correct generate table body', () => {
+    it('should be correct lazy rendering', fakeAsync(() => {
+        table.source = [{ a1: 1, a2: 2, a3: 3, a4: 4, a5: 5, a6: 6, a7: 7, a8: 8, a9: 9, a10: 10, a11: 11, a12: 12 }];
+        expect(table.isRendered).toEqual(false);
+
+        table.ngOnChanges();
+        table.ngAfterContentInit();
+
+        tick(1000);
+
+        expect(table.isRendered).toEqual(true);
+        expect(table.displayedColumns).toEqual([
+            'a1',
+            'a2',
+            'a3',
+            'a4',
+            'a5',
+            'a6',
+            'a7',
+            'a8',
+            'a9',
+            'a10',
+            'a11',
+            'a12'
+        ]);
+    }));
+
+    it('should be correct generate table body without emitter', () => {
         const index: number = 0;
-
         table.primaryKey = 'id';
-
         table.ngOnInit();
 
+        const mySelection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
-            selection,
+            mySelection,
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
             null,
@@ -192,18 +240,23 @@ describe('[TEST]: TableBuilder', () => {
         tableBody.enableSelection = true;
         tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, null);
 
-        expect(table.selectionModel.entries).toEqual({ 1: true });
-        expect(table.selectionModel.isAll).toEqual(true);
+        expect(mySelection.selectionModel.entries).toEqual({ 1: true });
+        expect(mySelection.selectionModel.isAll).toEqual(true);
+    });
 
-        const info: TableCellInfo = tableBody.generateTableCellInfo(item, mockPreventDefault as MouseEvent);
-        expect(info).toEqual({
-            ...info,
-            row: item,
-            event: mockPreventDefault
-        });
+    it('should be correct generate table body with emitter', (done: Fn<void>) => {
+        table.primaryKey = 'id';
+        table.ngOnInit();
 
-        info.preventDefault();
-        expect(clearIntervalInvoked).toEqual(1);
+        const tableBody: TableTbodyComponent = new TableTbodyComponent(
+            selection,
+            mockChangeDetector as ChangeDetectorRef,
+            new TableBuilderOptionsImpl(),
+            null,
+            mockNgZone as NgZone
+        );
+
+        tableBody.source = [item];
 
         const emitter: Partial<EventEmitter<TableCellInfo>> = {
             emit(value?: TableCellInfo): void {
@@ -212,48 +265,11 @@ describe('[TEST]: TableBuilder', () => {
                     row: item,
                     event: mockPreventDefault
                 });
+
+                done();
             }
         };
 
         tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, emitter as EventEmitter<TableCellInfo>);
-    });
-
-    it('should be correct selected items', () => {
-        table.primaryKey = 'position';
-        table.ngOnInit();
-
-        table.selection.selectRow(data[0], { ctrlKey: true } as MouseEvent, data);
-        table.selection.selectRow(data[1], { ctrlKey: true } as MouseEvent, data);
-        table.selection.selectRow(data[2], { ctrlKey: true } as MouseEvent, data);
-
-        expect(table.selectedItems).toEqual([
-            { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-            { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-            { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
-        ]);
-    });
-
-    it('should be correct lazy rendering', () => {
-        table.source = [{ a1: 1, a2: 2, a3: 3, a4: 4, a5: 5, a6: 6, a7: 7, a8: 8, a9: 9, a10: 10, a11: 11, a12: 12 }];
-        expect(table.isRendered).toEqual(false);
-
-        table.ngOnChanges();
-        table.ngAfterContentInit();
-
-        expect(table.isRendered).toEqual(true);
-        expect(table.displayedColumns).toEqual([
-            'a1',
-            'a2',
-            'a3',
-            'a4',
-            'a5',
-            'a6',
-            'a7',
-            'a8',
-            'a9',
-            'a10',
-            'a11',
-            'a12'
-        ]);
     });
 });
