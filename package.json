@@ -3,13 +3,14 @@
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
+        "lint": "ng lint",
         "typedoc": "typedoc projects/table-builder/src",
         "test": "jest --config ./jest.config.js --coverage",
         "start": "ng serve --open --aot=false",
         "build": "ng build && ng build table-builder",
         "build:lib": "ng build table-builder",
         "build.meta": "echo 'prebuild'",
-        "lint": "ng lint"
+        "format": "prettier --write \"src/**/*.*\" \"projects/**/*.*\" \"!src/assets/**\" \"!src/favicon.ico\""
     },
     "private": true,
     "dependencies": {
@@ -42,6 +43,7 @@
         "@types/jest": "^24.0.13",
         "@types/node": "~8.9.4",
         "codelyzer": "^5.0.1",
+        "husky": "^2.4.1",
         "intersection-observer": "^0.7.0",
         "jest": "^24.8.0",
         "jest-cli": "^24.8.0",
@@ -58,5 +60,9 @@
         "tslint-sonarts": "^1.9.0",
         "typedoc": "^0.14.2",
         "typescript": "~3.4.5"
+    },
+    "hooks": {
+        "pre-commit": "npm run format",
+        "pre-push": "npm run lint"
     }
 }
