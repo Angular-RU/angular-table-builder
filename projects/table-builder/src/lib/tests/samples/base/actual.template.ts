@@ -1,14 +1,15 @@
-import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { TableColumn, TableSchema } from '../../../table/interfaces/table-builder.external';
 
 const COLUMN: TableColumn = {
-    th: FakeGeneratorTable.generateCell(true),
-    td: FakeGeneratorTable.generateCell(),
+    th: MocksGenerator.generateCell(true),
+    td: MocksGenerator.generateCell(),
     width: null,
-    stickyLeft: null,
-    stickyRight: null,
+    stickyLeft: false,
+    stickyRight: false,
     cssClass: [],
-    cssStyle: []
+    cssStyle: [],
+    resizable: false
 };
 
 export const ACTUAL_TEMPLATE: TableSchema = {

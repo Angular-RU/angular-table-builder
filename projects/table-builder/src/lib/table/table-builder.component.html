@@ -36,6 +36,7 @@
                 [column-key]="key"
                 [client-row-height]="clientRowHeight"
                 [class.table-head__offset]="scrollOffset.offset"
+                (resize)="resizeColumn($event, column)"
             ></table-thead>
 
             <table-tbody

@@ -1,7 +1,7 @@
 /* tslint:disable:no-big-function */
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone } from '@angular/core';
-import { FakeGeneratorTable } from '@helpers/utils/fake-generator-table.class';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
@@ -13,6 +13,8 @@ import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { ACTUAL_TEMPLATE } from './actual.template';
 import { UtilsService } from '../../../table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
+import { ResizableService } from '../../../table/services/resizer/resizable.service';
+import { TableLineRow } from '../../../table/components/common/table-line-row';
 
 export interface PeriodicElement {
     name: string;
@@ -42,6 +44,7 @@ describe('[TEST]: TableBuilder', () => {
     let table: TableBuilderComponent;
     let selection: SelectionService;
     let templateParser: TemplateParserService;
+    let resizable: ResizableService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
@@ -53,7 +56,7 @@ describe('[TEST]: TableBuilder', () => {
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular: (callback: Fn): Any => callback()
     };
-    const mockPreventDefault: Partial<MouseEvent> = {
+    const mockMouseEvent: Partial<MouseEvent> = {
         preventDefault: (): void => {
             preventDefaultInvoked++;
         }
@@ -66,19 +69,21 @@ describe('[TEST]: TableBuilder', () => {
     beforeEach(() => {
         selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         templateParser = new TemplateParserService();
+        resizable = new ResizableService();
         table = new TableBuilderComponent(
             selection,
             templateParser,
             mockChangeDetector as ChangeDetectorRef,
             mockNgZone as NgZone,
-            new UtilsService()
+            new UtilsService(),
+            resizable
         );
     });
 
     beforeEach(() => {
-        position = FakeGeneratorTable.generateColumn('position');
-        name = FakeGeneratorTable.generateColumn('name');
-        weight = FakeGeneratorTable.generateColumn('weight');
+        position = MocksGenerator.generateColumn('position');
+        name = MocksGenerator.generateColumn('name');
+        weight = MocksGenerator.generateColumn('weight');
     });
 
     beforeEach(() => (table.source = JSON.parse(JSON.stringify(data))));
@@ -151,12 +156,12 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct parse template', () => {
-        templateParser.initialSchema().parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight]);
+        templateParser.initialSchema(null).parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight]);
         expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
     });
 
     it('should be correct rendered', fakeAsync(() => {
-        table.columnTemplates = [position, name, weight];
+        table.columnList = [position, name, weight];
         table.ngOnChanges();
         table.ngAfterContentInit();
 
@@ -238,7 +243,7 @@ describe('[TEST]: TableBuilder', () => {
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
         tableBody.enableSelection = true;
-        tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, null);
+        tableBody.handleRowIdleCallback(item, mockMouseEvent as MouseEvent, null);
 
         expect(mySelection.selectionModel.entries).toEqual({ 1: true });
         expect(mySelection.selectionModel.isAll).toEqual(true);
@@ -263,13 +268,23 @@ describe('[TEST]: TableBuilder', () => {
                 expect(value).toEqual({
                     ...value,
                     row: item,
-                    event: mockPreventDefault
+                    event: mockMouseEvent
                 });
 
                 done();
             }
         };
 
-        tableBody.handleRowIdleCallback(item, mockPreventDefault as MouseEvent, emitter as EventEmitter<TableCellInfo>);
+        tableBody.handleRowIdleCallback(item, mockMouseEvent as MouseEvent, emitter as EventEmitter<TableCellInfo>);
+    });
+
+    it('should be invoke preventDefault', () => {
+        const cell: TableCellInfo = new TableLineRow(templateParser, selection).generateTableCellInfo(
+            item,
+            mockMouseEvent as MouseEvent
+        );
+
+        cell.preventDefault();
+        expect(clearIntervalInvoked).toEqual(1);
     });
 });

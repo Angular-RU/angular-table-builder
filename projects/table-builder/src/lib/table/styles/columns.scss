@@ -29,6 +29,16 @@
         &--default-width {
             min-width: $cellWidth;
         }
+
+        &--resize {
+            height: 100%;
+            width: 10px;
+            position: absolute;
+            background: transparent;
+            cursor: ew-resize;
+            right: 0;
+            top: 0;
+        }
     }
 }
 

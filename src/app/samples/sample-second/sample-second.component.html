@@ -9,18 +9,14 @@
         <pre><code class="javascript">
   // app.component.ts
   import &#123; Component } from "@angular/core";
-
-  interface LicenseSample &#123;
-    id: number;
-    name: string;
-    price: number;
-  }
+  import &#123; LicenseSample } from "./license.interface";
 
   @Component(&#123;
     selector: 'app',
     templateUrl: './app.component.html'
   })
   export class AppComponent &#123;
+
     public licenses: LicenseSample[] = [
       &#123;
         id: 1,
@@ -43,9 +39,9 @@
         price: 199
       }
     ];
+
   }
 
-          
 </code></pre>
     </div>
 

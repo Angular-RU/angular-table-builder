@@ -1,0 +1,123 @@
+import { TableBuilderComponent, TableRow, TableSchema } from '@angular-ru/table-builder';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { SelectionService } from '../../table/services/selection/selection.service';
+import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { TemplateParserService } from '../../table/services/template-parser/template-parser.service';
+import { ResizableService } from '../../table/services/resizer/resizable.service';
+import { UtilsService } from '../../table/services/utils/utils.service';
+import { Any, Fn } from '../../table/interfaces/table-builder.internal';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
+
+const source: TableRow[] = [{ id: 1, value: 'hello world' }];
+
+describe('[TEST]: Resizable service', () => {
+    let table: TableBuilderComponent;
+    let removeAll: number = 0;
+    let documentEmpty: number = 0;
+    let resizeService: ResizableService;
+    const columnWidth: number = 200;
+
+    const mockChangeDetector: Partial<ChangeDetectorRef> = {
+        detectChanges: (): void => {}
+    };
+    const appRef: Partial<ApplicationRef> = {
+        tick: (): void => {}
+    };
+    const mockNgZone: Partial<NgZone> = {
+        runOutsideAngular: (callback: Fn): Any => callback()
+    };
+
+    const column: Partial<HTMLDivElement> = {
+        offsetWidth: columnWidth
+    };
+
+    beforeEach(() => {
+        resizeService = new ResizableService();
+        table = new TableBuilderComponent(
+            new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone),
+            new TemplateParserService(),
+            mockChangeDetector as ChangeDetectorRef,
+            mockNgZone as NgZone,
+            new UtilsService(),
+            resizeService
+        );
+    });
+
+    beforeEach(() => {
+        table.source = source;
+        table.ngOnChanges();
+        table.ngAfterContentInit();
+    });
+
+    beforeEach(() => {
+        removeAll = 0;
+        documentEmpty = 0;
+        window['getSelection'] = null;
+    });
+
+    it('should be correct listen mousemove and mouseup', fakeAsync(() => {
+        Object.defineProperty(window, 'getSelection', {
+            value: (): Any => ({
+                removeAllRanges: (): Any => {
+                    removeAll++;
+                }
+            })
+        });
+
+        let schema: TableSchema = null;
+
+        table.resizeColumn(
+            {
+                key: 'id',
+                event: MocksGenerator.dispatchMouseEvent('mousemove', 0, 0)
+            },
+            column as HTMLDivElement
+        );
+
+        expect(resizeService.startWidth).toEqual(columnWidth);
+        expect(resizeService.startX).toEqual(0);
+        expect(table.templateParser.schema.columns['id'].width).toEqual(null);
+
+        // ColumnWidth { 200 } + pageX { 140 }
+        MocksGenerator.dispatchMouseEvent('mousemove', 140, 0);
+        expect(table.templateParser.schema.columns['id'].width).toEqual(340);
+
+        tick(100);
+
+        // ColumnWidth { 200 } + pageX { 210 }
+        MocksGenerator.dispatchMouseEvent('mousemove', 210, 0);
+        expect(table.templateParser.schema.columns['id'].width).toEqual(410);
+
+        table.schemaChanges.subscribe((data: TableSchema) => (schema = data));
+        MocksGenerator.dispatchMouseEvent('mouseup', 210, 0);
+
+        tick(1000);
+
+        expect(schema.columns['id'].width).toEqual(410);
+        expect(removeAll).toEqual(2);
+    }));
+
+    it('should be correct selection empty', fakeAsync(() => {
+        document['selection'] = {
+            empty: (): number => documentEmpty++
+        };
+
+        table.resizeColumn(
+            {
+                key: 'id',
+                event: MocksGenerator.dispatchMouseEvent('mousemove', 0, 0)
+            },
+            column as HTMLDivElement
+        );
+
+        MocksGenerator.dispatchMouseEvent('mousemove', -50, 0);
+
+        tick(100);
+
+        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+        expect(documentEmpty).toEqual(1);
+
+        MocksGenerator.dispatchMouseEvent('mousemove', -350, 0);
+        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+    }));
+});

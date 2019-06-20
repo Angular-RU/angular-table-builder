@@ -9,7 +9,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 
-import { TableLineRow } from '../common/table-line-row.class';
+import { TableLineRow } from '../common/table-line-row';
 import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { ImplicitContext, TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';

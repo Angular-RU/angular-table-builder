@@ -26,7 +26,7 @@ export interface TableCellOptions<T = Any> {
     style: KeyMap<Any>;
     width: number;
     height: number;
-    click: EventEmitter<Any>;
+    onClick: EventEmitter<Any>;
 }
 
 export interface ColumnsSchema<T = Any> {
@@ -41,6 +41,7 @@ export interface TableColumn<T = Any> {
     cssClass: string[];
     stickyLeft: boolean;
     stickyRight: boolean;
+    resizable: boolean;
 }
 
 export interface TableSchema<T = unknown> {

@@ -1,11 +1,12 @@
-import { EventEmitter, Input, Output } from '@angular/core';
-import { PrimaryKey } from './interfaces/table-builder.internal';
-import { ColumnsSchema, TableRow } from './interfaces/table-builder.external';
+import { ChangeDetectorRef, EventEmitter, Input, Output } from '@angular/core';
+import { PrimaryKey, ResizeEvent } from './interfaces/table-builder.internal';
+import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
+import { ResizableService } from './services/resizer/resizable.service';
 
 export abstract class TableBuilderApiImpl {
     @Input() public height: number;
@@ -24,11 +25,14 @@ export abstract class TableBuilderApiImpl {
     @Input('row-height') public rowHeight: string | number = null;
     @Input('buffer-amount') public bufferAmount: number = null;
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
+    @Output() public schemaChanges: EventEmitter<TableSchema> = new EventEmitter();
     public modelColumnKeys: string[] = [];
     public customModelColumnsKeys: string[] = [];
-    protected abstract templateParser: TemplateParserService;
-    protected abstract selection: SelectionService;
+    public abstract templateParser: TemplateParserService;
+    public abstract selection: SelectionService;
+    public abstract cd: ChangeDetectorRef;
     protected abstract utils: UtilsService;
+    protected abstract resize: ResizableService;
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;
@@ -61,6 +65,22 @@ export abstract class TableBuilderApiImpl {
     public get columnHeight(): number {
         const rowHeight: number = this.clientRowHeight || TableBuilderOptionsImpl.ROW_HEIGHT;
         return this.source.length * rowHeight + rowHeight;
+    }
+
+    public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
+        this.resize.resize(
+            event,
+            column,
+            (width: number) => this.onMouseResizeColumn(key, width),
+            () => this.schemaChanges.emit(this.templateParser.schema)
+        );
+
+        event.preventDefault();
+    }
+
+    private onMouseResizeColumn(key: string, width: number): void {
+        this.templateParser.updateState(key, { width });
+        this.cd.detectChanges();
     }
 
     protected generateCustomModelColumnsKeys(): string[] {

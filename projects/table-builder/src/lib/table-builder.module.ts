@@ -17,6 +17,7 @@ import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
+import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -30,10 +31,17 @@ import { DefaultValuePipe } from './table/pipes/default-value.pipe';
         TemplateHeadThDirective,
         TemplateBodyTdDirective,
         DeepPathPipe,
-        DefaultValuePipe
+        DefaultValuePipe,
+        NgxOptionsComponent
     ],
     providers: [UtilsService],
-    exports: [TableBuilderComponent, NgxColumnComponent, TemplateHeadThDirective, TemplateBodyTdDirective]
+    exports: [
+        TableBuilderComponent,
+        NgxColumnComponent,
+        TemplateHeadThDirective,
+        TemplateBodyTdDirective,
+        NgxOptionsComponent
+    ]
 })
 export class TableBuilderModule {
     private static readonly ROOT_OPTIONS: InjectionToken<string> = new InjectionToken<string>('NGX_TABLE_OPTIONS');

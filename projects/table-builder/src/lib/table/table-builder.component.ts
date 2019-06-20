@@ -3,6 +3,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ContentChild,
     ContentChildren,
     NgZone,
     OnChanges,
@@ -10,7 +11,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 
-import { ColumnTemplates, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
+import { ColumnListRef, ColumnOptionsRef, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -20,18 +21,24 @@ import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
+import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
+import { ResizableService } from './services/resizer/resizable.service';
+
+const { COUNT_SYNC_RENDERED_COLUMNS, TIME_IDLE, SMOOTH_FPS }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
-    providers: [TemplateParserService, SortableService, SelectionService],
+    providers: [TemplateParserService, SortableService, SelectionService, ResizableService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
-    @ContentChildren(NgxColumnComponent) public columnTemplates: ColumnTemplates = [];
+    @ContentChild(NgxOptionsComponent, { static: false }) public columnOptions: ColumnOptionsRef = null;
+    @ContentChildren(NgxColumnComponent) public columnList: ColumnListRef = [];
+
     public isFirstRendered: boolean = false;
     public displayedColumns: string[] = [];
     public scrollOffset: ScrollOffsetStatus = { offset: false };
@@ -39,10 +46,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     constructor(
         public readonly selection: SelectionService,
-        protected readonly templateParser: TemplateParserService,
-        protected readonly cd: ChangeDetectorRef,
+        public readonly templateParser: TemplateParserService,
+        public readonly cd: ChangeDetectorRef,
         protected readonly ngZone: NgZone,
-        protected readonly utils: UtilsService
+        protected readonly utils: UtilsService,
+        protected readonly resize: ResizableService
     ) {
         super();
     }
@@ -88,7 +96,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         this.ngZone.runOutsideAngular(() => {
             this.displayedColumns = [];
             const columnList: string[] = this.generateDisplayedColumns();
-            columnList.forEach(async (name: string, index: number) => {
+            columnList.forEach((name: string, index: number) => {
                 this.drawColumn(name, index).then((position: number) => {
                     const isLast: boolean = position + 1 === columnList.length;
                     if (isLast) {
@@ -100,12 +108,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     }
 
     private drawColumn(columnName: string, index: number): Promise<number> {
-        const {
-            COUNT_SYNC_RENDERED_COLUMNS,
-            TIME_IDLE,
-            SMOOTH_FPS
-        }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
-
         return new Promise(
             (resolve: Fn<number>): void => {
                 if (index > COUNT_SYNC_RENDERED_COLUMNS) {
@@ -148,7 +150,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
             ? this.generateColumnsKeyMap(customModelColumnsKeys)
             : this.generateColumnsKeyMap(modelColumnKeys);
 
-        this.templateParser.initialSchema().parse(allowedKeyMap, this.columnTemplates);
+        this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnList);
         return this.templateParser.renderedTemplateKeys;
     }
 

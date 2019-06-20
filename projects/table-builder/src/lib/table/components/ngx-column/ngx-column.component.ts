@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Input, ViewEncapsulation } from '@angular/core';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
+import { ColumnOptions } from '../common/column-options';
 
 @Component({
     selector: 'ngx-column',
@@ -8,18 +9,11 @@ import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class NgxColumnComponent {
+export class NgxColumnComponent extends ColumnOptions {
     @Input() public key: string = null;
-    @Input() public width: number = null;
-    @Input('css-class') public cssClass: string[] = [];
-    @Input('css-style') public cssStyle: string[] = [];
+    @Input('custom-key') public customKey: boolean = false;
     @Input('sticky') public stickyLeft: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
-    @Input('custom-key') public customKey: boolean = false;
-
-    @ContentChild(TemplateHeadThDirective, { static: true })
-    public th: TemplateHeadThDirective = new TemplateHeadThDirective(null);
-
-    @ContentChild(TemplateBodyTdDirective, { static: true })
-    public td: TemplateBodyTdDirective = new TemplateBodyTdDirective(null);
+    @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
+    @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
 }

@@ -7,7 +7,7 @@ import { NgxColumnComponent } from '../../projects/table-builder/src/lib/table/c
 import { TemplateHeadThDirective } from '../../projects/table-builder/src/lib/table/directives/rows/template-head-th.directive';
 import { TemplateBodyTdDirective } from '../../projects/table-builder/src/lib/table/directives/rows/template-body-td.directive';
 
-export class FakeGeneratorTable {
+export class MocksGenerator {
     public static generateColumn(columnName: string): NgxColumnComponent {
         const column: NgxColumnComponent = new NgxColumnComponent();
         column.key = columnName;
@@ -27,7 +27,36 @@ export class FakeGeneratorTable {
             class: null,
             height: null,
             width: null,
-            click: new EventEmitter<TableCellOptions>()
+            onClick: new EventEmitter<TableCellOptions>()
         };
+    }
+
+    public static dispatchMouseEvent(type: string, x: number, y: number): MouseEvent {
+        const mouseMoveEvent: MouseEvent = document.createEvent('MouseEvents');
+
+        mouseMoveEvent.initMouseEvent(
+            type, // event type : click, mousedown, mouseup, mouseover, mousemove, mouseout.
+            true, // canBubble
+            false, // cancelable
+            window, // event's AbstractView : should be window
+            1, // detail : Event's mouse click count
+            x, // screenX
+            y, // screenY
+            x, // clientX
+            y, // clientY
+            false, // ctrlKey
+            false, // altKey
+            false, // shiftKey
+            false, // metaKey
+            0, // button : 0 = click, 1 = middle button, 2 = right button
+            null // relatedTarget : Only used with some event types (e.g. mouseover and mouseout).
+            // In other cases, pass null.
+        );
+
+        (mouseMoveEvent as any)['pageX'] = x;
+
+        document.dispatchEvent(mouseMoveEvent);
+
+        return mouseMoveEvent;
     }
 }

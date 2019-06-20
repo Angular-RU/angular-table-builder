@@ -15,4 +15,9 @@
         [ngIfElse]="defaultTh"
     ></ng-template>
     <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
+    <div
+        *ngIf="columnsSchema[key]?.resizable"
+        class="table-grid__column--resize"
+        (mousedown)="resize.emit({ event: $event, key: key })"
+    ></div>
 </div>

@@ -16,7 +16,7 @@
 >
     <div
         class="table-grid__cell"
-        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.click)"
+        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.onClick)"
         (selectstart)="(canSelectTextInTable)"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
         [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
