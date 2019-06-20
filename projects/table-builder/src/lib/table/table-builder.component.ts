@@ -24,7 +24,11 @@ import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { ResizableService } from './services/resizer/resizable.service';
 
-const { COUNT_SYNC_RENDERED_COLUMNS, TIME_IDLE, SMOOTH_FPS }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const {
+    COUNT_SYNC_RENDERED_COLUMNS,
+    TIME_IDLE,
+    SMOOTH_FPS_FRAME
+}: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
@@ -115,7 +119,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
                         this.displayedColumns.push(columnName);
                         this.cd.detectChanges();
                         resolve(index);
-                    }, index + TIME_IDLE + SMOOTH_FPS);
+                    }, index + TIME_IDLE + SMOOTH_FPS_FRAME);
                 } else {
                     this.displayedColumns.push(columnName);
                     resolve(index);
