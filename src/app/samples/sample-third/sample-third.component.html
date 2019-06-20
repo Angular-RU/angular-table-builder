@@ -1,0 +1,27 @@
+<mat-toolbar class="simple-toolbar">
+    <span>
+        Selection model
+        <span *ngIf="table.isRendered"> ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
+    </span>
+    <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
+</mat-toolbar>
+
+<ngx-table-builder #table [source]="data" [auto-height]="true" [enable-selection]="true">
+    <ngx-column key="selection" [sticky]="true" width="55" custom-key>
+        <ng-template ngx-th>
+            <mat-checkbox
+                (change)="table.selection.toggleAll(data)"
+                [indeterminate]="table.selectionModel.hasValue() && !table.selectionModel.isAll"
+                [checked]="table.selectionModel.isAll"
+            ></mat-checkbox>
+        </ng-template>
+        <ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+            <mat-checkbox
+                [checked]="table.selectionModel.get($any(row).id)"
+                (change)="table.selection.toggle(row)"
+            ></mat-checkbox>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
+</ngx-table-builder>

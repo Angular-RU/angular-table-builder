@@ -1,0 +1,23 @@
+<div
+    class="table-grid__cell table-grid__header-cell"
+    [class.table-grid__cell--text-bold]="columnsSchema[key]?.th.textBold"
+    [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
+    [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
+    [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
+    [style.line-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
+    [ngClass]="columnsSchema[key]?.th.class"
+    [ngStyle]="columnsSchema[key]?.th.style"
+    [@fadeAnimation]="'in'"
+>
+    <ng-template
+        [ngIf]="columnsSchema[key]?.th.template"
+        [ngTemplateOutlet]="columnsSchema[key]?.th.template"
+        [ngIfElse]="defaultTh"
+    ></ng-template>
+    <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
+    <div
+        *ngIf="columnsSchema[key]?.resizable"
+        class="table-grid__column--resize"
+        (mousedown)="resize.emit({ event: $event, key: key })"
+    ></div>
+</div>

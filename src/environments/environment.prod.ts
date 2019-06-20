@@ -1,3 +1,5 @@
-export const environment: object = {
-  production: true
+import { ObjectKeyMap } from '../app/shared/symbol';
+
+export const environment: ObjectKeyMap = {
+    production: true
 };

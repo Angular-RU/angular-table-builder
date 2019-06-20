@@ -1,1 +1,117 @@
-/* You can add global styles to this file, and also import other style files */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+a {
+    color: #000;
+}
+
+.dashboard {
+    height: 100%;
+}
+
+.dashboard__menu {
+    background: rgb(24, 75, 170);
+    color: #fff;
+    width: 280px;
+}
+
+.title {
+    background: transparent;
+    color: #fff;
+}
+
+.dashboard__menu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.dashboard__content.mat-drawer-content {
+    padding: 0 100px;
+    height: 100%;
+    background: whitesmoke;
+}
+
+.mat-drawer.mat-drawer-side {
+    z-index: 2;
+    box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.6);
+    border-right: none;
+}
+
+.mat-toolbar.simple-toolbar {
+    padding: 0;
+    position: relative;
+}
+
+.mat-form-field,
+.mat-checkbox {
+    margin-right: 20px;
+}
+
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+    background-color: #0040a7;
+}
+
+.red {
+    color: red;
+}
+
+.spinner.mat-progress-spinner {
+    position: absolute;
+    left: 450px;
+}
+
+.dialog-close {
+    float: right;
+}
+
+.main__wrap {
+    width: 1024px;
+    margin: 0 auto;
+}
+
+code {
+    border: 1px dotted #c3c3c3;
+}
+
+.logo {
+    width: 30px;
+    margin-right: 10px;
+    margin-top: -3px;
+}
+
+.mat-list-item-content a {
+    padding-left: 5px;
+}
+
+.mat-divider {
+    border-top-color: rgba(241, 232, 232, 0.12);
+    width: 80%;
+    margin: 0 auto !important;
+}
+
+.column-samples {
+    display: flex;
+    justify-content: space-between;
+}
+
+.column {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.column:nth-child(1) {
+    margin-right: 45px;
+}
+
+pre {
+    margin: 0 auto 1em auto;
+}

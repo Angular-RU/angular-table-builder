@@ -1,0 +1,62 @@
+<mat-toolbar class="simple-toolbar">
+    <span>
+        Virtual scroll table
+        <span *ngIf="table.isRendered">({{ simple?.length }}x{{ table?.displayedColumns?.length }})</span>
+    </span>
+    <mat-spinner *ngIf="loading" class="spinner" strokeWidth="5" [diameter]="30"></mat-spinner>
+</mat-toolbar>
+
+<form>
+    <mat-form-field>
+        <mat-label>Data size</mat-label>
+        <mat-select [(value)]="dataSize" (selectionChange)="updateTable()">
+            <mat-option value="10x5">10 x 5</mat-option>
+            <mat-option value="100x20">100 x 20</mat-option>
+            <mat-option value="1000x30">1000 x 30</mat-option>
+            <mat-option value="10000x50">10 000 x 50</mat-option>
+            <mat-option value="100000x100"><span class="red">100 000 x 100 (1.5Gb memory usage)</span></mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table width</mat-label>
+        <label>
+            <input matInput name="width" [(ngModel)]="width" />
+        </label>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table height (px)</mat-label>
+        <label>
+            <input matInput name="height" type="number" [(ngModel)]="height" />
+        </label>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table row height</mat-label>
+        <label>
+            <input matInput name="rowHeight" type="number" [(ngModel)]="rowHeight" />
+        </label>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Table cell width</mat-label>
+        <label>
+            <input matInput name="columnWidth" type="number" [(ngModel)]="columnWidth" />
+        </label>
+    </mat-form-field>
+
+    <button mat-raised-button (click)="showSample()">show code sample</button>
+</form>
+
+<div class="content">
+    <ngx-table-builder
+        #table
+        [source]="simple"
+        [width]="width"
+        [height]="height"
+        [auto-height]="true"
+        [row-height]="rowHeight"
+        [column-width]="columnWidth"
+    ></ngx-table-builder>
+</div>

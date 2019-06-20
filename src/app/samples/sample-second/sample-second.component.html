@@ -1,0 +1,193 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Define the column templates</span>
+</mat-toolbar>
+
+<h4>1. Override columns rendering</h4>
+
+<div class="column-samples">
+    <div class="column">
+        <pre><code class="javascript">
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+  import &#123; LicenseSample } from "./license.interface";
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html'
+  })
+  export class AppComponent &#123;
+
+    public licenses: LicenseSample[] = [
+      &#123;
+        id: 1,
+        name: 'single',
+        price: 29.3
+      },
+      &#123;
+        id: 2,
+        name: 'developer',
+        price: 49.8
+      },
+      &#123;
+        id: 3,
+        name: 'premium',
+        price: 99.5
+      },
+      &#123;
+        id: 4,
+        name: 'enterprise',
+        price: 199
+      }
+    ];
+
+  }
+
+</code></pre>
+    </div>
+
+    <div class="column">
+        <pre><code class="javascript" ngNonBindable>
+    &lt;!-- app.component.html -->
+    &lt;ngx-table-builder [source]="licenses">
+
+      &lt;ngx-column key="name">
+          &lt;ng-template ngx-th>License&lt;/ng-template>
+          &lt;ng-template ngx-td let-name>
+            &#123;&#123; name | uppercase }}
+          &lt;/ng-template>
+      &lt;/ngx-column>
+
+      &lt;ngx-column key="price">
+          &lt;ng-template ngx-th>Cost&lt;/ng-template>
+          &lt;ng-template ngx-td let-price>
+            {{ price | currency &#125;&#125;
+          &lt;/ng-template>
+      &lt;/ngx-column>
+
+    &lt;/ngx-table-builder>
+
+</code></pre>
+
+        <ngx-table-builder [source]="licenses">
+            <ngx-column key="name">
+                <ng-template ngx-th>License</ng-template>
+                <ng-template ngx-td let-name>{{ name | uppercase }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="price">
+                <ng-template ngx-th>Price</ng-template>
+                <ng-template ngx-td let-price>{{ price | currency }}</ng-template>
+            </ngx-column>
+        </ngx-table-builder>
+    </div>
+</div>
+
+<h4>2. Sticky and Custom Columns</h4>
+
+<div class="column-samples">
+    <div class="column">
+        <pre><code class="javascript">
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+
+  export interface PeriodicElement &#123;
+      name: string;
+      position: number;
+      weight: number;
+      symbol: string;
+  }
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html',
+    styles: [
+      `
+         // Use custom CSS for column and cell
+        .my-status .table-grid__cell &#123;
+          padding: 0;
+          color: green;
+        }
+
+         // Reset CSS for default mat-button style
+        .button__done[mat-button] &#123;
+          padding: 0;
+          min-width: 100%;
+          line-height: 45px;
+        }
+      `
+    ],
+    // Use to disable CSS Encapsulation for this component
+    encapsulation: ViewEncapsulation.None,
+  })
+  export class AppComponent &#123;
+    public columns: string[] = [
+      'name', 'position', 'weight', 'symbol',
+      'position', 'weight', 'symbol', 'status'
+    ];
+
+    public data: PeriodicElement[] = [
+      &#123; position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+      &#123; position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+      &#123; position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
+      &#123; position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
+      &#123; position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+      &#123; position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+      &#123; position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
+      &#123; position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
+      &#123; position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
+      &#123; position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+    ];
+  }
+
+          
+</code></pre>
+
+        <p>
+            <b>Note</b>: If you use the keys array, then the columns will be drawn to agree with their order (including
+            repetitions). If you do not use the keys array, then the columns will be drawn to agree with the specified
+            templates (ngx-column). <br />
+        </p>
+    </div>
+
+    <div class="column">
+        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
+            <ngx-column key="name" [sticky]="true"> </ngx-column>
+
+            <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
+                <ng-template ngx-th></ng-template>
+                <ng-template ngx-td>
+                    <button class="button__done" mat-button>
+                        <mat-icon>done</mat-icon>
+                    </button>
+                </ng-template>
+            </ngx-column>
+        </ngx-table-builder>
+
+        <div><br /></div>
+
+        <pre><code class="javascript" ngNonBindable>
+  &lt;!-- app.component.html -->
+  &lt;ngx-table-builder [source]="data" [striped]="false" [keys]="columns">
+      &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
+
+      &lt;ngx-column
+          width="50"
+          key="status"
+          [sticky-end]="true"
+          [css-class]="['status-column']">
+
+          &lt;ng-template ngx-th>&lt;/ng-template>
+          &lt;ng-template ngx-td>
+              &lt;button class="button__done" mat-button>
+                  &lt;mat-icon>done&lt;/mat-icon>
+              &lt;/button>
+          &lt;/ng-template>
+
+      &lt;/ngx-column>
+
+  &lt;/ngx-table-builder>
+</code></pre>
+    </div>
+</div>
+
+<div><br /></div>
