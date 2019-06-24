@@ -6,7 +6,7 @@
         "lint": "ng lint",
         "typedoc": "typedoc projects/table-builder/src",
         "test": "jest --config ./jest.config.js --coverage",
-        "start": "ng serve --open --aot=false",
+        "start": "ng serve --open --aot=false --port 4300",
         "build": "ng build && ng build table-builder",
         "build:lib": "ng build table-builder",
         "build.meta": "echo 'prebuild'",

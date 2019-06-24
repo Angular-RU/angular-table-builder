@@ -1,0 +1,17 @@
+<mat-toolbar class="simple-toolbar">
+    <span>
+        Sortable columns
+        <span *ngIf="table.isRendered"> ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
+    </span>
+    <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
+</mat-toolbar>
+
+<ngx-table-builder #table [source]="data" [auto-height]="true">
+    <!--
+       <ngx-options /> - declaration common options for columns
+
+       Also you can customize your columns manually
+       <ngx-column key="myKey" [sortable]="true">...</ngx-column>
+    -->
+    <ngx-options [sortable]="true"></ngx-options>
+</ngx-table-builder>

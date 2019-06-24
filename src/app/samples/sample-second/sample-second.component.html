@@ -112,7 +112,6 @@
         .button__done[mat-button] &#123;
           padding: 0;
           min-width: 100%;
-          line-height: 45px;
         }
       `
     ],
@@ -151,7 +150,7 @@
 
     <div class="column">
         <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
-            <ngx-column key="name" [sticky]="true"> </ngx-column>
+            <ngx-column key="name" [sticky]="true"></ngx-column>
 
             <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
                 <ng-template ngx-th></ng-template>

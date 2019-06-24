@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, EventEmitter, Input, Output, ViewRef } from '@angular/core';
 import { PrimaryKey, ResizeEvent } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
@@ -30,7 +30,7 @@ export abstract class TableBuilderApiImpl {
     public customModelColumnsKeys: string[] = [];
     public abstract templateParser: TemplateParserService;
     public abstract selection: SelectionService;
-    public abstract cd: ChangeDetectorRef;
+    protected abstract cd: ChangeDetectorRef;
     protected abstract utils: UtilsService;
     protected abstract resize: ResizableService;
 
@@ -51,11 +51,11 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get clientRowHeight(): number {
-        return parseInt(this.rowHeight as string);
+        return parseInt(this.rowHeight as string) || null;
     }
 
     public get clientColWidth(): number {
-        return this.autoWidth ? null : parseInt(this.columnWidth as string);
+        return this.autoWidth ? null : parseInt(this.columnWidth as string) || null;
     }
 
     public get columnVirtualHeight(): number {
@@ -76,6 +76,12 @@ export abstract class TableBuilderApiImpl {
         );
 
         event.preventDefault();
+    }
+
+    public detectChanges(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
+        }
     }
 
     private onMouseResizeColumn(key: string, width: number): void {

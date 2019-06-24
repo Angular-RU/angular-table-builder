@@ -8,7 +8,8 @@ import {
     NgZone,
     OnChanges,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ViewRef
 } from '@angular/core';
 
 import { ColumnListRef, ColumnOptionsRef, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
@@ -51,7 +52,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
     constructor(
         public readonly selection: SelectionService,
         public readonly templateParser: TemplateParserService,
-        public readonly cd: ChangeDetectorRef,
+        protected readonly cd: ChangeDetectorRef,
         protected readonly ngZone: NgZone,
         protected readonly utils: UtilsService,
         protected readonly resize: ResizableService
@@ -78,7 +79,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     public updateScrollOffset(offset: boolean): void {
         this.scrollOffset = { offset };
-        this.cd.detectChanges();
+        this.detectChanges();
     }
 
     public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {
@@ -117,7 +118,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
                 if (index > COUNT_SYNC_RENDERED_COLUMNS) {
                     window.setTimeout(() => {
                         this.displayedColumns.push(columnName);
-                        this.cd.detectChanges();
+                        this.detectChanges();
                         resolve(index);
                     }, index + TIME_IDLE + SMOOTH_FPS_FRAME);
                 } else {

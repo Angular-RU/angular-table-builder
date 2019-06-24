@@ -63,6 +63,7 @@ export class TemplateParserService {
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
 
         this.schema.columns[key] = {
+            customColumn: typeof column.customKey === 'string' ? true : column.customKey,
             th: TemplateParserService.getCellTemplateContext(key, thTemplate),
             td: TemplateParserService.getCellTemplateContext(key, tdTemplate),
             width: column.width || this.columnOptions.width,
@@ -70,7 +71,8 @@ export class TemplateParserService {
             stickyRight: column.stickyRight,
             cssClass: column.cssClass || this.columnOptions.cssClass || [],
             cssStyle: column.cssStyle || this.columnOptions.cssStyle || [],
-            resizable: column.resizable || this.columnOptions.resizable
+            resizable: column.resizable || this.columnOptions.resizable,
+            sortable: column.sortable || this.columnOptions.sortable
         };
     }
 }

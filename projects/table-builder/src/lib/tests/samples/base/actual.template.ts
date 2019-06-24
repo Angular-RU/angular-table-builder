@@ -9,7 +9,9 @@ const COLUMN: TableColumn = {
     stickyRight: false,
     cssClass: [],
     cssStyle: [],
-    resizable: false
+    resizable: false,
+    customColumn: false,
+    sortable: false
 };
 
 export const ACTUAL_TEMPLATE: TableSchema = {

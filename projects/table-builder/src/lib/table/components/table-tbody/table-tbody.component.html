@@ -21,31 +21,38 @@
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
         [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
-        [style.line-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
+        [class.table-grid__cell--resizable]="columnsSchema[key]?.resizable"
+        [class.table-grid__cell--custom-cell]="columnsSchema[key]?.customColumn"
         [class.table-grid__cell--strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
         [class.table-grid__cell--enable-selection]="enableSelection"
         [class.table-grid__cell--selected]="selectionEntries[item[primaryKey]]"
         [class.table-grid__cell--text-bold]="columnsSchema[key]?.td.textBold"
-        [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
         [ngClass]="columnsSchema[key]?.td.class"
         [ngStyle]="columnsSchema[key]?.td.style"
     >
-        <ng-template
-            [ngIf]="columnsSchema[key]?.td.template"
-            [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-            [ngTemplateOutletContext]="{
-                $implicit:
-                    columnsSchema[key]?.td.context === contextType.CELL
-                        ? columnsSchema[key]?.td.useDeepPath
-                            ? (item | deepPath: key)
-                            : (item[key] | defaultValue)
-                        : item
-            }"
-            [ngIfElse]="defaultTd"
+        <div
+            class="table-grid__cell--content"
+            [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
+            [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
+            [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         >
-        </ng-template>
-        <ng-template #defaultTd>
-            {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
-        </ng-template>
+            <ng-template
+                [ngIf]="columnsSchema[key]?.td.template"
+                [ngTemplateOutlet]="columnsSchema[key]?.td.template"
+                [ngTemplateOutletContext]="{
+                    $implicit:
+                        columnsSchema[key]?.td.context === contextType.CELL
+                            ? columnsSchema[key]?.td.useDeepPath
+                                ? (item | deepPath: key)
+                                : (item[key] | defaultValue)
+                            : item
+                }"
+                [ngIfElse]="defaultTd"
+            >
+            </ng-template>
+            <ng-template #defaultTd>
+                {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
+            </ng-template>
+        </div>
     </div>
 </virtual-scroller>

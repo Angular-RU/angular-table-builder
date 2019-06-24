@@ -24,6 +24,7 @@
             [ngClass]="columnsSchema[key]?.cssClass"
             [style.width.px]="columnsSchema[key]?.width"
             [style.min-width.px]="columnsSchema[key]?.width || clientColWidth"
+            [class.table-grid__column--custom-column]="columnsSchema[key]?.customColumn"
             [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
             [class.table-grid__column--sticky-left]="columnsSchema[key]?.stickyLeft"
             [class.table-grid__column--sticky-right]="columnsSchema[key]?.stickyRight"
@@ -34,6 +35,7 @@
         >
             <table-thead
                 [column-key]="key"
+                [content-visible]="column['visible']"
                 [client-row-height]="clientRowHeight"
                 [class.table-head__offset]="scrollOffset.offset"
                 (resize)="resizeColumn($event, column)"

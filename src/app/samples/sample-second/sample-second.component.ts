@@ -33,7 +33,6 @@ declare const hljs: Any;
             .button__done[mat-button] {
                 padding: 0;
                 min-width: 100%;
-                line-height: 45px;
             }
         `
     ],

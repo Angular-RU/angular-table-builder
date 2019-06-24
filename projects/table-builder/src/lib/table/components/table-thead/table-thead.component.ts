@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row';
 import { NGX_ANIMATION } from '../../animations/fade.animation';
@@ -14,6 +14,7 @@ import { ResizeEvent } from '../../interfaces/table-builder.internal';
     animations: [NGX_ANIMATION]
 })
 export class TableTheadComponent extends TableLineRow {
+    @Input('content-visible') public contentVisible: boolean;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
 
     constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {

@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 
 import { TableRow } from '../../interfaces/table-builder.external';
-import { Any } from '../../interfaces/table-builder.internal';
+import { Any, KeyMap } from '../../interfaces/table-builder.internal';
 import { UtilsInterface } from './utils.interface';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
+    public getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
+        return path ? path.split('.').reduce((value: string, key: string) => value && value[key], object) : object;
+    }
+
     public flattenKeysByRow(row: TableRow, parentKey: string = null, keys: string[] = []): string[] {
         for (const key in row) {
             if (!row.hasOwnProperty(key)) {

@@ -1,4 +1,5 @@
 @import './variables';
+@import './common';
 
 .table-grid {
     &__column {
@@ -39,7 +40,30 @@
             right: 0;
             top: 0;
         }
+
+        &--sortable {
+            width: 24px;
+            height: 20px;
+            font-size: 12px;
+            opacity: 0.1;
+            transition: opacity 0.2s ease-in-out;
+            @extend .vertical-align;
+
+            &:hover {
+                opacity: 1;
+                cursor: pointer;
+            }
+        }
     }
+}
+
+.table-grid__cell--content-sortable {
+    cursor: pointer;
+}
+
+.table-grid__cell--content-sortable:hover + .table-grid__column--sortable {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0.5;
 }
 
 .table-grid__with-vertical-line {

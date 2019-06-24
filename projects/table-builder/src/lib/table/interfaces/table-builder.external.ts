@@ -42,6 +42,8 @@ export interface TableColumn<T = Any> {
     stickyLeft: boolean;
     stickyRight: boolean;
     resizable: boolean;
+    sortable: boolean;
+    customColumn: boolean;
 }
 
 export interface TableSchema<T = unknown> {

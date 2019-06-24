@@ -10,7 +10,7 @@ export class FakeGenerator {
                 name: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
                 description: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
                 guid: '5cdae5b2ba0a57f709b72142' + '__' + idx,
-                ['About Big Text And More Powerful Label Fugiat tempor sunt nostrud']: `
+                ['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud']: `
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam.
                  Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa consectetur veniam

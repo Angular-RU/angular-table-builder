@@ -49,8 +49,7 @@ a {
     position: relative;
 }
 
-.mat-form-field,
-.mat-checkbox {
+.mat-form-field {
     margin-right: 20px;
 }
 

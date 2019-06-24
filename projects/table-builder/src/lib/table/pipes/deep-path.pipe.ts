@@ -25,11 +25,8 @@ export class DeepPathPipe implements PipeTransform {
             this.lastReference = object;
             this.lastPath = path;
 
-            this.value = path
-                ? path.split('.').reduce((value: string, key: string) => value && value[key], object)
-                : object;
-
-            this.value = new DefaultValuePipe(this.options, this.utils).transform(this.value);
+            const result: Any = this.utils.getValueByPath(object, path);
+            this.value = new DefaultValuePipe(this.options, this.utils).transform(result);
         }
 
         return this.value;
