@@ -33,8 +33,6 @@
         <div
             class="table-grid__cell--content"
             [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
-            [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
-            [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         >
             <ng-template
                 [ngIf]="columnsSchema[key]?.td.template"

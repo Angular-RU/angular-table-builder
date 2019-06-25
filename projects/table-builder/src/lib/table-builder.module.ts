@@ -18,6 +18,7 @@ import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.component';
+import { WebWorkerThreadService } from './table/worker/worker-thread.service';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -34,7 +35,7 @@ import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.
         DefaultValuePipe,
         NgxOptionsComponent
     ],
-    providers: [UtilsService],
+    providers: [UtilsService, WebWorkerThreadService],
     exports: [
         TableBuilderComponent,
         NgxColumnComponent,

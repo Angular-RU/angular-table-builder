@@ -20,4 +20,8 @@ export class TableTheadComponent extends TableLineRow {
     constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {
         super(templateParser, selection);
     }
+
+    public sortByKey(key: string): void {
+        console.log('key', key);
+    }
 }

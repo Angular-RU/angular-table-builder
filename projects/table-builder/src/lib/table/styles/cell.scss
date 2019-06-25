@@ -38,6 +38,10 @@
         &--content {
             overflow: hidden;
             @extend .vertical-align;
+
+            &:not(.table-grid__cell--content-sortable) {
+                width: 100%;
+            }
         }
 
         &--text-bold {

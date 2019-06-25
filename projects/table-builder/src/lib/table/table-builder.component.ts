@@ -5,11 +5,11 @@ import {
     Component,
     ContentChild,
     ContentChildren,
+    Injectable,
     NgZone,
     OnChanges,
     OnInit,
-    ViewEncapsulation,
-    ViewRef
+    ViewEncapsulation
 } from '@angular/core';
 
 import { ColumnListRef, ColumnOptionsRef, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
@@ -24,6 +24,7 @@ import { UtilsService } from './services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { ResizableService } from './services/resizer/resizable.service';
+import { WebWorkerThreadService } from './worker/worker-thread.service';
 
 const {
     COUNT_SYNC_RENDERED_COLUMNS,
@@ -41,7 +42,7 @@ const {
     animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
-    @ContentChild(NgxOptionsComponent, { static: false }) public columnOptions: ColumnOptionsRef = null;
+    @ContentChild(NgxOptionsComponent, { static: true }) public columnOptions: ColumnOptionsRef = null;
     @ContentChildren(NgxColumnComponent) public columnList: ColumnListRef = [];
 
     public isFirstRendered: boolean = false;
@@ -55,7 +56,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         protected readonly cd: ChangeDetectorRef,
         protected readonly ngZone: NgZone,
         protected readonly utils: UtilsService,
-        protected readonly resize: ResizableService
+        protected readonly resize: ResizableService,
+        private thread: WebWorkerThreadService
     ) {
         super();
     }
@@ -75,6 +77,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     public ngOnInit(): void {
         this.selection.primaryKey = this.primaryKey;
+        console.log(1);
+        this.thread
+            .run((input: number) => {
+                let i: number = 0;
+                for (; i < 3000000000; i++) {}
+
+                return input + i;
+            }, 10)
+            .then((e) => {
+                console.log(e);
+            });
+        console.log(2);
     }
 
     public updateScrollOffset(offset: boolean): void {

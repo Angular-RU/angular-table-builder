@@ -14,6 +14,7 @@
             class="table-grid__cell--content table-grid__header-cell--content"
             [class.table-grid__cell--content-sortable]="columnsSchema[key]?.sortable"
             [class.table-grid__cell--nowrap]="columnsSchema[key]?.th.nowrap"
+            (click)="columnsSchema[key]?.sortable ? sortByKey(key) : null"
         >
             <ng-template
                 [ngIf]="columnsSchema[key]?.th.template"
@@ -24,7 +25,13 @@
         </div>
 
         <ng-container *ngIf="!columnsSchema[key]?.customColumn && columnsSchema[key]?.sortable as showSort">
-            <div class="table-grid__column--sortable" *ngIf="showSort">⬆</div>
+            <div
+                class="table-grid__column--sortable"
+                *ngIf="showSort"
+                (click)="columnsSchema[key]?.sortable ? sortByKey(key) : null"
+            >
+                ⬆
+            </div>
         </ng-container>
 
         <div

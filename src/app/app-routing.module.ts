@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IntroductionComponent } from './samples/introduction/introduction.component';
@@ -22,45 +23,35 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                         },
                         {
                             path: 'first',
-                            loadChildren: (): Promise<unknown> =>
-                                import('./samples/sample-first/sample-first.module').then(
-                                    (module: Any) => module.SampleFirstModule
-                                )
+                            loadChildren: () =>
+                                import('./samples/sample-first/sample-first.module').then((m) => m.SampleFirstModule)
                         },
                         {
                             path: 'second',
-                            loadChildren: (): Promise<unknown> =>
+                            loadChildren: () =>
                                 import('./samples/sample-second/sample-second.module').then(
-                                    (module: Any) => module.SampleSecondModule
+                                    (m: Any) => m.SampleSecondModule
                                 )
                         },
                         {
                             path: 'third',
-                            loadChildren: (): Promise<unknown> =>
-                                import('./samples/sample-third/sample-third.module').then(
-                                    (module: Any) => module.SampleThirdModule
-                                )
+                            loadChildren: () =>
+                                import('./samples/sample-third/sample-third.module').then((m) => m.SampleThirdModule)
                         },
                         {
                             path: 'fourth',
-                            loadChildren: (): Promise<unknown> =>
-                                import('./samples/sample-fourth/sample-fourth.module').then(
-                                    (module: Any) => module.SampleFourthModule
-                                )
+                            loadChildren: () =>
+                                import('./samples/sample-fourth/sample-fourth.module').then((m) => m.SampleFourthModule)
                         },
                         {
                             path: 'five',
-                            loadChildren: (): Promise<unknown> =>
-                                import('./samples/sample-five/sample-five.module').then(
-                                    (module: Any) => module.SampleFiveModule
-                                )
+                            loadChildren: () =>
+                                import('./samples/sample-five/sample-five.module').then((m) => m.SampleFiveModule)
                         },
                         {
                             path: 'six',
-                            loadChildren: (): Promise<unknown> =>
-                                import('./samples/sample-six/sample-six.module').then(
-                                    (module: Any) => module.SampleSixModule
-                                )
+                            loadChildren: () =>
+                                import('./samples/sample-six/sample-six.module').then((m) => m.SampleSixModule)
                         }
                     ]
                 }
