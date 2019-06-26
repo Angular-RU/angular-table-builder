@@ -1,0 +1,16 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Filter columns</span>
+</mat-toolbar>
+
+<mat-tab-group>
+    <mat-tab label="Filter">
+        <ngx-table-builder #table [source]="data" [auto-height]="true">
+            <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
+        </ngx-table-builder>
+    </mat-tab>
+    <mat-tab label="Filter + Sort">
+        <ngx-table-builder #table [source]="data" [auto-height]="true">
+            <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
+        </ngx-table-builder>
+    </mat-tab>
+</mat-tab-group>

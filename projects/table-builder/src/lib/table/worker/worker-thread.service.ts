@@ -1,20 +1,34 @@
 import { Injectable } from '@angular/core';
-import { WebWorkerThread } from './worker-thread.interface';
+import { Executor, WebWorkerThread } from './worker-thread.interface';
+import { Any, Fn } from '../interfaces/table-builder.internal';
 
 @Injectable()
 export class WebWorkerThreadService implements WebWorkerThread {
-    private workerFunctionToUrlMap = new WeakMap<Function, string>();
-    private promiseToWorkerMap = new WeakMap<Promise<any>, Worker>();
+    private readonly workerFunctionToUrlMap: WeakMap<Fn, string> = new WeakMap();
+    private readonly promiseToWorkerMap: WeakMap<Promise<Any>, Worker> = new WeakMap();
 
-    run<T>(workerFunction: (input: any) => T, data?: any): Promise<T> {
-        const url = this.getOrCreateWorkerUrl(workerFunction);
+    private static createWorkerUrl(resolve: Fn): string {
+        const resolveString: string = resolve.toString();
+
+        const webWorkerTemplate: string = `
+            self.addEventListener('message', function(e) {
+                postMessage((${resolveString})(e.data));
+            });
+        `;
+
+        const blob: Blob = new Blob([webWorkerTemplate], { type: 'text/javascript' });
+        return URL.createObjectURL(blob);
+    }
+
+    public run<T, K>(workerFunction: (input: K) => T, data?: K): Promise<T> {
+        const url: string = this.getOrCreateWorkerUrl(workerFunction);
         return this.runUrl(url, data);
     }
 
-    runUrl(url: string, data?: any): Promise<any> {
-        const worker = new Worker(url);
-        const promise = this.createPromiseForWorker(worker, data);
-        const promiseCleaner = this.createPromiseCleaner(promise);
+    public runUrl(url: string, data?: any): Promise<Any> {
+        const worker: Worker = new Worker(url);
+        const promise: Promise<Any> = this.createPromiseForWorker(worker, data);
+        const promiseCleaner: Any = this.createPromiseCleaner(promise);
 
         this.promiseToWorkerMap.set(promise, worker);
 
@@ -23,54 +37,45 @@ export class WebWorkerThreadService implements WebWorkerThread {
         return promise;
     }
 
-    terminate<T>(promise: Promise<T>): Promise<T> {
+    public terminate<T>(promise: Promise<T>): Promise<T> {
         return this.removePromise(promise);
     }
 
-    getWorker(promise: Promise<any>): Worker {
+    public getWorker(promise: Promise<any>): Worker {
         return this.promiseToWorkerMap.get(promise);
     }
 
-    private createPromiseForWorker<T>(worker: Worker, data: any) {
-        return new Promise<T>((resolve, reject) => {
-            worker.addEventListener('message', (event) => resolve(event.data));
+    private createPromiseForWorker<T>(worker: Worker, data: any): Promise<T> {
+        return new Promise<T>((resolve: Executor<Any>, reject: Executor<Any>): void => {
+            worker.addEventListener('message', (event: MessageEvent) => resolve(event.data));
             worker.addEventListener('error', reject);
             worker.postMessage(data);
         });
     }
 
-    private getOrCreateWorkerUrl(fn: Function): string {
+    private getOrCreateWorkerUrl(fn: Fn): string {
         if (!this.workerFunctionToUrlMap.has(fn)) {
-            const url = this.createWorkerUrl(fn);
+            const url: string = WebWorkerThreadService.createWorkerUrl(fn);
             this.workerFunctionToUrlMap.set(fn, url);
             return url;
         }
         return this.workerFunctionToUrlMap.get(fn);
     }
 
-    private createWorkerUrl(resolve: Function): string {
-        const resolveString = resolve.toString();
-        const webWorkerTemplate = `
-            self.addEventListener('message', function(e) {
-                postMessage((${resolveString})(e.data));
-            });
-        `;
-        const blob = new Blob([webWorkerTemplate], { type: 'text/javascript' });
-        return URL.createObjectURL(blob);
-    }
-
-    private createPromiseCleaner<T>(promise: Promise<T>): (input: any) => T {
-        return (event) => {
+    private createPromiseCleaner<T>(promise: Promise<T>): (input: Any) => T {
+        return (event: T): T => {
             this.removePromise(promise);
             return event;
         };
     }
 
     private removePromise<T>(promise: Promise<T>): Promise<T> {
-        const worker = this.promiseToWorkerMap.get(promise);
+        const worker: Worker = this.promiseToWorkerMap.get(promise);
+
         if (worker) {
             worker.terminate();
         }
+
         this.promiseToWorkerMap.delete(promise);
         return promise;
     }

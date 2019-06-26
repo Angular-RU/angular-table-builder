@@ -12,9 +12,12 @@ import {
 import { DynamicHeightOptions } from '../interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
 
+const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+
 @Directive({ selector: '[autoHeight]' })
 export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
+    private isDirtyCheck: boolean;
 
     constructor(private readonly element: ElementRef, public ngZone: NgZone, public app: ApplicationRef) {
         this.ngZone = ngZone;
@@ -22,6 +25,10 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     private get height(): number {
         return this.autoHeight.height;
+    }
+
+    private get inViewport(): boolean {
+        return this.autoHeight.inViewport;
     }
 
     public ngOnInit(): void {
@@ -32,10 +39,13 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public ngAfterViewInit(): void {
         this.calculateHeight();
+        this.isDirtyCheck = true;
     }
 
     public ngOnChanges(): void {
-        this.calculateHeight();
+        if (this.isDirtyCheck) {
+            this.calculateHeight();
+        }
     }
 
     public ngOnDestroy(): void {
@@ -44,11 +54,13 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public recalculateByResize(): void {
         this.calculateHeight();
-        this.ngZone.runOutsideAngular(() => setTimeout(() => this.app.tick(), TableBuilderOptionsImpl.TIME_IDLE));
+        this.ngZone.runOutsideAngular(() => window.setTimeout(() => this.app.tick(), TIME_IDLE));
     }
 
     public calculateHeight(): void {
-        this.setHeightByParent(this.element.nativeElement);
+        if (this.inViewport) {
+            this.setHeightByParent(this.element.nativeElement);
+        }
     }
 
     private setHeightByParent(element: HTMLElement): void {

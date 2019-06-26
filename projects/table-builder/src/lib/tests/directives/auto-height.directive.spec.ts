@@ -78,25 +78,35 @@ describe('[TEST]: auto height', () => {
     });
 
     it('should be correct calculate auto height', () => {
-        directive.autoHeight = { detect: true };
+        directive.autoHeight = { detect: true, inViewport: true };
         directive.calculateHeight();
         expect(style).toEqual(`display: block; height: calc(1000px - 10px - 10px)`);
     });
 
+    it('should be correct hide height not in viewport', () => {
+        directive.autoHeight = { detect: true, inViewport: false };
+        directive.calculateHeight();
+        expect(style).toEqual(``);
+
+        directive.autoHeight = { detect: false, height: 200, inViewport: false };
+        directive.calculateHeight();
+        expect(style).toEqual(``);
+    });
+
     it('should be correct calculate custom height', () => {
-        directive.autoHeight = { detect: true, height: 500 };
+        directive.autoHeight = { detect: true, height: 500, inViewport: true };
         directive.calculateHeight();
         expect(style).toEqual(`display: block; height: 500px`);
     });
 
     it('should be correct empty style when autoHeight not called', () => {
-        directive.autoHeight = { detect: false, height: null };
+        directive.autoHeight = { detect: false, height: null, inViewport: true };
         directive.calculateHeight();
         expect(style).toEqual(``);
     });
 
     it('should be correct recalculate height', () => {
-        directive.autoHeight = { height: 200 };
+        directive.autoHeight = { height: 200, inViewport: true };
         directive.recalculateByResize();
         expect(style).toEqual(`display: block; height: 200px`);
         expect(ticked).toEqual(1);

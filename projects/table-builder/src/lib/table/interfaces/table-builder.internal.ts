@@ -6,8 +6,13 @@ export enum PrimaryKey {
     ID = 'id'
 }
 
+export enum TableKeys {
+    SOURCE_KEY = 'source'
+}
+
 export interface DynamicHeightOptions {
     detect: boolean;
+    inViewport: boolean;
     height: number;
 }
 
@@ -37,4 +42,8 @@ export type TableEvent = Event | MouseEvent | KeyboardEvent;
 export interface ResizeEvent {
     event: MouseEvent;
     key: string;
+}
+
+export interface ScrollOverload {
+    isOverload: boolean;
 }

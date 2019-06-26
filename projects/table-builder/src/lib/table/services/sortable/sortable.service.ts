@@ -1,88 +1,64 @@
-import { Injectable } from '@angular/core';
-import { Any, KeyMap } from '../../interfaces/table-builder.internal';
-import { SortOrderType } from './sortable-type.enum';
+import { Injectable, NgZone } from '@angular/core';
+
+import { KeyMap } from '../../interfaces/table-builder.internal';
+import { SortableMessage, SortableResolver, SortOrderType } from './sortable.interfaces';
+import { TableRow } from '../../interfaces/table-builder.external';
+import { WebWorkerThreadService } from '../../worker/worker-thread.service';
 import { UtilsService } from '../utils/utils.service';
+import { sortWorker } from './sort.worker';
+import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 
 @Injectable()
 export class SortableService {
-    constructor(private readonly utils: UtilsService) {}
+    public definition: KeyMap<SortOrderType> = {};
 
-    public sortByKeys(data: Any[], keys: KeyMap<SortOrderType>): Any[] {
-        const countKeys: number = Object.keys(keys).length;
+    constructor(
+        private readonly thread: WebWorkerThreadService,
+        private readonly utils: UtilsService,
+        private readonly zone: NgZone
+    ) {}
 
-        if (!countKeys) {
-            return data.sort(this.shallowSort.bind(this));
+    public sort(data: TableRow[], key: string = null): Promise<TableRow[]> {
+        if (key) {
+            this.updateSortKey(key);
         }
 
-        const matches: KeyMap<number> = this.getMatchesKeys(keys);
-        return data.sort((a: unknown, b: unknown) => this.multiSort(a, b, matches));
+        return new Promise((resolve: SortableResolver<TableRow[]>): void => {
+            this.thread
+                .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
+                .then((sorted: TableRow[]) => {
+                    this.zone.runOutsideAngular(() =>
+                        setTimeout(() => resolve(sorted), TableBuilderOptionsImpl.TIME_IDLE)
+                    );
+                });
+        });
     }
 
-    private multiSort(a: unknown, b: unknown, matches: KeyMap<number>): Any {
-        const countKeys: number = Object.keys(matches).length;
-        let sorted: number = 0;
-        let ix: number = 0;
+    public get empty(): boolean {
+        return Object.keys(this.definition).length === 0;
+    }
 
-        while (sorted === 0 && ix < countKeys) {
-            const key: string = this.observeKey(matches, ix);
-            if (key) {
-                const depth: number = matches[key];
-                sorted = this.deepSort(key, a, b, depth);
-                ix++;
+    public setDefinition(definition: KeyMap<string>): void {
+        this.definition = (definition as KeyMap<SortOrderType>) || {};
+    }
+
+    private updateSortKey(key: string): void {
+        this.definition = this.getImmutableDefinitionWithKey(key);
+    }
+
+    private getImmutableDefinitionWithKey(key: string): KeyMap<SortOrderType> {
+        const existKey: SortOrderType = this.definition[key];
+
+        if (existKey) {
+            if (existKey === SortOrderType.ASC) {
+                this.definition[key] = SortOrderType.DESC;
+            } else {
+                delete this.definition[key];
             }
+        } else {
+            this.definition[key] = SortOrderType.ASC;
         }
 
-        return sorted;
-    }
-
-    private getMatchesKeys(keys: KeyMap<SortOrderType | number>): KeyMap<number> {
-        const matches: KeyMap<number> = {};
-
-        for (const key in keys) {
-            if (keys.hasOwnProperty(key)) {
-                matches[key] =
-                    keys[key] === SortOrderType.DESC || keys[key] === -1
-                        ? -1
-                        : keys[key] === SortOrderType.SKIP || keys[key] === 0
-                        ? 0
-                        : 1;
-            }
-        }
-
-        return matches;
-    }
-
-    private deepSort(key: string, leftHand: Any, rightHand: Any, depth: number): number {
-        const a: Any = this.utils.getValueByPath(leftHand, key);
-        const b: Any = this.utils.getValueByPath(rightHand, key);
-        return this.shallowSort(a, b, depth);
-    }
-
-    private shallowSort(a: Any, b: Any, depth?: number): number {
-        const currentDepth: number = depth !== null ? depth : 1;
-        b = this.utils.checkValueIsEmpty(b) ? '' : b;
-
-        if (a === b) {
-            return 0;
-        }
-
-        return a > b ? currentDepth : -1 * currentDepth;
-    }
-
-    private observeKey(keys: KeyMap<number>, count: number): string {
-        let key: string;
-        let size: number = 0;
-
-        for (key in keys) {
-            if (keys.hasOwnProperty(key)) {
-                if (size === count) {
-                    return key;
-                }
-
-                size++;
-            }
-        }
-
-        return null;
+        return { ...this.definition };
     }
 }

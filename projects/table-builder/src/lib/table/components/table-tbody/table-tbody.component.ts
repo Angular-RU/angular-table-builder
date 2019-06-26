@@ -6,28 +6,32 @@ import {
     Inject,
     Input,
     NgZone,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ViewRef
 } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row';
-import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { ImplicitContext, TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { KeyMap } from '../../interfaces/table-builder.internal';
+import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
+import { UtilsService } from '../../services/utils/utils.service';
+
+const { FRAME_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'table-tbody',
     templateUrl: './table-tbody.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None,
-    animations: [NGX_ANIMATION]
+    encapsulation: ViewEncapsulation.None
 })
 export class TableTbodyComponent extends TableLineRow {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
+    @Input() public throttling: boolean;
+    @Input('scroll-overload') public scrollOverload: Partial<ScrollOverload>;
     @Input('primary-key') public primaryKey: string;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
     @Input('enable-selection') public enableSelection: boolean;
@@ -35,13 +39,15 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('buffer-amount') public bufferAmount: number;
     public contextType: typeof ImplicitContext = ImplicitContext;
+    private updateId: number;
 
     constructor(
         public selection: SelectionService,
         public cd: ChangeDetectorRef,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService,
-        private readonly ngZone: NgZone
+        private readonly ngZone: NgZone,
+        private readonly utils: UtilsService
     ) {
         super(templateParser, selection);
     }
@@ -65,12 +71,35 @@ export class TableTbodyComponent extends TableLineRow {
                     this.selection.selectRow(row, event, this.source);
                     event.preventDefault();
                     this.cd.detectChanges();
-                }, TableBuilderOptionsImpl.TIME_IDLE);
+                }, TIME_IDLE);
             }
 
             if (emitter) {
                 emitter.emit(this.generateTableCellInfo(row, event));
             }
         });
+    }
+
+    public update(): void {
+        if (this.canThrottling) {
+            this.ngZone.runOutsideAngular(() => {
+                window.clearTimeout(this.updateId);
+                this.updateId = window.setTimeout(() => {
+                    window.requestAnimationFrame(() => this.detectChanges());
+                }, FRAME_TIME);
+            });
+        } else {
+            this.cd.detectChanges();
+        }
+    }
+
+    private get canThrottling(): boolean {
+        return this.scrollOverload.isOverload && !this.utils.isFirefox() && !this.enableSelection && this.throttling;
+    }
+
+    public detectChanges(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
+        }
     }
 }

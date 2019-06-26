@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/table-builder';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
-import { FakeGenerator } from '../../shared/fake-generator.class';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 @Component({
     selector: 'sample-first',
@@ -50,35 +50,34 @@ export class SampleFirstComponent implements OnInit {
     }
 
     public updateTable(): void {
+        this.loading = true;
         switch (this.dataSize) {
             case '10x5':
-                this.simple = FakeGenerator.generateTable(10, 5);
+                MocksGenerator.generator(10, 5).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '100x20':
-                this.simple = FakeGenerator.generateTable(100, 20);
+                MocksGenerator.generator(100, 20).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '1000x30':
-                this.simple = FakeGenerator.generateTable(1000, 30);
+                MocksGenerator.generator(1000, 30).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '10000x50':
-                this.simple = FakeGenerator.generateTable(10000, 50);
+                MocksGenerator.generator(10000, 50).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '100000x100':
-                this.loading = true;
-                this.cd.detectChanges();
-                setTimeout(() => {
-                    this.simple = FakeGenerator.generateTable(100000, 100);
-                    this.loading = false;
-                    this.cd.detectChanges();
-                }, 1000);
-
+                MocksGenerator.generator(100000, 100).then((data: TableRow[]) => this.setData(data));
                 break;
         }
+        this.cd.detectChanges();
+    }
 
-        setTimeout(() => this.cd.detectChanges(), 100);
+    private setData(data: TableRow[]): void {
+        this.simple = data;
+        this.loading = false;
+        this.cd.detectChanges();
     }
 }

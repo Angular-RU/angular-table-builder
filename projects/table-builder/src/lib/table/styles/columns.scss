@@ -46,8 +46,18 @@
             height: 20px;
             font-size: 12px;
             opacity: 0.1;
-            transition: opacity 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
+            transform: rotate(180deg);
+
             @extend .vertical-align;
+
+            &-active {
+                opacity: 1;
+            }
+
+            &-desc {
+                transform: rotate(0deg);
+            }
 
             &:hover {
                 opacity: 1;
@@ -61,7 +71,7 @@
     cursor: pointer;
 }
 
-.table-grid__cell--content-sortable:hover + .table-grid__column--sortable {
+.table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
     transition: opacity 0.2s ease-in-out;
     opacity: 0.5;
 }

@@ -1,16 +1,19 @@
 <div
-    *ngIf="source?.length && isFirstRendered"
-    class="table-grid__root"
+    inViewport
     [style.width]="width"
+    class="table-grid__root"
+    *ngIf="source?.length && isDirtyCheck"
     [class.table-grid__with-vertical-line]="verticalBorder"
     [class.table-grid__root-auto-height]="autoHeightDetect"
-    [autoHeight]="{ detect: autoHeightDetect, height: height }"
-    [@fadeAnimation]
+    [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport }"
+    (inViewportAction)="inViewport = $event?.visible"
+    [@fadeAnimation]="'in'"
 >
     <div
         #tableViewport
         wheelThrottling
         class="table-grid"
+        (scrollOverload)="updateScrollOverload($event)"
         (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
@@ -33,28 +36,34 @@
             [class.table-grid__column--default-width]="!autoWidth"
             (inViewportAction)="inViewportAction(column, $event)"
         >
-            <table-thead
-                [column-key]="key"
-                [content-visible]="column['visible']"
-                [client-row-height]="clientRowHeight"
-                [class.table-head__offset]="scrollOffset.offset"
-                (resize)="resizeColumn($event, column)"
-            ></table-thead>
+            <div class="table-grid__column-area" *ngIf="column['visible']" [@fadeAnimation]="'in'">
+                <table-thead
+                    [column-key]="key"
+                    [definition]="sortable.definition"
+                    [client-row-height]="clientRowHeight"
+                    [class.table-head__offset]="scrollOffset.offset"
+                    (resize)="resizeColumn($event, column)"
+                    (sortByKey)="sortByKey($event)"
+                ></table-thead>
 
-            <table-tbody
-                *ngIf="column['visible']"
-                [source]="source"
-                [column-key]="key"
-                [striped]="striped"
-                [primary-key]="primaryKey"
-                [selection-entries]="selectionEntries"
-                [buffer-amount]="bufferAmount"
-                [table-viewport]="tableViewport"
-                [enable-selection]="enableSelection"
-                [client-row-height]="clientRowHeight"
-                [column-virtual-height]="columnVirtualHeight"
-            >
-            </table-tbody>
+                <table-tbody
+                    [source]="source"
+                    [column-key]="key"
+                    [striped]="striped"
+                    [throttling]="throttling"
+                    [primary-key]="primaryKey"
+                    [buffer-amount]="bufferAmount"
+                    [table-viewport]="tableViewport"
+                    [scroll-overload]="scrollOverload"
+                    [enable-selection]="enableSelection"
+                    [client-row-height]="clientRowHeight"
+                    [selection-entries]="selectionEntries"
+                    [column-virtual-height]="columnVirtualHeight"
+                >
+                </table-tbody>
+            </div>
         </div>
     </div>
+
+    <div *ngIf="freezeTable" class="freeze"></div>
 </div>

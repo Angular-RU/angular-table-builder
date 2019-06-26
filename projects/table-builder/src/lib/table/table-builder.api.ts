@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, EventEmitter, Input, Output, ViewRef } from '@angular/core';
-import { PrimaryKey, ResizeEvent } from './interfaces/table-builder.internal';
+import { PrimaryKey, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
@@ -7,6 +7,9 @@ import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { ResizableService } from './services/resizer/resizable.service';
+import { SortableService } from './services/sortable/sortable.service';
+
+const { ROW_HEIGHT, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl {
     @Input() public height: number;
@@ -14,6 +17,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
+    @Input() public throttling: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
@@ -26,13 +30,19 @@ export abstract class TableBuilderApiImpl {
     @Input('buffer-amount') public bufferAmount: number = null;
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<TableSchema> = new EventEmitter();
+    public inViewport: boolean;
+    public scrollOverload: Partial<ScrollOverload> = {};
+    public freezeTable: boolean;
     public modelColumnKeys: string[] = [];
     public customModelColumnsKeys: string[] = [];
     public abstract templateParser: TemplateParserService;
     public abstract selection: SelectionService;
-    protected abstract cd: ChangeDetectorRef;
+    protected originalSource: TableRow[];
     protected abstract utils: UtilsService;
     protected abstract resize: ResizableService;
+    protected abstract sortable: SortableService;
+
+    protected constructor(protected cd: ChangeDetectorRef) {}
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;
@@ -59,11 +69,11 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get columnVirtualHeight(): number {
-        return this.source.length * (this.clientRowHeight || TableBuilderOptionsImpl.ROW_HEIGHT);
+        return this.source.length * (this.clientRowHeight || ROW_HEIGHT);
     }
 
     public get columnHeight(): number {
-        const rowHeight: number = this.clientRowHeight || TableBuilderOptionsImpl.ROW_HEIGHT;
+        const rowHeight: number = this.clientRowHeight || ROW_HEIGHT;
         return this.source.length * rowHeight + rowHeight;
     }
 
@@ -78,15 +88,18 @@ export abstract class TableBuilderApiImpl {
         event.preventDefault();
     }
 
+    public sortByKey(key: string): void {
+        this.toggleFreeze();
+        this.sortable.sort(this.originalSource, key).then((sorted: TableRow[]) => {
+            this.source = this.sortable.empty ? this.originalSource : sorted;
+            this.toggleFreeze(TIME_IDLE);
+        });
+    }
+
     public detectChanges(): void {
         if (!(this.cd as ViewRef).destroyed) {
             this.cd.detectChanges();
         }
-    }
-
-    private onMouseResizeColumn(key: string, width: number): void {
-        this.templateParser.updateState(key, { width });
-        this.cd.detectChanges();
     }
 
     protected generateCustomModelColumnsKeys(): string[] {
@@ -95,6 +108,20 @@ export abstract class TableBuilderApiImpl {
 
     protected generateModelColumnKeys(): string[] {
         return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
+    }
+
+    private toggleFreeze(time: number = null): void {
+        this.freezeTable = !this.freezeTable;
+        if (time) {
+            setTimeout(() => this.detectChanges(), time);
+        } else {
+            this.detectChanges();
+        }
+    }
+
+    private onMouseResizeColumn(key: string, width: number): void {
+        this.templateParser.updateState(key, { width });
+        this.cd.detectChanges();
     }
 
     private excluding(keys: string[]): string[] {

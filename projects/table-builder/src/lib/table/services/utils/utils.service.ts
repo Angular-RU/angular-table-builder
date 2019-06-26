@@ -6,6 +6,14 @@ import { UtilsInterface } from './utils.interface';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
+    public isFirefox(userAgent: string = null): boolean {
+        return (userAgent || navigator.userAgent).toLowerCase().indexOf('firefox') > -1;
+    }
+
+    public clone<T = Any>(obj: T): T {
+        return JSON.parse(JSON.stringify(obj || null)) || {};
+    }
+
     public getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
         return path ? path.split('.').reduce((value: string, key: string) => value && value[key], object) : object;
     }

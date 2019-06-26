@@ -3,6 +3,7 @@ import { ElementRef, NgZone } from '@angular/core';
 import { WheelThrottlingDirective } from '../../table/directives/wheel.directive';
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../../table/config/table-builder-options';
+import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('[TEST]: Wheel throttling', () => {
     let directive: WheelThrottlingDirective;
@@ -35,7 +36,7 @@ describe('[TEST]: Wheel throttling', () => {
     beforeEach(() => {
         const options: TableBuilderOptionsImpl = new TableBuilderOptionsImpl();
         options.wheelMaxDelta = maxDeltaWheel;
-        directive = new WheelThrottlingDirective(options, mockElementRef, mockNgZone as NgZone);
+        directive = new WheelThrottlingDirective(options, mockElementRef, mockNgZone as NgZone, new UtilsService());
         preventDefaulted = 0;
     });
 
@@ -78,11 +79,9 @@ describe('[TEST]: Wheel throttling', () => {
     });
 
     it('check handler options', () => {
-        expect(WheelThrottlingDirective.handlerOptions()).toEqual({ passive: false });
+        expect(directive.handlerOptions()).toEqual({ passive: false });
         expect(
-            WheelThrottlingDirective.handlerOptions(
-                'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion'
-            )
+            directive.handlerOptions('Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion')
         ).toEqual(true);
     });
 

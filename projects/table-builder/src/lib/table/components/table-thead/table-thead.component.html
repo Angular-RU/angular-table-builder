@@ -7,37 +7,35 @@
     [style.max-height.px]="columnsSchema[key]?.th.height || clientRowHeight"
     [ngClass]="columnsSchema[key]?.th.class"
     [ngStyle]="columnsSchema[key]?.th.style"
-    [@fadeAnimation]="'in'"
 >
-    <ng-container *ngIf="contentVisible">
-        <div
-            class="table-grid__cell--content table-grid__header-cell--content"
-            [class.table-grid__cell--content-sortable]="columnsSchema[key]?.sortable"
-            [class.table-grid__cell--nowrap]="columnsSchema[key]?.th.nowrap"
-            (click)="columnsSchema[key]?.sortable ? sortByKey(key) : null"
-        >
-            <ng-template
-                [ngIf]="columnsSchema[key]?.th.template"
-                [ngTemplateOutlet]="columnsSchema[key]?.th.template"
-                [ngIfElse]="defaultTh"
-            ></ng-template>
-            <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
-        </div>
+    <div
+        class="table-grid__cell--content table-grid__header-cell--content"
+        [class.table-grid__cell--content-sortable]="columnsSchema[key]?.sortable"
+        [class.table-grid__cell--nowrap]="columnsSchema[key]?.th.nowrap"
+        (click)="columnsSchema[key]?.sortable ? sortByKey.emit(key) : null"
+    >
+        <ng-template
+            [ngIf]="columnsSchema[key]?.th.template"
+            [ngTemplateOutlet]="columnsSchema[key]?.th.template"
+            [ngIfElse]="defaultTh"
+        ></ng-template>
+        <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
+    </div>
 
-        <ng-container *ngIf="!columnsSchema[key]?.customColumn && columnsSchema[key]?.sortable as showSort">
-            <div
-                class="table-grid__column--sortable"
-                *ngIf="showSort"
-                (click)="columnsSchema[key]?.sortable ? sortByKey(key) : null"
-            >
-                ⬆
-            </div>
-        </ng-container>
+    <div
+        *ngIf="!columnsSchema[key]?.customColumn && columnsSchema[key]?.sortable"
+        class="table-grid__column--sortable"
+        [class.table-grid__column--sortable-active]="definition[key]"
+        [class.table-grid__column--sortable-asc]="definition[key] === orderType.ASC"
+        [class.table-grid__column--sortable-desc]="definition[key] === orderType.DESC"
+        (click)="columnsSchema[key]?.sortable ? sortByKey.emit(key) : null"
+    >
+        ⬆
+    </div>
 
-        <div
-            *ngIf="columnsSchema[key]?.resizable"
-            class="table-grid__column--resize"
-            (mousedown)="resize.emit({ event: $event, key: key })"
-        ></div>
-    </ng-container>
+    <div
+        *ngIf="columnsSchema[key]?.resizable"
+        class="table-grid__column--resize"
+        (mousedown)="resize.emit({ event: $event, key: key })"
+    ></div>
 </div>

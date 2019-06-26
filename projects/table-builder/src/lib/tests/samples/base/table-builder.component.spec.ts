@@ -1,6 +1,6 @@
 /* tslint:disable:no-big-function */
 import { fakeAsync, tick } from '@angular/core/testing';
-import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone, SimpleChanges } from '@angular/core';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
@@ -15,6 +15,8 @@ import { UtilsService } from '../../../table/services/utils/utils.service';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
 import { ResizableService } from '../../../table/services/resizer/resizable.service';
 import { TableLineRow } from '../../../table/components/common/table-line-row';
+import { SortableService } from '../../../table/services/sortable/sortable.service';
+import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 
 export interface PeriodicElement {
     name: string;
@@ -45,8 +47,11 @@ describe('[TEST]: TableBuilder', () => {
     let selection: SelectionService;
     let templateParser: TemplateParserService;
     let resizable: ResizableService;
+    let sortable: SortableService;
+    let utils: UtilsService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
+    let changes: SimpleChanges;
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
     };
@@ -69,14 +74,17 @@ describe('[TEST]: TableBuilder', () => {
     beforeEach(() => {
         selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         templateParser = new TemplateParserService();
+        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         resizable = new ResizableService();
+        utils = new UtilsService();
         table = new TableBuilderComponent(
             selection,
             templateParser,
             mockChangeDetector as ChangeDetectorRef,
             mockNgZone as NgZone,
-            new UtilsService(),
-            resizable
+            utils,
+            resizable,
+            sortable
         );
     });
 
@@ -86,10 +94,26 @@ describe('[TEST]: TableBuilder', () => {
         weight = MocksGenerator.generateColumn('weight');
     });
 
-    beforeEach(() => (table.source = JSON.parse(JSON.stringify(data))));
+    beforeEach(() => {
+        table.source = JSON.parse(JSON.stringify(data));
+        changes = {
+            source: {
+                currentValue: table.source,
+                firstChange: false,
+                previousValue: undefined,
+                isFirstChange: (): boolean => false
+            }
+        };
+    });
 
     beforeEach(() => {
         Object.defineProperty(window, 'setTimeout', {
+            value: (callback: Fn): Any => {
+                callback();
+            }
+        });
+
+        Object.defineProperty(window, 'requestAnimationFrame', {
             value: (callback: Fn): Any => {
                 callback();
             }
@@ -131,18 +155,20 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.columnVirtualHeight).toEqual(800);
     });
 
-    it('should be correct displayedColumns', () => {
-        table.ngOnChanges();
+    it('should be correct displayedColumns', fakeAsync(() => {
+        table.ngOnChanges(changes);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.isFirstRendered).toEqual(false);
+        expect(table.isDirtyCheck).toEqual(false);
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(modelKeys);
-        expect(table.isFirstRendered).toEqual(true);
-    });
+
+        tick(1000); // async rendering
+        expect(table.isDirtyCheck).toEqual(true);
+    }));
 
     it('should be correct displayedColumns when set custom keys', () => {
         table.keys = customKeys;
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(customKeys);
     });
@@ -150,7 +176,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct displayedColumns when set custom keys and exclude keys', () => {
         table.keys = customKeys;
         table.excludeKeys = ['position'];
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['name', 'symbol', 'name']);
     });
@@ -162,7 +188,7 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct rendered', fakeAsync(() => {
         table.columnList = [position, name, weight];
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngAfterContentInit();
 
         tick(100);
@@ -177,10 +203,10 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct re-render table on change', () => {
-        table.isFirstRendered = true;
-        table.ngOnChanges();
+        table.isDirtyCheck = true;
+        table.ngOnChanges(changes);
         expect(table.displayedColumns).toEqual(modelKeys);
-        expect(table.isFirstRendered).toEqual(true);
+        expect(table.isDirtyCheck).toEqual(true);
     });
 
     it('should be correct invoke updateScrollOffset', () => {
@@ -198,7 +224,7 @@ describe('[TEST]: TableBuilder', () => {
         table.source = [{ a1: 1, a2: 2, a3: 3, a4: 4, a5: 5, a6: 6, a7: 7, a8: 8, a9: 9, a10: 10, a11: 11, a12: 12 }];
         expect(table.isRendered).toEqual(false);
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngAfterContentInit();
 
         tick(1000);
@@ -231,7 +257,8 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone
+            mockNgZone as NgZone,
+            utils
         );
 
         tableBody.source = [item];
@@ -258,7 +285,8 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone
+            mockNgZone as NgZone,
+            utils
         );
 
         tableBody.source = [item];

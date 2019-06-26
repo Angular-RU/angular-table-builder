@@ -6,3 +6,5 @@ export interface WebWorkerThread<R = Any, U = Any> {
     terminate<T>(promise: Promise<T>): Promise<T>;
     getWorker(promise: Promise<any>): Worker;
 }
+
+export type Executor<T = void> = (...args: Any[]) => T;

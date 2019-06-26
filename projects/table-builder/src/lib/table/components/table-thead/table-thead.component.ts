@@ -1,27 +1,24 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row';
-import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
-import { ResizeEvent } from '../../interfaces/table-builder.internal';
+import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
+import { SortOrderType } from '../../services/sortable/sortable.interfaces';
 
 @Component({
     selector: 'table-thead',
     templateUrl: './table-thead.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None,
-    animations: [NGX_ANIMATION]
+    encapsulation: ViewEncapsulation.None
 })
 export class TableTheadComponent extends TableLineRow {
-    @Input('content-visible') public contentVisible: boolean;
+    @Input() public definition: KeyMap<SortOrderType>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
+    @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
+    public orderType: typeof SortOrderType = SortOrderType;
 
     constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {
         super(templateParser, selection);
-    }
-
-    public sortByKey(key: string): void {
-        console.log('key', key);
     }
 }
