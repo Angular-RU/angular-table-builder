@@ -17,7 +17,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public throttling: boolean = true;
+    @Input() public throttling: boolean = false;
     @Input() public async: boolean = false;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
