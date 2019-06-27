@@ -77,7 +77,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     public ngOnChanges(changes: SimpleChanges): void {
         const sourceNotNull: boolean = SOURCE_KEY in changes && changes[SOURCE_KEY].currentValue;
-        if (sourceNotNull) {
+
+        if (sourceNotNull && this.getCountKeys() !== this.renderedCountKeys) {
+            this.renderedCountKeys = this.getCountKeys();
             this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
             this.modelColumnKeys = this.generateModelColumnKeys();
             this.originalSource = this.source;
@@ -183,7 +185,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
             : this.generateColumnsKeyMap(modelColumnKeys);
 
         this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnList);
-        return this.templateParser.renderedTemplateKeys;
+        return Array.from(this.templateParser.renderedTemplateKeys);
     }
 
     private checkUnCompiledTemplates(generatedList: string[]): void {

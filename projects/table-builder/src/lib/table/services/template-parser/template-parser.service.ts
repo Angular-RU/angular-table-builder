@@ -12,7 +12,7 @@ import { ColumnOptions } from '../../components/common/column-options';
 @Injectable()
 export class TemplateParserService {
     public schema: TableSchema;
-    public renderedTemplateKeys: string[];
+    public renderedTemplateKeys: Set<string>;
     public columnOptions: ColumnOptionsRef;
 
     private static getCellTemplateContext(key: string, cellTemplate: TemplateCellCommon): TableCellOptions {
@@ -32,7 +32,7 @@ export class TemplateParserService {
 
     public initialSchema(columnOptions: ColumnOptionsRef): TemplateParserService {
         this.schema = new SchemaBuilder();
-        this.renderedTemplateKeys = [];
+        this.renderedTemplateKeys = new Set<string>();
         this.columnOptions = columnOptions || new ColumnOptions();
         return this;
     }
@@ -40,11 +40,17 @@ export class TemplateParserService {
     public parse(allowedKeyMap: KeyMap<boolean>, templates: ColumnListRef): void {
         if (templates) {
             templates.forEach((column: NgxColumnComponent) => {
-                const { key, customKey }: NgxColumnComponent = column;
+                const { key, customKey, overridePosition }: NgxColumnComponent = column;
                 const needTemplateCheck: boolean = allowedKeyMap[key] || customKey !== false;
                 if (needTemplateCheck) {
-                    this.compileColumnMetadata(column);
-                    this.renderedTemplateKeys.push(key);
+                    if (overridePosition !== false && this.renderedTemplateKeys.has(key)) {
+                        this.renderedTemplateKeys.delete(key);
+                        this.compileColumnMetadata(column);
+                    } else if (!this.renderedTemplateKeys.has(key)) {
+                        this.compileColumnMetadata(column);
+                    }
+
+                    this.renderedTemplateKeys.add(key);
                 }
             });
         }

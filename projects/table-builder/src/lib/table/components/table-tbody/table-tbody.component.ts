@@ -6,12 +6,11 @@ import {
     Inject,
     Input,
     NgZone,
-    ViewEncapsulation,
-    ViewRef
+    ViewEncapsulation
 } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row';
-import { ImplicitContext, TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
+import { TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
@@ -19,7 +18,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
 import { UtilsService } from '../../services/utils/utils.service';
 
-const { FRAME_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'table-tbody',
@@ -38,8 +37,6 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('buffer-amount') public bufferAmount: number;
-    public contextType: typeof ImplicitContext = ImplicitContext;
-    private updateId: number;
 
     constructor(
         public selection: SelectionService,
@@ -58,6 +55,10 @@ export class TableTbodyComponent extends TableLineRow {
 
     public get canSelectTextInTable(): boolean {
         return !this.selection.selectionStart.status;
+    }
+
+    private get canThrottling(): boolean {
+        return this.scrollOverload.isOverload && !this.utils.isFirefox() && !this.enableSelection && this.throttling;
     }
 
     public trackByIdx(index: number, item: TableRow): number {
@@ -83,23 +84,13 @@ export class TableTbodyComponent extends TableLineRow {
     public update(): void {
         if (this.canThrottling) {
             this.ngZone.runOutsideAngular(() => {
-                window.clearTimeout(this.updateId);
-                this.updateId = window.setTimeout(() => {
+                window.clearTimeout(this.taskId);
+                this.taskId = window.setTimeout(() => {
                     window.requestAnimationFrame(() => this.detectChanges());
-                }, FRAME_TIME);
+                }, TableBuilderOptionsImpl.FRAME_TIME);
             });
         } else {
-            this.cd.detectChanges();
-        }
-    }
-
-    private get canThrottling(): boolean {
-        return this.scrollOverload.isOverload && !this.utils.isFirefox() && !this.enableSelection && this.throttling;
-    }
-
-    public detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
+            this.detectChanges();
         }
     }
 }

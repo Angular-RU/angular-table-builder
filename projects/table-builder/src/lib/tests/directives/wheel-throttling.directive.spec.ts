@@ -15,7 +15,7 @@ describe('[TEST]: Wheel throttling', () => {
 
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular<T = Any>(fn: Fn): T {
-            return fn() as Any;
+            return fn();
         }
     };
 

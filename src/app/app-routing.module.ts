@@ -57,6 +57,11 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                             path: 'seven',
                             loadChildren: () =>
                                 import('./samples/sample-seven/sample-seven.module').then((m) => m.SampleSevenModule)
+                        },
+                        {
+                            path: 'eight',
+                            loadChildren: () =>
+                                import('./samples/sample-eight/sample-eight.module').then((m) => m.SampleEightModule)
                         }
                     ]
                 }

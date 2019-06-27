@@ -80,3 +80,18 @@
         }
     }
 }
+
+.fade-in {
+    opacity: 1;
+    animation: fade 0.4s;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

@@ -15,16 +15,24 @@ export const ACTUAL_TEMPLATES: string = `
             <div class="total-padding"></div>
             <div class="scrollable-content">
               <div class="table-grid__cell table-grid__cell--strip">
-                <div class="table-grid__cell--content table-grid__cell--nowrap">SINGLE</div>
+                <div class="table-grid__cell--content table-grid__cell--nowrap">
+                  <table-cell>SINGLE</table-cell>
+                </div>
               </div>
               <div class="table-grid__cell">
-                <div class="table-grid__cell--content table-grid__cell--nowrap">DEVELOPER</div>
+                <div class="table-grid__cell--content table-grid__cell--nowrap">
+                  <table-cell>DEVELOPER</table-cell>
+                </div>
               </div>
               <div class="table-grid__cell table-grid__cell--strip">
-                <div class="table-grid__cell--content table-grid__cell--nowrap">PREMIUM</div>
+                <div class="table-grid__cell--content table-grid__cell--nowrap">
+                  <table-cell>PREMIUM</table-cell>
+                </div>
               </div>
               <div class="table-grid__cell">
-                <div class="table-grid__cell--content table-grid__cell--nowrap">ENTERPRISE</div>
+                <div class="table-grid__cell--content table-grid__cell--nowrap">
+                  <table-cell>ENTERPRISE</table-cell>
+                </div>
               </div>
             </div>
           </virtual-scroller>
@@ -43,16 +51,24 @@ export const ACTUAL_TEMPLATES: string = `
               <div class="total-padding"></div>
               <div class="scrollable-content">
                 <div class="table-grid__cell table-grid__cell--strip">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap">$29.30</div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell>$29.30</table-cell>
+                  </div>
                 </div>
                 <div class="table-grid__cell">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap">$49.80</div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell>$49.80</table-cell>
+                  </div>
                 </div>
                 <div class="table-grid__cell table-grid__cell--strip">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap">$99.50</div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell>$99.50</table-cell>
+                  </div>
                 </div>
                 <div class="table-grid__cell">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap">$199.00</div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell>$199.00</table-cell>
+                  </div>
                 </div>
               </div>
             </virtual-scroller>

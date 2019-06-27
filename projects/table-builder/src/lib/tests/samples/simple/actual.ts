@@ -15,13 +15,19 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                 <div class="total-padding"></div>
                 <div class="scrollable-content">
                   <div class="table-grid__cell table-grid__cell--strip">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> 1 </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> 1 </table-cell>
+                    </div>
                   </div>
                   <div class="table-grid__cell">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> 2 </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> 2 </table-cell>
+                    </div>
                   </div>
                   <div class="table-grid__cell table-grid__cell--strip">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> 3 </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> 3 </table-cell>
+                    </div>
                   </div>
                 </div>
               </virtual-scroller>
@@ -40,13 +46,19 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                 <div class="total-padding"></div>
                 <div class="scrollable-content">
                   <div class="table-grid__cell table-grid__cell--strip">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> Max </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> Max </table-cell>
+                    </div>
                   </div>
                   <div class="table-grid__cell">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> Ivan </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> Ivan </table-cell>
+                    </div>
                   </div>
                   <div class="table-grid__cell table-grid__cell--strip">
-                    <div class="table-grid__cell--content table-grid__cell--nowrap"> Petr </div>
+                    <div class="table-grid__cell--content table-grid__cell--nowrap">
+                      <table-cell> Petr </table-cell>
+                    </div>
                   </div>
                 </div>
               </virtual-scroller>
@@ -65,13 +77,19 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
               <div class="total-padding"></div>
               <div class="scrollable-content">
                 <div class="table-grid__cell table-grid__cell--strip">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap"> Ivanov </div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell> Ivanov </table-cell>
+                  </div>
                 </div>
                 <div class="table-grid__cell">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap"> Petrov </div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell> Petrov </table-cell>
+                  </div>
                 </div>
                 <div class="table-grid__cell table-grid__cell--strip">
-                  <div class="table-grid__cell--content table-grid__cell--nowrap"> Sidorov </div>
+                  <div class="table-grid__cell--content table-grid__cell--nowrap">
+                    <table-cell> Sidorov </table-cell>
+                  </div>
                 </div>
               </div>
             </virtual-scroller>

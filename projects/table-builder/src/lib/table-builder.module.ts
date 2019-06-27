@@ -19,6 +19,7 @@ import { TableBuilderOptionsImpl } from './table/config/table-builder-options';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.component';
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
+import { TableCellComponent } from './table/components/table-cell/table-cell.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, InViewportModule],
@@ -33,7 +34,8 @@ import { WebWorkerThreadService } from './table/worker/worker-thread.service';
         TemplateBodyTdDirective,
         DeepPathPipe,
         DefaultValuePipe,
-        NgxOptionsComponent
+        NgxOptionsComponent,
+        TableCellComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [

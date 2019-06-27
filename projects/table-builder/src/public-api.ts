@@ -6,3 +6,4 @@ export { TableBuilderComponent } from './lib/table/table-builder.component';
 export { NgxColumnComponent } from './lib/table/components/ngx-column/ngx-column.component';
 export { NgxOptionsComponent } from './lib/table/components/ngx-options/ngx-options.component';
 export * from './lib/table/interfaces/table-builder.external';
+export * from './lib/table/operators';

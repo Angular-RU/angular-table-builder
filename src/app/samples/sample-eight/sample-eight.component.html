@@ -1,0 +1,40 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Dynamic changes</span>
+</mat-toolbar>
+
+<ngx-table-builder #table [source]="data" [auto-height]="true" [row-height]="60" [throttling]="false" [async]="true">
+    <ngx-column key="cost" override-position>
+        <ng-template ngx-td [row]="true" let-row>
+            <span [class.cost-disable]="!row?.active">{{ row?.cost | currency }}</span>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
+        <ng-container *ngIf="key === 'symbol'">
+            <ng-template ngx-td [row]="true" let-row>
+                <mat-form-field class="example-full-width">
+                    <input
+                        matInput
+                        placeholder="Editable field"
+                        [ngModel]="row?.symbol"
+                        (ngModelChange)="updateRow(row, 'symbol', $event)"
+                    />
+                </mat-form-field>
+            </ng-template>
+        </ng-container>
+
+        <ng-container *ngIf="key === 'weight'">
+            <ng-template ngx-td [row]="true" let-row> {{ row?.weight }} - {{ row?.symbol }} </ng-template>
+        </ng-container>
+    </ngx-column>
+
+    <ngx-column key="active" width="60" override-position [sticky-end]="true">
+        <ng-template ngx-th></ng-template>
+        <ng-template ngx-td [row]="true" let-row>
+            <mat-checkbox
+                [ngModel]="$any(row).active"
+                (ngModelChange)="updateRow(row, 'active', $event)"
+            ></mat-checkbox>
+        </ng-template>
+    </ngx-column>
+</ngx-table-builder>

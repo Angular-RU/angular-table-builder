@@ -21,7 +21,7 @@
             #column
             inViewport
             class="table-grid__column"
-            *ngFor="let key of displayedColumns"
+            *ngFor="let key of displayedColumns; let index = index"
             [style.height.px]="columnHeight"
             [ngStyle]="columnsSchema[key]?.cssStyle"
             [ngClass]="columnsSchema[key]?.cssClass"
@@ -47,9 +47,11 @@
                 ></table-thead>
 
                 <table-tbody
+                    [async]="async"
                     [source]="source"
                     [column-key]="key"
                     [striped]="striped"
+                    [column-index]="index"
                     [throttling]="throttling"
                     [primary-key]="primaryKey"
                     [buffer-amount]="bufferAmount"

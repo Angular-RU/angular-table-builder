@@ -26,7 +26,7 @@ export interface KeyMap<T = unknown> {
 
 export type RowId = string | number;
 
-export type Fn<T = unknown, U = unknown> = (...args: T[]) => U;
+export type Fn<T = Any, U = Any> = (...args: T[]) => U;
 
 export type Any = any; // NOSONAR
 

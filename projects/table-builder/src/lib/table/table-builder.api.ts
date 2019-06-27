@@ -18,6 +18,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public throttling: boolean = true;
+    @Input() public async: boolean = false;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
@@ -41,6 +42,7 @@ export abstract class TableBuilderApiImpl {
     protected abstract utils: UtilsService;
     protected abstract resize: ResizableService;
     protected abstract sortable: SortableService;
+    protected renderedCountKeys: number;
 
     protected constructor(protected cd: ChangeDetectorRef) {}
 
@@ -100,6 +102,10 @@ export abstract class TableBuilderApiImpl {
         if (!(this.cd as ViewRef).destroyed) {
             this.cd.detectChanges();
         }
+    }
+
+    protected getCountKeys(): number {
+        return Object.keys(this.rowKeyValue).length;
     }
 
     protected generateCustomModelColumnsKeys(): string[] {

@@ -13,7 +13,8 @@ export class NgxColumnComponent extends ColumnOptions {
     @Input() public key: string = null;
     @Input('custom-key') public customKey: boolean = false;
     @Input('sticky') public stickyLeft: boolean = false;
+    @Input('override-position') public overridePosition: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
-    @ContentChild(TemplateHeadThDirective, { static: true }) public th: TemplateHeadThDirective;
-    @ContentChild(TemplateBodyTdDirective, { static: true }) public td: TemplateBodyTdDirective;
+    @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
+    @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
 }

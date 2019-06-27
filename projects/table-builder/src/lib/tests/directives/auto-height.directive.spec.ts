@@ -13,7 +13,7 @@ describe('[TEST]: auto height', () => {
 
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular<T = Any>(fn: Fn): T {
-            return fn() as Any;
+            return fn();
         }
     };
 

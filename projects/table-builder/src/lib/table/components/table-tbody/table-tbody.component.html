@@ -34,23 +34,14 @@
             class="table-grid__cell--content"
             [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
         >
-            <ng-template
-                [ngIf]="columnsSchema[key]?.td.template"
-                [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-                [ngTemplateOutletContext]="{
-                    $implicit:
-                        columnsSchema[key]?.td.context === contextType.CELL
-                            ? columnsSchema[key]?.td.useDeepPath
-                                ? (item | deepPath: key)
-                                : (item[key] | defaultValue)
-                            : item
-                }"
-                [ngIfElse]="defaultTd"
-            >
-            </ng-template>
-            <ng-template #defaultTd>
-                {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
-            </ng-template>
+            <table-cell
+                [item]="item"
+                [async]="async"
+                [index]="index"
+                [column-key]="key"
+                [column-index]="columnIndex"
+                [scroll-overload]="scrollOverload"
+            ></table-cell>
         </div>
     </div>
 </virtual-scroller>
