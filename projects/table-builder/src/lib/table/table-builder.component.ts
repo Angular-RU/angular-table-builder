@@ -77,8 +77,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     public ngOnChanges(changes: SimpleChanges): void {
         const sourceNotNull: boolean = SOURCE_KEY in changes && changes[SOURCE_KEY].currentValue;
+        const nonIdenticalStructure: boolean = sourceNotNull && this.getCountKeys() !== this.renderedCountKeys;
 
-        if (sourceNotNull && this.getCountKeys() !== this.renderedCountKeys) {
+        if (nonIdenticalStructure) {
             this.renderedCountKeys = this.getCountKeys();
             this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
             this.modelColumnKeys = this.generateModelColumnKeys();

@@ -3,10 +3,15 @@
         Sortable columns
         <span *ngIf="table.isRendered"> ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
     </span>
+
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [auto-height]="true">
+<mat-checkbox [(ngModel)]="scrollTrolling">Enable throttling for scrolling</mat-checkbox>
+<br />
+<br />
+
+<ngx-table-builder #table [source]="data" [auto-height]="true" [throttling]="scrollTrolling">
     <!--
        <ngx-options /> - declaration common options for columns
 

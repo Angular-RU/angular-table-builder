@@ -10,6 +10,6 @@ export class TableBuilderOptionsImpl implements TableBuilderOptions {
     public static readonly ROW_HEIGHT: number = 45;
     public static readonly TIME_IDLE: number = 200;
     public defaultValueSeparator: string = '-';
-    public bufferAmount: number = 2;
+    public bufferAmount: number = 0;
     public wheelMaxDelta: number = 200;
 }

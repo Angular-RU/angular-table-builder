@@ -55,7 +55,7 @@ export abstract class TableBuilderApiImpl {
     }
 
     public get rowKeyValue(): TableRow {
-        return this.source && this.source[0];
+        return (this.source && this.source[0]) || {};
     }
 
     public get selectionModel(): SelectionMap {
