@@ -1,31 +1,34 @@
 <div
-    inViewport
+    observerView
     [style.width]="width"
     class="table-grid__root"
-    *ngIf="source?.length && isDirtyCheck"
+    *ngIf="source?.length"
     [class.table-grid__with-vertical-line]="verticalBorder"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport }"
-    (inViewportAction)="inViewport = $event?.visible"
+    (observeVisible)="inViewport = $event"
     [@fadeAnimation]="'in'"
 >
     <div
         #tableViewport
         wheelThrottling
         class="table-grid"
+        (scrollEnd)="scrollEnd()"
         (scrollOverload)="updateScrollOverload($event)"
         (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
         <div
             #column
-            inViewport
+            observerView
+            [rendered]="isRendered"
+            [attr.column-id]="key"
             class="table-grid__column"
-            *ngFor="let key of displayedColumns; let index = index"
             [style.height.px]="columnHeight"
             [ngStyle]="columnsSchema[key]?.cssStyle"
             [ngClass]="columnsSchema[key]?.cssClass"
             [style.width.px]="columnsSchema[key]?.width"
+            *ngFor="let key of displayedColumns; let index = index"
             [style.min-width.px]="columnsSchema[key]?.width || clientColWidth"
             [class.table-grid__column--custom-column]="columnsSchema[key]?.customColumn"
             [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
@@ -34,7 +37,7 @@
             [class.table-grid__column--is-visible]="column['visible']"
             [class.table-grid__column--is-invisible]="!column['visible']"
             [class.table-grid__column--default-width]="!autoWidth"
-            (inViewportAction)="inViewportAction(column, $event)"
+            (observeVisible)="onVisibleColumn(column, $event)"
         >
             <div class="table-grid__column-area" *ngIf="column['visible']" [@fadeAnimation]="'in'">
                 <table-thead
@@ -47,19 +50,19 @@
                 ></table-thead>
 
                 <table-tbody
-                    [async]="async"
                     [source]="source"
                     [column-key]="key"
                     [striped]="striped"
                     [column-index]="index"
-                    [throttling]="throttling"
                     [primary-key]="primaryKey"
+                    [throttling]="throttling"
                     [buffer-amount]="bufferAmount"
                     [table-viewport]="tableViewport"
                     [scroll-overload]="scrollOverload"
                     [enable-selection]="enableSelection"
                     [client-row-height]="clientRowHeight"
                     [selection-entries]="selectionEntries"
+                    [showed-cell-by-default]="showedCellByDefault"
                     [column-virtual-height]="columnVirtualHeight"
                 >
                 </table-tbody>

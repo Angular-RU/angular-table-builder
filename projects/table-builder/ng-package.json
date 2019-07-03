@@ -5,8 +5,7 @@
         "entryFile": "./src/public-api",
         "flatModuleFile": "table-builder",
         "umdModuleIds": {
-            "ngx-virtual-scroller": "ngxVirtualScroller",
-            "ng-in-viewport": "ngInViewport"
+            "ngx-virtual-scroller": "ngxVirtualScroller"
         }
     }
 }

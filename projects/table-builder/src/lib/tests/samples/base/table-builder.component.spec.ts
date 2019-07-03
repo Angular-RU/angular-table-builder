@@ -159,10 +159,11 @@ describe('[TEST]: TableBuilder', () => {
         table.ngOnChanges(changes);
         expect(table.displayedColumns).toEqual([]);
         expect(table.isDirtyCheck).toEqual(false);
-        table.ngAfterContentInit();
-        expect(table.displayedColumns).toEqual(modelKeys);
 
+        table.ngAfterContentInit();
         tick(1000); // async rendering
+
+        expect(table.displayedColumns).toEqual(modelKeys);
         expect(table.isDirtyCheck).toEqual(true);
     }));
 
@@ -191,7 +192,7 @@ describe('[TEST]: TableBuilder', () => {
         table.ngOnChanges(changes);
         table.ngAfterContentInit();
 
-        tick(100);
+        tick(1000); // async rendering
 
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight']);
         expect(table.isRendered).toEqual(true);
@@ -248,8 +249,6 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct generate table body without emitter', () => {
         const index: number = 0;
-        table.primaryKey = 'id';
-        table.ngOnInit();
 
         const mySelection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
@@ -257,15 +256,18 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone,
-            utils
+            mockNgZone as NgZone
         );
 
+        tableBody.primaryKey = 'id';
+        tableBody.throttling = true;
         tableBody.source = [item];
+
+        tableBody.scrollOverload = { isOverload: true };
         expect(tableBody.trackByIdx(index, item)).toEqual(index);
 
-        tableBody.primaryKey = 'id';
-        expect(tableBody.trackByIdx(index, item)).toEqual(1);
+        tableBody.scrollOverload = { isOverload: false };
+        expect(tableBody.trackByIdx(index, item)).toEqual(item.id);
 
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
@@ -285,8 +287,7 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone,
-            utils
+            mockNgZone as NgZone
         );
 
         tableBody.source = [item];

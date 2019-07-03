@@ -2,10 +2,10 @@
     <span>Dynamic changes</span>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [auto-height]="true" [row-height]="60" [async]="true">
+<ngx-table-builder #table [source]="data" [auto-height]="true" [row-height]="60">
     <ngx-column key="cost" override-position>
         <ng-template ngx-td [row]="true" let-row>
-            <span [class.cost-disable]="!$any(row).active">{{ row?.cost | currency }}</span>
+            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
         </ng-template>
     </ngx-column>
 
@@ -16,7 +16,7 @@
                     <input
                         matInput
                         placeholder="Editable field"
-                        [ngModel]="row?.symbol"
+                        [ngModel]="$any(row)?.symbol"
                         (ngModelChange)="updateRow(row, 'symbol', $event)"
                     />
                 </mat-form-field>
@@ -34,7 +34,7 @@
         <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>
             <mat-checkbox
-                [ngModel]="$any(row).active"
+                [ngModel]="$any(row)?.active"
                 (ngModelChange)="updateRow(row, 'active', $event)"
             ></mat-checkbox>
         </ng-template>

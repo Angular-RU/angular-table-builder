@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, EventEmitter, Input, Output, ViewRef } from '@angular/core';
-import { PrimaryKey, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
+import { Fn, PrimaryKey, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
@@ -17,8 +17,7 @@ export abstract class TableBuilderApiImpl {
     @Input() public source: TableRow[] = [];
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public throttling: boolean = false;
-    @Input() public async: boolean = false;
+    @Input() public throttling: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
@@ -116,7 +115,7 @@ export abstract class TableBuilderApiImpl {
         return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
     }
 
-    private toggleFreeze(time: number = null): void {
+    protected toggleFreeze(time: number = null): void {
         this.freezeTable = !this.freezeTable;
         if (time) {
             setTimeout(() => this.detectChanges(), time);

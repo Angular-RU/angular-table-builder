@@ -29,17 +29,12 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
-import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { ResizableService } from './services/resizer/resizable.service';
-
-const {
-    COUNT_SYNC_RENDERED_COLUMNS,
-    TIME_IDLE,
-    SMOOTH_FPS_FRAME
-}: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+import { TableBuilderOptionsImpl } from './config/table-builder-options';
 
 const { SOURCE_KEY }: typeof TableKeys = TableKeys;
+const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
@@ -51,13 +46,15 @@ const { SOURCE_KEY }: typeof TableKeys = TableKeys;
     animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
+    private static readonly MIN_IDLE: number = 50;
     @ContentChild(NgxOptionsComponent, { static: true }) public columnOptions: ColumnOptionsRef = null;
     @ContentChildren(NgxColumnComponent) public columnList: ColumnListRef = [];
-
     public isDirtyCheck: boolean = false;
     public displayedColumns: string[] = [];
+    public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
     public isRendered: boolean = false;
+    public detectOverload: boolean = false;
 
     constructor(
         public readonly selection: SelectionService,
@@ -104,13 +101,30 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         this.detectChanges();
     }
 
+    public scrollEnd(): void {
+        this.invalidateThrottleCache();
+    }
+
     public updateScrollOverload(event: ScrollOverload): void {
         this.scrollOverload = { ...event };
+
+        if (event.isOverload) {
+            this.detectOverload = event.isOverload;
+        }
+
         this.detectChanges();
     }
 
-    public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {
-        column['visible'] = $event.visible;
+    public onVisibleColumn(column: HTMLDivElement, visible: boolean): void {
+        if (this.isRendered) {
+            column['visible'] = visible;
+            this.detectChanges();
+        } else {
+            this.ngZone.runOutsideAngular(() => {
+                column['visible'] = visible;
+                window.setTimeout(() => this.detectChanges(), TableBuilderComponent.MIN_IDLE);
+            });
+        }
     }
 
     public ngAfterContentInit(): void {
@@ -127,41 +141,57 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return map;
     }
 
+    private invalidateThrottleCache(): void {
+        if (this.detectOverload && this.throttling) {
+            this.showedCellByDefault = false;
+            this.freezeTable = true;
+            this.detectChanges();
+            this.ngZone.runOutsideAngular(() => {
+                window.requestAnimationFrame(() => {
+                    this.showedCellByDefault = true;
+                    this.detectChanges();
+                    window.setTimeout(() => {
+                        this.freezeTable = false;
+                        this.detectChanges();
+                    }, TIME_IDLE * 2);
+                });
+            });
+        }
+
+        this.detectOverload = false;
+    }
+
     private renderTable(): void {
         this.ngZone.runOutsideAngular(() => {
             this.displayedColumns = [];
             const columnList: string[] = this.generateDisplayedColumns();
-            columnList.forEach((name: string, index: number) => {
-                this.drawColumn(name, index).then((position: number) => {
-                    const isLast: boolean = position + 1 === columnList.length;
-                    if (isLast) {
-                        this.emitRendered();
-                    }
-                });
-            });
+            this.draw(columnList, (): void => this.emitRendered());
         });
     }
 
-    private drawColumn(columnName: string, index: number): Promise<number> {
-        return new Promise((resolve: Fn<number>): void => {
-            if (index > COUNT_SYNC_RENDERED_COLUMNS) {
-                window.setTimeout(() => {
-                    this.displayedColumns.push(columnName);
-                    this.detectChanges();
-                    resolve(index);
-                }, index + TIME_IDLE + SMOOTH_FPS_FRAME);
+    private draw(originList: string[], resolve: Fn<void>, startIndex: number = 0): void {
+        window.setTimeout(() => {
+            const columnName: string = originList[startIndex];
+            this.displayedColumns.push(columnName);
+            this.detectChanges();
+
+            const isNotLastElement: boolean = startIndex + 1 !== originList.length;
+
+            if (isNotLastElement) {
+                this.draw(originList, resolve, startIndex + 1);
             } else {
-                this.displayedColumns.push(columnName);
-                resolve(index);
+                resolve();
             }
         });
     }
 
     private emitRendered(): void {
-        this.isRendered = true;
-        this.isDirtyCheck = true;
-        this.afterRendered.emit(this.isRendered);
-        this.detectChanges();
+        window.setTimeout(() => {
+            this.isRendered = true;
+            this.isDirtyCheck = true;
+            this.afterRendered.emit(this.isRendered);
+            this.detectChanges();
+        }, TIME_IDLE);
     }
 
     private generateDisplayedColumns(): string[] {

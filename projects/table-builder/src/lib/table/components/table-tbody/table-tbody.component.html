@@ -12,7 +12,7 @@
     [enableUnequalChildrenSizes]="true"
     [modifyOverflowStyleOfParentScroll]="false"
     [style.height.px]="columnVirtualHeight"
-    (vsChange)="update()"
+    (vsChange)="detectChanges()"
 >
     <div
         class="table-grid__cell"
@@ -35,12 +35,11 @@
             [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
         >
             <table-cell
+                *ngIf="showedCellByDefault"
                 [item]="item"
-                [async]="async"
                 [index]="index"
                 [column-key]="key"
                 [column-index]="columnIndex"
-                [scroll-overload]="scrollOverload"
             ></table-cell>
         </div>
     </div>

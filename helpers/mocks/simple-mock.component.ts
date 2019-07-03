@@ -5,7 +5,7 @@ import { TableRow } from '../../projects/table-builder/src/lib/table/interfaces/
 @Component({
     selector: 'app',
     template: `
-        <ngx-table-builder [source]="data" [auto-height]="true"></ngx-table-builder>
+        <ngx-table-builder [source]="data" [auto-height]="true" [buffer-amount]="5"></ngx-table-builder>
     `
 })
 export class SimpleMockComponent {

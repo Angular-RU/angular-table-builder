@@ -23,7 +23,7 @@ declare const hljs: Any;
 })
 export class SampleSixComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
-    public scrollTrolling: boolean;
+    public scrollTrolling: boolean = true;
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {

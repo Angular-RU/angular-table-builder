@@ -16,7 +16,6 @@ import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
-import { UtilsService } from '../../services/utils/utils.service';
 
 const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -36,6 +35,7 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('enable-selection') public enableSelection: boolean;
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
+    @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('buffer-amount') public bufferAmount: number;
 
     constructor(
@@ -43,8 +43,7 @@ export class TableTbodyComponent extends TableLineRow {
         public cd: ChangeDetectorRef,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService,
-        private readonly ngZone: NgZone,
-        private readonly utils: UtilsService
+        private readonly ngZone: NgZone
     ) {
         super(templateParser, selection);
     }
@@ -58,11 +57,11 @@ export class TableTbodyComponent extends TableLineRow {
     }
 
     private get canThrottling(): boolean {
-        return this.scrollOverload.isOverload && !this.utils.isFirefox() && !this.enableSelection && this.throttling;
+        return this.scrollOverload.isOverload && this.throttling;
     }
 
     public trackByIdx(index: number, item: TableRow): number {
-        return item[this.primaryKey] ? parseInt(item[this.primaryKey] as string) : index;
+        return this.canThrottling ? index : parseInt(item[this.primaryKey] as string);
     }
 
     public handleRowIdleCallback(row: TableRow, event: MouseEvent, emitter: EventEmitter<TableCellInfo> | null): void {
@@ -79,18 +78,5 @@ export class TableTbodyComponent extends TableLineRow {
                 emitter.emit(this.generateTableCellInfo(row, event));
             }
         });
-    }
-
-    public update(): void {
-        if (this.canThrottling) {
-            this.ngZone.runOutsideAngular(() => {
-                window.clearTimeout(this.taskId);
-                this.taskId = window.setTimeout(() => {
-                    window.requestAnimationFrame(() => this.detectChanges());
-                }, TableBuilderOptionsImpl.FRAME_TIME);
-            });
-        } else {
-            this.detectChanges();
-        }
     }
 }

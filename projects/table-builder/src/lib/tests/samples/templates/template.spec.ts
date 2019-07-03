@@ -1,24 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { Delay } from '@helpers/utils/delay';
+import { Fn } from '../../../table/interfaces/table-builder.internal';
 import { TemplateMockComponent } from '@helpers/mocks/template-mock.component';
 import { HtmlFormatter } from '@helpers/utils/html-formatter.class';
 import { TableBuilderModule } from '../../../table-builder.module';
 import { ACTUAL_TEMPLATES } from './actual';
-import { Fn } from '../../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: Template mock table', () => {
     let fixture: ComponentFixture<TemplateMockComponent>;
     let component: TemplateMockComponent;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [BrowserAnimationsModule, TableBuilderModule.forRoot({})],
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [BrowserAnimationsModule, TableBuilderModule.forRoot()],
             declarations: [TemplateMockComponent]
         }).compileComponents();
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(TemplateMockComponent);
         component = fixture.componentInstance;
         fixture.autoDetectChanges();

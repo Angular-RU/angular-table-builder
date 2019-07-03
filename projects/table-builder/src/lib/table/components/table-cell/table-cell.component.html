@@ -1,19 +1,17 @@
-<ng-template [ngIf]="attached">
-    <ng-template
-        [ngIf]="columnsSchema[key]?.td.template"
-        [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-        [ngTemplateOutletContext]="{
-            $implicit:
-                columnsSchema[key]?.td.context === contextType.CELL
-                    ? columnsSchema[key]?.td.useDeepPath
-                        ? (item | deepPath: key)
-                        : (item[key] | defaultValue)
-                    : item
-        }"
-        [ngIfElse]="defaultTd"
-    >
-    </ng-template>
-    <ng-template #defaultTd>
-        {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
-    </ng-template>
+<ng-template
+    [ngIf]="columnsSchema[key]?.td.template"
+    [ngTemplateOutlet]="columnsSchema[key]?.td.template"
+    [ngTemplateOutletContext]="{
+        $implicit:
+            columnsSchema[key]?.td.context === contextType.CELL
+                ? columnsSchema[key]?.td.useDeepPath
+                    ? (item | deepPath: key)
+                    : (item[key] | defaultValue)
+                : item
+    }"
+    [ngIfElse]="defaultTd"
+>
+</ng-template>
+<ng-template #defaultTd>
+    {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
 </ng-template>

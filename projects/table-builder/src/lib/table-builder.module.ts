@@ -1,6 +1,5 @@
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
-import { InViewportModule } from 'ng-in-viewport';
 import { CommonModule } from '@angular/common';
 
 import { NGX_TABLE_OPTIONS } from './table/config/table-builder.tokens';
@@ -20,9 +19,10 @@ import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.component';
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
 import { TableCellComponent } from './table/components/table-cell/table-cell.component';
+import { ObserverViewDirective } from './table/directives/observer-view.directive';
 
 @NgModule({
-    imports: [CommonModule, VirtualScrollerModule, InViewportModule],
+    imports: [CommonModule, VirtualScrollerModule],
     declarations: [
         TableBuilderComponent,
         WheelThrottlingDirective,
@@ -35,7 +35,8 @@ import { TableCellComponent } from './table/components/table-cell/table-cell.com
         DeepPathPipe,
         DefaultValuePipe,
         NgxOptionsComponent,
-        TableCellComponent
+        TableCellComponent,
+        ObserverViewDirective
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
