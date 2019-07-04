@@ -30,9 +30,6 @@ export type Fn<T = Any, U = Any> = (...args: T[]) => U;
 
 export type Any = any; // NOSONAR
 
-export type ColumnListRef = QueryList<NgxColumnComponent> | NgxColumnComponent[];
-export type ColumnOptionsRef = ColumnOptions;
-
 export interface SelectionStatus {
     status: boolean;
 }
@@ -47,3 +44,6 @@ export interface ResizeEvent {
 export interface ScrollOverload {
     isOverload: boolean;
 }
+
+// Bug: 'QueryList' is imported from external module '@angular/core' but never used
+export type QueryListColumns = QueryList<NgxColumnComponent>;

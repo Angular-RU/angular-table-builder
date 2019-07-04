@@ -2,8 +2,7 @@
     observerView
     [style.width]="width"
     class="table-grid__root"
-    *ngIf="source?.length"
-    [class.table-grid__with-vertical-line]="verticalBorder"
+    *ngIf="source?.length && contentInit"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport }"
     (observeVisible)="inViewport = $event"
@@ -21,15 +20,16 @@
         <div
             #column
             observerView
-            [rendered]="isRendered"
-            [attr.column-id]="key"
             class="table-grid__column"
+            [attr.column-id]="key"
+            [rendered]="isRendered"
             [style.height.px]="columnHeight"
             [ngStyle]="columnsSchema[key]?.cssStyle"
             [ngClass]="columnsSchema[key]?.cssClass"
             [style.width.px]="columnsSchema[key]?.width"
             *ngFor="let key of displayedColumns; let index = index"
             [style.min-width.px]="columnsSchema[key]?.width || clientColWidth"
+            [class.table-grid__column--vertical-line]="verticalBorder || columnsSchema[key]?.verticalLine"
             [class.table-grid__column--custom-column]="columnsSchema[key]?.customColumn"
             [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
             [class.table-grid__column--sticky-left]="columnsSchema[key]?.stickyLeft"

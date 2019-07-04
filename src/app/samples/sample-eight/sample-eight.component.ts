@@ -61,6 +61,7 @@ const COLORS: string[] = [
 })
 export class SampleEightComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
+    public scrollTrolling: boolean = true;
 
     constructor(private readonly cd: ChangeDetectorRef) {}
 

@@ -17,7 +17,7 @@ import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
 
-const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'table-tbody',
@@ -37,6 +37,8 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('buffer-amount') public bufferAmount: number;
+
+    private taskId: number;
 
     constructor(
         public selection: SelectionService,
@@ -78,5 +80,14 @@ export class TableTbodyComponent extends TableLineRow {
                 emitter.emit(this.generateTableCellInfo(row, event));
             }
         });
+    }
+
+    public vsChange(): void {
+        if (this.canThrottling && !this.enableSelection) {
+            window.clearTimeout(this.taskId);
+            this.taskId = window.setTimeout(() => this.update(), TIME_RELOAD);
+        } else {
+            this.update();
+        }
     }
 }

@@ -187,6 +187,7 @@
         "template-no-negated-async": true,
         "contextual-lifecycle": true,
         "use-lifecycle-interface": true,
-        "angular-whitespace": [true, "check-interpolation", "check-semicolon"]
+        "angular-whitespace": [true, "check-interpolation", "check-semicolon"],
+        "no-angle-bracket-type-assertion": false
     }
 }

@@ -44,6 +44,7 @@ export interface TableColumn<T = Any> {
     resizable: boolean;
     sortable: boolean;
     customColumn: boolean;
+    verticalLine: boolean;
 }
 
 export interface TableSchema<T = unknown> {

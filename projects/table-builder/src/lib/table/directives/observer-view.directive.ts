@@ -1,10 +1,8 @@
 import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output } from '@angular/core';
-import { TableBuilderOptionsImpl } from '../config/table-builder-options';
 
-@Directive({
-    selector: '[observerView]'
-})
+@Directive({ selector: '[observerView]' })
 export class ObserverViewDirective implements AfterViewInit, OnDestroy {
+    private static readonly MIN_TIME_IDLE: number = 120;
     @Output() public observeVisible: EventEmitter<boolean> = new EventEmitter();
     @Input('rendered') public isRendered: boolean;
     private observer: IntersectionObserver = null;
@@ -25,7 +23,7 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
                             clearTimeout(this.frameId);
                             this.frameId = window.setTimeout(() => {
                                 this.observeVisible.emit(isVisible);
-                            }, TableBuilderOptionsImpl.TIME_IDLE);
+                            }, ObserverViewDirective.MIN_TIME_IDLE);
                         } else {
                             window.requestAnimationFrame(() => this.observeVisible.emit(isVisible));
                         }

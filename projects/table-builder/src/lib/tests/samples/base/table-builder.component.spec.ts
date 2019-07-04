@@ -1,6 +1,6 @@
 /* tslint:disable:no-big-function */
 import { fakeAsync, tick } from '@angular/core/testing';
-import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone, SimpleChanges } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone, QueryList, SimpleChanges } from '@angular/core';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
@@ -183,12 +183,18 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct parse template', () => {
-        templateParser.initialSchema(null).parse(table.generateColumnsKeyMap(modelKeys), [position, name, weight]);
+        const templates: QueryList<NgxColumnComponent> = new QueryList();
+        templates.reset([position, name, weight]);
+
+        templateParser.initialSchema(null).parse(table.generateColumnsKeyMap(modelKeys), templates);
         expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
     });
 
     it('should be correct rendered', fakeAsync(() => {
-        table.columnList = [position, name, weight];
+        const templates: QueryList<NgxColumnComponent> = new QueryList();
+        templates.reset([position, name, weight]);
+        table.columnTemplates = templates;
+
         table.ngOnChanges(changes);
         table.ngAfterContentInit();
 
@@ -205,6 +211,7 @@ describe('[TEST]: TableBuilder', () => {
 
     it('should be correct re-render table on change', () => {
         table.isDirtyCheck = true;
+        table.contentInit = true;
         table.ngOnChanges(changes);
         expect(table.displayedColumns).toEqual(modelKeys);
         expect(table.isDirtyCheck).toEqual(true);

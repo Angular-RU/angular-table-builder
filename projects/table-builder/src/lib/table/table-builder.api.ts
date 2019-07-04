@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, EventEmitter, Input, Output, ViewRef } from '@angular/core';
-import { Fn, PrimaryKey, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
+import { ChangeDetectorRef, EventEmitter, Input, NgZone, Output, ViewRef } from '@angular/core';
+import { PrimaryKey, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
@@ -43,7 +43,7 @@ export abstract class TableBuilderApiImpl {
     protected abstract sortable: SortableService;
     protected renderedCountKeys: number;
 
-    protected constructor(protected cd: ChangeDetectorRef) {}
+    protected constructor(protected readonly cd: ChangeDetectorRef, protected readonly ngZone: NgZone) {}
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;
@@ -97,9 +97,11 @@ export abstract class TableBuilderApiImpl {
         });
     }
 
-    public detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
+    public detectChanges({ async }: Partial<{ async: boolean }> = { async: true }): void {
+        if (async) {
+            this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.update()));
+        } else {
+            this.update();
         }
     }
 
@@ -118,9 +120,15 @@ export abstract class TableBuilderApiImpl {
     protected toggleFreeze(time: number = null): void {
         this.freezeTable = !this.freezeTable;
         if (time) {
-            setTimeout(() => this.detectChanges(), time);
+            window.setTimeout(() => this.detectChanges({ async: false }), time);
         } else {
-            this.detectChanges();
+            this.detectChanges({ async: false });
+        }
+    }
+
+    private update(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
         }
     }
 

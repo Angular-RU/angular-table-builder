@@ -2,7 +2,7 @@
     #scroll
     [items]="source"
     [checkResizeInterval]="0"
-    [scrollAnimationTime]="0"
+    [scrollAnimationTime]="1000"
     [parentScroll]="tableViewport"
     [stripedTable]="true"
     [bufferAmount]="clientBufferAmount"
@@ -12,7 +12,7 @@
     [enableUnequalChildrenSizes]="true"
     [modifyOverflowStyleOfParentScroll]="false"
     [style.height.px]="columnVirtualHeight"
-    (vsChange)="detectChanges()"
+    (vsChange)="vsChange()"
 >
     <div
         class="table-grid__cell"

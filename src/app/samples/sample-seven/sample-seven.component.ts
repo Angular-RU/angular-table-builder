@@ -27,4 +27,8 @@ export class SampleSevenComponent implements OnInit, AfterViewInit {
             hljs.highlightBlock(block);
         });
     }
+
+    public alert(row: TableRow): void {
+        window.alert(JSON.stringify(row, null, 4));
+    }
 }

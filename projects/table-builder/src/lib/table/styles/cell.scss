@@ -1,6 +1,11 @@
 @import './variables';
 @import './common';
 
+table-cell {
+    margin: 0 auto;
+    width: 100%;
+}
+
 .table-grid {
     &__header-cell {
         top: 0;
@@ -79,10 +84,4 @@
             box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
         }
     }
-}
-
-table-cell {
-    display: table;
-    margin: 0 auto;
-    width: 100%;
 }

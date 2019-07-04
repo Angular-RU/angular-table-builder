@@ -1,9 +1,9 @@
 /* tslint:disable */
 export const SIMPLE_TABLE_TEMPLATE: string = `
 <ngx-table-builder>
-  <div class="table-grid__root table-grid__with-vertical-line table-grid__root-auto-height" observerview="">
+  <div class="table-grid__root table-grid__root-auto-height" observerview="">
     <div class="table-grid" wheelthrottling="">
-      <div class="table-grid__column table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="id">
+      <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="id">
         <div class="table-grid__column-area">
            <table-thead>
               <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
@@ -37,7 +37,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
             </table-tbody>
         </div>
       </div>
-      <div class="table-grid__column table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="name">
+      <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="name">
         <div class="table-grid__column-area">
            <table-thead>
               <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
@@ -71,7 +71,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
             </table-tbody>
           </div>
       </div>
-      <div class="table-grid__column table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="lastName">
+      <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="lastName">
         <div class="table-grid__column-area">
           <table-thead>
             <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">

@@ -11,7 +11,8 @@ const COLUMN: TableColumn = {
     cssStyle: [],
     resizable: false,
     customColumn: false,
-    sortable: false
+    sortable: false,
+    verticalLine: false
 };
 
 export const ACTUAL_TEMPLATE: TableSchema = {

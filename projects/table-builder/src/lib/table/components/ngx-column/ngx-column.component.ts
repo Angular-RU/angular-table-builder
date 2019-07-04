@@ -15,6 +15,7 @@ export class NgxColumnComponent extends ColumnOptions {
     @Input('sticky') public stickyLeft: boolean = false;
     @Input('override-position') public overridePosition: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
+    @Input('vertical-line') public verticalLine: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
 }

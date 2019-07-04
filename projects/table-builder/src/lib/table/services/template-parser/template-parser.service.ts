@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
 import { ImplicitContext, TableCellOptions, TableColumn, TableSchema } from '../../interfaces/table-builder.external';
-import { ColumnListRef, ColumnOptionsRef, KeyMap } from '../../interfaces/table-builder.internal';
+import { KeyMap, QueryListColumns } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
@@ -13,7 +13,7 @@ import { ColumnOptions } from '../../components/common/column-options';
 export class TemplateParserService {
     public schema: TableSchema;
     public renderedTemplateKeys: Set<string>;
-    public columnOptions: ColumnOptionsRef;
+    public columnOptions: ColumnOptions;
 
     private static getCellTemplateContext(key: string, cellTemplate: TemplateCellCommon): TableCellOptions {
         return {
@@ -30,14 +30,14 @@ export class TemplateParserService {
         };
     }
 
-    public initialSchema(columnOptions: ColumnOptionsRef): TemplateParserService {
+    public initialSchema(columnOptions: ColumnOptions): TemplateParserService {
         this.schema = new SchemaBuilder();
         this.renderedTemplateKeys = new Set<string>();
         this.columnOptions = columnOptions || new ColumnOptions();
         return this;
     }
 
-    public parse(allowedKeyMap: KeyMap<boolean>, templates: ColumnListRef): void {
+    public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListColumns): void {
         if (templates) {
             templates.forEach((column: NgxColumnComponent) => {
                 const { key, customKey, overridePosition }: NgxColumnComponent = column;
@@ -78,7 +78,8 @@ export class TemplateParserService {
             cssClass: column.cssClass || this.columnOptions.cssClass || [],
             cssStyle: column.cssStyle || this.columnOptions.cssStyle || [],
             resizable: column.resizable || this.columnOptions.resizable,
-            sortable: column.sortable || this.columnOptions.sortable
+            sortable: column.sortable || this.columnOptions.sortable,
+            verticalLine: column.verticalLine
         };
     }
 }

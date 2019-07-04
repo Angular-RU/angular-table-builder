@@ -41,6 +41,18 @@
             top: 0;
         }
 
+        &--vertical-line {
+            border-right: 1px solid $borderColor;
+        }
+
+        &--vertical-line:last-child {
+            border-left: 1px solid $borderColor;
+        }
+
+        &--vertical-line:nth-last-child(2) {
+            border-right: none;
+        }
+
         &--sortable {
             width: 24px;
             height: 20px;
@@ -74,20 +86,4 @@
 .table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
     transition: opacity 0.2s ease-in-out;
     opacity: 0.5;
-}
-
-.table-grid__with-vertical-line {
-    .table-grid {
-        &__column {
-            border-right: 1px solid $borderColor;
-        }
-
-        &__column:last-child {
-            border-left: 1px solid $borderColor;
-        }
-
-        &__column:nth-last-child(2) {
-            border-right: none;
-        }
-    }
 }

@@ -27,7 +27,7 @@ export class TableLineRow {
         };
     }
 
-    public detectChanges(): void {
+    public update(): void {
         if (!(this.cd as ViewRef).destroyed) {
             this.cd.detectChanges();
         }

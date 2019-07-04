@@ -25,7 +25,7 @@ export class WebWorkerThreadService implements WebWorkerThread {
         return this.runUrl(url, data);
     }
 
-    public runUrl(url: string, data?: any): Promise<Any> {
+    public runUrl(url: string, data?: Any): Promise<Any> {
         const worker: Worker = new Worker(url);
         const promise: Promise<Any> = this.createPromiseForWorker(worker, data);
         const promiseCleaner: Any = this.createPromiseCleaner(promise);

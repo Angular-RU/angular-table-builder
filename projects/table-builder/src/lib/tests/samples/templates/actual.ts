@@ -1,9 +1,9 @@
 /* tslint:disable */
 export const ACTUAL_TEMPLATES: string = `
 <ngx-table-builder>
-  <div class="table-grid__root table-grid__with-vertical-line" observerview="">
+  <div class="table-grid__root" observerview="">
     <div class="table-grid" wheelthrottling="">
-      <div class="table-grid__column table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="name">
+      <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="name">
       <div class="table-grid__column-area">
         <table-thead>
           <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
@@ -39,7 +39,7 @@ export const ACTUAL_TEMPLATES: string = `
         </table-tbody>
         </div>
       </div>
-      <div class="table-grid__column table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="price">
+      <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="price">
         <div class="table-grid__column-area">
           <table-thead>
             <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
