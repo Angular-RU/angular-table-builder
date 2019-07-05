@@ -80,7 +80,7 @@ export abstract class TableBuilderApiImpl {
 
     public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
         this.resize.resize(
-            event,
+            event as MouseEvent,
             column,
             (width: number) => this.onMouseResizeColumn(key, width),
             () => this.schemaChanges.emit(this.templateParser.schema)

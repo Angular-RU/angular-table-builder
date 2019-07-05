@@ -59,6 +59,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public contentInit: boolean = false;
     public isDirtyCheck: boolean = false;
+    public rendering: boolean = false;
     public displayedColumns: string[] = [];
     public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
@@ -82,6 +83,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public get selectionEntries(): KeyMap<boolean> {
         return this.selection.selectionModel.entries;
+    }
+
+    private get needRecheckTemplates(): boolean {
+        return this.isDirtyCheck && !this.contentInit && (this.source && this.source.length > 0);
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -139,9 +144,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.contentInit = true;
             }
 
-            this.columnTemplates.changes
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(() => this.synchronizeRenderedTemplates());
+            this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe(() => this.deferredRender());
         }
 
         if (this.source) {
@@ -166,10 +169,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
     }
 
-    private get needRecheckTemplates(): boolean {
-        return this.isDirtyCheck && !this.contentInit && (this.source && this.source.length > 0);
-    }
-
     public ngOnDestroy(): void {
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
@@ -181,10 +180,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return map;
     }
 
-    private synchronizeRenderedTemplates(): void {
+    private deferredRender() {
         window.requestAnimationFrame(() => {
-            this.contentInit = true;
-            this.renderTable();
+            if (this.rendering) {
+                this.deferredRender();
+            } else {
+                this.contentInit = true;
+                this.renderTable();
+            }
         });
     }
 
@@ -211,12 +214,15 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private renderTable(): void {
         this.contentInit &&
             this.ngZone.runOutsideAngular(() => {
-                this.debugRenderCount++;
-                const columnList: string[] = this.generateDisplayedColumns();
-                const canInvalidate: boolean = columnList.length !== this.displayedColumns.length;
-                if (canInvalidate) {
-                    this.displayedColumns = [];
-                    this.draw(columnList, (): void => this.emitRendered());
+                if (!this.rendering) {
+                    this.rendering = true;
+                    this.debugRenderCount++;
+                    const columnList: string[] = this.generateDisplayedColumns();
+                    const canInvalidate: boolean = columnList.length !== this.displayedColumns.length;
+                    if (canInvalidate) {
+                        this.displayedColumns = [];
+                        this.draw(columnList, (): void => this.emitRendered());
+                    }
                 }
             });
     }
@@ -242,6 +248,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             window.setTimeout(() => {
                 this.isRendered = true;
                 this.isDirtyCheck = true;
+                this.rendering = false;
                 this.afterRendered.emit(this.isRendered);
                 this.detectChanges();
             }, TIME_IDLE);
