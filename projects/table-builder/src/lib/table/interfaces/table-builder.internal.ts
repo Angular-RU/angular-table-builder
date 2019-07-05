@@ -1,6 +1,5 @@
 import { QueryList } from '@angular/core';
 import { NgxColumnComponent } from '../components/ngx-column/ngx-column.component';
-import { ColumnOptions } from '../components/common/column-options';
 
 export enum PrimaryKey {
     ID = 'id'
@@ -37,7 +36,7 @@ export interface SelectionStatus {
 export type TableEvent = Event | MouseEvent | KeyboardEvent;
 
 export interface ResizeEvent {
-    event: MouseEvent;
+    event: TableEvent;
     key: string;
 }
 
