@@ -60,11 +60,5 @@
         "tslint-sonarts": "^1.9.0",
         "typedoc": "^0.14.2",
         "typescript": "~3.4.5"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run format",
-            "pre-push": "npm run lint"
-        }
     }
 }

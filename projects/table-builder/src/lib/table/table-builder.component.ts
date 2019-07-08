@@ -230,7 +230,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private draw(originList: string[], emitRender: Fn<void>, startIndex: number = 0): void {
         this.ngZone.runOutsideAngular(() => {
-            const drawTask: Fn = () => {
+            const drawTask: Fn = (): void => {
                 const columnName: string = originList[startIndex];
                 this.displayedColumns.push(columnName);
 
@@ -253,7 +253,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private emitRendered(): void {
-        const emit: Fn = () => {
+        const emit: Fn = (): void => {
             this.isRendered = true;
             this.rendering = false;
             this.afterRendered.emit(this.isRendered);
