@@ -41,7 +41,11 @@
             [class.table-grid__column--default-width]="!autoWidth"
             (observeVisible)="markVisibleColumn(column, $event)"
         >
-            <div class="table-grid__column-area" *ngIf="asyncColumns === false || column['visible']" [@fadeAnimation]="'in'">
+            <div
+                class="table-grid__column-area"
+                *ngIf="asyncColumns === false || column['visible']"
+                [@fadeAnimation]="'in'"
+            >
                 <table-thead
                     [column-key]="key"
                     [definition]="sortable.definition"
