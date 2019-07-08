@@ -16,9 +16,15 @@
     [vertical-border]="false"
     [throttling]="scrollTrolling"
 >
-    <ngx-column key="cost" override-position>
+    <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" override-position>
+        <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>
-            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
+            <div [@.disabled]="true">
+                <mat-checkbox
+                    [ngModel]="$any(row)?.active"
+                    (ngModelChange)="updateRow(row, 'active', $event)"
+                ></mat-checkbox>
+            </div>
         </ng-template>
     </ngx-column>
 
@@ -45,15 +51,9 @@
         <ng-template #other ngx-td [nowrap]="false" let-cell>{{ cell }}</ng-template>
     </ngx-column>
 
-    <ngx-column key="active" width="60" override-position [sticky-end]="true">
-        <ng-template ngx-th></ng-template>
+    <ngx-column key="cost" [sticky-end]="true" [vertical-line]="true" override-position>
         <ng-template ngx-td [row]="true" let-row>
-            <div [@.disabled]="true">
-                <mat-checkbox
-                    [ngModel]="$any(row)?.active"
-                    (ngModelChange)="updateRow(row, 'active', $event)"
-                ></mat-checkbox>
-            </div>
+            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
         </ng-template>
     </ngx-column>
 </ngx-table-builder>

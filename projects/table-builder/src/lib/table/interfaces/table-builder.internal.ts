@@ -5,10 +5,6 @@ export enum PrimaryKey {
     ID = 'id'
 }
 
-export enum TableKeys {
-    SOURCE_KEY = 'source'
-}
-
 export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;

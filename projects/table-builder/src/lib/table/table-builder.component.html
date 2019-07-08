@@ -2,13 +2,15 @@
     observerView
     [style.width]="width"
     class="table-grid__root"
-    *ngIf="source?.length && contentInit"
+    *ngIf="lazy ? true : isRendered"
+    [class.table-grid__root--visible]="isVisible"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport }"
     (observeVisible)="inViewport = $event"
     [@fadeAnimation]="'in'"
 >
     <div
+        *ngIf="isVisible"
         #tableViewport
         wheelThrottling
         class="table-grid"
@@ -37,9 +39,9 @@
             [class.table-grid__column--is-visible]="column['visible']"
             [class.table-grid__column--is-invisible]="!column['visible']"
             [class.table-grid__column--default-width]="!autoWidth"
-            (observeVisible)="onVisibleColumn(column, $event)"
+            (observeVisible)="markVisibleColumn(column, $event)"
         >
-            <div class="table-grid__column-area" *ngIf="column['visible']" [@fadeAnimation]="'in'">
+            <div class="table-grid__column-area" *ngIf="asyncColumns === false || column['visible']" [@fadeAnimation]="'in'">
                 <table-thead
                     [column-key]="key"
                     [definition]="sortable.definition"

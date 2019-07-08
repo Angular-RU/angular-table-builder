@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/table-builder';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
+import { TableRow } from '@angular-ru/table-builder';
+
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -11,7 +12,7 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleSevenComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public data: TableRow[] = [];
 
     constructor(private readonly cd: ChangeDetectorRef) {}
 

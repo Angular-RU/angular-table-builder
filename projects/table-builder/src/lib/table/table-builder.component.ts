@@ -1,29 +1,20 @@
 import {
     AfterContentInit,
     AfterViewChecked,
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ContentChild,
-    ContentChildren,
     NgZone,
     OnChanges,
     OnDestroy,
     OnInit,
-    SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import {
-    Fn,
-    KeyMap,
-    QueryListColumns,
-    ScrollOffsetStatus,
-    ScrollOverload,
-    TableKeys
-} from './interfaces/table-builder.internal';
+import { Fn, KeyMap, ScrollOffsetStatus, ScrollOverload } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -32,13 +23,10 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
-import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { ResizableService } from './services/resizer/resizable.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
-import { ColumnOptions } from './components/common/column-options';
 
-const { SOURCE_KEY }: typeof TableKeys = TableKeys;
-const { TIME_IDLE, TIME_RELOAD, TIME_REFRESH }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
@@ -50,24 +38,20 @@ const { TIME_IDLE, TIME_RELOAD, TIME_REFRESH }: typeof TableBuilderOptionsImpl =
     animations: [NGX_ANIMATION]
 })
 export class TableBuilderComponent extends TableBuilderApiImpl
-    implements OnChanges, OnInit, AfterContentInit, AfterViewChecked, OnDestroy {
-    @ContentChild(NgxOptionsComponent, { static: false })
-    public columnOptions: ColumnOptions = null;
-
-    @ContentChildren(NgxColumnComponent)
-    public columnTemplates: QueryListColumns = null;
-
-    public contentInit: boolean = false;
-    public isDirtyCheck: boolean = false;
+    implements OnChanges, OnInit, AfterContentInit, AfterViewInit, AfterViewChecked, OnDestroy {
+    public dirty: boolean = true;
     public rendering: boolean = false;
+    public isRendered: boolean = false;
+    public contentInit: boolean = false;
     public displayedColumns: string[] = [];
+    public detectOverload: boolean = false;
     public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
-    public isRendered: boolean = false;
-    public detectOverload: boolean = false;
+    private contentCheck: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-    private checkedUnCompiledTaskId: number;
-    private debugRenderCount: number = 0;
+    private checkedTaskId: number;
+    private renderCount: number = 0;
+    private renderTaskId: number;
 
     constructor(
         public readonly selection: SelectionService,
@@ -78,36 +62,41 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         protected readonly resize: ResizableService,
         public readonly sortable: SortableService
     ) {
-        super(cd, ngZone);
+        super(cd);
     }
 
     public get selectionEntries(): KeyMap<boolean> {
         return this.selection.selectionModel.entries;
     }
 
-    private get needRecheckTemplates(): boolean {
-        return this.isDirtyCheck && !this.contentInit && (this.source && this.source.length > 0);
+    public get isVisible(): boolean {
+        return !!(this.source && this.source.length) && this.contentInit;
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        const sourceNotNull: boolean = SOURCE_KEY in changes && changes[SOURCE_KEY].currentValue;
-        const nonIdenticalStructure: boolean = sourceNotNull && this.getCountKeys() !== this.renderedCountKeys;
+    private get contentIsDirty(): boolean {
+        return !this.contentInit && this.renderCount > 0;
+    }
+
+    private get emptySourceList(): boolean {
+        return this.source && this.source.length > 0;
+    }
+
+    public ngOnChanges(): void {
+        const nonIdenticalStructure: boolean = this.emptySourceList && this.getCountKeys() !== this.renderedCountKeys;
 
         if (nonIdenticalStructure) {
             this.renderedCountKeys = this.getCountKeys();
             this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
             this.modelColumnKeys = this.generateModelColumnKeys();
             this.originalSource = this.source;
-
-            if (this.isDirtyCheck) {
-                this.ngZone.runOutsideAngular(() => {
-                    window.requestAnimationFrame(() => {
-                        this.renderTable();
-                        this.detectChanges();
-                    });
-                });
+            if (!this.dirty) {
+                this.markForCheck();
             }
         }
+    }
+
+    public markForCheck(): void {
+        this.contentCheck = true;
     }
 
     public ngOnInit(): void {
@@ -116,7 +105,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public updateScrollOffset(offset: boolean): void {
         this.scrollOffset = { offset };
-        this.detectChanges({ async: false });
+        this.detectChanges();
     }
 
     public scrollEnd(): void {
@@ -130,48 +119,48 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.detectOverload = event.isOverload;
         }
 
-        this.detectChanges({ async: false });
+        this.detectChanges();
     }
 
-    public onVisibleColumn(column: HTMLDivElement, visible: boolean): void {
+    public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
         column['visible'] = visible;
         this.detectChanges();
     }
 
     public ngAfterContentInit(): void {
-        if (this.columnTemplates) {
-            if (!this.columnTemplates.length) {
-                this.contentInit = true;
-            }
+        this.markDirtyCheck();
+        this.markTemplateContentCheck();
 
-            this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe(() => this.deferredRender());
-        }
-
-        if (this.source) {
-            this.contentInit = true;
-            this.renderTable();
-        } else {
-            this.isDirtyCheck = true;
+        if (this.emptySourceList) {
+            this.render();
         }
     }
 
+    public ngAfterViewInit(): void {
+        this.listenTemplateChanges();
+    }
+
     public ngAfterViewChecked(): void {
-        if (!this.isRendered) {
-            window.clearTimeout(this.checkedUnCompiledTaskId);
-            this.ngZone.runOutsideAngular(() => {
-                this.checkedUnCompiledTaskId = window.setTimeout(() => {
-                    if (this.needRecheckTemplates) {
-                        this.contentInit = true;
-                        this.renderTable();
-                    }
-                }, TIME_REFRESH);
-            });
+        if (this.viewIsDirty) {
+            this.viewRefresh();
         }
+    }
+
+    private get viewIsDirty(): boolean {
+        return this.contentIsDirty || this.contentCheck;
     }
 
     public ngOnDestroy(): void {
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
+    }
+
+    public markTemplateContentCheck(): void {
+        this.contentInit = !!this.source || !this.columnTemplates.length;
+    }
+
+    public markDirtyCheck(): void {
+        this.dirty = false;
     }
 
     public generateColumnsKeyMap(keys: string[]): KeyMap<boolean> {
@@ -180,26 +169,40 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return map;
     }
 
-    private deferredRender() {
-        window.requestAnimationFrame(() => {
-            if (this.rendering) {
-                this.deferredRender();
-            } else {
-                this.contentInit = true;
-                this.renderTable();
-            }
+    public render(): void {
+        this.contentCheck = false;
+        this.ngZone.runOutsideAngular(() => {
+            window.clearTimeout(this.renderTaskId);
+            this.renderTaskId = window.setTimeout(() => this.renderTable(), TIME_IDLE);
+        });
+    }
+
+    private viewRefresh(): void {
+        this.ngZone.runOutsideAngular(() => {
+            window.clearTimeout(this.checkedTaskId);
+            this.checkedTaskId = window.setTimeout(() => {
+                this.markTemplateContentCheck();
+                this.render();
+            }, FRAME_TIME);
+        });
+    }
+
+    private listenTemplateChanges(): void {
+        this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.markTemplateContentCheck();
+            this.markForCheck();
         });
     }
 
     private invalidateThrottleCache(): void {
         if (this.detectOverload && this.throttling) {
-            this.showedCellByDefault = false;
             this.freezeTable = true;
-            this.detectChanges({ async: false });
+            this.showedCellByDefault = false;
+            this.detectChanges();
             this.ngZone.runOutsideAngular(() => {
                 window.requestAnimationFrame(() => {
                     this.showedCellByDefault = true;
-                    this.detectChanges({ async: false });
+                    this.detectChanges();
                     window.setTimeout(() => {
                         this.freezeTable = false;
                         this.detectChanges();
@@ -212,47 +215,58 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private renderTable(): void {
-        this.contentInit &&
-            this.ngZone.runOutsideAngular(() => {
-                if (!this.rendering) {
-                    this.rendering = true;
-                    this.debugRenderCount++;
-                    const columnList: string[] = this.generateDisplayedColumns();
-                    const canInvalidate: boolean = columnList.length !== this.displayedColumns.length;
-                    if (canInvalidate) {
-                        this.displayedColumns = [];
-                        this.draw(columnList, (): void => this.emitRendered());
-                    }
-                }
-            });
+        if (!this.rendering) {
+            this.rendering = true;
+            const columnList: string[] = this.generateDisplayedColumns();
+            const canInvalidate: boolean = columnList.length !== this.displayedColumns.length;
+
+            if (canInvalidate) {
+                this.renderCount++;
+                this.displayedColumns = [];
+                this.draw(columnList, (): void => this.emitRendered());
+            }
+        }
     }
 
-    private draw(originList: string[], resolve: Fn<void>, startIndex: number = 0): void {
-        window.requestAnimationFrame(() => {
-            const columnName: string = originList[startIndex];
-            this.displayedColumns.push(columnName);
-            this.detectChanges();
+    private draw(originList: string[], emitRender: Fn<void>, startIndex: number = 0): void {
+        this.ngZone.runOutsideAngular(() => {
+            const drawTask: Fn = () => {
+                const columnName: string = originList[startIndex];
+                this.displayedColumns.push(columnName);
 
-            const isNotLastElement: boolean = startIndex + 1 !== originList.length;
+                this.detectChanges();
+                const isNotLastElement: boolean = startIndex + 1 !== originList.length;
 
-            if (isNotLastElement) {
-                this.draw(originList, resolve, startIndex + 1);
+                if (isNotLastElement) {
+                    this.draw(originList, emitRender, startIndex + 1);
+                } else {
+                    emitRender();
+                }
+            };
+
+            if (this.lazy) {
+                window.requestAnimationFrame(() => drawTask());
             } else {
-                resolve();
+                drawTask();
             }
         });
     }
 
     private emitRendered(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => {
-                this.isRendered = true;
-                this.isDirtyCheck = true;
-                this.rendering = false;
-                this.afterRendered.emit(this.isRendered);
-                this.detectChanges();
-            }, TIME_IDLE);
-        });
+        const emit: Fn = () => {
+            this.isRendered = true;
+            this.rendering = false;
+            this.afterRendered.emit(this.isRendered);
+            this.detectChanges();
+        };
+
+        if (this.lazy) {
+            this.ngZone.runOutsideAngular(() => {
+                window.setTimeout(() => emit(), TIME_IDLE);
+            });
+        } else {
+            emit();
+        }
     }
 
     private generateDisplayedColumns(): string[] {

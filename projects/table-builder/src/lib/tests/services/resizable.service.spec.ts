@@ -49,7 +49,7 @@ describe('[TEST]: Resizable service', () => {
         );
     });
 
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
         table.source = source;
         changes = {
             source: {
@@ -60,9 +60,10 @@ describe('[TEST]: Resizable service', () => {
             }
         };
 
-        table.ngOnChanges(changes);
         table.ngAfterContentInit();
-    });
+        table.ngOnChanges();
+        tick(1000); // async rendering
+    }));
 
     beforeEach(() => {
         removeAll = 0;

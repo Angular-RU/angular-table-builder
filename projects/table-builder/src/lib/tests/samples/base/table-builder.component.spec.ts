@@ -51,7 +51,7 @@ describe('[TEST]: TableBuilder', () => {
     let utils: UtilsService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
-    let changes: SimpleChanges;
+
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
     };
@@ -96,14 +96,6 @@ describe('[TEST]: TableBuilder', () => {
 
     beforeEach(() => {
         table.source = JSON.parse(JSON.stringify(data));
-        changes = {
-            source: {
-                currentValue: table.source,
-                firstChange: false,
-                previousValue: undefined,
-                isFirstChange: (): boolean => false
-            }
-        };
     });
 
     beforeEach(() => {
@@ -156,20 +148,20 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct displayedColumns', fakeAsync(() => {
-        table.ngOnChanges(changes);
+        table.ngOnChanges();
         expect(table.displayedColumns).toEqual([]);
-        expect(table.isDirtyCheck).toEqual(false);
+        expect(table.dirty).toEqual(true);
 
         table.ngAfterContentInit();
         tick(1000); // async rendering
 
         expect(table.displayedColumns).toEqual(modelKeys);
-        expect(table.isDirtyCheck).toEqual(true);
+        expect(table.dirty).toEqual(false);
     }));
 
     it('should be correct displayedColumns when set custom keys', () => {
         table.keys = customKeys;
-        table.ngOnChanges(changes);
+        table.ngOnChanges();
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(customKeys);
     });
@@ -177,7 +169,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct displayedColumns when set custom keys and exclude keys', () => {
         table.keys = customKeys;
         table.excludeKeys = ['position'];
-        table.ngOnChanges(changes);
+        table.ngOnChanges();
         table.ngAfterContentInit();
         expect(table.displayedColumns).toEqual(['name', 'symbol', 'name']);
     });
@@ -195,7 +187,7 @@ describe('[TEST]: TableBuilder', () => {
         templates.reset([position, name, weight]);
         table.columnTemplates = templates;
 
-        table.ngOnChanges(changes);
+        table.ngOnChanges();
         table.ngAfterContentInit();
 
         tick(1000); // async rendering
@@ -209,13 +201,18 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.clientColWidth).toEqual(null);
     });
 
-    it('should be correct re-render table on change', () => {
-        table.isDirtyCheck = true;
-        table.contentInit = true;
-        table.ngOnChanges(changes);
+    it('should be correct re-render table on change', fakeAsync(() => {
+        table.markTemplateContentCheck();
+        table.markDirtyCheck();
+        table.markForCheck();
+        table.ngOnChanges();
+        table.ngAfterViewChecked();
+
+        tick(1000); // async rendering
+
         expect(table.displayedColumns).toEqual(modelKeys);
-        expect(table.isDirtyCheck).toEqual(true);
-    });
+        expect(table.dirty).toEqual(false);
+    }));
 
     it('should be correct invoke updateScrollOffset', () => {
         table.updateScrollOffset(true);
@@ -232,7 +229,7 @@ describe('[TEST]: TableBuilder', () => {
         table.source = [{ a1: 1, a2: 2, a3: 3, a4: 4, a5: 5, a6: 6, a7: 7, a8: 8, a9: 9, a10: 10, a11: 11, a12: 12 }];
         expect(table.isRendered).toEqual(false);
 
-        table.ngOnChanges(changes);
+        table.ngOnChanges();
         table.ngAfterContentInit();
 
         tick(1000);

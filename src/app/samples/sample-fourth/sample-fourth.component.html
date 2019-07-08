@@ -42,7 +42,7 @@
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
 
-  &lt;ngx-table-builder [source]="data">
+  &lt;ngx-table-builder [source]="data" [lazy]="false">
     &lt;ngx-column key="toppings">&lt;/ngx-column>
 
     &lt;ngx-column width="150" [key]="key" *ngFor="let key of keys">
@@ -54,7 +54,7 @@
 
 </code></pre>
 
-        <ngx-table-builder [source]="data">
+        <ngx-table-builder [source]="data" [lazy]="false">
             <ngx-column key="toppings"></ngx-column>
 
             <ngx-column *ngFor="let key of ['prices.small', 'prices.medium', 'prices.large']" [key]="key" width="150">
@@ -67,12 +67,17 @@
             with ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the
             template in the order in which you want to display your columns.
         </p>
+
+        <p>
+            <strong>Note</strong>: As an example ([lazy]="false"), you can turn off asynchronous table rendering, and
+            show it only when it has been formed.
+        </p>
     </div>
 </div>
 
 <div class="column-samples">
     <div class="column">
-        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys">
+        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys" [lazy]="false">
             <ngx-column key="date">
                 <ng-template ngx-td let-date>
                     {{ date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}
@@ -84,7 +89,7 @@
         <pre><code class="javascript" ngNonBindable>
    &lt;!-- app.component.html -->
 
-   &lt;ngx-table-builder [keys]="keys" [source]="elements" [auto-width]="true">
+   &lt;ngx-table-builder [keys]="keys" [source]="elements" [auto-width]="true" [lazy]="false">
      &lt;ngx-column key="date">
         &lt;ng-template ngx-td let-date>
           &#123;&#123; date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}

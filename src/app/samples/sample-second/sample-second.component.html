@@ -149,7 +149,7 @@
     </div>
 
     <div class="column">
-        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
+        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns" [async-columns]="false" [lazy]="false">
             <ngx-column key="name" [sticky]="true"></ngx-column>
 
             <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
@@ -166,7 +166,13 @@
 
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
-  &lt;ngx-table-builder [source]="data" [striped]="false" [keys]="columns">
+  &lt;ngx-table-builder
+          [source]="data"
+          [striped]="false"
+          [keys]="columns"
+          [lazy]="false"
+          [async-columns]="false">
+
       &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
 
       &lt;ngx-column

@@ -1,7 +1,6 @@
 /* tslint:disable */
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { IntroductionComponent } from './samples/introduction/introduction.component';
 import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 @NgModule({
@@ -11,7 +10,7 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                 {
                     path: '',
                     pathMatch: 'full',
-                    component: IntroductionComponent
+                    redirectTo: 'samples'
                 },
                 {
                     path: 'samples',
@@ -19,7 +18,11 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                         {
                             path: '',
                             pathMatch: 'full',
-                            redirectTo: 'first'
+                            redirectTo: 'guide'
+                        },
+                        {
+                            path: 'guide',
+                            loadChildren: () => import('./samples/guide/guide.module').then((m) => m.GuideModule)
                         },
                         {
                             path: 'first',
