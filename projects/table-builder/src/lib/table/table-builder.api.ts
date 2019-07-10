@@ -86,7 +86,7 @@ export abstract class TableBuilderApiImpl
     }
 
     public get clientRowHeight(): number {
-        return parseInt(this.rowHeight as string) || null;
+        return parseInt(this.rowHeight as string) || ROW_HEIGHT;
     }
 
     public get clientColWidth(): number {
@@ -94,12 +94,11 @@ export abstract class TableBuilderApiImpl
     }
 
     public get columnVirtualHeight(): number {
-        return this.source.length * (this.clientRowHeight || ROW_HEIGHT);
+        return this.source.length * this.clientRowHeight;
     }
 
     public get columnHeight(): number {
-        const rowHeight: number = this.clientRowHeight || ROW_HEIGHT;
-        return this.size * rowHeight + rowHeight;
+        return this.size * this.clientRowHeight + this.clientRowHeight;
     }
 
     private get size(): number {

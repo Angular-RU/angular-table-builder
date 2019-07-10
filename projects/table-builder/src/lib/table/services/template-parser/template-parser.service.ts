@@ -12,7 +12,9 @@ import { ColumnOptions } from '../../components/common/column-options';
 @Injectable()
 export class TemplateParserService {
     public schema: TableSchema;
-    public renderedTemplateKeys: Set<string>;
+    public templateKeys: Set<string>;
+    public fullTemplateKeys: Set<string>;
+    public overrideTemplateKeys: Set<string>;
     public columnOptions: ColumnOptions;
 
     private static getCellTemplateContext(key: string, cellTemplate: TemplateCellCommon): TableCellOptions {
@@ -32,7 +34,9 @@ export class TemplateParserService {
 
     public initialSchema(columnOptions: ColumnOptions): TemplateParserService {
         this.schema = new SchemaBuilder();
-        this.renderedTemplateKeys = new Set<string>();
+        this.templateKeys = new Set<string>();
+        this.overrideTemplateKeys = new Set<string>();
+        this.fullTemplateKeys = new Set<string>();
         this.columnOptions = columnOptions || new ColumnOptions();
         return this;
     }
@@ -42,15 +46,18 @@ export class TemplateParserService {
             templates.forEach((column: NgxColumnComponent) => {
                 const { key, customKey, overridePosition }: NgxColumnComponent = column;
                 const needTemplateCheck: boolean = allowedKeyMap[key] || customKey !== false;
+
                 if (needTemplateCheck) {
-                    if (overridePosition !== false && this.renderedTemplateKeys.has(key)) {
-                        this.renderedTemplateKeys.delete(key);
+                    if (overridePosition !== false) {
+                        this.templateKeys.delete(key);
                         this.compileColumnMetadata(column);
-                    } else if (!this.renderedTemplateKeys.has(key)) {
+                        this.overrideTemplateKeys.add(key);
+                    } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
                         this.compileColumnMetadata(column);
+                        this.templateKeys.add(key);
                     }
 
-                    this.renderedTemplateKeys.add(key);
+                    this.fullTemplateKeys.add(key);
                 }
             });
         }

@@ -3,6 +3,7 @@
 .table-grid__root {
     position: relative;
     overflow: hidden;
+    border: 1px solid transparent;
 
     &.table-grid__root--visible {
         box-shadow: 0 0 10px -2px $borderColor;

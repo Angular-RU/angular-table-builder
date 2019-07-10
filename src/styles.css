@@ -123,3 +123,8 @@ pre {
     position: absolute !important;
     right: 0;
 }
+
+.mat-checkbox-flat {
+    margin-left: 10px;
+    margin-bottom: 3px;
+}

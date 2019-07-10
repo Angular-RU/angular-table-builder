@@ -1,6 +1,8 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Custom layout</span>
-    <mat-checkbox [(ngModel)]="nativeScrollbar" style="margin-left: 10px" (change)="update()">Enable native scrollbar</mat-checkbox>
+    <span>Example table in columns</span>
+    <mat-checkbox [(ngModel)]="nativeScrollbar" class="mat-checkbox-flat" (change)="update()"
+        >Enable native scrollbar</mat-checkbox
+    >
 
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>

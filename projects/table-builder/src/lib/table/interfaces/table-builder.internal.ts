@@ -43,3 +43,9 @@ export interface ScrollOverload {
 
 // Bug: 'QueryList' is imported from external module '@angular/core' but never used
 export type QueryListColumns = QueryList<NgxColumnComponent>;
+
+export interface TemplateKeys {
+    allRenderedKeys: string[];
+    simpleRenderedKeys: string[];
+    overridingRenderedKeys: string[];
+}

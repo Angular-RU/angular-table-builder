@@ -14,7 +14,7 @@ import {
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { Fn, KeyMap, ScrollOffsetStatus, ScrollOverload } from './interfaces/table-builder.internal';
+import { Fn, KeyMap, ScrollOffsetStatus, ScrollOverload, TemplateKeys } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -267,12 +267,15 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private generateDisplayedColumns(): string[] {
         let generatedList: string[] = [];
-        const renderedTemplateKeys: string[] = this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
+        const { simpleRenderedKeys, allRenderedKeys }: TemplateKeys = this.compileTemplates(
+            this.customModelColumnsKeys,
+            this.modelColumnKeys
+        );
 
         if (this.keys.length) {
             generatedList = this.customModelColumnsKeys;
-        } else if (renderedTemplateKeys.length) {
-            generatedList = renderedTemplateKeys;
+        } else if (simpleRenderedKeys.length) {
+            generatedList = allRenderedKeys;
         } else {
             generatedList = this.modelColumnKeys;
         }
@@ -281,13 +284,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return generatedList;
     }
 
-    private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): string[] {
+    private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): TemplateKeys {
         const allowedKeyMap: KeyMap<boolean> = this.keys.length
             ? this.generateColumnsKeyMap(customModelColumnsKeys)
             : this.generateColumnsKeyMap(modelColumnKeys);
 
         this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnTemplates);
-        return Array.from(this.templateParser.renderedTemplateKeys);
+
+        return {
+            allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys),
+            overridingRenderedKeys: Array.from(this.templateParser.overrideTemplateKeys),
+            simpleRenderedKeys: Array.from(this.templateParser.templateKeys)
+        };
     }
 
     private checkUnCompiledTemplates(generatedList: string[]): void {

@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Special cases in the model</span>
+    <span>Example nested models</span>
 </mat-toolbar>
 
 <div class="column-samples">
@@ -14,7 +14,6 @@
     templateUrl: './app.component.html'
   })
   export class AppComponent &#123;
-    public keys: string[] = ['prices.small', 'prices.medium', 'prices.large'];
 
     public pizzas: Pizza[] = [
         &#123;
@@ -34,6 +33,7 @@
             }
         }
     ];
+
   }
 
 </code></pre>
@@ -43,42 +43,52 @@
   &lt;!-- app.component.html -->
 
   &lt;ngx-table-builder [source]="data" [lazy]="false">
-    &lt;ngx-column key="toppings">&lt;/ngx-column>
+    &lt;ngx-column key="toppings" width="350">&lt;/ngx-column>
 
-    &lt;ngx-column width="150" [key]="key" *ngFor="let key of keys">
-      &lt;ng-template ngx-td let-cell>
-          &#123;&#123; cell | currency &#125;&#125;
-      &lt;/ng-template>
+    &lt;ngx-column key="prices.small">
+      &lt;ng-template ngx-th>Small&lt;/ng-template>
+      &lt;ng-template ngx-td let-cell>&#123;&#123; cell | currency &#125;&#125;&lt;/ng-template>
+    &lt;/ngx-column>
+
+     &lt;ngx-column key="prices.small">
+      &lt;ng-template ngx-th>Small&lt;/ng-template>
+      &lt;ng-template ngx-td let-cell>&#123;&#123; cell | currency &#125;&#125;&lt;/ng-template>
+    &lt;/ngx-column>
+
+    &lt;ngx-column key="prices.small">
+      &lt;ng-template ngx-th>Small&lt;/ng-template>
+      &lt;ng-template ngx-td let-cell>&#123;&#123; cell | currency &#125;&#125;&lt;/ng-template>
     &lt;/ngx-column>
   &lt;/ngx-table-builder>
 
 </code></pre>
 
-        <ngx-table-builder [source]="data" [lazy]="true">
-            <ngx-column key="toppings"></ngx-column>
+        <ngx-table-builder [source]="data" [auto-width]="true" [lazy]="true">
+            <ngx-column key="toppings" width="350"></ngx-column>
 
-            <ngx-column *ngFor="let key of ['prices.small', 'prices.medium', 'prices.large']" [key]="key" width="150">
+            <ngx-column key="prices.small">
+                <ng-template ngx-th>Small</ng-template>
+                <ng-template ngx-td let-cell>{{ cell | currency }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="prices.medium">
+                <ng-template ngx-th>Medium</ng-template>
+                <ng-template ngx-td let-cell>{{ cell | currency }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="prices.large">
+                <ng-template ngx-th>Large</ng-template>
                 <ng-template ngx-td let-cell>{{ cell | currency }}</ng-template>
             </ngx-column>
         </ngx-table-builder>
-
-        <p>
-            <strong>Note</strong>: If you want to override the template body of the table, you just use only ng-template
-            with ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the
-            template in the order in which you want to display your columns.
-        </p>
-
-        <p>
-            <strong>Note</strong>: As an example ([lazy]="false"), you can turn off asynchronous table rendering, and
-            show it only when it has been formed.
-        </p>
     </div>
 </div>
 
 <div class="column-samples">
     <div class="column">
-        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys" [lazy]="true">
-            <ngx-column key="date">
+        <ngx-table-builder [source]="elements" [auto-width]="true" [lazy]="true">
+            <ngx-column key="date.value" override-position>
+                <ng-template ngx-th>Date</ng-template>
                 <ng-template ngx-td let-date>
                     {{ date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}
                 </ng-template>
@@ -89,8 +99,10 @@
         <pre><code class="javascript" ngNonBindable>
    &lt;!-- app.component.html -->
 
-   &lt;ngx-table-builder [keys]="keys" [source]="elements" [auto-width]="true" [lazy]="false">
-     &lt;ngx-column key="date">
+   &lt;ngx-table-builder [source]="data" [auto-width]="true" [lazy]="false">
+     &lt;!-- override-position - keyword to override table column styles -->
+     &lt;ngx-column key="date.value" override-position>
+        &lt;ng-template ngx-th>Date&lt;/ng-template>
         &lt;ng-template ngx-td let-date>
           &#123;&#123; date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}
         &lt;/ng-template>
@@ -110,16 +122,26 @@
     templateUrl: './app.component.html' 
   })
   export class AppComponent &#123;
-    public keys: string[] = ['position', 'name', 'date', 'symbol'];
-    public elements: Elements[] = [
-      &#123; position: null, name: 'Hydrogen', date: NaN, symbol: 'H' },
-      &#123; position: 2, name: '', date: new Date(), symbol: undefined },
-      &#123; position: 3, name: 'Lithium', date: Infinity, symbol: 'Li' },
-      &#123; position: 4, name: 'Beryllium', date: 0, symbol: '    ' }
+    public data: Elements[] = [
+          &#123; position: null, name: 'Hydrogen', date: &#123; value: NaN }, symbol: 'H' },
+          &#123; position: 2, name: '', date: &#123; value: new Date() }, symbol: undefined },
+          &#123; position: 3, name: 'Lithium', date: &#123; value: Infinity }, symbol: 'Li' },
+          &#123; position: 4, name: 'Beryllium', date: &#123; value: 0 }, symbol: '    ' }
     ];
   }
 
 </code></pre>
+
+        <p>
+            <strong>Note</strong>: If you want to override the template body of the table, you just use only ng-template
+            with ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the
+            template in the order in which you want to display your columns.
+        </p>
+
+        <p>
+            <strong>Note</strong>: As an example ([lazy]="false"), you can turn off asynchronous table rendering, and
+            show it only when it has been formed. This is mainly noticeable on a large number of columns of tables.
+        </p>
 
         <p>
             <strong>Note</strong>: By default, if the cell value is invalid, then the default separator is used. You can
