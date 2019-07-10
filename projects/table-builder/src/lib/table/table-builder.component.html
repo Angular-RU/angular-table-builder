@@ -1,16 +1,17 @@
 <div
+    #root
     observerView
+    *ngIf="contentInit"
     [style.width]="width"
     class="table-grid__root"
-    *ngIf="lazy ? true : isRendered"
-    [class.table-grid__root--visible]="isVisible"
+    [style.height.px]="height"
     [class.table-grid__root-auto-height]="autoHeightDetect"
-    [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport }"
+    [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
+    [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport, columnHeight: columnHeight }"
     (observeVisible)="inViewport = $event"
     [@fadeAnimation]="'in'"
 >
     <div
-        *ngIf="isVisible"
         #tableViewport
         wheelThrottling
         class="table-grid"

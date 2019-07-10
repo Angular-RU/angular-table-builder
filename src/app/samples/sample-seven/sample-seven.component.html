@@ -4,7 +4,7 @@
 
 <mat-tab-group>
     <mat-tab label="Tab 1">
-        <ngx-table-builder #table [source]="data" [auto-height]="true" [vertical-border]="false">
+        <ngx-table-builder #table [source]="data" [vertical-border]="false">
             <ngx-column key="action-start" custom-key [vertical-line]="true" [sticky]="true" width="100">
                 <ng-template ngx-th></ng-template>
                 <ng-template ngx-td [row]="true" let-row>
@@ -26,7 +26,7 @@
         </ngx-table-builder>
     </mat-tab>
     <mat-tab label="Tab 2">
-        <ngx-table-builder #table [source]="data" [auto-height]="true" [vertical-border]="false">
+        <ngx-table-builder #table [source]="data" [vertical-border]="false">
             <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
                 <ng-template ngx-th>{{ key }}</ng-template>
                 <ng-template ngx-td let-cell>{{ cell }}</ng-template>
@@ -41,7 +41,7 @@
         </ngx-table-builder>
     </mat-tab>
     <mat-tab label="Tab 3">
-        <ngx-table-builder [source]="data" [vertical-border]="false" [auto-height]="true">
+        <ngx-table-builder [source]="data" [vertical-border]="false">
             <ngx-column key="id">
                 <ng-template ngx-th>{{ 'ID' }}</ng-template>
                 <ng-template ngx-td let-id>{{ id }}</ng-template>
@@ -68,7 +68,7 @@
         </ngx-table-builder>
     </mat-tab>
     <mat-tab label="Tab 4">
-        <ngx-table-builder #table [source]="data" [auto-height]="true" [vertical-border]="false">
+        <ngx-table-builder #table [source]="data" [vertical-border]="false">
             <ngx-column key="action" custom-key [vertical-line]="true" [sticky]="true" width="80">
                 <ng-template ngx-th></ng-template>
                 <ng-template ngx-td [row]="true" let-row>

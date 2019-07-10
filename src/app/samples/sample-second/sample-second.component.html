@@ -176,7 +176,6 @@
           [source]="data"
           [striped]="false"
           [keys]="columns"
-          [lazy]="false"
           [async-columns]="false">
 
       &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
@@ -198,6 +197,11 @@
 
   &lt;/ngx-table-builder>
 </code></pre>
+
+        <p>
+            <strong>Note:</strong> If you always want the columns to be drawn regardless of their visibility in the
+            viewport, then you need to use the property [async-columns]="false"
+        </p>
     </div>
 </div>
 

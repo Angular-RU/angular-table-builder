@@ -118,3 +118,8 @@ pre {
 .mat-tab-body {
     padding-top: 5px;
 }
+
+.show-simple {
+    position: absolute !important;
+    right: 0;
+}

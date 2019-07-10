@@ -80,7 +80,7 @@ describe('[TEST]: auto height', () => {
     it('should be correct calculate auto height', () => {
         directive.autoHeight = { detect: true, inViewport: true };
         directive.calculateHeight();
-        expect(style).toEqual(`display: block; height: calc(1000px - 10px - 10px)`);
+        expect(style).toEqual(`display: block; height: calc(980px - 0px - 0px)`);
     });
 
     it('should be correct hide height not in viewport', () => {

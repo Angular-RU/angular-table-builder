@@ -54,7 +54,7 @@
 
 </code></pre>
 
-        <ngx-table-builder [source]="data" [lazy]="false">
+        <ngx-table-builder [source]="data" [lazy]="true">
             <ngx-column key="toppings"></ngx-column>
 
             <ngx-column *ngFor="let key of ['prices.small', 'prices.medium', 'prices.large']" [key]="key" width="150">
@@ -77,7 +77,7 @@
 
 <div class="column-samples">
     <div class="column">
-        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys" [lazy]="false">
+        <ngx-table-builder [source]="elements" [auto-width]="true" [keys]="keys" [lazy]="true">
             <ngx-column key="date">
                 <ng-template ngx-td let-date>
                     {{ date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}

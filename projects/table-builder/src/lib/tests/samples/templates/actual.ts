@@ -1,7 +1,7 @@
 /* tslint:disable */
 export const ACTUAL_TEMPLATES: string = `
 <ngx-table-builder>
-  <div class="table-grid__root table-grid__root--visible" observerview="">
+  <div class="table-grid__root table-grid__root-auto-height" observerview="">
     <div class="table-grid" wheelthrottling="">
       <div class="table-grid__column table-grid__column--vertical-line table-grid__column--default-width table-grid__column--is-visible" observerview="" column-id="name">
       <div class="table-grid__column-area">

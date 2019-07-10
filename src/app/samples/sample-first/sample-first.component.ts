@@ -16,7 +16,7 @@ export class SampleFirstComponent implements OnInit {
     public columnWidth: string;
     public dataSize: string = '100x20';
     public loading: boolean = false;
-    public simple: TableRow[];
+    public simple: TableRow[] = [];
 
     constructor(private readonly cd: ChangeDetectorRef, public readonly dialog: MatDialog) {}
 
@@ -31,10 +31,7 @@ export class SampleFirstComponent implements OnInit {
                 description: 'If you want enabled virtual scroll, you need use auto-height or height attribute.',
                 code:
                     `<!-- simple - is Array any objects -->\n` +
-                    `<ngx-table-builder\n` +
-                    `   [source]="simple"\n` +
-                    `   [auto-height]="true"\n` +
-                    `></ngx-table-builder>\n\n\n` +
+                    `<ngx-table-builder [source]="simple"></ngx-table-builder>\n\n\n` +
                     `<!-- also you can set height, width for cell in table -->\n` +
                     `<ngx-table-builder\n` +
                     `   [source]="simple"\n` +
@@ -77,7 +74,9 @@ export class SampleFirstComponent implements OnInit {
 
     private setData(data: TableRow[]): void {
         this.simple = data;
-        this.loading = false;
-        this.cd.detectChanges();
+        window.setTimeout(() => {
+            this.loading = false;
+            this.cd.detectChanges();
+        }, 500);
     }
 }

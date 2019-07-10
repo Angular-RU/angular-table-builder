@@ -10,15 +10,6 @@ declare const hljs: Any;
 @Component({
     selector: 'sample-third',
     templateUrl: './sample-third.component.html',
-    styles: [
-        // tslint:disable-next-line:component-max-inline-declarations
-        `
-            .show-simple {
-                position: absolute;
-                right: 0;
-            }
-        `
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleThirdComponent implements OnInit, AfterViewInit {
@@ -46,7 +37,7 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
                     'In order to use the API for string highlighting, you can use the table.selection service. <br>' +
                     'In more detail you can read in the guide.',
                 code: `
-<ngx-table-builder #table [source]="data" [auto-height]="true" [enable-selection]="true">
+<ngx-table-builder #table [source]="data" [enable-selection]="true">
     <ngx-column key="selection" [sticky]="true" width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox

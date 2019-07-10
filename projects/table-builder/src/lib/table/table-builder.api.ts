@@ -37,13 +37,13 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public lazy: boolean = true;
-    @Input() public throttling: boolean = true;
+    @Input() public throttling: boolean = false;
     @Input('async-columns') public asyncColumns: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
-    @Input('auto-height') public autoHeightDetect: boolean = false;
+    @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
     @Input('column-width') public columnWidth: string | number = null;
@@ -99,7 +99,11 @@ export abstract class TableBuilderApiImpl
 
     public get columnHeight(): number {
         const rowHeight: number = this.clientRowHeight || ROW_HEIGHT;
-        return this.source.length * rowHeight + rowHeight;
+        return this.size * rowHeight + rowHeight;
+    }
+
+    private get size(): number {
+        return (this.source && this.source.length) || 0;
     }
 
     public abstract markDirtyCheck(): void;

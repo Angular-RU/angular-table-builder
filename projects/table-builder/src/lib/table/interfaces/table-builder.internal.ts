@@ -8,6 +8,7 @@ export enum PrimaryKey {
 export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;
+    columnHeight: number;
     height: number;
 }
 

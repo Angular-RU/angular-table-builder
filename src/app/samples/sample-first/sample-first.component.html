@@ -1,7 +1,6 @@
 <mat-toolbar class="simple-toolbar">
     <span>
         Virtual scroll table
-        <span *ngIf="table.isRendered">({{ simple?.length }}x{{ table?.displayedColumns?.length }})</span>
     </span>
     <mat-spinner *ngIf="loading" class="spinner" strokeWidth="5" [diameter]="30"></mat-spinner>
 </mat-toolbar>
@@ -51,11 +50,9 @@
 
 <div class="content">
     <ngx-table-builder
-        #table
         [source]="simple"
         [width]="width"
         [height]="height"
-        [auto-height]="true"
         [row-height]="rowHeight"
         [column-width]="columnWidth"
     ></ngx-table-builder>

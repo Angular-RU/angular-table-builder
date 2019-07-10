@@ -6,12 +6,12 @@
             columnsSchema[key]?.td.context === contextType.CELL
                 ? columnsSchema[key]?.td.useDeepPath
                     ? (item | deepPath: key)
-                    : (item[key] | defaultValue)
+                    : (item | defaultValue: key)
                 : item
     }"
     [ngIfElse]="defaultTd"
 >
 </ng-template>
 <ng-template #defaultTd>
-    {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
+    {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key) }}
 </ng-template>

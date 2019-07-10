@@ -32,8 +32,8 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = T
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
-    providers: [TemplateParserService, SortableService, SelectionService, ResizableService],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TemplateParserService, SortableService, SelectionService, ResizableService],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
@@ -67,10 +67,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public get selectionEntries(): KeyMap<boolean> {
         return this.selection.selectionModel.entries;
-    }
-
-    public get isVisible(): boolean {
-        return !!(this.source && this.source.length) && this.contentInit;
     }
 
     private get contentIsDirty(): boolean {

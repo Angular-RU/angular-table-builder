@@ -46,17 +46,7 @@ describe('[TEST]: Deep path pipe', () => {
     it('should be correct create cache and invalidate', () => {
         const a: KeyMap = { a: { b: 1 } };
         const b: KeyMap = { a: { b: 2 } };
-
-        expect(pipe.refCount).toEqual(0);
         expect(pipe.transform(a, 'a.b')).toEqual(1);
-        expect(pipe.transform(a, 'a.b')).toEqual(1);
-        expect(pipe.transform(a, 'a.b')).toEqual(1);
-        expect(pipe.refCount).toEqual(1);
         expect(pipe.transform(b, 'a.b')).toEqual(2);
-        expect(pipe.transform(b, 'a.b')).toEqual(2);
-        expect(pipe.refCount).toEqual(2);
-        expect(pipe.transform(b, 'a')).toEqual({ b: 2 });
-        expect(pipe.transform(b, 'a')).toEqual({ b: 2 });
-        expect(pipe.refCount).toEqual(3);
     });
 });

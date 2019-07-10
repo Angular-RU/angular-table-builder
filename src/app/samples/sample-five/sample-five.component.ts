@@ -10,15 +10,6 @@ declare const hljs: Any;
 @Component({
     selector: 'sample-five',
     templateUrl: './sample-five.component.html',
-    styles: [
-        // tslint:disable-next-line:component-max-inline-declarations
-        `
-            .show-simple {
-                position: absolute;
-                right: 0;
-            }
-        `
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFiveComponent implements OnInit, AfterViewInit {
@@ -44,7 +35,7 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
                 title: 'Overview resizable table',
                 description: '',
                 code: `
-<ngx-table-builder [source]="data" [auto-height]="true">
+<ngx-table-builder [source]="data">
     <!--
        <ngx-options /> - declaration common options for columns
 

@@ -68,6 +68,7 @@ export class SampleEightComponent implements OnInit, AfterViewInit {
     public ngOnInit(): void {
         this.data = new Array(1000).fill(0).map((_: TableRow, index: number) => ({
             id: index,
+            symbol: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
             item:
                 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of' +
                 ' classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin' +
@@ -89,7 +90,6 @@ export class SampleEightComponent implements OnInit, AfterViewInit {
                 NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
                 '.',
             weight: Math.round(Math.random() * 100).toString(),
-            symbol: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
             firstName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
             lastName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
             dateOfBirth: 1985,

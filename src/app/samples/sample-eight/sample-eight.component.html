@@ -2,20 +2,17 @@
     <span>Dynamic changes</span>
 </mat-toolbar>
 
-<mat-checkbox [(ngModel)]="scrollTrolling"
-    >Enable / Disable throttling for scrolling (enabled by default for tables)</mat-checkbox
->
+<mat-checkbox [(ngModel)]="scrollTrolling">Enable / Disable throttling for scrolling</mat-checkbox>
 <br />
 <br />
 
-<ngx-table-builder
-    #table
-    [source]="data"
-    [row-height]="60"
-    [auto-height]="true"
-    [vertical-border]="false"
-    [throttling]="scrollTrolling"
->
+<style>
+    .example-full-width {
+        padding: 5px;
+    }
+</style>
+
+<ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false" [throttling]="scrollTrolling">
     <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" override-position>
         <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>
@@ -28,32 +25,32 @@
         </ng-template>
     </ngx-column>
 
-    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
-        <ng-container *ngIf="key === 'symbol'">
-            <ng-template ngx-td [row]="true" let-row>
-                <mat-form-field class="example-full-width">
-                    <div [@.disabled]="true">
-                        <input
-                            matInput
-                            placeholder="Editable field"
-                            [ngModel]="$any(row)?.symbol"
-                            (ngModelChange)="updateRow(row, 'symbol', $event)"
-                        />
-                    </div>
-                </mat-form-field>
-            </ng-template>
-        </ng-container>
+    <ngx-column key="cost" override-position>
+        <ng-template ngx-td [row]="true" let-row>
+            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
+        </ng-template>
+    </ngx-column>
 
-        <ng-container *ngIf="key === 'weight'; else other">
-            <ng-template ngx-td [row]="true" let-row> {{ row?.weight }} - {{ row?.symbol }} </ng-template>
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
+        <ng-container *ngIf="key === 'symbol'; else other">
+            <ng-template ngx-td let-symbol> {{ symbol }} </ng-template>
         </ng-container>
 
         <ng-template #other ngx-td [nowrap]="false" let-cell>{{ cell }}</ng-template>
     </ngx-column>
 
-    <ngx-column key="cost" [sticky-end]="true" [vertical-line]="true" override-position>
+    <ngx-column key="symbol-edit" [sticky-end]="true" [vertical-line]="true" custom-key override-position>
         <ng-template ngx-td [row]="true" let-row>
-            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
+            <mat-form-field class="example-full-width">
+                <div [@.disabled]="true">
+                    <input
+                        matInput
+                        placeholder="Editable field"
+                        [ngModel]="$any(row)?.symbol"
+                        (ngModelChange)="updateRow(row, 'symbol', $event)"
+                    />
+                </div>
+            </mat-form-field>
         </ng-template>
     </ngx-column>
 </ngx-table-builder>

@@ -6,7 +6,7 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [auto-height]="true" [enable-selection]="true">
+<ngx-table-builder #table [source]="data" [enable-selection]="true">
     <ngx-column key="selection" [sticky]="true" width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox
