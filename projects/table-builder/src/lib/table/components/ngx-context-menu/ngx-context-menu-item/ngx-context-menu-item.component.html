@@ -1,0 +1,8 @@
+<div
+    class="context-menu__item"
+    [class.context-menu__title]="contextTitle !== null"
+    [class.context-menu__item--disable]="disable"
+    (click)="click()"
+>
+    <ng-content></ng-content>
+</div>

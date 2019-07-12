@@ -20,6 +20,11 @@ import { NgxOptionsComponent } from './table/components/ngx-options/ngx-options.
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
 import { TableCellComponent } from './table/components/table-cell/table-cell.component';
 import { ObserverViewDirective } from './table/directives/observer-view.directive';
+import { NgxContextMenuComponent } from './table/components/ngx-context-menu/ngx-context-menu.component';
+import { NgxContextMenuItemComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-context-menu-item.component';
+import { NgxContextMenuDividerComponent } from './table/components/ngx-context-menu/ngx-context-menu-divider/ngx-context-menu-divider.component';
+import { NgxMenuIconPlaceComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-icon-place/ngx-menu-icon-place.component';
+import { NgxMenuContentPlaceComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-content-place/ngx-menu-content-place.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule],
@@ -36,15 +41,25 @@ import { ObserverViewDirective } from './table/directives/observer-view.directiv
         DefaultValuePipe,
         NgxOptionsComponent,
         TableCellComponent,
-        ObserverViewDirective
+        ObserverViewDirective,
+        NgxContextMenuComponent,
+        NgxContextMenuItemComponent,
+        NgxContextMenuDividerComponent,
+        NgxMenuIconPlaceComponent,
+        NgxMenuContentPlaceComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
         TableBuilderComponent,
-        NgxColumnComponent,
         TemplateHeadThDirective,
         TemplateBodyTdDirective,
-        NgxOptionsComponent
+        NgxColumnComponent,
+        NgxOptionsComponent,
+        NgxContextMenuComponent,
+        NgxContextMenuItemComponent,
+        NgxContextMenuDividerComponent,
+        NgxMenuIconPlaceComponent,
+        NgxMenuContentPlaceComponent
     ]
 })
 export class TableBuilderModule {

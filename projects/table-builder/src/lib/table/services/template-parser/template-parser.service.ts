@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
 import { ImplicitContext, TableCellOptions, TableColumn, TableSchema } from '../../interfaces/table-builder.external';
-import { KeyMap, QueryListColumns } from '../../interfaces/table-builder.internal';
+import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
@@ -41,7 +41,7 @@ export class TemplateParserService {
         return this;
     }
 
-    public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListColumns): void {
+    public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListRef<NgxColumnComponent>): void {
         if (templates) {
             templates.forEach((column: NgxColumnComponent) => {
                 const { key, customKey, overridePosition }: NgxColumnComponent = column;

@@ -1,0 +1,139 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Example context menu</span>
+</mat-toolbar>
+
+<div class="column-samples">
+    <div class="column">
+        <ngx-table-builder [source]="licences">
+            <ngx-context-menu #menu>
+                <ngx-context-menu-item contextTitle>
+                    <ngx-menu-icon-place>
+                        <img src="https://angular.io/assets/images/logos/angular/angular.svg" alt="logo" />
+                    </ngx-menu-icon-place>
+                    <ngx-menu-content-place>My custom context menu title</ngx-menu-content-place>
+                </ngx-context-menu-item>
+
+                <ngx-context-menu-divider></ngx-context-menu-divider>
+
+                <ngx-context-menu-item (onClick)="exportExcel(licences)">
+                    <ngx-menu-icon-place>
+                        <img
+                            src="http://www.myiconfinder.com/uploads/iconsets/ae86b3a8881d697b6c42528aff5ba48b-excel.png"
+                            alt="excel"
+                        />
+                    </ngx-menu-icon-place>
+                    <ngx-menu-content-place>Export Excel</ngx-menu-content-place>
+                </ngx-context-menu-item>
+
+                <ngx-context-menu-item
+                    [disable]="!menu.state.key"
+                    (onClick)="showLine(menu.state.key, menu.state.item)"
+                >
+                    <ngx-menu-icon-place></ngx-menu-icon-place>
+                    <ngx-menu-content-place>Show item row</ngx-menu-content-place>
+                </ngx-context-menu-item>
+
+                <ngx-context-menu-divider></ngx-context-menu-divider>
+
+                <ngx-context-menu-item *ngIf="menu.state.key === 'id'" (onClick)="copyId(menu.state.value)">
+                    <ngx-menu-icon-place></ngx-menu-icon-place>
+                    <ngx-menu-content-place>Copy in buffer ID</ngx-menu-content-place>
+                </ngx-context-menu-item>
+            </ngx-context-menu>
+        </ngx-table-builder>
+    </div>
+    <div class="column">
+        <ngx-table-builder [source]="data"> </ngx-table-builder>
+    </div>
+</div>
+
+<div class="column-samples">
+    <div class="column" style="width: 100%">
+        <br />
+        <pre><code class="html">
+    &lt;!-- app.component.html -->
+    &lt;ngx-table-builder [source]="data">
+
+      &lt;ngx-context-menu #menu>
+
+        &lt;ngx-context-menu-item contextTitle>
+            &lt;ngx-menu-icon-place>
+                &lt;img src="./assets/angular.svg" alt="logo" />
+            &lt;/ngx-menu-icon-place>
+            &lt;ngx-menu-content-place>
+                My custom context menu title
+            &lt;/ngx-menu-content-place>
+        &lt;/ngx-context-menu-item>
+
+        &lt;ngx-context-menu-divider>&lt;/ngx-context-menu-divider>
+
+        &lt;ngx-context-menu-item (onClick)="exportExcel(licences)">
+            &lt;ngx-menu-icon-place>
+                &lt;img src="./assets/excel.png" alt="excel" />
+            &lt;/ngx-menu-icon-place>
+            &lt;ngx-menu-content-place>
+                Export Excel
+            &lt;/ngx-menu-content-place>
+        &lt;/ngx-context-menu-item>
+
+        &lt;ngx-context-menu-item
+          [disable]="!menu.state.key"
+          (onClick)="showLine(menu.state.key, menu.state.item)">
+
+            &lt;ngx-menu-icon-place>&lt;/ngx-menu-icon-place>
+            &lt;ngx-menu-content-place>
+              Show item row
+            &lt;/ngx-menu-content-place>
+
+        &lt;/ngx-context-menu-item>
+
+        &lt;ngx-context-menu-divider>&lt;/ngx-context-menu-divider>
+          
+        &lt;ngx-context-menu-item
+          *ngIf="menu.state.key === 'id'" (onClick)="copyId(menu.state.value)">
+
+            &lt;ngx-menu-icon-place>&lt;/ngx-menu-icon-place>
+            &lt;ngx-menu-content-place>
+              Show item row
+            &lt;/ngx-menu-content-place>
+
+        &lt;/ngx-context-menu-item>
+
+      &lt;/ngx-context-menu>
+
+    &lt;/ngx-table-builder>
+
+</code></pre>
+        <br />
+
+        <pre><code class="javascript">
+  // app.component.ts
+  import &#123; Component } from "@angular/core";
+  import &#123; Data } from "./data.interface";
+
+  @Component(&#123;
+    selector: 'app',
+    templateUrl: './app.component.html'
+  })
+  export class AppComponent &#123;
+
+    public data: Data[] = [ .. ];
+
+    public exportExcel(data: Data[]): void &#123;
+        window.alert('export excel - ' + JSON.stringify(data));
+    }
+
+    public showLine(key: string, item: Data): void &#123;
+        window.alert('key - ' + key + ' item - ' + JSON.stringify(item));
+    }
+
+    public copyId(id: string): void &#123;
+        window.alert('Copy on buffer - ' + id);
+    }
+
+  }
+
+</code></pre>
+    </div>
+    <div class="column"><br /></div>
+</div>

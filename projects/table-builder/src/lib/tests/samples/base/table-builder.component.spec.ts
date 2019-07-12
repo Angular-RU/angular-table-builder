@@ -17,6 +17,7 @@ import { ResizableService } from '../../../table/services/resizer/resizable.serv
 import { TableLineRow } from '../../../table/components/common/table-line-row';
 import { SortableService } from '../../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
+import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 
 export interface PeriodicElement {
     name: string;
@@ -48,6 +49,7 @@ describe('[TEST]: TableBuilder', () => {
     let templateParser: TemplateParserService;
     let resizable: ResizableService;
     let sortable: SortableService;
+    let contextMenu: ContextMenuService;
     let utils: UtilsService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
@@ -76,6 +78,7 @@ describe('[TEST]: TableBuilder', () => {
         templateParser = new TemplateParserService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         resizable = new ResizableService();
+        contextMenu = new ContextMenuService(utils);
         utils = new UtilsService();
         table = new TableBuilderComponent(
             selection,
@@ -84,7 +87,8 @@ describe('[TEST]: TableBuilder', () => {
             mockNgZone as NgZone,
             utils,
             resizable,
-            sortable
+            sortable,
+            contextMenu
         );
     });
 
@@ -258,6 +262,7 @@ describe('[TEST]: TableBuilder', () => {
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
             mockChangeDetector as ChangeDetectorRef,
+            contextMenu,
             new TableBuilderOptionsImpl(),
             null,
             mockNgZone as NgZone
@@ -289,6 +294,7 @@ describe('[TEST]: TableBuilder', () => {
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             selection,
             mockChangeDetector as ChangeDetectorRef,
+            contextMenu,
             new TableBuilderOptionsImpl(),
             null,
             mockNgZone as NgZone

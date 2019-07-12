@@ -70,6 +70,11 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                             path: 'night',
                             loadChildren: () =>
                                 import('./samples/sample-night/sample-night.module').then((m) => m.SampleNightModule)
+                        },
+                        {
+                            path: 'eleven',
+                            loadChildren: () =>
+                                import('./samples/sample-eleven/sample-eleven.module').then((m) => m.SampleElevenModule)
                         }
                     ]
                 }

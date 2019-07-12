@@ -1,0 +1,22 @@
+<div class="table-grid__context-menu">
+    <div
+        *ngIf="state.opened"
+        class="context-menu-outer"
+        (click)="closeMenu($event)"
+        (contextmenu)="closeMenu($event)"
+    ></div>
+
+    <div
+        class="context-menu"
+        (contextmenu)="closeMenu($event)"
+        [ngStyle]="{
+            'width.px': width,
+            'min-height.px': height,
+            'top.px': state?.position?.top - overflowY,
+            'left.px': state?.position?.left - overflowX,
+            visibility: state?.position ? 'visible' : 'hidden'
+        }"
+    >
+        <ng-content></ng-content>
+    </div>
+</div>

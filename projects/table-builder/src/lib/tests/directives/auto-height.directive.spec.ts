@@ -1,4 +1,4 @@
-import { ApplicationRef, ElementRef, NgZone } from '@angular/core';
+import { ElementRef, NgZone } from '@angular/core';
 
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { AutoHeightDirective } from '../../table/directives/auto-height.directive';
@@ -14,12 +14,6 @@ describe('[TEST]: auto height', () => {
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular<T = Any>(fn: Fn): T {
             return fn();
-        }
-    };
-
-    const appMock: Partial<ApplicationRef> = {
-        tick(): void {
-            ticked++;
         }
     };
 
@@ -62,7 +56,7 @@ describe('[TEST]: auto height', () => {
     });
 
     beforeEach(() => {
-        directive = new AutoHeightDirective(mockElementRef, mockNgZone as NgZone, appMock as ApplicationRef);
+        directive = new AutoHeightDirective(mockElementRef, mockNgZone as NgZone);
         style = '';
         ticked = 0;
     });
@@ -109,6 +103,5 @@ describe('[TEST]: auto height', () => {
         directive.autoHeight = { height: 200, inViewport: true };
         directive.recalculateByResize();
         expect(style).toEqual(`display: block; height: 200px`);
-        expect(ticked).toEqual(1);
     });
 });

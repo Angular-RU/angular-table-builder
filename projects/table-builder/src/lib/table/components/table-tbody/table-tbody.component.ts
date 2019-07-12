@@ -16,6 +16,7 @@ import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
+import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 
 const { TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -43,6 +44,7 @@ export class TableTbodyComponent extends TableLineRow {
     constructor(
         public selection: SelectionService,
         public cd: ChangeDetectorRef,
+        public contextMenu: ContextMenuService,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService,
         private readonly ngZone: NgZone

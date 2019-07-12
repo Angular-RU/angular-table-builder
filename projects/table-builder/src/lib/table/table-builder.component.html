@@ -1,15 +1,23 @@
 <div
     #root
     observerView
-    *ngIf="contentInit"
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
+    *ngIf="contentInit && source?.length"
+    (contextmenu)="contextMenu.openContextMenu($event)"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
-    [autoHeight]="{ detect: autoHeightDetect, height: height, inViewport: inViewport, columnHeight: columnHeight }"
     (observeVisible)="inViewport = $event"
+    (recalculatedHeight)="detectChanges()"
     [@fadeAnimation]="'in'"
+    [autoHeight]="{
+        detect: autoHeightDetect,
+        height: height,
+        inViewport: inViewport,
+        columnHeight: columnHeight,
+        statusRendered: isRendered
+    }"
 >
     <div
         #tableViewport
@@ -23,9 +31,9 @@
         <div
             #column
             observerView
-            class="table-grid__column"
             [attr.column-id]="key"
             [rendered]="isRendered"
+            class="table-grid__column"
             [style.height.px]="columnHeight"
             [ngStyle]="columnsSchema[key]?.cssStyle"
             [ngClass]="columnsSchema[key]?.cssClass"
@@ -79,3 +87,7 @@
 
     <div *ngIf="freezeTable" class="freeze"></div>
 </div>
+
+<ng-template [ngIf]="contextMenuTemplate">
+    <ng-content select="ngx-context-menu"></ng-content>
+</ng-template>

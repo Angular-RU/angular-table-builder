@@ -1,13 +1,14 @@
 import {
     AfterViewInit,
-    ApplicationRef,
     Directive,
     ElementRef,
+    EventEmitter,
     Input,
     NgZone,
     OnChanges,
     OnDestroy,
-    OnInit
+    OnInit,
+    Output
 } from '@angular/core';
 import { Any, DynamicHeightOptions } from '../interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
@@ -19,11 +20,13 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     private static readonly DEFAULT_VALUE: number = 0;
     private static readonly HEAD_TOP: string = '10px';
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
+    @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
+
     private useOnlyAutoViewPort: boolean;
     private isDirtyCheck: boolean;
     private taskId: number;
 
-    constructor(private readonly element: ElementRef, public ngZone: NgZone, public app: ApplicationRef) {
+    constructor(private readonly element: ElementRef, public ngZone: NgZone) {
         this.ngZone = ngZone;
     }
 
@@ -44,10 +47,11 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
             let viewportHeight: number;
             const paddingTop: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-top');
             const paddingBottom: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-bottom');
+            const scrollbarHeight: number = this.childElement.offsetHeight - this.childElement.clientHeight;
 
             if (this.isLessHeightViewPort) {
                 viewportHeight = this.columnHeight;
-                height = `calc(${viewportHeight}px)`;
+                height = `calc(${viewportHeight}px + ${scrollbarHeight}px)`;
             } else if (this.isLessHeightParentOffset && !this.useOnlyAutoViewPort) {
                 viewportHeight = this.parentOffsetHeight - parseInt(AutoHeightDirective.HEAD_TOP);
                 height = `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
@@ -77,6 +81,10 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     private get currentElement(): HTMLDivElement {
         return this.element.nativeElement;
+    }
+
+    private get childElement(): Partial<HTMLDivElement> {
+        return ((this.element.nativeElement as HTMLDivElement).firstChild as HTMLDivElement) || {};
     }
 
     private get rootCurrentElement(): Partial<HTMLElement> {
@@ -121,7 +129,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public ngOnChanges(): void {
         if (this.isDirtyCheck) {
-            this.calculateHeight();
+            this.recalculateByResize();
         }
     }
 
@@ -133,7 +141,9 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         this.calculateHeight();
         this.ngZone.runOutsideAngular(() => {
             clearTimeout(this.taskId);
-            this.taskId = window.setTimeout(() => this.app.tick(), TIME_IDLE);
+            this.taskId = window.setTimeout(() => {
+                this.recalculatedHeight.emit();
+            }, TIME_IDLE);
         });
     }
 

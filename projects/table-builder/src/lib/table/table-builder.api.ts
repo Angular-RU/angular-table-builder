@@ -11,10 +11,11 @@ import {
     OnDestroy,
     OnInit,
     Output,
+    TemplateRef,
     ViewRef
 } from '@angular/core';
 
-import { PrimaryKey, QueryListColumns, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
+import { PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
 import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
@@ -23,9 +24,10 @@ import { UtilsService } from './services/utils/utils.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { ResizableService } from './services/resizer/resizable.service';
 import { SortableService } from './services/sortable/sortable.service';
-import { ColumnOptions } from './components/common/column-options';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
+import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
+import { ContextMenuService } from './services/context-menu/context-menu.service';
 
 const { ROW_HEIGHT, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -51,8 +53,15 @@ export abstract class TableBuilderApiImpl
     @Input('buffer-amount') public bufferAmount: number = null;
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<TableSchema> = new EventEmitter();
-    @ContentChild(NgxOptionsComponent, { static: false }) public columnOptions: ColumnOptions = null;
-    @ContentChildren(NgxColumnComponent) public columnTemplates: QueryListColumns = null;
+
+    @ContentChild(NgxOptionsComponent, { static: false })
+    public columnOptions: NgxOptionsComponent = null;
+
+    @ContentChildren(NgxColumnComponent)
+    public columnTemplates: QueryListRef<NgxColumnComponent> = null;
+
+    @ContentChild(NgxContextMenuComponent, { static: false })
+    public contextMenuTemplate: NgxContextMenuComponent = null;
 
     public inViewport: boolean;
     public scrollOverload: Partial<ScrollOverload> = {};
@@ -61,13 +70,13 @@ export abstract class TableBuilderApiImpl
     public customModelColumnsKeys: string[] = [];
     public abstract templateParser: TemplateParserService;
     public abstract selection: SelectionService;
+    public abstract utils: UtilsService;
+    public abstract readonly cd: ChangeDetectorRef;
+    public abstract resize: ResizableService;
+    public abstract sortable: SortableService;
+    public abstract contextMenu: ContextMenuService;
     protected originalSource: TableRow[];
-    protected abstract utils: UtilsService;
-    protected abstract resize: ResizableService;
-    protected abstract sortable: SortableService;
     protected renderedCountKeys: number;
-
-    protected constructor(protected readonly cd: ChangeDetectorRef) {}
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;

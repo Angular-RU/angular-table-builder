@@ -25,6 +25,7 @@ import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
 import { ResizableService } from './services/resizer/resizable.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
+import { ContextMenuService } from './services/context-menu/context-menu.service';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -33,7 +34,7 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = T
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [TemplateParserService, SortableService, SelectionService, ResizableService],
+    providers: [TemplateParserService, SortableService, SelectionService, ResizableService, ContextMenuService],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
@@ -56,13 +57,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     constructor(
         public readonly selection: SelectionService,
         public readonly templateParser: TemplateParserService,
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly ngZone: NgZone,
-        protected readonly utils: UtilsService,
-        protected readonly resize: ResizableService,
-        public readonly sortable: SortableService
+        public readonly cd: ChangeDetectorRef,
+        public readonly ngZone: NgZone,
+        public readonly utils: UtilsService,
+        public readonly resize: ResizableService,
+        public readonly sortable: SortableService,
+        public readonly contextMenu: ContextMenuService
     ) {
-        super(cd);
+        super();
     }
 
     public get selectionEntries(): KeyMap<boolean> {

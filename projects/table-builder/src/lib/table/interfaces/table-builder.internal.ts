@@ -10,6 +10,7 @@ export interface DynamicHeightOptions {
     inViewport: boolean;
     columnHeight: number;
     height: number;
+    statusRendered: boolean;
 }
 
 export interface ScrollOffsetStatus {
@@ -42,7 +43,7 @@ export interface ScrollOverload {
 }
 
 // Bug: 'QueryList' is imported from external module '@angular/core' but never used
-export type QueryListColumns = QueryList<NgxColumnComponent>;
+export type QueryListRef<T> = QueryList<T>;
 
 export interface TemplateKeys {
     allRenderedKeys: string[];
