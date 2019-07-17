@@ -128,3 +128,8 @@ pre {
     margin-left: 10px;
     margin-bottom: 3px;
 }
+
+.mat-checkbox {
+    display: inline-flex;
+    margin: 15px 0;
+}

@@ -4,10 +4,16 @@
     position: relative;
     overflow: hidden;
     border: 1px solid transparent;
+    transition: opacity 0.5s ease;
+    opacity: 0;
 
     &.table-grid__root--visible {
         box-shadow: 0 0 10px -2px $borderColor;
         border: 1px solid $borderColor;
+    }
+
+    &.table-grid__root--content-is-init {
+        opacity: 1;
     }
 }
 

@@ -11,12 +11,11 @@ import {
     OnDestroy,
     OnInit,
     Output,
-    TemplateRef,
     ViewRef
 } from '@angular/core';
 
 import { PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
-import { ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
+import { ColumnsAllowedKeys, ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
@@ -65,7 +64,7 @@ export abstract class TableBuilderApiImpl
 
     public inViewport: boolean;
     public scrollOverload: Partial<ScrollOverload> = {};
-    public freezeTable: boolean;
+    public isFrozenView: boolean = false;
     public modelColumnKeys: string[] = [];
     public customModelColumnsKeys: string[] = [];
     public abstract templateParser: TemplateParserService;
@@ -78,16 +77,28 @@ export abstract class TableBuilderApiImpl
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
 
-    public get columnsSchema(): ColumnsSchema {
-        return this.templateParser.schema.columns;
+    public get schema(): Partial<TableSchema> {
+        return this.templateParser.schema || {};
+    }
+
+    public get columns(): ColumnsSchema {
+        return this.schema.columns || {};
+    }
+
+    public get columnsAllowedKeys(): ColumnsAllowedKeys {
+        return this.schema.columnsAllowedKeys;
     }
 
     public get selectedItems(): TableRow[] {
         return this.source.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
     }
 
-    public get rowKeyValue(): TableRow {
+    public get firstItem(): TableRow {
         return (this.source && this.source[0]) || {};
+    }
+
+    public get lastItem(): TableRow {
+        return (this.source && this.source[this.source.length - 1]) || {};
     }
 
     public get selectionModel(): SelectionMap {
@@ -110,7 +121,7 @@ export abstract class TableBuilderApiImpl
         return this.size * this.clientRowHeight + this.clientRowHeight;
     }
 
-    private get size(): number {
+    public get size(): number {
         return (this.source && this.source.length) || 0;
     }
 
@@ -151,20 +162,19 @@ export abstract class TableBuilderApiImpl
         });
     }
 
-    protected getCountKeys(): number {
-        return Object.keys(this.rowKeyValue).length;
+    public checkVisible(visible: boolean): void {
+        this.inViewport = visible;
+        this.detectChanges();
     }
 
-    protected generateCustomModelColumnsKeys(): string[] {
-        return this.excluding(this.keys);
+    public detectChanges(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
+        }
     }
 
-    protected generateModelColumnKeys(): string[] {
-        return this.excluding(this.utils.flattenKeysByRow(this.rowKeyValue));
-    }
-
-    protected toggleFreeze(time: number = null): void {
-        this.freezeTable = !this.freezeTable;
+    public toggleFreeze(time: number = null): void {
+        this.isFrozenView = !this.isFrozenView;
         if (time) {
             window.setTimeout(() => this.detectChanges(), time);
         } else {
@@ -172,10 +182,16 @@ export abstract class TableBuilderApiImpl
         }
     }
 
-    protected detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
-        }
+    protected getCountKeys(): number {
+        return Object.keys(this.firstItem).length;
+    }
+
+    protected generateCustomModelColumnsKeys(): string[] {
+        return this.excluding(this.keys);
+    }
+
+    protected generateModelColumnKeys(): string[] {
+        return this.excluding(this.utils.flattenKeysByRow(this.firstItem));
     }
 
     private onMouseResizeColumn(key: string, width: number): void {

@@ -6,6 +6,12 @@ import { UtilsInterface } from './utils.interface';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
+    public static readonly SCROLLBAR_WIDTH: number = 10;
+
+    public get bodyRect(): ClientRect | DOMRect {
+        return document.querySelector('body').getBoundingClientRect();
+    }
+
     public isFirefox(userAgent: string = null): boolean {
         return (userAgent || navigator.userAgent).toLowerCase().indexOf('firefox') > -1;
     }

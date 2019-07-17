@@ -32,6 +32,20 @@ export class TemplateParserService {
         };
     }
 
+    private static mergeWithoutNull<T>(value: T, common: T): T {
+        return value === null ? common : value;
+    }
+
+    public toggleVisibleColumns(key: string): void {
+        this.schema.columnsAllowedKeys = {
+            ...this.schema.columnsAllowedKeys,
+            [key]: {
+                isModel: this.schema.columnsAllowedKeys[key].isModel,
+                visible: !this.schema.columnsAllowedKeys[key].visible
+            }
+        };
+    }
+
     public initialSchema(columnOptions: ColumnOptions): TemplateParserService {
         this.schema = new SchemaBuilder();
         this.templateKeys = new Set<string>();
@@ -44,11 +58,11 @@ export class TemplateParserService {
     public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListRef<NgxColumnComponent>): void {
         if (templates) {
             templates.forEach((column: NgxColumnComponent) => {
-                const { key, customKey, overridePosition }: NgxColumnComponent = column;
+                const { key, customKey, importantTemplate }: NgxColumnComponent = column;
                 const needTemplateCheck: boolean = allowedKeyMap[key] || customKey !== false;
 
                 if (needTemplateCheck) {
-                    if (overridePosition !== false) {
+                    if (importantTemplate !== false) {
                         this.templateKeys.delete(key);
                         this.compileColumnMetadata(column);
                         this.overrideTemplateKeys.add(key);
@@ -63,6 +77,18 @@ export class TemplateParserService {
         }
     }
 
+    public setAllowedKeyMap(fullyKeyList: string[], modelKeys: string[]): void {
+        fullyKeyList.forEach((key: string) => {
+            this.schema.columnsAllowedKeys[key] = {
+                isModel: modelKeys.includes(key),
+                visible:
+                    this.schema.columnsAllowedKeys[key] !== undefined
+                        ? this.schema.columnsAllowedKeys[key].visible
+                        : true
+            };
+        });
+    }
+
     public updateState(key: string, value: Partial<TableColumn>): void {
         this.schema.columns = {
             ...this.schema.columns,
@@ -75,17 +101,17 @@ export class TemplateParserService {
         const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
 
-        this.schema.columns[key] = {
+        this.schema.columns[key] = this.schema.columns[key] || {
             customColumn: typeof column.customKey === 'string' ? true : column.customKey,
             th: TemplateParserService.getCellTemplateContext(key, thTemplate),
             td: TemplateParserService.getCellTemplateContext(key, tdTemplate),
-            width: column.width || this.columnOptions.width,
             stickyLeft: column.stickyLeft,
             stickyRight: column.stickyRight,
-            cssClass: column.cssClass || this.columnOptions.cssClass || [],
-            cssStyle: column.cssStyle || this.columnOptions.cssStyle || [],
-            resizable: column.resizable || this.columnOptions.resizable,
-            sortable: column.sortable || this.columnOptions.sortable,
+            width: TemplateParserService.mergeWithoutNull(column.width, this.columnOptions.width),
+            cssClass: TemplateParserService.mergeWithoutNull(column.cssClass, this.columnOptions.cssClass) || [],
+            cssStyle: TemplateParserService.mergeWithoutNull(column.cssStyle, this.columnOptions.cssStyle) || [],
+            resizable: TemplateParserService.mergeWithoutNull(column.resizable, this.columnOptions.resizable),
+            sortable: TemplateParserService.mergeWithoutNull(column.sortable, this.columnOptions.sortable),
             verticalLine: column.verticalLine
         };
     }

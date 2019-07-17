@@ -9,9 +9,9 @@ const COLUMN: TableColumn = {
     stickyRight: false,
     cssClass: [],
     cssStyle: [],
-    resizable: false,
+    resizable: null,
+    sortable: null,
     customColumn: false,
-    sortable: false,
     verticalLine: false
 };
 
@@ -20,5 +20,6 @@ export const ACTUAL_TEMPLATE: TableSchema = {
         position: COLUMN,
         name: COLUMN,
         weight: COLUMN
-    }
+    },
+    columnsAllowedKeys: {}
 };

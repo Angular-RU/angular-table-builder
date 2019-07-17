@@ -1,9 +1,11 @@
 import { EventEmitter, TemplateRef } from '@angular/core';
 import { Any, KeyMap, TableEvent } from './table-builder.internal';
 
-export interface TableRow<T = Any> {
-    [key: string]: T;
-}
+export type TableRow<T = Any> =
+    | Any
+    | {
+          [key: string]: T;
+      };
 
 export interface TableBuilderOptions {
     bufferAmount: number;
@@ -47,12 +49,26 @@ export interface TableColumn<T = Any> {
     verticalLine: boolean;
 }
 
+export interface ColumnsAllowedKeys {
+    [key: string]: AllowedKeysProperties;
+}
+
+export interface AllowedKeysProperties {
+    isModel: boolean;
+    visible: boolean;
+}
+
 export interface TableSchema<T = unknown> {
     columns: ColumnsSchema;
+    columnsAllowedKeys: ColumnsAllowedKeys;
 }
 
 export interface TableCellInfo {
     row: TableRow;
     event: TableEvent;
     preventDefault: () => void;
+}
+
+export interface ContextItemEvent {
+    preventDefault(): void;
 }

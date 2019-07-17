@@ -87,7 +87,7 @@
 <div class="column-samples">
     <div class="column">
         <ngx-table-builder [source]="elements" [auto-width]="true" [lazy]="true">
-            <ngx-column key="date.value" override-position>
+            <ngx-column key="date.value" important-template>
                 <ng-template ngx-th>Date</ng-template>
                 <ng-template ngx-td let-date>
                     {{ date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}
@@ -100,8 +100,8 @@
    &lt;!-- app.component.html -->
 
    &lt;ngx-table-builder [source]="data" [auto-width]="true" [lazy]="false">
-     &lt;!-- override-position - keyword to override table column styles -->
-     &lt;ngx-column key="date.value" override-position>
+     &lt;!-- important-template - keyword to override table column styles -->
+     &lt;ngx-column key="date.value" important-template>
         &lt;ng-template ngx-th>Date&lt;/ng-template>
         &lt;ng-template ngx-td let-date>
           &#123;&#123; date === '-' ? date : (date | date: 'dd.MM.yyyy HH:mm') }}

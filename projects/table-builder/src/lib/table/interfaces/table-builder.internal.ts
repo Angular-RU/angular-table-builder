@@ -1,5 +1,4 @@
 import { QueryList } from '@angular/core';
-import { NgxColumnComponent } from '../components/ngx-column/ngx-column.component';
 
 export enum PrimaryKey {
     ID = 'id'
@@ -8,9 +7,10 @@ export enum PrimaryKey {
 export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;
-    columnHeight: number;
     height: number;
+    columnHeight: number;
     statusRendered: boolean;
+    sourceLength: number;
 }
 
 export interface ScrollOffsetStatus {

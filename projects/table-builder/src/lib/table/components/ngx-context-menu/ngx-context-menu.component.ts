@@ -8,10 +8,13 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { ContextMenuService } from '../../services/context-menu/context-menu.service';
-import { ContextMenuState } from '../../services/context-menu/context-menu.interface';
 import { Subscription } from 'rxjs';
 
+import { ContextMenuService } from '../../services/context-menu/context-menu.service';
+import { ContextMenuState } from '../../services/context-menu/context-menu.interface';
+import { UtilsService } from '../../services/utils/utils.service';
+
+// @dynamic
 @Component({
     selector: 'ngx-context-menu',
     templateUrl: './ngx-context-menu.component.html',
@@ -20,34 +23,17 @@ import { Subscription } from 'rxjs';
     encapsulation: ViewEncapsulation.None
 })
 export class NgxContextMenuComponent implements OnInit, OnDestroy {
-    private static readonly SCROLLBAR_WIDTH: number = 10;
     @Input() public width: number = 300;
     @Input() public height: number = 300;
-    public state: Partial<ContextMenuState> = {};
+    @Input('max-height') public maxHeight: number = 400;
     private subscription: Subscription = null;
 
     constructor(
         private readonly contextMenu: ContextMenuService,
         private readonly cd: ChangeDetectorRef,
-        private readonly app: ApplicationRef
+        private readonly app: ApplicationRef,
+        private readonly utils: UtilsService
     ) {}
-
-    public ngOnInit(): void {
-        this.subscription = this.contextMenu.state.subscribe((state: ContextMenuState) => {
-            this.state = state;
-            this.cd.detectChanges();
-            this.app.tick();
-        });
-    }
-
-    public closeMenu(event: MouseEvent): void {
-        this.contextMenu.close();
-        event.preventDefault();
-    }
-
-    private static get bodyRect(): ClientRect | DOMRect {
-        return document.querySelector('body').getBoundingClientRect();
-    }
 
     public get left(): number {
         return (this.state.position && this.state.position.left) || 0;
@@ -58,13 +44,29 @@ export class NgxContextMenuComponent implements OnInit, OnDestroy {
     }
 
     public get overflowX(): number {
-        const overflowX: number = this.width + this.left - NgxContextMenuComponent.bodyRect.width;
-        return overflowX > 0 ? overflowX + NgxContextMenuComponent.SCROLLBAR_WIDTH : 0;
+        const overflowX: number = this.width + this.left - this.utils.bodyRect.width;
+        return overflowX > 0 ? overflowX + UtilsService.SCROLLBAR_WIDTH : 0;
     }
 
     public get overflowY(): number {
-        const overflowY: number = this.height + this.top - NgxContextMenuComponent.bodyRect.height;
-        return overflowY > 0 ? overflowY + NgxContextMenuComponent.SCROLLBAR_WIDTH : 0;
+        const overflowY: number = this.height + this.top - this.utils.bodyRect.height;
+        return overflowY > 0 ? overflowY + UtilsService.SCROLLBAR_WIDTH : 0;
+    }
+
+    public get state(): Partial<ContextMenuState> {
+        return this.contextMenu.state;
+    }
+
+    public ngOnInit(): void {
+        this.subscription = this.contextMenu.events.subscribe(() => {
+            this.cd.detectChanges();
+            this.app.tick();
+        });
+    }
+
+    public closeMenu(event: MouseEvent): void {
+        this.contextMenu.close();
+        event.preventDefault();
     }
 
     public ngOnDestroy(): void {

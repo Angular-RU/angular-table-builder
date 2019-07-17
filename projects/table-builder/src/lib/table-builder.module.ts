@@ -23,8 +23,7 @@ import { ObserverViewDirective } from './table/directives/observer-view.directiv
 import { NgxContextMenuComponent } from './table/components/ngx-context-menu/ngx-context-menu.component';
 import { NgxContextMenuItemComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-context-menu-item.component';
 import { NgxContextMenuDividerComponent } from './table/components/ngx-context-menu/ngx-context-menu-divider/ngx-context-menu-divider.component';
-import { NgxMenuIconPlaceComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-icon-place/ngx-menu-icon-place.component';
-import { NgxMenuContentPlaceComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-content-place/ngx-menu-content-place.component';
+import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-content-place/ngx-menu-content.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule],
@@ -45,8 +44,7 @@ import { NgxMenuContentPlaceComponent } from './table/components/ngx-context-men
         NgxContextMenuComponent,
         NgxContextMenuItemComponent,
         NgxContextMenuDividerComponent,
-        NgxMenuIconPlaceComponent,
-        NgxMenuContentPlaceComponent
+        NgxMenuContentComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
@@ -58,8 +56,7 @@ import { NgxMenuContentPlaceComponent } from './table/components/ngx-context-men
         NgxContextMenuComponent,
         NgxContextMenuItemComponent,
         NgxContextMenuDividerComponent,
-        NgxMenuIconPlaceComponent,
-        NgxMenuContentPlaceComponent
+        NgxMenuContentComponent
     ]
 })
 export class TableBuilderModule {

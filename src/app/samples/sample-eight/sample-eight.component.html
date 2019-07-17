@@ -13,7 +13,7 @@
 </style>
 
 <ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false" [throttling]="scrollTrolling">
-    <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" override-position>
+    <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" important-template>
         <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>
             <div [@.disabled]="true">
@@ -25,7 +25,7 @@
         </ng-template>
     </ngx-column>
 
-    <ngx-column key="cost" override-position>
+    <ngx-column key="cost" important-template>
         <ng-template ngx-td [row]="true" let-row>
             <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
         </ng-template>
@@ -39,7 +39,7 @@
         <ng-template #other ngx-td [nowrap]="false" let-cell>{{ cell }}</ng-template>
     </ngx-column>
 
-    <ngx-column key="symbol-edit" [sticky-end]="true" [vertical-line]="true" custom-key override-position>
+    <ngx-column key="symbol-edit" [sticky-end]="true" [vertical-line]="true" custom-key important-template>
         <ng-template ngx-td [row]="true" let-row>
             <mat-form-field class="example-full-width">
                 <div [@.disabled]="true">

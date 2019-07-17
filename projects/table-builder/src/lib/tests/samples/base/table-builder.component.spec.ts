@@ -19,7 +19,7 @@ import { SortableService } from '../../../table/services/sortable/sortable.servi
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 
-export interface PeriodicElement {
+interface PeriodicElement {
     name: string;
     position: number;
     weight: number;
@@ -325,5 +325,70 @@ describe('[TEST]: TableBuilder', () => {
 
         cell.preventDefault();
         expect(clearIntervalInvoked).toEqual(1);
+    });
+
+    it('should be correct work exclude keys', () => {
+        table.source = [];
+        table.ngOnChanges();
+        expect(table.modelColumnKeys).toEqual([]);
+
+        table.source = [{ a1: 1, a2: 2, a3: 3 }];
+        table.excludeKeys = ['a3'];
+        table.ngOnChanges();
+        expect(table.modelColumnKeys).toEqual(['a1', 'a2']);
+    });
+
+    it('should be correct update scroll', fakeAsync(() => {
+        table.throttling = true;
+
+        table.updateScrollOverload({ isOverload: true });
+        expect(table['detectOverload']).toEqual(true);
+
+        table.scrollEnd();
+
+        expect(table['isFrozenView']).toEqual(true);
+        expect(table.showedCellByDefault).toEqual(true);
+        expect(table['detectOverload']).toEqual(false);
+
+        tick(TableBuilderOptionsImpl.TIME_RELOAD);
+        expect(table['isFrozenView']).toEqual(false);
+    }));
+
+    it('should be correct selection entries', () => {
+        expect(table.selectionEntries).toEqual({});
+
+        table.primaryKey = 'position';
+        table.ngOnInit();
+
+        table.selection.selectRow(data[3], mockMouseEvent as MouseEvent, data);
+        expect(table.selectionEntries).toEqual({ 4: true });
+    });
+
+    it('should be correct check content dirty', () => {
+        expect(table.contentIsDirty).toEqual(false);
+
+        table['renderCount']++;
+
+        expect(table.contentIsDirty).toEqual(true);
+    });
+
+    it('should be correct toggleFreeze', () => {
+        expect(table.isFrozenView).toEqual(false);
+        table.toggleFreeze();
+        expect(table.isFrozenView).toEqual(true);
+
+        table.toggleFreeze(100);
+        expect(table.isFrozenView).toEqual(false);
+    });
+
+    it('should be correct get table size', () => {
+        expect(table.size).toEqual(10);
+        expect(table.firstItem).toEqual({ position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' });
+        expect(table.lastItem).toEqual({ position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' });
+
+        table.source = null;
+        expect(table.size).toEqual(0);
+        expect(table.firstItem).toEqual({});
+        expect(table.lastItem).toEqual({});
     });
 });

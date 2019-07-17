@@ -75,11 +75,11 @@ export class MocksGenerator {
         const mouseMoveEvent: MouseEvent = document.createEvent('MouseEvents');
 
         mouseMoveEvent.initMouseEvent(
-            type, // event type : click, mousedown, mouseup, mouseover, mousemove, mouseout.
+            type, // event type : emitClick, mousedown, mouseup, mouseover, mousemove, mouseout.
             true, // canBubble
             false, // cancelable
             window, // event's AbstractView : should be window
-            1, // detail : Event's mouse click count
+            1, // detail : Event's mouse emitClick count
             x, // screenX
             y, // screenY
             x, // clientX
@@ -88,7 +88,7 @@ export class MocksGenerator {
             false, // altKey
             false, // shiftKey
             false, // metaKey
-            0, // button : 0 = click, 1 = middle button, 2 = right button
+            0, // button : 0 = emitClick, 1 = middle button, 2 = right button
             null // relatedTarget : Only used with some event types (e.g. mouseover and mouseout).
             // In other cases, pass null.
         );

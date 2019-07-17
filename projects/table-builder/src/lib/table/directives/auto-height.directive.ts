@@ -34,8 +34,8 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         return this.autoHeight.height;
     }
 
-    private get inViewport(): boolean {
-        return this.autoHeight.inViewport;
+    private get canCalculated(): boolean {
+        return this.autoHeight.inViewport && this.autoHeight.sourceLength > 0;
     }
 
     private get style(): string {
@@ -47,7 +47,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
             let viewportHeight: number;
             const paddingTop: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-top');
             const paddingBottom: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-bottom');
-            const scrollbarHeight: number = this.childElement.offsetHeight - this.childElement.clientHeight;
+            const scrollbarHeight: number = this.childElement.offsetHeight - this.childElement.clientHeight || 0;
 
             if (this.isLessHeightViewPort) {
                 viewportHeight = this.columnHeight;
@@ -123,7 +123,6 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     public ngAfterViewInit(): void {
-        this.calculateHeight();
         this.markForCheck();
     }
 
@@ -148,7 +147,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     public calculateHeight(): void {
-        if (this.inViewport) {
+        if (this.canCalculated) {
             this.setHeightByParent();
         }
     }

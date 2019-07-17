@@ -9,6 +9,7 @@ import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { SortableService } from '../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
+import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -45,7 +46,8 @@ describe('[TEST]: Resizable service', () => {
             mockNgZone as NgZone,
             new UtilsService(),
             resizeService,
-            sortable
+            sortable,
+            new ContextMenuService(new UtilsService())
         );
     });
 

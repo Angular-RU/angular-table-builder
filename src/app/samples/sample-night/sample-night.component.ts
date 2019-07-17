@@ -4,6 +4,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    NgZone,
     OnInit
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
@@ -26,7 +27,8 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     constructor(
         public readonly dialog: MatDialog,
         private readonly cd: ChangeDetectorRef,
-        private readonly app: ApplicationRef
+        private readonly app: ApplicationRef,
+        private readonly ngZone: NgZone
     ) {}
 
     public ngOnInit(): void {
@@ -43,9 +45,11 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     }
 
     public update(): void {
-        setTimeout(() => {
-            this.cd.detectChanges();
-            this.app.tick();
+        this.ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+                this.cd.detectChanges();
+                this.app.tick();
+            });
         });
     }
 

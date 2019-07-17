@@ -5,4 +5,5 @@ export interface UtilsInterface {
     isFirefox(userAgent: string): boolean;
     checkValueIsEmpty(value: Any): boolean;
     getValueByPath(object: KeyMap, path: string): KeyMap | undefined;
+    readonly bodyRect: ClientRect | DOMRect;
 }
