@@ -32,11 +32,9 @@ export class NgxContextMenuItemComponent implements OnInit {
     @Input('sub-menu-width') public subMenuWidth: number = 300;
     @Output() public onClick: EventEmitter<ContextItemEvent> = new EventEmitter();
     @ViewChild('item', { static: false }) public itemRef: ElementRef<HTMLDivElement>;
-
-    private taskId: number;
-
     public offsetX: number = null;
     public offsetY: number = null;
+    private taskId: number;
 
     constructor(
         private readonly contextMenu: ContextMenuService,
@@ -49,14 +47,16 @@ export class NgxContextMenuItemComponent implements OnInit {
         return this.contextMenu.state;
     }
 
-    public ngOnInit(): void {
-        this.contextMenu.events.subscribe(() => this.detectChanges());
+    public get clientRect(): Partial<ClientRect | DOMRect> {
+        return (this.itemElement.getBoundingClientRect && this.itemElement.getBoundingClientRect()) || {};
     }
 
-    private detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
-        }
+    private get itemElement(): Partial<HTMLDivElement> {
+        return (this.itemRef && this.itemRef.nativeElement) || {};
+    }
+
+    public ngOnInit(): void {
+        this.contextMenu.events.subscribe(() => this.detectChanges());
     }
 
     public calculateSubMenuPosition(ref: HTMLDivElement): void {
@@ -80,14 +80,6 @@ export class NgxContextMenuItemComponent implements OnInit {
         return overflowY > 0 ? overflowY + UtilsService.SCROLLBAR_WIDTH : 0;
     }
 
-    public get clientRect(): Partial<ClientRect | DOMRect> {
-        return (this.itemElement.getBoundingClientRect && this.itemElement.getBoundingClientRect()) || {};
-    }
-
-    private get itemElement(): Partial<HTMLDivElement> {
-        return (this.itemRef && this.itemRef.nativeElement) || {};
-    }
-
     public emitClick(event: MouseEvent): void {
         if (!this.disable) {
             this.deferCloseMenu();
@@ -99,6 +91,12 @@ export class NgxContextMenuItemComponent implements OnInit {
             });
 
             event.stopPropagation();
+        }
+    }
+
+    private detectChanges(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
         }
     }
 
