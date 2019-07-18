@@ -4,6 +4,7 @@
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
+    [class.table-grid__root--empty-list]="!source?.length"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__root--content-is-init]="contentInit && inViewport"
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
@@ -16,7 +17,9 @@
         inViewport: inViewport,
         columnHeight: columnHeight,
         statusRendered: isRendered,
-        sourceLength: source?.length || 0
+        sourceLength: source?.length || 0,
+        headerRef: headerRef,
+        footerRef: footerRef
     }"
 >
     <div
@@ -28,57 +31,76 @@
         (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
-        <div
-            #column
-            observerView
-            [attr.column-id]="key"
-            [rendered]="isRendered"
-            class="table-grid__column"
-            [style.height.px]="columnHeight"
-            [ngStyle]="columns[key]?.cssStyle"
-            [ngClass]="columns[key]?.cssClass"
-            [style.width.px]="columns[key]?.width"
-            *ngFor="let key of displayedColumns; let index = index"
-            [style.min-width.px]="columns[key]?.width || clientColWidth"
-            [class.table-grid__column--vertical-line]="verticalBorder || columns[key]?.verticalLine"
-            [class.table-grid__column--custom-column]="columns[key]?.customColumn"
-            [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
-            [class.table-grid__column--sticky-left]="columns[key]?.stickyLeft"
-            [class.table-grid__column--sticky-right]="columns[key]?.stickyRight"
-            [class.table-grid__column--is-visible]="column['visible']"
-            [class.table-grid__column--is-invisible]="!column['visible']"
-            [class.table-grid__column--default-width]="!autoWidth"
-            (observeVisible)="markVisibleColumn(column, $event)"
-        >
-            <div class="table-grid__column-area" *ngIf="asyncColumns === false || column['visible']" [@fadeAnimation]>
-                <table-thead
-                    [column-key]="key"
-                    [definition]="sortable.definition"
-                    [client-row-height]="clientRowHeight"
-                    [class.table-head__offset]="scrollOffset.offset"
-                    (resize)="resizeColumn($event, column)"
-                    (sortByKey)="sortByKey($event)"
-                ></table-thead>
+        <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
+            <ng-content select="ngx-header"></ng-content>
+        </div>
 
-                <table-tbody
-                    [source]="source"
-                    [column-key]="key"
-                    [striped]="striped"
-                    [column-index]="index"
-                    [primary-key]="primaryKey"
-                    [throttling]="throttling"
-                    [buffer-amount]="bufferAmount"
-                    [table-viewport]="tableViewport"
-                    [scroll-overload]="scrollOverload"
-                    [context-menu]="contextMenuTemplate"
-                    [enable-selection]="enableSelection"
-                    [client-row-height]="clientRowHeight"
-                    [selection-entries]="selectionEntries"
-                    [showed-cell-by-default]="showedCellByDefault"
-                    [column-virtual-height]="columnVirtualHeight"
+        <div
+            class="table-grid__column-area-content"
+            [style.width.px]="tableViewport.scrollWidth > tableViewport.clientWidth ? tableViewport.scrollWidth : null"
+        >
+            <div
+                #column
+                observerView
+                [attr.column-id]="key"
+                [rendered]="isRendered"
+                class="table-grid__column"
+                [style.height.px]="columnHeight"
+                [ngStyle]="columns[key]?.cssStyle"
+                [ngClass]="columns[key]?.cssClass"
+                [style.width.px]="columns[key]?.width"
+                *ngFor="let key of displayedColumns; let index = index"
+                [style.min-width.px]="columns[key]?.width || clientColWidth"
+                [class.table-grid__column--with-footer-content]="footerTemplate"
+                [class.table-grid__column--vertical-line]="verticalBorder || columns[key]?.verticalLine"
+                [class.table-grid__column--custom-column]="columns[key]?.customColumn"
+                [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
+                [class.table-grid__column--sticky-left]="columns[key]?.stickyLeft"
+                [class.table-grid__column--sticky-right]="columns[key]?.stickyRight"
+                [class.table-grid__column--is-visible]="column['visible']"
+                [class.table-grid__column--is-invisible]="!column['visible']"
+                [class.table-grid__column--default-width]="!autoWidth"
+                (observeVisible)="markVisibleColumn(column, $event)"
+            >
+                <div
+                    class="table-grid__column-area"
+                    *ngIf="asyncColumns === false || column['visible']"
+                    [@fadeAnimation]
                 >
-                </table-tbody>
+                    <table-thead
+                        [column-key]="key"
+                        [header-top]="headerRef?.nativeElement.offsetHeight || 0"
+                        [definition]="sortable.definition"
+                        [client-row-height]="clientRowHeight"
+                        [class.table-head__offset]="scrollOffset.offset"
+                        (resize)="resizeColumn($event, column)"
+                        (sortByKey)="sortByKey($event)"
+                    ></table-thead>
+
+                    <table-tbody
+                        [source]="source"
+                        [column-key]="key"
+                        [striped]="striped"
+                        [column-index]="index"
+                        [primary-key]="primaryKey"
+                        [throttling]="throttling"
+                        [buffer-amount]="bufferAmount"
+                        [table-viewport]="tableViewport"
+                        [scroll-overload]="scrollOverload"
+                        [context-menu]="contextMenuTemplate"
+                        [enable-selection]="enableSelection"
+                        [client-row-height]="clientRowHeight"
+                        [selection-entries]="selectionEntries"
+                        [showed-cell-by-default]="showedCellByDefault"
+                        [column-virtual-height]="columnVirtualHeight"
+                    >
+                    </table-tbody>
+                </div>
             </div>
+        </div>
+
+        <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer [@fadeAnimation]>
+            <ng-content select="ngx-footer"></ng-content>
         </div>
     </div>
 
@@ -88,3 +110,7 @@
 <ng-template [ngIf]="contextMenuTemplate && contextMenu.state.opened">
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
+
+<div *ngIf="!source?.length" [@fadeAnimation]>
+    <ng-content select="ngx-empty"></ng-content>
+</div>

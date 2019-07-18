@@ -74,7 +74,7 @@ describe('[TEST]: TableBuilder', () => {
     let weight: NgxColumnComponent;
 
     beforeEach(() => {
-        selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+        selection = new SelectionService(mockNgZone as NgZone);
         templateParser = new TemplateParserService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         resizable = new ResizableService();
@@ -88,7 +88,8 @@ describe('[TEST]: TableBuilder', () => {
             utils,
             resizable,
             sortable,
-            contextMenu
+            contextMenu,
+            appRef as ApplicationRef
         );
     });
 
@@ -258,7 +259,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct generate table body without emitter', () => {
         const index: number = 0;
 
-        const mySelection: SelectionService = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+        const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
             mockChangeDetector as ChangeDetectorRef,

@@ -22,6 +22,11 @@
     height: 0;
 }
 
+.table-grid__root--empty-list {
+    border: none !important;
+    display: none !important;
+}
+
 .scrollable-content {
     height: unset !important;
     will-change: auto;

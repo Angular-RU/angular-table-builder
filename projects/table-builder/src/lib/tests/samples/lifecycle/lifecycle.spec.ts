@@ -52,7 +52,7 @@ describe('[TEST]: Lifecycle table', () => {
     ];
 
     beforeEach(() => {
-        selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+        selection = new SelectionService(mockNgZone as NgZone);
         templateParser = new TemplateParserService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         resizable = new ResizableService();
@@ -66,7 +66,8 @@ describe('[TEST]: Lifecycle table', () => {
             utils,
             resizable,
             sortable,
-            contextMenu
+            contextMenu,
+            appRef as ApplicationRef
         );
 
         table.primaryKey = 'position';

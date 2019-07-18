@@ -40,14 +40,15 @@ describe('[TEST]: Resizable service', () => {
         resizeService = new ResizableService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         table = new TableBuilderComponent(
-            new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone),
+            new SelectionService(mockNgZone as NgZone),
             new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
             mockNgZone as NgZone,
             new UtilsService(),
             resizeService,
             sortable,
-            new ContextMenuService(new UtilsService())
+            new ContextMenuService(new UtilsService()),
+          appRef as ApplicationRef
         );
     });
 

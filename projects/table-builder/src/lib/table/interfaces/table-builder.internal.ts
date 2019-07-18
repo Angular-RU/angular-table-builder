@@ -1,4 +1,4 @@
-import { QueryList } from '@angular/core';
+import { ElementRef, QueryList } from '@angular/core';
 
 export enum PrimaryKey {
     ID = 'id'
@@ -11,6 +11,8 @@ export interface DynamicHeightOptions {
     columnHeight: number;
     statusRendered: boolean;
     sourceLength: number;
+    headerRef: ElementRef<HTMLDivElement>;
+    footerRef: ElementRef<HTMLDivElement>;
 }
 
 export interface ScrollOffsetStatus {

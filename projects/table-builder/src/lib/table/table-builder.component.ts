@@ -2,13 +2,16 @@ import {
     AfterContentInit,
     AfterViewChecked,
     AfterViewInit,
+    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     NgZone,
     OnChanges,
     OnDestroy,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -49,6 +52,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public detectOverload: boolean = false;
     public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
+
+    @ViewChild('header', { static: false })
+    public headerRef: ElementRef<HTMLDivElement>;
+
+    @ViewChild('footer', { static: false })
+    public footerRef: ElementRef<HTMLDivElement>;
+
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
     private renderTaskId: number = null;
@@ -63,7 +73,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         public readonly utils: UtilsService,
         public readonly resize: ResizableService,
         public readonly sortable: SortableService,
-        public readonly contextMenu: ContextMenuService
+        public readonly contextMenu: ContextMenuService,
+        private readonly app: ApplicationRef
     ) {
         super();
     }
@@ -141,6 +152,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public ngAfterViewInit(): void {
         this.listenTemplateChanges();
+        this.listenSelectionChanges();
+    }
+
+    private listenSelectionChanges(): void {
+        if (this.enableSelection) {
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                this.detectChanges();
+                this.ngZone.runOutsideAngular(() => {
+                    window.setTimeout(() => this.app.tick());
+                });
+            });
+        }
     }
 
     public ngAfterViewChecked(): void {

@@ -19,7 +19,7 @@ import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal'
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
 
-const { TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'table-tbody',
@@ -54,16 +54,6 @@ export class TableTbodyComponent extends TableLineRow {
         super(templateParser, selection);
     }
 
-    public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
-        if (this.contextMenuTemplate) {
-            if (this.enableSelection) {
-                this.selection.selectRow(row, event, this.source);
-            }
-
-            this.contextMenu.openContextMenu(event, key, row);
-        }
-    }
-
     public get clientBufferAmount(): number {
         return Number(this.bufferAmount) || this.options.bufferAmount;
     }
@@ -74,6 +64,16 @@ export class TableTbodyComponent extends TableLineRow {
 
     private get canThrottling(): boolean {
         return this.scrollOverload.isOverload && this.throttling;
+    }
+
+    public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
+        if (this.contextMenuTemplate) {
+            if (this.enableSelection) {
+                this.selection.selectRow(row, event, this.source);
+            }
+
+            this.contextMenu.openContextMenu(event, key, row);
+        }
     }
 
     public trackByIdx(index: number, item: TableRow): number {
@@ -87,7 +87,7 @@ export class TableTbodyComponent extends TableLineRow {
                     this.selection.selectRow(row, event, this.source);
                     event.preventDefault();
                     this.cd.detectChanges();
-                }, TIME_IDLE);
+                });
             }
 
             if (emitter) {

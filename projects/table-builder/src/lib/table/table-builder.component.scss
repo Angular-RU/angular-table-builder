@@ -11,9 +11,72 @@
     background: $backgroundColor;
     will-change: auto;
     scroll-behavior: smooth;
-    display: flex;
     overflow-x: visible;
     height: 100%;
+
     //noinspection CssOverwrittenProperties
     overflow-y: auto;
+
+    &__column-area-content {
+        display: flex;
+    }
+
+    &__header-sticky,
+    &__footer-sticky {
+        background: #fff;
+        position: sticky;
+        z-index: 1000;
+        width: 100%;
+    }
+
+    &__header-sticky {
+        top: 0;
+        left: 0;
+    }
+
+    &__footer-sticky {
+        bottom: 0;
+        left: 0;
+
+        .table-grid__table-content-place {
+            border-top: 1px solid $borderColor;
+            border-bottom: none;
+        }
+    }
+
+    &__column--with-footer-content table-tbody .table-grid__cell:last-child {
+        border-bottom: none;
+    }
+
+    &__table-content-place {
+        color: #000;
+        border-bottom: 1px solid $borderColor;
+
+        &--content-cell {
+            box-sizing: border-box;
+            display: flex;
+            overflow: hidden;
+            padding: 5px 20px;
+
+            .content-box {
+                display: flex;
+                vertical-align: middle;
+                box-sizing: border-box;
+                margin: auto 0;
+            }
+        }
+
+        &--align-center {
+            justify-content: center;
+            text-align: center;
+
+            .content-box {
+                text-align: center;
+            }
+        }
+
+        &--bold {
+            font-weight: bold;
+        }
+    }
 }

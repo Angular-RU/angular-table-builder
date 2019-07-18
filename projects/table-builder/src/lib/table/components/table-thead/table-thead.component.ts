@@ -13,6 +13,7 @@ import { SortOrderType } from '../../services/sortable/sortable.interfaces';
     encapsulation: ViewEncapsulation.None
 })
 export class TableTheadComponent extends TableLineRow {
+    @Input('header-top') public headerTop: number;
     @Input() public definition: KeyMap<SortOrderType>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();

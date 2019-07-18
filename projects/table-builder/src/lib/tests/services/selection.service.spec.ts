@@ -1,4 +1,4 @@
-import { ApplicationRef, NgZone } from '@angular/core';
+import { NgZone } from '@angular/core';
 import { Any, RowId } from '../../table/interfaces/table-builder.internal';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { TableRow } from '../../table/interfaces/table-builder.external';
@@ -6,10 +6,6 @@ import { SelectionMap } from '../../table/services/selection/selection';
 
 // tslint:disable-next-line
 describe('[TEST]: Selection service', () => {
-    const appRef: Partial<ApplicationRef> = {
-        tick: (): void => {}
-    };
-
     let preventDefaultInvoked: number = 0;
     let listenKeydown: boolean = false;
     let listenKeyup: boolean = false;
@@ -49,7 +45,7 @@ describe('[TEST]: Selection service', () => {
     let selection: SelectionService;
 
     beforeEach(() => {
-        selection = new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone);
+        selection = new SelectionService(mockNgZone as NgZone);
     });
 
     it('should be correct exception', () => {

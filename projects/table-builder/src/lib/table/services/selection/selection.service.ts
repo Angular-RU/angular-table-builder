@@ -1,8 +1,9 @@
-import { ApplicationRef, Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { SelectionMap } from './selection';
 import { SelectionRange } from './selection-range';
 import { TableRow } from '../../interfaces/table-builder.external';
 import { PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class SelectionService implements OnDestroy {
@@ -11,8 +12,9 @@ export class SelectionService implements OnDestroy {
     public selectionStart: SelectionStatus = { status: false };
     public primaryKey: string = PrimaryKey.ID;
     public selectionTaskIdle: number;
+    public onChanges: Subject<void> = new Subject<void>();
 
-    constructor(private readonly app: ApplicationRef, private readonly ngZone: NgZone) {
+    constructor(private readonly ngZone: NgZone) {
         this.listenShiftKeyByType('keydown');
         this.listenShiftKeyByType('keyup');
     }
@@ -44,7 +46,7 @@ export class SelectionService implements OnDestroy {
     public toggle(row: TableRow): void {
         clearInterval(this.selectionTaskIdle);
         this.selectionModel.toggle(this.getIdByRow(row), true);
-        this.app.tick();
+        this.onChanges.next();
     }
 
     public selectRow(row: TableRow, event: MouseEvent, rows: TableRow[]): void {
@@ -60,7 +62,7 @@ export class SelectionService implements OnDestroy {
         }
 
         this.checkIsAllSelected(rows);
-        this.app.tick();
+        this.onChanges.next();
     }
 
     public getIdByRow(row: TableRow): RowId {
@@ -90,7 +92,6 @@ export class SelectionService implements OnDestroy {
     private checkIsAllSelected(rows: TableRow[]): void {
         this.selectionModel.isAll = rows.length === this.selectionModel.size;
         this.selectionModel.generateImmutableEntries();
-        this.app.tick();
     }
 
     private multipleSelectByShiftKeydown(index: number, rows: TableRow[]): void {

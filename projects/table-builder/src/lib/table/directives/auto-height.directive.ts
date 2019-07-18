@@ -51,7 +51,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
             if (this.isLessHeightViewPort) {
                 viewportHeight = this.columnHeight;
-                height = `calc(${viewportHeight}px + ${scrollbarHeight}px)`;
+                height = `calc(${viewportHeight + scrollbarHeight + this.headerHeight + this.footerHeight}px)`;
             } else if (this.isLessHeightParentOffset && !this.useOnlyAutoViewPort) {
                 viewportHeight = this.parentOffsetHeight - parseInt(AutoHeightDirective.HEAD_TOP);
                 height = `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
@@ -97,6 +97,14 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     private get autoViewHeight(): number {
         return document.body.clientHeight - this.currentElement.getBoundingClientRect().top;
+    }
+
+    private get headerHeight(): number {
+        return (this.autoHeight.headerRef && this.autoHeight.headerRef.nativeElement.clientHeight) || 0;
+    }
+
+    private get footerHeight(): number {
+        return (this.autoHeight.footerRef && this.autoHeight.footerRef.nativeElement.clientHeight) || 0;
     }
 
     private static getStyle(element: Element | Any, strCssRule: string): string {

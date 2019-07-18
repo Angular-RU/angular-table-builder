@@ -24,6 +24,9 @@ import { NgxContextMenuComponent } from './table/components/ngx-context-menu/ngx
 import { NgxContextMenuItemComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-context-menu-item.component';
 import { NgxContextMenuDividerComponent } from './table/components/ngx-context-menu/ngx-context-menu-divider/ngx-context-menu-divider.component';
 import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx-context-menu-item/ngx-menu-content-place/ngx-menu-content.component';
+import { NgxEmptyComponent } from './table/components/ngx-empty/ngx-empty.component';
+import { NgxHeaderComponent } from './table/components/ngx-header/ngx-header.component';
+import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule],
@@ -44,7 +47,10 @@ import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx
         NgxContextMenuComponent,
         NgxContextMenuItemComponent,
         NgxContextMenuDividerComponent,
-        NgxMenuContentComponent
+        NgxMenuContentComponent,
+        NgxEmptyComponent,
+        NgxHeaderComponent,
+        NgxFooterComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
@@ -56,7 +62,10 @@ import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx
         NgxContextMenuComponent,
         NgxContextMenuItemComponent,
         NgxContextMenuDividerComponent,
-        NgxMenuContentComponent
+        NgxMenuContentComponent,
+        NgxEmptyComponent,
+        NgxHeaderComponent,
+        NgxFooterComponent
     ]
 })
 export class TableBuilderModule {

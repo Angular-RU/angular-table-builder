@@ -27,6 +27,8 @@ import { NgxOptionsComponent } from './components/ngx-options/ngx-options.compon
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
+import { NgxHeaderComponent } from './components/ngx-header/ngx-header.component';
+import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component';
 
 const { ROW_HEIGHT, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -61,6 +63,12 @@ export abstract class TableBuilderApiImpl
 
     @ContentChild(NgxContextMenuComponent, { static: false })
     public contextMenuTemplate: NgxContextMenuComponent = null;
+
+    @ContentChild(NgxHeaderComponent, { static: false })
+    public headerTemplate: NgxHeaderComponent = null;
+
+    @ContentChild(NgxFooterComponent, { static: false })
+    public footerTemplate: NgxFooterComponent = null;
 
     public inViewport: boolean;
     public scrollOverload: Partial<ScrollOverload> = {};
