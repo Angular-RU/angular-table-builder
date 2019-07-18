@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component, HostBinding, Input, ViewEncapsulati
 export class NgxMenuContentComponent {
     @Input() public icon: string = null;
     @Input('no-margin') public noMargin: boolean = null;
-  @Input('align-center') public alignCenter: boolean = null;
+    @Input('align-center') public alignCenter: boolean = null;
 
     @HostBinding('class')
     public get class(): string {
