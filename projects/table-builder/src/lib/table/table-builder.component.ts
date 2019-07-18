@@ -200,7 +200,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public toggleVisibleColumns(columnKey: string): void {
-        this.templateParser.toggleVisibleColumns(columnKey);
+        this.templateParser.toggleColumnVisibility(columnKey);
         this.recalculateVisibleColumns();
         this.detectChanges();
     }

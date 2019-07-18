@@ -36,7 +36,7 @@ export class TemplateParserService {
         return value === null ? common : value;
     }
 
-    public toggleVisibleColumns(key: string): void {
+    public toggleColumnVisibility(key: string): void {
         this.schema.columnsAllowedKeys = {
             ...this.schema.columnsAllowedKeys,
             [key]: {

@@ -255,7 +255,7 @@
 
       &lt;ngx-context-menu-item
           *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
-          (onClick)="table.toggleVisibleColumns(columnType.key); $event.preventDefault()"
+          (onClick)="table.toggleColumnVisibility(columnType.key); $event.preventDefault()"
           [visible]="columnType.value.isModel"
       >
           &lt;ngx-menu-content no-margin>&#123;&#123; columnType.key }}&lt;/ngx-menu-content>

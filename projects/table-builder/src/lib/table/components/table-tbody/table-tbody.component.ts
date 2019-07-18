@@ -17,6 +17,7 @@ import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
+import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
 
 const { TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -33,6 +34,7 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('scroll-overload') public scrollOverload: Partial<ScrollOverload>;
     @Input('primary-key') public primaryKey: string;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
+    @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
     @Input('enable-selection') public enableSelection: boolean;
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
@@ -50,6 +52,16 @@ export class TableTbodyComponent extends TableLineRow {
         private readonly ngZone: NgZone
     ) {
         super(templateParser, selection);
+    }
+
+    public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
+        if (this.contextMenuTemplate) {
+            if (this.enableSelection) {
+                this.selection.selectRow(row, event, this.source);
+            }
+
+            this.contextMenu.openContextMenu(event, key, row);
+        }
     }
 
     public get clientBufferAmount(): number {

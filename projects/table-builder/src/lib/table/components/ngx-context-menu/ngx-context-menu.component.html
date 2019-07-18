@@ -1,5 +1,5 @@
 <div class="table-grid__context-menu" *ngIf="state?.opened">
-    <div class="context-menu-outer" (click)="closeMenu($event)" (contextmenu)="closeMenu($event)"></div>
+    <div class="context-menu-outer" (click)="closeMenu($event, true)" (contextmenu)="closeMenu($event, true)"></div>
 
     <div
         class="context-menu"

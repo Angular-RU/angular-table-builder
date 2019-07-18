@@ -14,6 +14,10 @@ import { ContextMenuService } from '../../services/context-menu/context-menu.ser
 import { ContextMenuState } from '../../services/context-menu/context-menu.interface';
 import { UtilsService } from '../../services/utils/utils.service';
 
+interface MouseNext {
+    next(x: number, y: number): void;
+}
+
 // @dynamic
 @Component({
     selector: 'ngx-context-menu',
@@ -22,7 +26,7 @@ import { UtilsService } from '../../services/utils/utils.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class NgxContextMenuComponent implements OnInit, OnDestroy {
+export class NgxContextMenuComponent implements OnInit, OnDestroy, MouseNext {
     @Input() public width: number = 300;
     @Input() public height: number = 300;
     @Input('max-height') public maxHeight: number = 400;
@@ -64,12 +68,28 @@ export class NgxContextMenuComponent implements OnInit, OnDestroy {
         });
     }
 
-    public closeMenu(event: MouseEvent): void {
+    public closeMenu(event: MouseEvent, nextPropagation: boolean = false): void {
         this.contextMenu.close();
         event.preventDefault();
+
+        if (nextPropagation) {
+            this.next(event.x, event.y);
+        }
     }
 
     public ngOnDestroy(): void {
         this.subscription.unsubscribe();
+    }
+
+    public next(x: number, y: number): void {
+        const event: MouseEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+            screenX: x,
+            screenY: y
+        });
+
+        document.elementFromPoint(x, y).dispatchEvent(event);
     }
 }
