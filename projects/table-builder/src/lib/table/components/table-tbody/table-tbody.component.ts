@@ -68,12 +68,18 @@ export class TableTbodyComponent extends TableLineRow {
 
     public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
         if (this.contextMenuTemplate) {
-            if (this.enableSelection) {
+            const selectOnlyUnSelectedRow: boolean = this.enableSelection && !this.checkSelectedItem(row);
+
+            if (selectOnlyUnSelectedRow) {
                 this.selection.selectRow(row, event, this.source);
             }
 
             this.contextMenu.openContextMenu(event, key, row);
         }
+    }
+
+    private checkSelectedItem(row: TableRow): boolean {
+        return this.selection.selectionModel.get(row[this.primaryKey]);
     }
 
     public trackByIdx(index: number, item: TableRow): number {
