@@ -17,23 +17,27 @@ export class TemplateParserService {
     public overrideTemplateKeys: Set<string>;
     public columnOptions: ColumnOptions;
 
-    private static getCellTemplateContext(key: string, cellTemplate: TemplateCellCommon): TableCellOptions {
+    private static templateContext(key: string, cell: TemplateCellCommon, options: ColumnOptions): TableCellOptions {
         return {
-            textBold: cellTemplate.bold,
-            nowrap: cellTemplate.nowrap,
-            template: cellTemplate.template,
-            class: cellTemplate.cssClasses,
-            style: cellTemplate.cssStyles,
+            textBold: cell.bold,
+            template: cell.template,
+            class: cell.cssClasses,
+            style: cell.cssStyles,
+            width: cell.width,
+            height: cell.height,
+            onClick: cell.onClick,
             useDeepPath: key.includes('.'),
-            context: cellTemplate.row ? ImplicitContext.ROW : ImplicitContext.CELL,
-            width: cellTemplate.width,
-            height: cellTemplate.height,
-            onClick: cellTemplate.onClick
+            context: cell.row ? ImplicitContext.ROW : ImplicitContext.CELL,
+            nowrap: TemplateParserService.getValidPredicate(options.nowrap, cell.nowrap)
         };
     }
 
-    private static mergeWithoutNull<T>(value: T, common: T): T {
-        return value === null ? common : value;
+    private static getValidHtmlBooleanAttribute(attribute: boolean): boolean {
+        return typeof attribute === 'string' ? true : attribute;
+    }
+
+    private static getValidPredicate<T>(leftPredicate: T, rightPredicate: T): T {
+        return leftPredicate === null ? rightPredicate : leftPredicate;
     }
 
     public toggleColumnVisibility(key: string): void {
@@ -102,16 +106,16 @@ export class TemplateParserService {
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
 
         this.schema.columns[key] = this.schema.columns[key] || {
-            customColumn: typeof column.customKey === 'string' ? true : column.customKey,
-            th: TemplateParserService.getCellTemplateContext(key, thTemplate),
-            td: TemplateParserService.getCellTemplateContext(key, tdTemplate),
-            stickyLeft: column.stickyLeft,
-            stickyRight: column.stickyRight,
-            width: TemplateParserService.mergeWithoutNull(column.width, this.columnOptions.width),
-            cssClass: TemplateParserService.mergeWithoutNull(column.cssClass, this.columnOptions.cssClass) || [],
-            cssStyle: TemplateParserService.mergeWithoutNull(column.cssStyle, this.columnOptions.cssStyle) || [],
-            resizable: TemplateParserService.mergeWithoutNull(column.resizable, this.columnOptions.resizable),
-            sortable: TemplateParserService.mergeWithoutNull(column.sortable, this.columnOptions.sortable),
+            stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
+            stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
+            customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
+            th: TemplateParserService.templateContext(key, thTemplate, this.columnOptions),
+            td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
+            width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
+            cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
+            cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
+            resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
+            sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
             verticalLine: column.verticalLine
         };
     }
