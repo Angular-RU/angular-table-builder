@@ -1,4 +1,5 @@
 @import './variables';
+@import './common';
 
 .table-grid {
     &__column {
@@ -39,21 +40,50 @@
             right: 0;
             top: 0;
         }
-    }
-}
 
-.table-grid__with-vertical-line {
-    .table-grid {
-        &__column {
+        &--vertical-line {
             border-right: 1px solid $borderColor;
         }
 
-        &__column:last-child {
+        &--vertical-line:last-child {
             border-left: 1px solid $borderColor;
         }
 
-        &__column:nth-last-child(2) {
+        &--vertical-line:nth-last-child(2) {
             border-right: none;
         }
+
+        &--sortable {
+            width: 24px;
+            height: 20px;
+            font-size: 12px;
+            opacity: 0.1;
+            transition: all 0.2s ease-in-out;
+            transform: rotate(180deg);
+
+            @extend .vertical-align;
+
+            &-active {
+                opacity: 1;
+            }
+
+            &-desc {
+                transform: rotate(0deg);
+            }
+
+            &:hover {
+                opacity: 1;
+                cursor: pointer;
+            }
+        }
     }
+}
+
+.table-grid__cell--content-sortable {
+    cursor: pointer;
+}
+
+.table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0.5;
 }

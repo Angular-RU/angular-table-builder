@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-css */
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 interface LicenseSample {
@@ -33,7 +33,6 @@ declare const hljs: Any;
             .button__done[mat-button] {
                 padding: 0;
                 min-width: 100%;
-                line-height: 45px;
             }
         `
     ],
@@ -42,30 +41,11 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleSecondComponent implements AfterViewInit {
-    public licenses: LicenseSample[] = [
-        {
-            id: 1,
-            name: 'single',
-            price: 29.3
-        },
-        {
-            id: 2,
-            name: 'developer',
-            price: 49.8
-        },
-        {
-            id: 3,
-            name: 'premium',
-            price: 99.5
-        },
-        {
-            id: 4,
-            name: 'enterprise',
-            price: 199
-        }
-    ];
+    public licenses: LicenseSample[] = [];
 
     public columns: string[] = ['name', 'position', 'weight', 'symbol', 'position', 'weight', 'symbol', 'status'];
+
+    constructor(private readonly cd: ChangeDetectorRef) {}
 
     public elements: PeriodicElement[] = [
         { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
@@ -83,6 +63,33 @@ export class SampleSecondComponent implements AfterViewInit {
     public ngAfterViewInit(): void {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
+        });
+
+        setTimeout(() => {
+            this.licenses = [
+                {
+                    id: 1,
+                    name: 'single',
+                    price: 29.3
+                },
+                {
+                    id: 2,
+                    name: 'developer',
+                    price: 49.8
+                },
+                {
+                    id: 3,
+                    name: 'premium',
+                    price: 99.5
+                },
+                {
+                    id: 4,
+                    name: 'enterprise',
+                    price: 199
+                }
+            ];
+
+            this.cd.detectChanges();
         });
     }
 }

@@ -12,14 +12,12 @@ describe('[TEST]: Simple table', () => {
     let fixture: ComponentFixture<SimpleMockComponent>;
     let component: SimpleMockComponent;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
+    beforeEach(() => {
+        TestBed.configureTestingModule({
             imports: [BrowserAnimationsModule, TableBuilderModule.forRoot()],
             declarations: [SimpleMockComponent]
         }).compileComponents();
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(SimpleMockComponent);
         component = fixture.componentInstance;
         fixture.autoDetectChanges();
@@ -27,6 +25,7 @@ describe('[TEST]: Simple table', () => {
 
     it('should be correct create table', (done: Fn) => {
         expect(component).toBeDefined();
+
         Delay.timeout(done, () => {
             const html: HTMLDivElement = fixture.debugElement.nativeElement;
             const tableTemplate: string = new HtmlFormatter(html.innerHTML)
@@ -35,6 +34,7 @@ describe('[TEST]: Simple table', () => {
                 .prettyHtml();
 
             const actualTableTemplate: string = new HtmlFormatter(SIMPLE_TABLE_TEMPLATE).prettyHtml();
+
             expect(tableTemplate).toEqual(actualTableTemplate);
         });
     });

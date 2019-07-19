@@ -13,7 +13,6 @@ declare const hljs: Any;
 export class SampleFourthComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
     public elements: TableRow[];
-    public keys: string[] = ['position', 'name', 'date', 'symbol'];
 
     public ngOnInit(): void {
         this.data = [
@@ -36,10 +35,10 @@ export class SampleFourthComponent implements OnInit, AfterViewInit {
         ];
 
         this.elements = [
-            { position: null, name: 'Hydrogen', date: NaN, symbol: 'H' },
-            { position: 2, name: '', date: new Date(), symbol: undefined },
-            { position: 3, name: 'Lithium', date: Infinity, symbol: 'Li' },
-            { position: 4, name: 'Beryllium', date: 0, symbol: '    ' }
+            { position: null, name: 'Hydrogen', date: { value: NaN }, symbol: 'H' },
+            { position: 2, name: '', date: { value: new Date() }, symbol: undefined },
+            { position: 3, name: 'Lithium', date: { value: Infinity }, symbol: 'Li' },
+            { position: 4, name: 'Beryllium', date: { value: 0 }, symbol: '    ' }
         ];
     }
 

@@ -1,0 +1,56 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Example dynamic changes</span>
+</mat-toolbar>
+
+<mat-checkbox [(ngModel)]="scrollTrolling">Enable throttling for scrolling</mat-checkbox>
+<br />
+<br />
+
+<style>
+    .example-full-width {
+        padding: 5px;
+    }
+</style>
+
+<ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false" [throttling]="scrollTrolling">
+    <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" important-template>
+        <ng-template ngx-th></ng-template>
+        <ng-template ngx-td [row]="true" let-row>
+            <div [@.disabled]="true">
+                <mat-checkbox
+                    [ngModel]="$any(row)?.active"
+                    (ngModelChange)="updateRow(row, 'active', $event)"
+                ></mat-checkbox>
+            </div>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column key="cost" important-template>
+        <ng-template ngx-td [row]="true" let-row>
+            <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
+        <ng-container *ngIf="key === 'symbol'; else other">
+            <ng-template ngx-td let-symbol> {{ symbol }} </ng-template>
+        </ng-container>
+
+        <ng-template #other ngx-td [nowrap]="false" let-cell>{{ cell }}</ng-template>
+    </ngx-column>
+
+    <ngx-column key="symbol-edit" [sticky-end]="true" [vertical-line]="true" custom-key important-template>
+        <ng-template ngx-td [row]="true" let-row>
+            <mat-form-field class="example-full-width">
+                <div [@.disabled]="true">
+                    <input
+                        matInput
+                        placeholder="Editable field"
+                        [ngModel]="$any(row)?.symbol"
+                        (ngModelChange)="updateRow(row, 'symbol', $event)"
+                    />
+                </div>
+            </mat-form-field>
+        </ng-template>
+    </ngx-column>
+</ngx-table-builder>

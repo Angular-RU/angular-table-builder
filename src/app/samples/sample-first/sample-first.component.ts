@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/table-builder';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
-import { FakeGenerator } from '../../shared/fake-generator.class';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 @Component({
     selector: 'sample-first',
@@ -16,7 +16,7 @@ export class SampleFirstComponent implements OnInit {
     public columnWidth: string;
     public dataSize: string = '100x20';
     public loading: boolean = false;
-    public simple: TableRow[];
+    public simple: TableRow[] = [];
 
     constructor(private readonly cd: ChangeDetectorRef, public readonly dialog: MatDialog) {}
 
@@ -31,10 +31,7 @@ export class SampleFirstComponent implements OnInit {
                 description: 'If you want enabled virtual scroll, you need use auto-height or height attribute.',
                 code:
                     `<!-- simple - is Array any objects -->\n` +
-                    `<ngx-table-builder\n` +
-                    `   [source]="simple"\n` +
-                    `   [auto-height]="true"\n` +
-                    `></ngx-table-builder>\n\n\n` +
+                    `<ngx-table-builder [source]="simple"></ngx-table-builder>\n\n\n` +
                     `<!-- also you can set height, width for cell in table -->\n` +
                     `<ngx-table-builder\n` +
                     `   [source]="simple"\n` +
@@ -50,35 +47,36 @@ export class SampleFirstComponent implements OnInit {
     }
 
     public updateTable(): void {
+        this.loading = true;
         switch (this.dataSize) {
             case '10x5':
-                this.simple = FakeGenerator.generateTable(10, 5);
+                MocksGenerator.generator(10, 5).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '100x20':
-                this.simple = FakeGenerator.generateTable(100, 20);
+                MocksGenerator.generator(100, 20).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '1000x30':
-                this.simple = FakeGenerator.generateTable(1000, 30);
+                MocksGenerator.generator(1000, 30).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '10000x50':
-                this.simple = FakeGenerator.generateTable(10000, 50);
+                MocksGenerator.generator(10000, 50).then((data: TableRow[]) => this.setData(data));
                 break;
 
             case '100000x100':
-                this.loading = true;
-                this.cd.detectChanges();
-                setTimeout(() => {
-                    this.simple = FakeGenerator.generateTable(100000, 100);
-                    this.loading = false;
-                    this.cd.detectChanges();
-                }, 1000);
-
+                MocksGenerator.generator(100000, 100).then((data: TableRow[]) => this.setData(data));
                 break;
         }
+        this.cd.detectChanges();
+    }
 
-        setTimeout(() => this.cd.detectChanges(), 100);
+    private setData(data: TableRow[]): void {
+        this.simple = data;
+        window.setTimeout(() => {
+            this.loading = false;
+            this.cd.detectChanges();
+        }, 500);
     }
 }

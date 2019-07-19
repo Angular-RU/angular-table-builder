@@ -3,6 +3,7 @@ import { ElementRef, NgZone } from '@angular/core';
 import { WheelThrottlingDirective } from '../../table/directives/wheel.directive';
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../../table/config/table-builder-options';
+import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('[TEST]: Wheel throttling', () => {
     let directive: WheelThrottlingDirective;
@@ -14,7 +15,7 @@ describe('[TEST]: Wheel throttling', () => {
 
     const mockNgZone: Partial<NgZone> = {
         runOutsideAngular<T = Any>(fn: Fn): T {
-            return fn() as Any;
+            return fn();
         }
     };
 
@@ -35,7 +36,7 @@ describe('[TEST]: Wheel throttling', () => {
     beforeEach(() => {
         const options: TableBuilderOptionsImpl = new TableBuilderOptionsImpl();
         options.wheelMaxDelta = maxDeltaWheel;
-        directive = new WheelThrottlingDirective(options, mockElementRef, mockNgZone as NgZone);
+        directive = new WheelThrottlingDirective(options, mockElementRef, mockNgZone as NgZone, new UtilsService());
         preventDefaulted = 0;
     });
 
@@ -54,6 +55,8 @@ describe('[TEST]: Wheel throttling', () => {
     });
 
     it('should be call preventDefault', () => {
+        directive.isPassive = false;
+
         const deltaY: number = -150;
         mockElementRef.nativeElement.scrollTop = Math.abs(Number(deltaY));
         let event: Partial<WheelEvent> = createEvent(0, deltaY, () => (mockElementRef.nativeElement.scrollTop = 0));
@@ -70,6 +73,12 @@ describe('[TEST]: Wheel throttling', () => {
         directive.onElementScroll(event as WheelEvent);
         expect(preventDefaulted).toEqual(2);
         expect(directive.scrollTopOffset).toEqual(false);
+
+        directive.isPassive = true; // reset
+
+        event = createEvent(300, deltaY, () => {});
+        directive.onElementScroll(event as WheelEvent);
+        expect(preventDefaulted).toEqual(2);
     });
 
     it('should be correct invoke ngOnDestroy', () => {
@@ -78,12 +87,13 @@ describe('[TEST]: Wheel throttling', () => {
     });
 
     it('check handler options', () => {
-        expect(WheelThrottlingDirective.handlerOptions()).toEqual({ passive: false });
-        expect(
-            WheelThrottlingDirective.handlerOptions(
-                'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion'
-            )
-        ).toEqual(true);
+        expect(directive.isPassive).toEqual(true);
+        expect(directive.listenerOptions).toEqual({ passive: true });
+
+        directive.isPassive = false;
+        expect(directive.listenerOptions).toEqual(true);
+
+        directive.isPassive = true; // reset
     });
 
     function createEvent(deltaX: number, deltaY: number, callback: Fn = (): void => {}): Partial<WheelEvent> {

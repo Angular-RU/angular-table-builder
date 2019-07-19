@@ -1,12 +1,15 @@
 import { TableBuilderComponent, TableRow, TableSchema } from '@angular-ru/table-builder';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { SelectionService } from '../../table/services/selection/selection.service';
-import { ApplicationRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, NgZone, SimpleChanges } from '@angular/core';
 import { TemplateParserService } from '../../table/services/template-parser/template-parser.service';
 import { ResizableService } from '../../table/services/resizer/resizable.service';
 import { UtilsService } from '../../table/services/utils/utils.service';
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
+import { SortableService } from '../../table/services/sortable/sortable.service';
+import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
+import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -15,7 +18,9 @@ describe('[TEST]: Resizable service', () => {
     let removeAll: number = 0;
     let documentEmpty: number = 0;
     let resizeService: ResizableService;
+    let sortable: SortableService;
     const columnWidth: number = 200;
+    let changes: SimpleChanges;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
@@ -33,21 +38,35 @@ describe('[TEST]: Resizable service', () => {
 
     beforeEach(() => {
         resizeService = new ResizableService();
+        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         table = new TableBuilderComponent(
-            new SelectionService(appRef as ApplicationRef, mockNgZone as NgZone),
+            new SelectionService(mockNgZone as NgZone),
             new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
             mockNgZone as NgZone,
             new UtilsService(),
-            resizeService
+            resizeService,
+            sortable,
+            new ContextMenuService(new UtilsService()),
+          appRef as ApplicationRef
         );
     });
 
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
         table.source = source;
-        table.ngOnChanges();
+        changes = {
+            source: {
+                currentValue: table.source,
+                firstChange: false,
+                previousValue: undefined,
+                isFirstChange: (): boolean => false
+            }
+        };
+
         table.ngAfterContentInit();
-    });
+        table.ngOnChanges();
+        tick(1000); // async rendering
+    }));
 
     beforeEach(() => {
         removeAll = 0;

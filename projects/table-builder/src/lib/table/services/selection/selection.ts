@@ -53,7 +53,7 @@ export class SelectionMap {
 
     public clear(): void {
         this.map.clear();
-        this.generateImmutableEntries();
+        this.entries = {};
         this.isAll = false;
     }
 }

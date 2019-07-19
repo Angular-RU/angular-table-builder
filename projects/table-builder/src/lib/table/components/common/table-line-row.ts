@@ -1,4 +1,4 @@
-import { Input } from '@angular/core';
+import { ChangeDetectorRef, Input, ViewRef } from '@angular/core';
 import { ColumnsSchema, TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { TableEvent } from '../../interfaces/table-builder.internal';
@@ -6,7 +6,10 @@ import { SelectionService } from '../../services/selection/selection.service';
 
 export class TableLineRow {
     @Input('column-key') public key: string;
+    @Input('column-index') public columnIndex: number;
     @Input('client-row-height') public clientRowHeight: number;
+
+    public cd: ChangeDetectorRef;
 
     constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {}
 
@@ -22,5 +25,11 @@ export class TableLineRow {
                 clearInterval(this.selection.selectionTaskIdle);
             }
         };
+    }
+
+    public update(): void {
+        if (!(this.cd as ViewRef).destroyed) {
+            this.cd.detectChanges();
+        }
     }
 }

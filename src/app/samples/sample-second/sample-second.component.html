@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Define the column templates</span>
+    <span>Example custom templates</span>
 </mat-toolbar>
 
 <h4>1. Override columns rendering</h4>
@@ -103,7 +103,7 @@
     styles: [
       `
          // Use custom CSS for column and cell
-        .my-status .table-grid__cell &#123;
+        .status-column .table-grid__cell &#123;
           padding: 0;
           color: green;
         }
@@ -112,7 +112,6 @@
         .button__done[mat-button] &#123;
           padding: 0;
           min-width: 100%;
-          line-height: 45px;
         }
       `
     ],
@@ -150,8 +149,14 @@
     </div>
 
     <div class="column">
-        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
-            <ngx-column key="name" [sticky]="true"> </ngx-column>
+        <ngx-table-builder
+            [source]="elements"
+            [striped]="false"
+            [keys]="columns"
+            [async-columns]="false"
+            [lazy]="false"
+        >
+            <ngx-column key="name" [sticky]="true"></ngx-column>
 
             <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
                 <ng-template ngx-th></ng-template>
@@ -167,7 +172,12 @@
 
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
-  &lt;ngx-table-builder [source]="data" [striped]="false" [keys]="columns">
+  &lt;ngx-table-builder
+          [source]="data"
+          [striped]="false"
+          [keys]="columns"
+          [async-columns]="false">
+
       &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
 
       &lt;ngx-column
@@ -187,6 +197,11 @@
 
   &lt;/ngx-table-builder>
 </code></pre>
+
+        <p>
+            <strong>Note:</strong> If you always want the columns to be drawn regardless of their visibility in the
+            viewport, then you need to use the property [async-columns]="false"
+        </p>
     </div>
 </div>
 

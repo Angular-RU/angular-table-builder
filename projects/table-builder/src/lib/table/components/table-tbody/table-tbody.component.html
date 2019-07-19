@@ -1,51 +1,46 @@
 <virtual-scroller
     #scroll
     [items]="source"
-    [@fadeAnimation]="'in'"
     [checkResizeInterval]="0"
     [scrollAnimationTime]="1000"
     [parentScroll]="tableViewport"
+    [stripedTable]="true"
     [bufferAmount]="clientBufferAmount"
     [executeRefreshOutsideAngularZone]="true"
     [useMarginInsteadOfTranslate]="true"
     [resizeBypassRefreshThreshold]="0"
-    [enableUnequalChildrenSizes]="true"
     [modifyOverflowStyleOfParentScroll]="false"
     [style.height.px]="columnVirtualHeight"
-    (vsChange)="cd.detectChanges()"
+    (vsChange)="vsChange()"
 >
     <div
         class="table-grid__cell"
-        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.onClick)"
-        (selectstart)="(canSelectTextInTable)"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
+        (selectstart)="(canSelectTextInTable)"
+        (contextmenu)="openContextMenu($event, key, item)"
+        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.onClick)"
         [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
-        [style.line-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
-        [class.table-grid__cell--strip]="striped ? (item[primaryKey] || index) % 2 === 0 : null"
+        [class.table-grid__cell--resizable]="columnsSchema[key]?.resizable"
+        [class.table-grid__cell--custom-cell]="columnsSchema[key]?.customColumn"
+        [class.table-grid__cell--strip]="striped ? index % 2 === 0 : null"
         [class.table-grid__cell--enable-selection]="enableSelection"
         [class.table-grid__cell--selected]="selectionEntries[item[primaryKey]]"
         [class.table-grid__cell--text-bold]="columnsSchema[key]?.td.textBold"
-        [class.table-grid__cell--nowrap]="columnsSchema[key]?.td.nowrap"
         [ngClass]="columnsSchema[key]?.td.class"
         [ngStyle]="columnsSchema[key]?.td.style"
     >
-        <ng-template
-            [ngIf]="columnsSchema[key]?.td.template"
-            [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-            [ngTemplateOutletContext]="{
-                $implicit:
-                    columnsSchema[key]?.td.context === contextType.CELL
-                        ? columnsSchema[key]?.td.useDeepPath
-                            ? (item | deepPath: key)
-                            : (item[key] | defaultValue)
-                        : item
-            }"
-            [ngIfElse]="defaultTd"
+        <div
+            class="table-grid__cell--content"
+            [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
         >
-        </ng-template>
-        <ng-template #defaultTd>
-            {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item[key] | defaultValue) }}
-        </ng-template>
+            <table-cell
+                *ngIf="showedCellByDefault"
+                [item]="item"
+                [index]="index"
+                [column-key]="key"
+                [column-index]="columnIndex"
+            ></table-cell>
+        </div>
     </div>
 </virtual-scroller>

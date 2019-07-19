@@ -1,17 +1,23 @@
 import {
     AfterContentInit,
+    AfterViewChecked,
+    AfterViewInit,
+    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ContentChild,
-    ContentChildren,
+    ElementRef,
     NgZone,
     OnChanges,
+    OnDestroy,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
-import { ColumnListRef, ColumnOptionsRef, Fn, KeyMap, ScrollOffsetStatus } from './interfaces/table-builder.internal';
+import { Fn, KeyMap, ScrollOffsetStatus, ScrollOverload, TemplateKeys } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -20,41 +26,55 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { SortableService } from './services/sortable/sortable.service';
 import { SelectionService } from './services/selection/selection.service';
 import { UtilsService } from './services/utils/utils.service';
-import { TableBuilderOptionsImpl } from './config/table-builder-options';
-import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { ResizableService } from './services/resizer/resizable.service';
+import { TableBuilderOptionsImpl } from './config/table-builder-options';
+import { ContextMenuService } from './services/context-menu/context-menu.service';
 
-const {
-    COUNT_SYNC_RENDERED_COLUMNS,
-    TIME_IDLE,
-    SMOOTH_FPS_FRAME
-}: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
-    providers: [TemplateParserService, SortableService, SelectionService, ResizableService],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TemplateParserService, SortableService, SelectionService, ResizableService, ContextMenuService],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
-export class TableBuilderComponent extends TableBuilderApiImpl implements OnChanges, OnInit, AfterContentInit {
-    @ContentChild(NgxOptionsComponent, { static: false }) public columnOptions: ColumnOptionsRef = null;
-    @ContentChildren(NgxColumnComponent) public columnList: ColumnListRef = [];
-
-    public isFirstRendered: boolean = false;
-    public displayedColumns: string[] = [];
-    public scrollOffset: ScrollOffsetStatus = { offset: false };
+export class TableBuilderComponent extends TableBuilderApiImpl
+    implements OnChanges, OnInit, AfterContentInit, AfterViewInit, AfterViewChecked, OnDestroy {
+    public dirty: boolean = true;
+    public rendering: boolean = false;
     public isRendered: boolean = false;
+    public contentInit: boolean = false;
+    public contentCheck: boolean = false;
+    public displayedColumns: string[] = [];
+    public detectOverload: boolean = false;
+    public showedCellByDefault: boolean = true;
+    public scrollOffset: ScrollOffsetStatus = { offset: false };
+
+    @ViewChild('header', { static: false })
+    public headerRef: ElementRef<HTMLDivElement>;
+
+    @ViewChild('footer', { static: false })
+    public footerRef: ElementRef<HTMLDivElement>;
+
+    private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+    private checkedTaskId: number = null;
+    private renderTaskId: number = null;
+    private renderCount: number = 0;
+    private fullyColumnKeyList: string[] = [];
 
     constructor(
         public readonly selection: SelectionService,
         public readonly templateParser: TemplateParserService,
         public readonly cd: ChangeDetectorRef,
-        protected readonly ngZone: NgZone,
-        protected readonly utils: UtilsService,
-        protected readonly resize: ResizableService
+        public readonly ngZone: NgZone,
+        public readonly utils: UtilsService,
+        public readonly resize: ResizableService,
+        public readonly sortable: SortableService,
+        public readonly contextMenu: ContextMenuService,
+        private readonly app: ApplicationRef
     ) {
         super();
     }
@@ -63,13 +83,34 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return this.selection.selectionModel.entries;
     }
 
-    public ngOnChanges(): void {
-        this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
-        this.modelColumnKeys = this.generateModelColumnKeys();
+    public get contentIsDirty(): boolean {
+        return !this.contentInit && this.renderCount > 0;
+    }
 
-        if (this.isFirstRendered) {
-            this.renderTable();
+    public get sourceExists(): boolean {
+        return !!this.source && this.source.length > 0;
+    }
+
+    private get viewIsDirty(): boolean {
+        return this.contentIsDirty || this.contentCheck;
+    }
+
+    public ngOnChanges(): void {
+        const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
+
+        if (nonIdenticalStructure) {
+            this.renderedCountKeys = this.getCountKeys();
+            this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
+            this.modelColumnKeys = this.generateModelColumnKeys();
+            this.originalSource = this.source;
+            if (!this.dirty) {
+                this.markForCheck();
+            }
         }
+    }
+
+    public markForCheck(): void {
+        this.contentCheck = true;
     }
 
     public ngOnInit(): void {
@@ -78,16 +119,70 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
 
     public updateScrollOffset(offset: boolean): void {
         this.scrollOffset = { offset };
-        this.cd.detectChanges();
+        this.detectChanges();
     }
 
-    public inViewportAction(column: HTMLDivElement, $event: { visible: boolean }): void {
-        column['visible'] = $event.visible;
+    public scrollEnd(): void {
+        this.invalidateThrottleCache();
+    }
+
+    public updateScrollOverload(event: ScrollOverload): void {
+        this.scrollOverload = { ...event };
+
+        if (event.isOverload) {
+            this.detectOverload = event.isOverload;
+        }
+
+        this.detectChanges();
+    }
+
+    public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
+        column['visible'] = visible;
+        this.detectChanges();
     }
 
     public ngAfterContentInit(): void {
-        this.renderTable();
-        this.isFirstRendered = true;
+        this.markDirtyCheck();
+        this.markTemplateContentCheck();
+
+        if (this.sourceExists) {
+            this.render();
+        }
+    }
+
+    public ngAfterViewInit(): void {
+        this.listenTemplateChanges();
+        this.listenSelectionChanges();
+    }
+
+    private listenSelectionChanges(): void {
+        if (this.enableSelection) {
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                this.detectChanges();
+                this.ngZone.runOutsideAngular(() => {
+                    window.setTimeout(() => this.app.tick());
+                });
+            });
+        }
+    }
+
+    public ngAfterViewChecked(): void {
+        if (this.viewIsDirty) {
+            this.viewRefresh();
+        }
+    }
+
+    public ngOnDestroy(): void {
+        this.destroy$.next(true);
+        this.destroy$.unsubscribe();
+    }
+
+    public markTemplateContentCheck(): void {
+        this.contentInit = !!this.source || !(this.columnTemplates && this.columnTemplates.length);
+    }
+
+    public markDirtyCheck(): void {
+        this.dirty = false;
     }
 
     public generateColumnsKeyMap(keys: string[]): KeyMap<boolean> {
@@ -96,51 +191,142 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return map;
     }
 
-    private renderTable(): void {
+    public render(): void {
+        this.contentCheck = false;
         this.ngZone.runOutsideAngular(() => {
-            this.displayedColumns = [];
-            const columnList: string[] = this.generateDisplayedColumns();
-            columnList.forEach((name: string, index: number) => {
-                this.drawColumn(name, index).then((position: number) => {
-                    const isLast: boolean = position + 1 === columnList.length;
-                    if (isLast) {
-                        this.emitRendered();
-                    }
-                });
-            });
+            window.clearTimeout(this.renderTaskId);
+            this.renderTaskId = window.setTimeout(() => this.renderTable(), TIME_IDLE);
         });
     }
 
-    private drawColumn(columnName: string, index: number): Promise<number> {
-        return new Promise(
-            (resolve: Fn<number>): void => {
-                if (index > COUNT_SYNC_RENDERED_COLUMNS) {
-                    window.setTimeout(() => {
-                        this.displayedColumns.push(columnName);
-                        this.cd.detectChanges();
-                        resolve(index);
-                    }, index + TIME_IDLE + SMOOTH_FPS_FRAME);
-                } else {
-                    this.displayedColumns.push(columnName);
-                    resolve(index);
+    public renderTable(): void {
+        if (!this.rendering) {
+            this.rendering = true;
+            const columnList: string[] = this.generateDisplayedColumns();
+            const canInvalidate: boolean = columnList.length !== this.fullyColumnKeyList.length;
+
+            if (canInvalidate) {
+                this.fullyColumnKeyList = columnList;
+                this.templateParser.setAllowedKeyMap(this.fullyColumnKeyList, this.modelColumnKeys);
+
+                const visibleColumns: string[] = this.fullyColumnKeyList.filter(
+                    (key: string) => this.schema.columnsAllowedKeys[key]
+                );
+
+                if (visibleColumns.length) {
+                    this.renderCount++;
+                    this.displayedColumns = [];
+                    this.draw(visibleColumns, (): void => this.emitRendered());
                 }
             }
+        }
+    }
+
+    public toggleVisibleColumns(columnKey: string): void {
+        this.templateParser.toggleColumnVisibility(columnKey);
+        this.recalculateVisibleColumns();
+        this.detectChanges();
+    }
+
+    public resetSchema(): void {
+        this.templateParser.schema.columnsAllowedKeys = {};
+        this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
+        this.templateParser.setAllowedKeyMap(this.fullyColumnKeyList, this.modelColumnKeys);
+        this.recalculateVisibleColumns();
+        this.detectChanges();
+    }
+
+    public recalculateVisibleColumns(): void {
+        this.displayedColumns = this.fullyColumnKeyList.filter(
+            (key: string) => this.schema.columnsAllowedKeys[key].visible
         );
+    }
+
+    private viewRefresh(): void {
+        this.ngZone.runOutsideAngular(() => {
+            window.clearTimeout(this.checkedTaskId);
+            this.checkedTaskId = window.setTimeout(() => {
+                this.markTemplateContentCheck();
+                this.render();
+            }, FRAME_TIME);
+        });
+    }
+
+    private listenTemplateChanges(): void {
+        if (this.columnTemplates) {
+            this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                this.markForCheck();
+                this.markTemplateContentCheck();
+            });
+        }
+
+        if (this.contextMenuTemplate) {
+            this.contextMenu.events.pipe(takeUntil(this.destroy$)).subscribe(() => this.detectChanges());
+        }
+    }
+
+    private invalidateThrottleCache(): void {
+        if (this.detectOverload && this.throttling) {
+            this.isFrozenView = true;
+            this.showedCellByDefault = false;
+            this.detectChanges();
+            this.ngZone.runOutsideAngular(() => {
+                window.requestAnimationFrame(() => {
+                    this.showedCellByDefault = true;
+                    this.detectChanges();
+                    window.setTimeout(() => {
+                        this.isFrozenView = false;
+                        this.detectChanges();
+                    }, TIME_RELOAD);
+                });
+            });
+        }
+
+        this.detectOverload = false;
+    }
+
+    private draw(originList: string[], emitRender: Fn<void>, startIndex: number = 0): void {
+        this.ngZone.runOutsideAngular(() => {
+            const drawTask: Fn = (): void => {
+                const columnName: string = originList[startIndex];
+                this.displayedColumns.push(columnName);
+
+                this.detectChanges();
+                const isNotLastElement: boolean = startIndex + 1 !== originList.length;
+
+                if (isNotLastElement) {
+                    this.draw(originList, emitRender, startIndex + 1);
+                } else {
+                    emitRender();
+                }
+            };
+
+            if (this.lazy) {
+                window.requestAnimationFrame(() => drawTask());
+            } else {
+                drawTask();
+            }
+        });
     }
 
     private emitRendered(): void {
         this.isRendered = true;
+        this.rendering = false;
         this.afterRendered.emit(this.isRendered);
+        this.detectChanges();
     }
 
     private generateDisplayedColumns(): string[] {
         let generatedList: string[] = [];
-        const renderedTemplateKeys: string[] = this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
+        const { simpleRenderedKeys, allRenderedKeys }: TemplateKeys = this.compileTemplates(
+            this.customModelColumnsKeys,
+            this.modelColumnKeys
+        );
 
         if (this.keys.length) {
             generatedList = this.customModelColumnsKeys;
-        } else if (renderedTemplateKeys.length) {
-            generatedList = renderedTemplateKeys;
+        } else if (simpleRenderedKeys.length) {
+            generatedList = allRenderedKeys;
         } else {
             generatedList = this.modelColumnKeys;
         }
@@ -149,13 +335,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl implements OnChan
         return generatedList;
     }
 
-    private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): string[] {
+    private compileTemplates(customModelColumnsKeys: string[], modelColumnKeys: string[]): TemplateKeys {
         const allowedKeyMap: KeyMap<boolean> = this.keys.length
             ? this.generateColumnsKeyMap(customModelColumnsKeys)
             : this.generateColumnsKeyMap(modelColumnKeys);
 
-        this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnList);
-        return this.templateParser.renderedTemplateKeys;
+        this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnTemplates);
+
+        return {
+            allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys),
+            overridingRenderedKeys: Array.from(this.templateParser.overrideTemplateKeys),
+            simpleRenderedKeys: Array.from(this.templateParser.templateKeys)
+        };
     }
 
     private checkUnCompiledTemplates(generatedList: string[]): void {

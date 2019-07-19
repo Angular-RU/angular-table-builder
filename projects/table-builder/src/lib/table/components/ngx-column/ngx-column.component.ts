@@ -13,7 +13,9 @@ export class NgxColumnComponent extends ColumnOptions {
     @Input() public key: string = null;
     @Input('custom-key') public customKey: boolean = false;
     @Input('sticky') public stickyLeft: boolean = false;
+    @Input('important-template') public importantTemplate: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
+    @Input('vertical-line') public verticalLine: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
 }

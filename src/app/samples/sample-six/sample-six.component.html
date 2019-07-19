@@ -1,0 +1,21 @@
+<mat-toolbar class="simple-toolbar">
+    <span>
+        Example sorting
+    </span>
+
+    <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
+</mat-toolbar>
+
+<mat-checkbox [(ngModel)]="scrollTrolling">Enable throttling for scrolling</mat-checkbox>
+<br />
+<br />
+
+<ngx-table-builder [source]="data" [throttling]="scrollTrolling">
+    <!--
+       <ngx-options /> - declaration common options for columns
+
+       Also you can customize your columns manually
+       <ngx-column key="myKey" [sortable]="true">...</ngx-column>
+    -->
+    <ngx-options [sortable]="true"></ngx-options>
+</ngx-table-builder>

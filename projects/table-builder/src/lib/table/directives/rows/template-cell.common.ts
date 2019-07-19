@@ -1,6 +1,6 @@
 import { EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { Any, KeyMap } from '../../interfaces/table-builder.internal';
-import { TableCellInfo } from '@angular-ru/table-builder';
+import { TableCellInfo } from '../../interfaces/table-builder.external';
 
 export abstract class TemplateCellCommon {
     public type: string = null;

@@ -1,0 +1,87 @@
+@import './variables';
+@import './common';
+
+table-cell {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.table-grid {
+    &__header-cell {
+        top: 0;
+        z-index: 100;
+        position: sticky;
+        background: #fff;
+        box-sizing: border-box;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid $borderColor;
+        transition: box-shadow 0.3s ease-in-out;
+
+        &--content {
+            overflow: hidden;
+        }
+    }
+
+    &__cell {
+        color: rgba(0, 0, 0, 1);
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        word-break: break-word;
+        border-bottom: 1px solid $borderColor;
+        min-height: $cellHeight;
+        max-height: $cellHeight;
+        display: flex;
+        overflow: hidden;
+        justify-content: center;
+        padding: 5px 20px;
+
+        &--custom-cell {
+            padding: 0;
+        }
+
+        &--content {
+            overflow: hidden;
+            @extend .vertical-align;
+
+            &:not(.table-grid__cell--content-sortable) {
+                width: 100%;
+            }
+        }
+
+        &--text-bold {
+            font-weight: bold;
+        }
+
+        &--nowrap {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &--enable-selection {
+            cursor: pointer;
+        }
+
+        &--strip {
+            background: $backgroundOddLineColor;
+        }
+
+        &--selected {
+            background: $selectionColor;
+        }
+
+        &--settings {
+            margin-left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .table-head__offset {
+        .table-grid__header-cell {
+            transition: box-shadow 0.3s ease-in-out;
+            box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
+        }
+    }
+}

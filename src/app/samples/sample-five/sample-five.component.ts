@@ -1,32 +1,26 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { TableRow } from '@angular-ru/table-builder';
-import { FakeGenerator } from '../../shared/fake-generator.class';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
+import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 declare const hljs: Any;
 
 @Component({
     selector: 'sample-five',
     templateUrl: './sample-five.component.html',
-    styles: [
-        // tslint:disable-next-line:component-max-inline-declarations
-        `
-            .show-simple {
-                position: absolute;
-                right: 0;
-            }
-        `
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFiveComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
-    constructor(public readonly dialog: MatDialog) {}
+    constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        this.data = FakeGenerator.generateTable(1000, 30);
+        MocksGenerator.generator(1000, 30).then((data: TableRow[]) => {
+            this.data = data;
+            this.cd.detectChanges();
+        });
     }
 
     public ngAfterViewInit(): void {
@@ -41,7 +35,7 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
                 title: 'Overview resizable table',
                 description: '',
                 code: `
-<ngx-table-builder [source]="data" [auto-height]="true">
+<ngx-table-builder [source]="data">
     <!--
        <ngx-options /> - declaration common options for columns
 
