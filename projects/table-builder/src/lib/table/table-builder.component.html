@@ -27,8 +27,8 @@
         wheelThrottling
         class="table-grid"
         (scrollEnd)="scrollEnd()"
-        (scrollOverload)="updateScrollOverload($event)"
         (scrollOffset)="updateScrollOffset($event)"
+        (scrollOverload)="updateScrollOverload($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
     >
         <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
@@ -111,6 +111,6 @@
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
 
-<div *ngIf="!source?.length" [@fadeAnimation]>
+<div *ngIf="!source?.length">
     <ng-content select="ngx-empty"></ng-content>
 </div>
