@@ -6,7 +6,7 @@ import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
 import { SelectionService } from '../../../table/services/selection/selection.service';
-import { TableCellInfo, TableRow } from '../../../table/interfaces/table-builder.external';
+import { TableEvent, TableRow } from '../../../table/interfaces/table-builder.external';
 import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-column.component';
 import { TableBuilderComponent } from '../../../table/table-builder.component';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
@@ -266,7 +266,8 @@ describe('[TEST]: TableBuilder', () => {
             contextMenu,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone
+            mockNgZone as NgZone,
+            utils
         );
 
         tableBody.primaryKey = 'id';
@@ -282,7 +283,7 @@ describe('[TEST]: TableBuilder', () => {
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
         tableBody.enableSelection = true;
-        tableBody.handleRowIdleCallback(item, mockMouseEvent as MouseEvent, null);
+        tableBody.handleOnClick(item, 'id', mockMouseEvent as MouseEvent, null);
 
         expect(mySelection.selectionModel.entries).toEqual({ 1: true });
         expect(mySelection.selectionModel.isAll).toEqual(true);
@@ -298,13 +299,14 @@ describe('[TEST]: TableBuilder', () => {
             contextMenu,
             new TableBuilderOptionsImpl(),
             null,
-            mockNgZone as NgZone
+            mockNgZone as NgZone,
+            utils
         );
 
         tableBody.source = [item];
 
-        const emitter: Partial<EventEmitter<TableCellInfo>> = {
-            emit(value?: TableCellInfo): void {
+        const emitter: Partial<EventEmitter<TableEvent>> = {
+            emit(value?: TableEvent): void {
                 expect(value).toEqual({
                     ...value,
                     row: item,
@@ -315,12 +317,13 @@ describe('[TEST]: TableBuilder', () => {
             }
         };
 
-        tableBody.handleRowIdleCallback(item, mockMouseEvent as MouseEvent, emitter as EventEmitter<TableCellInfo>);
+        tableBody.handleOnClick(item, 'id', mockMouseEvent as MouseEvent, emitter as EventEmitter<TableEvent>);
     });
 
     it('should be invoke preventDefault', () => {
-        const cell: TableCellInfo = new TableLineRow(templateParser, selection).generateTableCellInfo(
+        const cell: TableEvent = new TableLineRow(templateParser, selection, utils).generateTableCellInfo(
             item,
+            'id',
             mockMouseEvent as MouseEvent
         );
 

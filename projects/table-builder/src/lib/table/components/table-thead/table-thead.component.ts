@@ -5,6 +5,7 @@ import { TemplateParserService } from '../../services/template-parser/template-p
 import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { SortOrderType } from '../../services/sortable/sortable.interfaces';
+import { UtilsService } from '../../services/utils/utils.service';
 
 @Component({
     selector: 'table-thead',
@@ -19,7 +20,11 @@ export class TableTheadComponent extends TableLineRow {
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
     public orderType: typeof SortOrderType = SortOrderType;
 
-    constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {
-        super(templateParser, selection);
+    constructor(
+        protected readonly templateParser: TemplateParserService,
+        public readonly selection: SelectionService,
+        protected readonly utils: UtilsService
+    ) {
+        super(templateParser, selection, utils);
     }
 }

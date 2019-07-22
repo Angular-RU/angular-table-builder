@@ -62,7 +62,6 @@ export class SelectionService implements OnDestroy {
         }
 
         this.checkIsAllSelected(rows);
-        this.onChanges.next();
     }
 
     public getIdByRow(row: TableRow): RowId {
@@ -92,6 +91,7 @@ export class SelectionService implements OnDestroy {
     private checkIsAllSelected(rows: TableRow[]): void {
         this.selectionModel.isAll = rows.length === this.selectionModel.size;
         this.selectionModel.generateImmutableEntries();
+        this.onChanges.next();
     }
 
     private multipleSelectByShiftKeydown(index: number, rows: TableRow[]): void {

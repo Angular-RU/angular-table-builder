@@ -20,7 +20,11 @@
             [ngTemplateOutlet]="columnsSchema[key]?.th.template"
             [ngIfElse]="defaultTh"
         ></ng-template>
-        <ng-template #defaultTh>{{ key | titlecase }}</ng-template>
+        <ng-template #defaultTh>
+            <ng-template [ngIf]="!columnsSchema[key]?.th.emptyHead">
+                {{ columnsSchema[key]?.th.headTitle || (key | titlecase) }}
+            </ng-template>
+        </ng-template>
     </div>
 
     <div

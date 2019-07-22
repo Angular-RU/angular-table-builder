@@ -18,7 +18,8 @@
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
         (selectstart)="(canSelectTextInTable)"
         (contextmenu)="openContextMenu($event, key, item)"
-        (click)="handleRowIdleCallback(item, $event, columnsSchema[key]?.td.onClick)"
+        (click)="handleOnClick(item, key, $event, columnsSchema[key]?.td.onClick)"
+        (dblclick)="handleDblClick(item, key, $event, columnsSchema[key]?.td.dblClick)"
         [style.min-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         [style.max-height.px]="columnsSchema[key]?.td.height || clientRowHeight"
         [class.table-grid__cell--resizable]="columnsSchema[key]?.resizable"
@@ -35,10 +36,10 @@
             [class.table-grid__cell--nowrap]="!columnsSchema[key]?.customColumn && columnsSchema[key]?.td.nowrap"
         >
             <table-cell
-                *ngIf="showedCellByDefault"
                 [item]="item"
                 [index]="index"
                 [column-key]="key"
+                *ngIf="showedCellByDefault"
                 [column-index]="columnIndex"
             ></table-cell>
         </div>
