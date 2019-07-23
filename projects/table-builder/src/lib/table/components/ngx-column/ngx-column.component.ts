@@ -11,8 +11,10 @@ import { ColumnOptions } from '../common/column-options';
 })
 export class NgxColumnComponent extends ColumnOptions {
     @Input() public key: string = null;
-    @Input('custom-key') public customKey: boolean = false;
     @Input('sticky') public stickyLeft: boolean = false;
+    @Input('empty-head') public emptyHead: boolean = null;
+    @Input('head-title') public headTitle: string = null;
+    @Input('custom-key') public customKey: boolean = false;
     @Input('important-template') public importantTemplate: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
     @Input('vertical-line') public verticalLine: boolean = false;

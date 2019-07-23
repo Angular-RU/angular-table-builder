@@ -26,6 +26,7 @@ export class TemplateParserService {
             width: cell.width,
             height: cell.height,
             onClick: cell.onClick,
+            dblClick: cell.dblClick,
             useDeepPath: key.includes('.'),
             context: cell.row ? ImplicitContext.ROW : ImplicitContext.CELL,
             nowrap: TemplateParserService.getValidPredicate(options.nowrap, cell.nowrap)
@@ -101,16 +102,23 @@ export class TemplateParserService {
     }
 
     public compileColumnMetadata(column: NgxColumnComponent): void {
-        const { key, th, td }: NgxColumnComponent = column;
+        const { key, th, td, emptyHead, headTitle }: NgxColumnComponent = column;
         const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
+        const isEmptyHead: boolean = TemplateParserService.getValidHtmlBooleanAttribute(emptyHead);
+        const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
 
         this.schema.columns[key] = this.schema.columns[key] || {
+            th: {
+                ...thOptions,
+                headTitle,
+                emptyHead: isEmptyHead,
+                template: isEmptyHead ? null : thOptions.template
+            },
+            td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
             customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
-            th: TemplateParserService.templateContext(key, thTemplate, this.columnOptions),
-            td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
             cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
             cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],

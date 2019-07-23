@@ -20,8 +20,12 @@ export class SelectionMap {
         return this.size > 0;
     }
 
+    public get isIndeterminate(): boolean {
+        return this.hasValue() && !this.isAll;
+    }
+
     public get(key: RowId): boolean {
-        return this.map.get(key);
+        return this.map.get(key) || false;
     }
 
     public select(key: RowId, emit: boolean): void {

@@ -4,6 +4,7 @@ import { ImplicitContext, TableRow } from '../../interfaces/table-builder.extern
 import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { TableLineRow } from '../common/table-line-row';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
+import { UtilsService } from '../../services/utils/utils.service';
 
 @Component({
     selector: 'table-cell',
@@ -20,10 +21,11 @@ export class TableCellComponent extends TableLineRow {
 
     constructor(
         public readonly cd: ChangeDetectorRef,
-        protected templateParser: TemplateParserService,
-        public selection: SelectionService
+        protected readonly templateParser: TemplateParserService,
+        public readonly selection: SelectionService,
+        protected readonly utils: UtilsService
     ) {
-        super(templateParser, selection);
+        super(templateParser, selection, utils);
         this.cd.reattach();
     }
 }

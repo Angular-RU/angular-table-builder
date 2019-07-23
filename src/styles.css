@@ -1,3 +1,5 @@
+@import '~ngx-toastr/toastr';
+
 html,
 body {
     height: 100%;
@@ -132,4 +134,13 @@ pre {
 .mat-checkbox {
     display: inline-flex;
     margin: 15px 0;
+}
+
+hr {
+    border-top: 1px solid #e0e0e0;
+}
+
+body,
+.mat-drawer-container {
+    height: 100%;
 }

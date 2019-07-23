@@ -146,6 +146,36 @@
             repetitions). If you do not use the keys array, then the columns will be drawn to agree with the specified
             templates (ngx-column). <br />
         </p>
+
+        <hr />
+
+        <p>
+            <b>Note</b>: You can also use keywords <b> <i>empty-head</i> </b>,
+            <b>
+                <i>head-title</i>
+            </b>
+            for print simple text in table head.
+        </p>
+
+        <pre><code class="javascript" ngNonBindable>
+    &lt;!-- app.component.html -->
+    &lt;ngx-table-builder [source]="licenses">
+
+     &lt;ngx-column key="id" width="100" empty-head>
+        &lt;ng-template ngx-td let-id>№&#123;&#123; id }}&lt;/ng-template>
+     &lt;/ngx-column>
+
+      &lt;ngx-column key="name" head-title="License name">
+        &lt;ng-template ngx-td let-name>&#123;&#123; name | uppercase }}&lt;/ng-template>
+      &lt;/ngx-column>
+
+      &lt;ngx-column key="price" head-title="Cost">
+        &lt;ng-template ngx-td let-price>{{ price | currency &#125;&#125;&lt;/ng-template>
+      &lt;/ngx-column>
+
+    &lt;/ngx-table-builder>
+
+</code></pre>
     </div>
 
     <div class="column">
@@ -202,6 +232,22 @@
             <strong>Note:</strong> If you always want the columns to be drawn regardless of their visibility in the
             viewport, then you need to use the property [async-columns]="false"
         </p>
+
+        <hr />
+
+        <ngx-table-builder [source]="licenses">
+            <ngx-column key="id" width="100" empty-head>
+                <ng-template ngx-td let-id>№{{ id }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="name" head-title="License name">
+                <ng-template ngx-td let-name>{{ name | uppercase }}</ng-template>
+            </ngx-column>
+
+            <ngx-column key="price" head-title="Cost">
+                <ng-template ngx-td let-price>{{ price | currency }}</ng-template>
+            </ngx-column>
+        </ngx-table-builder>
     </div>
 </div>
 

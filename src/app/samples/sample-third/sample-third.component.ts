@@ -42,7 +42,7 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
         <ng-template ngx-th>
             <mat-checkbox
                 (change)="table.selection.toggleAll(data)"
-                [indeterminate]="table.selectionModel.hasValue() && !table.selectionModel.isAll"
+                [indeterminate]="table.selectionModel.isIndeterminate"
                 [checked]="table.selectionModel.isAll"
             ></mat-checkbox>
         </ng-template>

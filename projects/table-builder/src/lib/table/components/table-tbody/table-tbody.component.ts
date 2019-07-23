@@ -2,7 +2,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    EventEmitter,
     Inject,
     Input,
     NgZone,
@@ -10,7 +9,7 @@ import {
 } from '@angular/core';
 
 import { TableLineRow } from '../common/table-line-row';
-import { TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
+import { TableClickEventEmitter, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
@@ -18,6 +17,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { KeyMap, ScrollOverload } from '../../interfaces/table-builder.internal';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
+import { UtilsService } from '../../services/utils/utils.service';
 
 const { TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -49,9 +49,10 @@ export class TableTbodyComponent extends TableLineRow {
         public contextMenu: ContextMenuService,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         protected templateParser: TemplateParserService,
-        private readonly ngZone: NgZone
+        private readonly ngZone: NgZone,
+        protected readonly utils: UtilsService
     ) {
-        super(templateParser, selection);
+        super(templateParser, selection, utils);
     }
 
     public get clientBufferAmount(): number {
@@ -78,15 +79,26 @@ export class TableTbodyComponent extends TableLineRow {
         }
     }
 
-    private checkSelectedItem(row: TableRow): boolean {
-        return this.selection.selectionModel.get(row[this.primaryKey]);
-    }
-
     public trackByIdx(index: number, item: TableRow): number {
         return this.canThrottling ? index : parseInt(item[this.primaryKey] as string);
     }
 
-    public handleRowIdleCallback(row: TableRow, event: MouseEvent, emitter: EventEmitter<TableCellInfo> | null): void {
+    public handleDblClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
+        window.clearInterval(this.selection.selectionTaskIdle);
+        this.handleEventEmitter(row, key, event, emitter);
+    }
+
+    private handleEventEmitter(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
+        if (emitter) {
+            this.ngZone.runOutsideAngular(() => {
+                window.setTimeout(() => {
+                    emitter.emit(this.generateTableCellInfo(row, key, event));
+                });
+            });
+        }
+    }
+
+    public handleOnClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         this.ngZone.runOutsideAngular(() => {
             if (this.enableSelection) {
                 this.selection.selectionTaskIdle = window.setTimeout(() => {
@@ -95,11 +107,9 @@ export class TableTbodyComponent extends TableLineRow {
                     this.cd.detectChanges();
                 });
             }
-
-            if (emitter) {
-                emitter.emit(this.generateTableCellInfo(row, event));
-            }
         });
+
+        this.handleEventEmitter(row, key, event, emitter);
     }
 
     public vsChange(): void {
@@ -109,5 +119,9 @@ export class TableTbodyComponent extends TableLineRow {
         } else {
             this.update();
         }
+    }
+
+    private checkSelectedItem(row: TableRow): boolean {
+        return this.selection.selectionModel.get(row[this.primaryKey]);
     }
 }

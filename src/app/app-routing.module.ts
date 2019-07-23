@@ -80,6 +80,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                             path: 'twelve',
                             loadChildren: () =>
                                 import('./samples/sample-twelve/sample-twelve.module').then((m) => m.SampleTwelveModule)
+                        },
+                        {
+                            path: 'thirteen',
+                            loadChildren: () =>
+                                import('./samples/sample-thirteen/sample-thirteen.module').then(
+                                    (m) => m.SampleThirteenModule
+                                )
                         }
                     ]
                 }

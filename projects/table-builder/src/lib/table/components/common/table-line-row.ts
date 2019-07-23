@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Input, ViewRef } from '@angular/core';
-import { ColumnsSchema, TableCellInfo, TableRow } from '../../interfaces/table-builder.external';
+import { ColumnsSchema, TableEvent, TableRow } from '../../interfaces/table-builder.external';
 import { TemplateParserService } from '../../services/template-parser/template-parser.service';
-import { TableEvent } from '../../interfaces/table-builder.internal';
+import { TableBrowserEvent } from '../../interfaces/table-builder.internal';
 import { SelectionService } from '../../services/selection/selection.service';
+import { UtilsService } from '../../services/utils/utils.service';
 
 export class TableLineRow {
     @Input('column-key') public key: string;
@@ -11,18 +12,23 @@ export class TableLineRow {
 
     public cd: ChangeDetectorRef;
 
-    constructor(protected templateParser: TemplateParserService, public selection: SelectionService) {}
+    constructor(
+        protected readonly templateParser: TemplateParserService,
+        public readonly selection: SelectionService,
+        protected readonly utils: UtilsService
+    ) {}
 
     public get columnsSchema(): ColumnsSchema {
         return this.templateParser.schema.columns;
     }
 
-    public generateTableCellInfo(item: TableRow, $event: TableEvent): TableCellInfo {
+    public generateTableCellInfo(item: TableRow, key: string, $event: TableBrowserEvent): TableEvent {
         return {
             row: item,
             event: $event,
+            value: this.utils.getValueByPath(item, key),
             preventDefault: (): void => {
-                clearInterval(this.selection.selectionTaskIdle);
+                window.clearInterval(this.selection.selectionTaskIdle);
             }
         };
     }

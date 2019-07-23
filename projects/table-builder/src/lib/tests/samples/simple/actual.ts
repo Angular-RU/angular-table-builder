@@ -8,7 +8,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
           <div class="table-grid__column-area">
              <table-thead>
                 <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
-                  <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap">Id</div>
+                  <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap"> Id </div>
                 </div>
               </table-thead>
               <table-tbody>
@@ -42,7 +42,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
           <div class="table-grid__column-area">
              <table-thead>
                 <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
-                  <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap">Name</div>
+                  <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap"> Name </div>
                 </div>
               </table-thead>
               <table-tbody>
@@ -76,7 +76,7 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
           <div class="table-grid__column-area">
             <table-thead>
               <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
-                <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap">Lastname</div>
+                <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap"> Lastname </div>
               </div>
             </table-thead>
             <table-tbody>

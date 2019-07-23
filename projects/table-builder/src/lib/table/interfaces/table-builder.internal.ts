@@ -33,10 +33,10 @@ export interface SelectionStatus {
     status: boolean;
 }
 
-export type TableEvent = Event | MouseEvent | KeyboardEvent;
+export type TableBrowserEvent = Event | MouseEvent | KeyboardEvent;
 
 export interface ResizeEvent {
-    event: TableEvent;
+    event: TableBrowserEvent;
     key: string;
 }
 

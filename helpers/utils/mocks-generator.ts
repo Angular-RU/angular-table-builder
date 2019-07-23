@@ -67,7 +67,8 @@ export class MocksGenerator {
             class: null,
             height: null,
             width: null,
-            onClick: new EventEmitter<TableCellOptions>()
+            onClick: new EventEmitter<TableCellOptions>(),
+            dblClick: new EventEmitter<TableCellOptions>()
         };
     }
 

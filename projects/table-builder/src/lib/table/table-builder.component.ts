@@ -52,6 +52,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public detectOverload: boolean = false;
     public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
+    private forcedRefresh: boolean = false;
 
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;
@@ -92,7 +93,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private get viewIsDirty(): boolean {
-        return this.contentIsDirty || this.contentCheck;
+        return (this.contentIsDirty || this.contentCheck) && !this.forcedRefresh;
     }
 
     public ngOnChanges(): void {
@@ -153,22 +154,30 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public ngAfterViewInit(): void {
         this.listenTemplateChanges();
         this.listenSelectionChanges();
+        this.recheckTemplateChanges();
+    }
+
+    private recheckTemplateChanges(): void {
+        this.ngZone.runOutsideAngular(() => window.setTimeout(() => this.app.tick(), TIME_RELOAD));
     }
 
     private listenSelectionChanges(): void {
         if (this.enableSelection) {
             this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
                 this.detectChanges();
-                this.ngZone.runOutsideAngular(() => {
-                    window.setTimeout(() => this.app.tick());
-                });
+                this.ngZone.runOutsideAngular(() =>
+                    window.requestAnimationFrame(() => {
+                        this.detectChanges();
+                        this.app.tick();
+                    })
+                );
             });
         }
     }
 
     public ngAfterViewChecked(): void {
         if (this.viewIsDirty) {
-            this.viewRefresh();
+            this.viewForceRefresh();
         }
     }
 
@@ -242,10 +251,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         );
     }
 
-    private viewRefresh(): void {
+    private viewForceRefresh(): void {
         this.ngZone.runOutsideAngular(() => {
             window.clearTimeout(this.checkedTaskId);
             this.checkedTaskId = window.setTimeout(() => {
+                this.forcedRefresh = true;
                 this.markTemplateContentCheck();
                 this.render();
             }, FRAME_TIME);
