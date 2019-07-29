@@ -48,4 +48,12 @@ export class UtilsService implements UtilsInterface {
         const val: string = typeof value === 'string' ? value.trim() : value;
         return [undefined, null, NaN, '', 'null', Infinity].includes(val);
     }
+
+    public clean(obj: KeyMap): KeyMap {
+        return JSON.parse(JSON.stringify(obj, this.replaceUndefinedOrNull.bind(this)));
+    }
+
+    private replaceUndefinedOrNull(_: string, value: unknown): unknown {
+        return this.checkValueIsEmpty(value) ? undefined : value;
+    }
 }

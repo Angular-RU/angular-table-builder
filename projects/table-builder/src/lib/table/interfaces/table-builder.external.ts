@@ -53,6 +53,7 @@ export interface TableColumn<T = Any> {
     stickyRight: boolean;
     resizable: boolean;
     sortable: boolean;
+    filterable: boolean;
     customColumn: boolean;
     verticalLine: boolean;
 }

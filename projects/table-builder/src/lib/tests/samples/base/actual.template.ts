@@ -16,7 +16,8 @@ const COLUMN: TableColumn = {
     resizable: null,
     sortable: null,
     customColumn: false,
-    verticalLine: false
+    verticalLine: false,
+    filterable: null
 };
 
 export const ACTUAL_TEMPLATE: TableSchema = {

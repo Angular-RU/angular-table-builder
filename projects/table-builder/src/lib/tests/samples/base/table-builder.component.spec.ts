@@ -18,6 +18,7 @@ import { TableLineRow } from '../../../table/components/common/table-line-row';
 import { SortableService } from '../../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
+import { FilterableService } from '../../../table/services/filterable/filterable.service';
 
 interface PeriodicElement {
     name: string;
@@ -50,6 +51,7 @@ describe('[TEST]: TableBuilder', () => {
     let resizable: ResizableService;
     let sortable: SortableService;
     let contextMenu: ContextMenuService;
+    let resizeService: ResizableService;
     let utils: UtilsService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
@@ -80,16 +82,25 @@ describe('[TEST]: TableBuilder', () => {
         resizable = new ResizableService();
         contextMenu = new ContextMenuService(utils);
         utils = new UtilsService();
+
+        const worker: WebWorkerThreadService = new WebWorkerThreadService();
+        const zone: NgZone = mockNgZone as NgZone;
+        const app: ApplicationRef = appRef as ApplicationRef;
+
+        resizeService = new ResizableService();
+        sortable = new SortableService(worker, utils, zone);
+
         table = new TableBuilderComponent(
-            selection,
-            templateParser,
+            new SelectionService(zone),
+            new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone,
+            zone,
             utils,
-            resizable,
+            resizeService,
             sortable,
-            contextMenu,
-            appRef as ApplicationRef
+            new ContextMenuService(utils),
+            app,
+            new FilterableService(worker, utils, zone, app)
         );
     });
 
@@ -124,6 +135,7 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct selected items', () => {
+        table.enableSelection = true;
         table.primaryKey = 'position';
         table.ngOnInit();
 
@@ -359,6 +371,7 @@ describe('[TEST]: TableBuilder', () => {
     }));
 
     it('should be correct selection entries', () => {
+        table.enableSelection = true;
         expect(table.selectionEntries).toEqual({});
 
         table.primaryKey = 'position';

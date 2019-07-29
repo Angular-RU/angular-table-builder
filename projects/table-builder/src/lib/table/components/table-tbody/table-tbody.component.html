@@ -39,8 +39,10 @@
                 [item]="item"
                 [index]="index"
                 [column-key]="key"
+                [is-rendered]="isRendered"
                 *ngIf="showedCellByDefault"
                 [column-index]="columnIndex"
+                [is-filterable]="columnsSchema[key]?.filterable"
             ></table-cell>
         </div>
     </div>

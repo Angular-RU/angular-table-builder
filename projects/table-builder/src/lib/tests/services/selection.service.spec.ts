@@ -153,6 +153,7 @@ describe('[TEST]: Selection service', () => {
     });
 
     it('should be correct remove listener before ngOnDestroy', () => {
+        selection.listenShiftKey();
         expect(listenKeydown).toEqual(true);
         expect(listenKeyup).toEqual(true);
         selection.ngOnDestroy();

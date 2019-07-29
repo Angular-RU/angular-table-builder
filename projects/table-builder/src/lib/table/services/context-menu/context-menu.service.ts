@@ -12,18 +12,18 @@ export class ContextMenuService {
 
     constructor(private readonly utils: UtilsService) {}
 
-    public openContextMenu($event: MouseEvent, key: string = null, row: TableRow = null): void {
+    public openContextMenu(event: MouseEvent, key: string = null, row: TableRow = null): void {
         this.state = new ContextMenuState({
             key,
             item: row,
             opened: true,
             value: this.utils.getValueByPath(row, key) || null,
-            position: { left: $event.clientX, top: $event.clientY }
+            position: { left: event.clientX, top: event.clientY }
         });
 
         this.events.next();
-        $event.stopPropagation();
-        $event.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();
     }
 
     public close(): void {

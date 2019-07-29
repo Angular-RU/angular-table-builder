@@ -10,7 +10,7 @@ import {
     OnInit,
     Output
 } from '@angular/core';
-import { Any, DynamicHeightOptions } from '../interfaces/table-builder.internal';
+import { Any, DynamicHeightOptions, Fn } from '../interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
 
 const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
@@ -21,6 +21,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     private static readonly HEAD_TOP: string = '10px';
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
+    private handler: Fn;
 
     private useOnlyAutoViewPort: boolean;
     private isDirtyCheck: boolean;
@@ -126,7 +127,8 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            window.addEventListener('resize', this.recalculateByResize.bind(this), { passive: true });
+            this.handler = (): void => this.recalculateByResize();
+            window.addEventListener('resize', this.handler, { passive: true });
         });
     }
 
@@ -141,7 +143,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     public ngOnDestroy(): void {
-        window.removeEventListener('resize', this.recalculateByResize.bind(this));
+        window.removeEventListener('resize', this.handler);
     }
 
     public recalculateByResize(): void {

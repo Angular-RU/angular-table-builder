@@ -7,6 +7,7 @@ import { UtilsService } from '../../services/utils/utils.service';
 
 export class TableLineRow {
     @Input('column-key') public key: string;
+    @Input('is-rendered') public isRendered: boolean;
     @Input('column-index') public columnIndex: number;
     @Input('client-row-height') public clientRowHeight: number;
 

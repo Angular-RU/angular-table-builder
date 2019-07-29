@@ -17,20 +17,17 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                   <div class="scrollable-content">
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> 1 
-                        </table-cell>
+                        <table-cell>1</table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> 2 
-                        </table-cell>
+                        <table-cell>2</table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> 3 
-                        </table-cell>
+                        <table-cell>3</table-cell>
                       </div>
                     </div>
                   </div>
@@ -51,20 +48,17 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                   <div class="scrollable-content">
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> Max 
-                        </table-cell>
+                        <table-cell>Max</table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> Ivan 
-                        </table-cell>
+                        <table-cell>Ivan</table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell> Petr 
-                        </table-cell>
+                        <table-cell>Petr</table-cell>
                       </div>
                     </div>
                   </div>
@@ -85,20 +79,17 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                 <div class="scrollable-content">
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell> Ivanov 
-                      </table-cell>
+                      <table-cell>Ivanov</table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell> Petrov 
-                      </table-cell>
+                      <table-cell>Petrov</table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell> Sidorov 
-                      </table-cell>
+                      <table-cell>Sidorov</table-cell>
                     </div>
                   </div>
                 </div>

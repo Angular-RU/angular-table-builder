@@ -10,6 +10,7 @@ import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { SortableService } from '../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
+import { FilterableService } from '../../table/services/filterable/filterable.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -37,18 +38,25 @@ describe('[TEST]: Resizable service', () => {
     };
 
     beforeEach(() => {
+        const worker: WebWorkerThreadService = new WebWorkerThreadService();
+        const utils: UtilsService = new UtilsService();
+        const zone: NgZone = mockNgZone as NgZone;
+        const app: ApplicationRef = appRef as ApplicationRef;
+
         resizeService = new ResizableService();
-        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
+        sortable = new SortableService(worker, utils, zone);
+
         table = new TableBuilderComponent(
-            new SelectionService(mockNgZone as NgZone),
+            new SelectionService(zone),
             new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone,
-            new UtilsService(),
+            zone,
+            utils,
             resizeService,
             sortable,
-            new ContextMenuService(new UtilsService()),
-          appRef as ApplicationRef
+            new ContextMenuService(utils),
+            app,
+            new FilterableService(worker, utils, zone, app)
         );
     });
 
@@ -64,7 +72,7 @@ describe('[TEST]: Resizable service', () => {
         };
 
         table.ngAfterContentInit();
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         tick(1000); // async rendering
     }));
 

@@ -2,19 +2,22 @@ import {
     AfterContentInit,
     AfterViewChecked,
     AfterViewInit,
+    ApplicationRef,
     ChangeDetectorRef,
     ContentChild,
     ContentChildren,
     EventEmitter,
     Input,
+    NgZone,
     OnChanges,
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewRef
 } from '@angular/core';
 
-import { PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
+import { Fn, PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
 import { ColumnsAllowedKeys, ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
@@ -29,8 +32,11 @@ import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-conte
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { NgxHeaderComponent } from './components/ngx-header/ngx-header.component';
 import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component';
+import { FilterableService } from './services/filterable/filterable.service';
+import { FilterWorkerEvent } from './services/filterable/filterable.interface';
+import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
 
-const { ROW_HEIGHT, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, FILTER_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -44,6 +50,7 @@ export abstract class TableBuilderApiImpl
     @Input('async-columns') public asyncColumns: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
+    @Input('enable-filtering') public enableFiltering: boolean = false;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -70,6 +77,9 @@ export abstract class TableBuilderApiImpl
     @ContentChild(NgxFooterComponent, { static: false })
     public footerTemplate: NgxFooterComponent = null;
 
+    @ContentChild(NgxFilterComponent, { static: false })
+    public filterTemplate: NgxFilterComponent = null;
+
     public inViewport: boolean;
     public scrollOverload: Partial<ScrollOverload> = {};
     public isFrozenView: boolean = false;
@@ -82,8 +92,12 @@ export abstract class TableBuilderApiImpl
     public abstract resize: ResizableService;
     public abstract sortable: SortableService;
     public abstract contextMenu: ContextMenuService;
+    public abstract filterable: FilterableService;
+    public abstract ngZone: NgZone;
+    protected abstract app: ApplicationRef;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
+    private filterIdTask: number = null;
 
     public get schema(): Partial<TableSchema> {
         return this.templateParser.schema || {};
@@ -139,7 +153,7 @@ export abstract class TableBuilderApiImpl
 
     public abstract markTemplateContentCheck(): void;
 
-    public abstract ngOnChanges(): void;
+    public abstract ngOnChanges(changes: SimpleChanges): void;
 
     public abstract ngOnInit(): void;
 
@@ -162,12 +176,43 @@ export abstract class TableBuilderApiImpl
         event.preventDefault();
     }
 
-    public sortByKey(key: string): void {
-        this.toggleFreeze();
-        this.sortable.sort(this.originalSource, key).then((sorted: TableRow[]) => {
-            this.source = this.sortable.empty ? this.originalSource : sorted;
-            this.toggleFreeze(TIME_IDLE);
+    public filter(): void {
+        this.ngZone.runOutsideAngular(() => {
+            window.clearInterval(this.filterIdTask);
+            this.filterIdTask = window.setTimeout(() => {
+                this.filterable.changeFilteringStatus();
+                this.sortAndFilter().then(() => this.reCheckDefinitions());
+            }, FILTER_TIME);
         });
+    }
+
+    public async sortAndFilter(): Promise<void> {
+        this.toggleFreeze();
+
+        if (this.filterable.filterValueExist && this.enableFiltering) {
+            const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource);
+            this.source = await this.sortable.sort(filter.source);
+            filter.fireSelection();
+        } else if (!this.sortable.empty) {
+            this.source = await this.sortable.sort(this.originalSource);
+        }
+
+        if (this.sortable.empty && !this.filterable.filterValueExist) {
+            this.source = this.originalSource;
+        }
+
+        this.toggleFreeze(TIME_IDLE);
+    }
+
+    public sortByKey(key: string): void {
+        this.sortable.updateSortKey(key);
+        this.sortAndFilter().then(() => this.reCheckDefinitions());
+    }
+
+    protected reCheckDefinitions(): void {
+        this.filterable.definition = { ...this.filterable.definition };
+        this.filterable.changeFilteringStatus();
+        this.detectChanges();
     }
 
     public checkVisible(visible: boolean): void {
@@ -181,10 +226,13 @@ export abstract class TableBuilderApiImpl
         }
     }
 
-    public toggleFreeze(time: number = null): void {
+    public toggleFreeze(time: number = null, callback: Fn = null): void {
         this.isFrozenView = !this.isFrozenView;
         if (time) {
-            window.setTimeout(() => this.detectChanges(), time);
+            window.setTimeout(() => {
+                this.detectChanges();
+                callback && callback();
+            }, time);
         } else {
             this.detectChanges();
         }

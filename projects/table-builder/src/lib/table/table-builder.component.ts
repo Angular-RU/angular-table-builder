@@ -11,13 +11,21 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { Fn, KeyMap, ScrollOffsetStatus, ScrollOverload, TemplateKeys } from './interfaces/table-builder.internal';
+import {
+    Fn,
+    KeyMap,
+    ScrollOffsetStatus,
+    ScrollOverload,
+    TableSimpleChanges,
+    TemplateKeys
+} from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { TableSchema } from './interfaces/table-builder.external';
@@ -29,6 +37,8 @@ import { UtilsService } from './services/utils/utils.service';
 import { ResizableService } from './services/resizer/resizable.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
+import { FilterableService } from './services/filterable/filterable.service';
+import { FilterType } from './services/filterable/filterable.interface';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -37,7 +47,14 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = T
     templateUrl: './table-builder.component.html',
     styleUrls: ['./table-builder.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [TemplateParserService, SortableService, SelectionService, ResizableService, ContextMenuService],
+    providers: [
+        TemplateParserService,
+        SortableService,
+        SelectionService,
+        ResizableService,
+        ContextMenuService,
+        FilterableService
+    ],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
 })
@@ -51,15 +68,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public displayedColumns: string[] = [];
     public detectOverload: boolean = false;
     public showedCellByDefault: boolean = true;
+    public tableViewportChecked: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
-    private forcedRefresh: boolean = false;
-
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;
-
     @ViewChild('footer', { static: false })
     public footerRef: ElementRef<HTMLDivElement>;
-
+    private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
     private renderTaskId: number = null;
@@ -75,7 +90,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         public readonly resize: ResizableService,
         public readonly sortable: SortableService,
         public readonly contextMenu: ContextMenuService,
-        private readonly app: ApplicationRef
+        protected readonly app: ApplicationRef,
+        public readonly filterable: FilterableService
     ) {
         super();
     }
@@ -96,7 +112,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return (this.contentIsDirty || this.contentCheck) && !this.forcedRefresh;
     }
 
-    public ngOnChanges(): void {
+    public ngOnChanges(changes: SimpleChanges = {}): void {
         const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
 
         if (nonIdenticalStructure) {
@@ -104,9 +120,22 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
             this.modelColumnKeys = this.generateModelColumnKeys();
             this.originalSource = this.source;
-            if (!this.dirty) {
+            const unDirty: boolean = !this.dirty;
+
+            this.checkFilterValues();
+
+            if (unDirty) {
                 this.markForCheck();
             }
+
+            const recycleView: boolean = unDirty && this.isRendered && this.contentInit;
+
+            if (recycleView) {
+                this.renderTable();
+            }
+        } else if (TableSimpleChanges.SOURCE_KEY in changes) {
+            this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
+            this.sortAndFilter().then(() => this.reCheckDefinitions());
         }
     }
 
@@ -115,7 +144,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnInit(): void {
-        this.selection.primaryKey = this.primaryKey;
+        if (this.enableSelection) {
+            this.selection.primaryKey = this.primaryKey;
+            this.selection.listenShiftKey();
+        }
     }
 
     public updateScrollOffset(offset: boolean): void {
@@ -155,24 +187,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenTemplateChanges();
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
-    }
-
-    private recheckTemplateChanges(): void {
-        this.ngZone.runOutsideAngular(() => window.setTimeout(() => this.app.tick(), TIME_RELOAD));
-    }
-
-    private listenSelectionChanges(): void {
-        if (this.enableSelection) {
-            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-                this.detectChanges();
-                this.ngZone.runOutsideAngular(() =>
-                    window.requestAnimationFrame(() => {
-                        this.detectChanges();
-                        this.app.tick();
-                    })
-                );
-            });
-        }
     }
 
     public ngAfterViewChecked(): void {
@@ -234,7 +248,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public toggleVisibleColumns(columnKey: string): void {
         this.templateParser.toggleColumnVisibility(columnKey);
         this.recalculateVisibleColumns();
+        this.tableViewportChecked = false;
         this.detectChanges();
+
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => {
+                this.tableViewportChecked = true;
+                this.detectChanges();
+                this.app.tick();
+            });
+        });
     }
 
     public resetSchema(): void {
@@ -249,6 +272,38 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.displayedColumns = this.fullyColumnKeyList.filter(
             (key: string) => this.schema.columnsAllowedKeys[key].visible
         );
+    }
+
+    private checkFilterValues(): void {
+        if (this.enableFiltering) {
+            this.filterable.filterType =
+                this.filterable.filterType ||
+                (this.columnOptions && this.columnOptions.filterType) ||
+                FilterType.START_WITH;
+
+            this.modelColumnKeys.forEach((key: string) => {
+                this.filterable.filterTypeDefinition[key] =
+                    this.filterable.filterTypeDefinition[key] || this.filterable.filterType;
+            });
+        }
+    }
+
+    private recheckTemplateChanges(): void {
+        this.ngZone.runOutsideAngular(() => window.setTimeout(() => this.app.tick(), TIME_RELOAD));
+    }
+
+    private listenSelectionChanges(): void {
+        if (this.enableSelection) {
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                this.detectChanges();
+                this.ngZone.runOutsideAngular(() =>
+                    window.requestAnimationFrame(() => {
+                        this.detectChanges();
+                        this.app.tick();
+                    })
+                );
+            });
+        }
     }
 
     private viewForceRefresh(): void {
@@ -324,6 +379,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.detectChanges();
+
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => this.app.tick());
+        });
     }
 
     private generateDisplayedColumns(): string[] {

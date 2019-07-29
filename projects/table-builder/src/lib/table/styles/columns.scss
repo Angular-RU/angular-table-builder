@@ -53,27 +53,34 @@
             border-right: none;
         }
 
-        &--sortable {
+        &--sortable,
+        &--filterable {
+            @extend .vertical-align;
+
             width: 24px;
             height: 20px;
             font-size: 12px;
-            opacity: 0.1;
+            opacity: 0.2;
             transition: all 0.2s ease-in-out;
             transform: rotate(180deg);
-
-            @extend .vertical-align;
 
             &-active {
                 opacity: 1;
             }
 
-            &-desc {
-                transform: rotate(0deg);
-            }
-
             &:hover {
                 opacity: 1;
                 cursor: pointer;
+            }
+        }
+
+        &--filterable {
+            transform: rotate(0deg);
+        }
+
+        &--sortable {
+            &-desc {
+                transform: rotate(0deg);
             }
         }
     }

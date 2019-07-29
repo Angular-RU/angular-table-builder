@@ -4,7 +4,7 @@
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
-    [class.table-grid__root--empty-list]="!source?.length"
+    [class.table-grid__root--empty-list]="!source?.length && !this.filterable.filtering && !this.isFrozenView"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__root--content-is-init]="contentInit && inViewport"
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
@@ -37,7 +37,11 @@
 
         <div
             class="table-grid__column-area-content"
-            [style.width.px]="tableViewport.scrollWidth > tableViewport.clientWidth ? tableViewport.scrollWidth : null"
+            [style.width.px]="
+                tableViewport.scrollWidth && tableViewportChecked > tableViewport.clientWidth
+                    ? tableViewport.scrollWidth
+                    : null
+            "
         >
             <div
                 #column
@@ -70,7 +74,8 @@
                     <table-thead
                         [column-key]="key"
                         [header-top]="headerRef?.nativeElement.offsetHeight || 0"
-                        [definition]="sortable.definition"
+                        [sortable-definition]="sortable.definition"
+                        [filterable-definition]="filterable.definition"
                         [client-row-height]="clientRowHeight"
                         [class.table-head__offset]="scrollOffset.offset"
                         (resize)="resizeColumn($event, column)"
@@ -82,6 +87,7 @@
                         [column-key]="key"
                         [striped]="striped"
                         [column-index]="index"
+                        [is-rendered]="isRendered"
                         [primary-key]="primaryKey"
                         [throttling]="throttling"
                         [buffer-amount]="bufferAmount"
@@ -114,3 +120,7 @@
 <div *ngIf="!source?.length">
     <ng-content select="ngx-empty"></ng-content>
 </div>
+
+<ng-template [ngIf]="filterTemplate">
+    <ng-content select="ngx-filter"></ng-content>
+</ng-template>

@@ -6,6 +6,7 @@ import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { SortOrderType } from '../../services/sortable/sortable.interfaces';
 import { UtilsService } from '../../services/utils/utils.service';
+import { FilterableService } from '../../services/filterable/filterable.service';
 
 @Component({
     selector: 'table-thead',
@@ -15,7 +16,8 @@ import { UtilsService } from '../../services/utils/utils.service';
 })
 export class TableTheadComponent extends TableLineRow {
     @Input('header-top') public headerTop: number;
-    @Input() public definition: KeyMap<SortOrderType>;
+    @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
+    @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
     public orderType: typeof SortOrderType = SortOrderType;
@@ -23,8 +25,13 @@ export class TableTheadComponent extends TableLineRow {
     constructor(
         protected readonly templateParser: TemplateParserService,
         public readonly selection: SelectionService,
-        protected readonly utils: UtilsService
+        protected readonly utils: UtilsService,
+        protected readonly filterable: FilterableService
     ) {
         super(templateParser, selection, utils);
+    }
+
+    public openFilter(key: string, event: MouseEvent): void {
+        this.filterable.openFilter(key, event);
     }
 }

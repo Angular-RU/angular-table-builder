@@ -27,6 +27,9 @@ import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx
 import { NgxEmptyComponent } from './table/components/ngx-empty/ngx-empty.component';
 import { NgxHeaderComponent } from './table/components/ngx-header/ngx-header.component';
 import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.component';
+import { NgxFilterViewerComponent } from './table/components/ngx-filter-viewer/ngx-filter-viewer.component';
+import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.component';
+import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule],
@@ -50,7 +53,10 @@ import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.com
         NgxMenuContentComponent,
         NgxEmptyComponent,
         NgxHeaderComponent,
-        NgxFooterComponent
+        NgxFooterComponent,
+        NgxFilterViewerComponent,
+        NgxFilterComponent,
+        NgxFilterDirective
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
@@ -65,7 +71,10 @@ import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.com
         NgxMenuContentComponent,
         NgxEmptyComponent,
         NgxHeaderComponent,
-        NgxFooterComponent
+        NgxFooterComponent,
+        NgxFilterViewerComponent,
+        NgxFilterComponent,
+        NgxFilterDirective
     ]
 })
 export class TableBuilderModule {

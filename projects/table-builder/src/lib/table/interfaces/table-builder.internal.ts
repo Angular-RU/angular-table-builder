@@ -4,6 +4,10 @@ export enum PrimaryKey {
     ID = 'id'
 }
 
+export enum TableSimpleChanges {
+  SOURCE_KEY = 'source'
+}
+
 export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;
@@ -19,7 +23,7 @@ export interface ScrollOffsetStatus {
     offset: boolean;
 }
 
-export interface KeyMap<T = unknown> {
+export interface KeyMap<T = Any> {
     [key: string]: T;
 }
 
@@ -31,6 +35,11 @@ export type Any = any; // NOSONAR
 
 export interface SelectionStatus {
     status: boolean;
+}
+
+export enum KeyType {
+    KEYDOWN = 'keydown',
+    KEYUP = 'keyup'
 }
 
 export type TableBrowserEvent = Event | MouseEvent | KeyboardEvent;
@@ -51,4 +60,11 @@ export interface TemplateKeys {
     allRenderedKeys: string[];
     simpleRenderedKeys: string[];
     overridingRenderedKeys: string[];
+}
+
+export type Resolver<T> = (value?: T | PromiseLike<T>) => void;
+
+export interface MousePosition {
+    left: number;
+    top: number;
 }

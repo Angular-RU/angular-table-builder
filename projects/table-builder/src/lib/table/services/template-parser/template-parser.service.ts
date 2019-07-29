@@ -124,6 +124,7 @@ export class TemplateParserService {
             cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
             sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
+            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
             verticalLine: column.verticalLine
         };
     }

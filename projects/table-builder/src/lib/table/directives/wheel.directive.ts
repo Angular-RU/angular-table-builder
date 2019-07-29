@@ -1,7 +1,7 @@
 import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { ScrollOverload } from '../interfaces/table-builder.internal';
+import { Fn, ScrollOverload } from '../interfaces/table-builder.internal';
 import { UtilsService } from '../services/utils/utils.service';
 
 @Directive({ selector: '[wheelThrottling]' })
@@ -13,6 +13,7 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     public isDetectOverload: boolean = false;
     public isScrolling: number = null;
     public isPassive: boolean;
+    private handler: Fn;
 
     constructor(
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
@@ -36,12 +37,13 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            this.element.addEventListener('wheel', this.onElementScroll.bind(this), this.listenerOptions);
+            this.handler = (event: WheelEvent): void => this.onElementScroll(event);
+            this.element.addEventListener('wheel', this.handler, this.listenerOptions);
         });
     }
 
     public ngOnDestroy(): void {
-        this.element.removeEventListener('wheel', this.onElementScroll.bind(this), this.listenerOptions);
+        this.element.removeEventListener('wheel', this.handler, this.listenerOptions);
     }
 
     public onElementScroll($event: WheelEvent): void {
