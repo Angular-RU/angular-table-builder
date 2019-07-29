@@ -1,10 +1,10 @@
-{{ tableViewport.scrollWidth  > tableViewport.clientWidth ? tableViewport.scrollWidth : tableViewport.clientWidth }}
 <div
     #root
     observerView
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
+    [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
     [class.table-grid__root--empty-list]="!source?.length && !this.filterable.filtering && !this.isFrozenView"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__root--content-is-init]="contentInit && inViewport"
@@ -39,7 +39,7 @@
         <div
             class="table-grid__column-area-content"
             [style.width.px]="
-                tableViewport.scrollWidth && tableViewportChecked > tableViewport.clientWidth
+                tableViewportChecked && tableViewport.scrollWidth > tableViewport.clientWidth
                     ? tableViewport.scrollWidth
                     : null
             "

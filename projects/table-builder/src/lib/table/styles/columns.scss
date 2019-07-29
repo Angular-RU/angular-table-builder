@@ -47,6 +47,7 @@
 
         &--vertical-line:last-child {
             border-left: 1px solid $borderColor;
+            border-right: none;
         }
 
         &--vertical-line:nth-last-child(2) {
@@ -82,6 +83,12 @@
             &-desc {
                 transform: rotate(0deg);
             }
+        }
+    }
+
+    &__root--is-scroll-overload {
+        .table-grid__column--vertical-line:last-child {
+            border-right: 1px solid $borderColor;
         }
     }
 }

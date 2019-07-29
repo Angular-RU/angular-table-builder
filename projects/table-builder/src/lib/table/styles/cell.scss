@@ -22,6 +22,10 @@ table-cell {
         }
     }
 
+    table-tbody &__cell:last-child {
+        border-bottom: none;
+    }
+
     &__cell {
         color: rgba(0, 0, 0, 1);
         width: 100%;
