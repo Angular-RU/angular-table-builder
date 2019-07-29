@@ -26,8 +26,8 @@ export interface TableCellOptions<T = Any> {
     textBold: boolean;
     nowrap: boolean;
     useDeepPath: boolean;
-    class: string | string[] | KeyMap<Any>;
-    style: KeyMap<Any>;
+    class: string | string[] | KeyMap;
+    style: KeyMap;
     width: number;
     height: number;
     onClick: EventEmitter<Any>;

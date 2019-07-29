@@ -14,7 +14,7 @@ export class SelectionService implements OnDestroy {
     public primaryKey: string = PrimaryKey.ID;
     public selectionTaskIdle: number;
     public onChanges: Subject<void> = new Subject<void>();
-    private handler: KeyMap<Fn> = {};
+    private readonly handler: KeyMap<Fn> = {};
 
     constructor(private readonly ngZone: NgZone) {}
 

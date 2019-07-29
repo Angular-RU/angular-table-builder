@@ -80,7 +80,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     private listenInsideClick(): void {
         this.ngZone.runOutsideAngular(() => {
             this.listener = (event: MouseEvent): void => {
-                const origin: Node = this.targetElement.nativeElement as Node;
+                const origin: Node = this.targetElement.nativeElement;
                 const target: Node = event.target as Node;
                 if (!origin.contains(target)) {
                     this.taskId = window.setTimeout(() => this.removeListener(event), this.closeTime);

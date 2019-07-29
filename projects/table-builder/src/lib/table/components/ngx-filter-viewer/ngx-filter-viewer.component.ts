@@ -41,7 +41,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     constructor(
         private readonly ngZone: NgZone,
         private readonly cd: ChangeDetectorRef,
-        private sanitizer: DomSanitizer,
+        private readonly sanitizer: DomSanitizer,
         private readonly filterable: FilterableService
     ) {}
 
@@ -74,7 +74,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.subscription && this.subscription.unsubscribe();
+        this.subscription.unsubscribe();
     }
 
     public detectChanges(): void {

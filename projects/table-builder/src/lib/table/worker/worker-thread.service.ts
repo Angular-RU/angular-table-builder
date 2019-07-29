@@ -41,11 +41,11 @@ export class WebWorkerThreadService implements WebWorkerThread {
         return this.removePromise(promise);
     }
 
-    public getWorker(promise: Promise<any>): Worker {
+    public getWorker(promise: Promise<Any>): Worker {
         return this.promiseToWorkerMap.get(promise);
     }
 
-    private createPromiseForWorker<T>(worker: Worker, data: any): Promise<T> {
+    private createPromiseForWorker<T>(worker: Worker, data: Any): Promise<T> {
         return new Promise<T>((resolve: Executor<Any>, reject: Executor<Any>): void => {
             worker.addEventListener('message', (event: MessageEvent) => resolve(event.data));
             worker.addEventListener('error', reject);
