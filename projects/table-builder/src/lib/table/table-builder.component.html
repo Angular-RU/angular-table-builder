@@ -18,10 +18,10 @@
         inViewport: inViewport,
         columnHeight: columnHeight,
         statusRendered: isRendered,
-        sourceLength: source?.length || 0,
-        headerRef: headerRef,
-        footerRef: footerRef
+        sourceLength: source?.length || 0
     }"
+    [headerHeight]="headerRef?.nativeElement.clientHeight"
+    [footerHeight]="footerRef?.nativeElement.clientHeight"
 >
     <div
         #tableViewport

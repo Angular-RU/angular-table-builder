@@ -13,13 +13,15 @@
         ></ng-template>
     </ng-template>
     <ng-template #defaultTd>
-        <ng-container
-            *ngIf="columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key) as text"
-        >
-            <ng-template [ngIf]="isFilterable" [ngIfElse]="simple">
-                <ngx-filter-viewer [key]="key" [index]="index" [text]="text"></ngx-filter-viewer>
-            </ng-template>
-            <ng-template #simple>{{ text }}</ng-template>
-        </ng-container>
+        <ng-template [ngIf]="isFilterable" [ngIfElse]="simple">
+            <ngx-filter-viewer
+                [key]="key"
+                [index]="index"
+                [text]="columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)"
+            ></ngx-filter-viewer>
+        </ng-template>
+        <ng-template #simple>{{
+            columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)
+        }}</ng-template>
     </ng-template>
 </ng-template>

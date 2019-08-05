@@ -25,7 +25,7 @@ export class MocksGenerator {
                 class FakeGenerator {
                     public static generateTable(rows: number, cols: number): TableRow[] {
                         return new Array(rows).fill(0).map((_: unknown, index: number) => {
-                            const idx: number = index + 1;
+                            const idx: number = index;
 
                             const baseRow: TableRow = {
                                 id: idx,

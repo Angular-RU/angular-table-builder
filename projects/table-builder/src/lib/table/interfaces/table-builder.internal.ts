@@ -1,11 +1,11 @@
-import { ElementRef, QueryList } from '@angular/core';
+import { QueryList } from '@angular/core';
 
 export enum PrimaryKey {
     ID = 'id'
 }
 
 export enum TableSimpleChanges {
-  SOURCE_KEY = 'source'
+    SOURCE_KEY = 'source'
 }
 
 export interface DynamicHeightOptions {
@@ -15,8 +15,6 @@ export interface DynamicHeightOptions {
     columnHeight: number;
     statusRendered: boolean;
     sourceLength: number;
-    headerRef: ElementRef<HTMLDivElement>;
-    footerRef: ElementRef<HTMLDivElement>;
 }
 
 export interface ScrollOffsetStatus {
