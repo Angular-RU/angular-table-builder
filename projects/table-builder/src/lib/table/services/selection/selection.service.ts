@@ -17,7 +17,7 @@ export class SelectionService implements OnDestroy {
     public onChanges: Subject<void> = new Subject<void>();
     private readonly handler: KeyMap<Fn> = {};
 
-    constructor(private readonly ngZone: NgZone, private utils: UtilsService) {}
+    constructor(private readonly ngZone: NgZone, private readonly utils: UtilsService) {}
 
     public listenShiftKey(): void {
         this.listenShiftKeyByType(KeyType.KEYDOWN);
