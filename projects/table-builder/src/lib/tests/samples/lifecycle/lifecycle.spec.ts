@@ -11,12 +11,14 @@ import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../../table/services/draggable/draggable.service';
 
 // tslint:disable-next-line:no-big-function
 describe('[TEST]: Lifecycle table', () => {
     let table: TableBuilderComponent;
     let sortable: SortableService;
     let utils: UtilsService;
+    let draggable: DraggableService;
     let resizeService: ResizableService;
     let changes: SimpleChanges;
 
@@ -54,14 +56,17 @@ describe('[TEST]: Lifecycle table', () => {
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
         const zone: NgZone = mockNgZone as NgZone;
         const app: ApplicationRef = appRef as ApplicationRef;
+        const parser: TemplateParserService = new TemplateParserService();
+
+        draggable = new DraggableService(parser);
         utils = new UtilsService();
 
         resizeService = new ResizableService();
         sortable = new SortableService(worker, utils, zone);
 
         table = new TableBuilderComponent(
-            new SelectionService(zone),
-            new TemplateParserService(),
+            new SelectionService(zone, utils),
+            parser,
             mockChangeDetector as ChangeDetectorRef,
             zone,
             utils,
@@ -69,7 +74,8 @@ describe('[TEST]: Lifecycle table', () => {
             sortable,
             new ContextMenuService(utils),
             app,
-            new FilterableService(worker, utils, zone, app)
+            new FilterableService(worker, utils, zone, app),
+            draggable
         );
 
         table.primaryKey = 'position';
@@ -255,7 +261,7 @@ describe('[TEST]: Lifecycle table', () => {
 
         tick(1000);
 
-        expect(table['renderCount']).toEqual(1);
+        expect(table['renderCount']).toEqual(2);
     }));
 
     it('should be correct template changes', fakeAsync(() => {

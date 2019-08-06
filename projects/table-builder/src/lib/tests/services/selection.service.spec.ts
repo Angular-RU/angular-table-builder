@@ -3,6 +3,7 @@ import { Any, RowId } from '../../table/interfaces/table-builder.internal';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { TableRow } from '../../table/interfaces/table-builder.external';
 import { SelectionMap } from '../../table/services/selection/selection';
+import { UtilsService } from '../../table/services/utils/utils.service';
 
 // tslint:disable-next-line
 describe('[TEST]: Selection service', () => {
@@ -43,9 +44,11 @@ describe('[TEST]: Selection service', () => {
     });
 
     let selection: SelectionService;
+    let utils: UtilsService;
 
     beforeEach(() => {
-        selection = new SelectionService(mockNgZone as NgZone);
+        utils = new UtilsService();
+        selection = new SelectionService(mockNgZone as NgZone, utils);
     });
 
     it('should be correct exception', () => {

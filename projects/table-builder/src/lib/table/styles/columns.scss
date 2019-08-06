@@ -55,6 +55,7 @@
         }
 
         &--sortable,
+        &--draggable,
         &--filterable {
             @extend .vertical-align;
 
@@ -75,6 +76,16 @@
             }
         }
 
+        &--draggable {
+            opacity: 0;
+        }
+
+        &--draggable {
+            &-active {
+                opacity: 0.8;
+            }
+        }
+
         &--filterable {
             transform: rotate(0deg);
         }
@@ -83,12 +94,6 @@
             &-desc {
                 transform: rotate(0deg);
             }
-        }
-    }
-
-    &__root--is-scroll-overload {
-        .table-grid__column--vertical-line:last-child {
-            border-right: 1px solid $borderColor;
         }
     }
 }

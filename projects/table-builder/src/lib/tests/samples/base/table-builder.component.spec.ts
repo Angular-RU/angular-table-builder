@@ -19,6 +19,7 @@ import { SortableService } from '../../../table/services/sortable/sortable.servi
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../../table/services/draggable/draggable.service';
 
 interface PeriodicElement {
     name: string;
@@ -53,6 +54,7 @@ describe('[TEST]: TableBuilder', () => {
     let contextMenu: ContextMenuService;
     let resizeService: ResizableService;
     let utils: UtilsService;
+    let draggable: DraggableService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
 
@@ -76,22 +78,25 @@ describe('[TEST]: TableBuilder', () => {
     let weight: NgxColumnComponent;
 
     beforeEach(() => {
-        selection = new SelectionService(mockNgZone as NgZone);
+        const zone: NgZone = mockNgZone as NgZone;
+
+        utils = new UtilsService();
+        selection = new SelectionService(zone, utils);
         templateParser = new TemplateParserService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
+        draggable = new DraggableService(templateParser);
         resizable = new ResizableService();
         contextMenu = new ContextMenuService(utils);
-        utils = new UtilsService();
 
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
-        const zone: NgZone = mockNgZone as NgZone;
+
         const app: ApplicationRef = appRef as ApplicationRef;
 
         resizeService = new ResizableService();
         sortable = new SortableService(worker, utils, zone);
 
         table = new TableBuilderComponent(
-            new SelectionService(zone),
+            selection,
             new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
             zone,
@@ -100,7 +105,8 @@ describe('[TEST]: TableBuilder', () => {
             sortable,
             new ContextMenuService(utils),
             app,
-            new FilterableService(worker, utils, zone, app)
+            new FilterableService(worker, utils, zone, app),
+            draggable
         );
     });
 
@@ -271,7 +277,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct generate table body without emitter', () => {
         const index: number = 0;
 
-        const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone);
+        const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone, utils);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
             mockChangeDetector as ChangeDetectorRef,

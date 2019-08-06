@@ -94,6 +94,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                                 import('./samples/sample-fourteen/sample-fourteen.module').then(
                                     (m) => m.SampleFourteenModule
                                 )
+                        },
+                        {
+                            path: 'fifteen',
+                            loadChildren: () =>
+                                import('./samples/sample-fifteen/sample-fifteen.module').then(
+                                    (m) => m.SampleFifteenModule
+                                )
                         }
                     ]
                 }

@@ -64,6 +64,8 @@
         </svg>
     </div>
 
+    <ng-content select="[slot=draggable]"></ng-content>
+
     <div
         *ngIf="columnsSchema[key]?.resizable"
         class="table-grid__column--resize"

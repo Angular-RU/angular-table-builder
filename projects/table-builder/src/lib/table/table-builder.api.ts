@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 
 import { Fn, PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
-import { ColumnsAllowedKeys, ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
+import { ColumnsSimpleOptions, ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
@@ -35,6 +35,8 @@ import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component
 import { FilterableService } from './services/filterable/filterable.service';
 import { FilterWorkerEvent } from './services/filterable/filterable.interface';
 import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
+import { CdkDragSortEvent } from '@angular/cdk/drag-drop';
+import { DraggableService } from './services/draggable/draggable.service';
 
 const { ROW_HEIGHT, FILTER_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -60,7 +62,7 @@ export abstract class TableBuilderApiImpl
     @Input('row-height') public rowHeight: string | number = null;
     @Input('buffer-amount') public bufferAmount: number = null;
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
-    @Output() public schemaChanges: EventEmitter<TableSchema> = new EventEmitter();
+    @Output() public schemaChanges: EventEmitter<Partial<TableSchema>> = new EventEmitter();
 
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;
@@ -95,6 +97,7 @@ export abstract class TableBuilderApiImpl
     public abstract filterable: FilterableService;
     public abstract ngZone: NgZone;
     protected abstract app: ApplicationRef;
+    protected abstract draggable: DraggableService;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
@@ -107,8 +110,8 @@ export abstract class TableBuilderApiImpl
         return this.schema.columns || {};
     }
 
-    public get columnsAllowedKeys(): ColumnsAllowedKeys {
-        return this.schema.columnsAllowedKeys;
+    public get columnsAllowedKeys(): ColumnsSimpleOptions {
+        return this.schema.columnsSimpleOptions;
     }
 
     public get selectedItems(): TableRow[] {
@@ -170,7 +173,7 @@ export abstract class TableBuilderApiImpl
             event as MouseEvent,
             column,
             (width: number) => this.onMouseResizeColumn(key, width),
-            () => this.schemaChanges.emit(this.templateParser.schema)
+            () => this.changeSchema()
         );
 
         event.preventDefault();
@@ -209,10 +212,13 @@ export abstract class TableBuilderApiImpl
         this.sortAndFilter().then(() => this.reCheckDefinitions());
     }
 
-    protected reCheckDefinitions(): void {
-        this.filterable.definition = { ...this.filterable.definition };
-        this.filterable.changeFilteringStatus();
-        this.detectChanges();
+    public drop(event: CdkDragSortEvent): void {
+        this.draggable.drop(event);
+        this.changeSchema();
+    }
+
+    protected changeSchema(): void {
+        this.schemaChanges.emit(this.templateParser.schema.toJSON());
     }
 
     public checkVisible(visible: boolean): void {
@@ -236,6 +242,12 @@ export abstract class TableBuilderApiImpl
         } else {
             this.detectChanges();
         }
+    }
+
+    protected reCheckDefinitions(): void {
+        this.filterable.definition = { ...this.filterable.definition };
+        this.filterable.changeFilteringStatus();
+        this.detectChanges();
     }
 
     protected getCountKeys(): number {

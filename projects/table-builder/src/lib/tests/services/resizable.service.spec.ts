@@ -11,6 +11,7 @@ import { SortableService } from '../../table/services/sortable/sortable.service'
 import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../table/services/draggable/draggable.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -19,6 +20,7 @@ describe('[TEST]: Resizable service', () => {
     let removeAll: number = 0;
     let documentEmpty: number = 0;
     let resizeService: ResizableService;
+    let draggable: DraggableService;
     let sortable: SortableService;
     const columnWidth: number = 200;
     let changes: SimpleChanges;
@@ -42,13 +44,15 @@ describe('[TEST]: Resizable service', () => {
         const utils: UtilsService = new UtilsService();
         const zone: NgZone = mockNgZone as NgZone;
         const app: ApplicationRef = appRef as ApplicationRef;
+        const parser: TemplateParserService = new TemplateParserService();
 
         resizeService = new ResizableService();
+        draggable = new DraggableService(parser);
         sortable = new SortableService(worker, utils, zone);
 
         table = new TableBuilderComponent(
-            new SelectionService(zone),
-            new TemplateParserService(),
+            new SelectionService(zone, utils),
+            parser,
             mockChangeDetector as ChangeDetectorRef,
             zone,
             utils,
@@ -56,7 +60,8 @@ describe('[TEST]: Resizable service', () => {
             sortable,
             new ContextMenuService(utils),
             app,
-            new FilterableService(worker, utils, zone, app)
+            new FilterableService(worker, utils, zone, app),
+            draggable
         );
     });
 

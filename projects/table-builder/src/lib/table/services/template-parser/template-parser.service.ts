@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
-import { ImplicitContext, TableCellOptions, TableColumn, TableSchema } from '../../interfaces/table-builder.external';
+import { ImplicitContext, TableCellOptions, TableColumn } from '../../interfaces/table-builder.external';
 import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
@@ -11,7 +11,7 @@ import { ColumnOptions } from '../../components/common/column-options';
 
 @Injectable()
 export class TemplateParserService {
-    public schema: TableSchema;
+    public schema: SchemaBuilder;
     public templateKeys: Set<string>;
     public fullTemplateKeys: Set<string>;
     public overrideTemplateKeys: Set<string>;
@@ -42,11 +42,11 @@ export class TemplateParserService {
     }
 
     public toggleColumnVisibility(key: string): void {
-        this.schema.columnsAllowedKeys = {
-            ...this.schema.columnsAllowedKeys,
+        this.schema.columnsSimpleOptions = {
+            ...this.schema.columnsSimpleOptions,
             [key]: {
-                isModel: this.schema.columnsAllowedKeys[key].isModel,
-                visible: !this.schema.columnsAllowedKeys[key].visible
+                isModel: this.schema.columnsSimpleOptions[key].isModel,
+                visible: !this.schema.columnsSimpleOptions[key].visible
             }
         };
     }
@@ -84,11 +84,11 @@ export class TemplateParserService {
 
     public setAllowedKeyMap(fullyKeyList: string[], modelKeys: string[]): void {
         fullyKeyList.forEach((key: string) => {
-            this.schema.columnsAllowedKeys[key] = {
+            this.schema.columnsSimpleOptions[key] = {
                 isModel: modelKeys.includes(key),
                 visible:
-                    this.schema.columnsAllowedKeys[key] !== undefined
-                        ? this.schema.columnsAllowedKeys[key].visible
+                    this.schema.columnsSimpleOptions[key] !== undefined
+                        ? this.schema.columnsSimpleOptions[key].visible
                         : true
             };
         });
@@ -125,6 +125,7 @@ export class TemplateParserService {
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
             sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
             filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
+            draggable: TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable),
             verticalLine: column.verticalLine
         };
     }

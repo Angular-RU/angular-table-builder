@@ -21,15 +21,15 @@ export enum ImplicitContext {
 export type TableClickEventEmitter = EventEmitter<TableEvent> | null;
 
 export interface TableCellOptions<T = Any> {
-    template: TemplateRef<T>;
-    context: ImplicitContext;
+    class: string | string[] | KeyMap;
     textBold: boolean;
     nowrap: boolean;
     useDeepPath: boolean;
-    class: string | string[] | KeyMap;
     style: KeyMap;
     width: number;
     height: number;
+    template: TemplateRef<T>;
+    context: ImplicitContext;
     onClick: EventEmitter<Any>;
     dblClick: EventEmitter<Any>;
 }
@@ -54,22 +54,25 @@ export interface TableColumn<T = Any> {
     resizable: boolean;
     sortable: boolean;
     filterable: boolean;
+    draggable: boolean;
     customColumn: boolean;
     verticalLine: boolean;
 }
 
-export interface ColumnsAllowedKeys {
-    [key: string]: AllowedKeysProperties;
+export interface ColumnsSimpleOptions {
+    [key: string]: ColumnSimpleOptions;
 }
 
-export interface AllowedKeysProperties {
+export interface ColumnSimpleOptions {
     isModel: boolean;
     visible: boolean;
 }
 
 export interface TableSchema<T = Any> {
     columns: ColumnsSchema<T>;
-    columnsAllowedKeys: ColumnsAllowedKeys;
+    displayedColumns: string[];
+    allRenderedColumnKeys: string[];
+    columnsSimpleOptions: ColumnsSimpleOptions;
 }
 
 export interface TableEvent<T = Any> {

@@ -7,7 +7,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableRow, TableSchema } from '@angular-ru/table-builder';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { NGX_ANIMATION } from '../../../../projects/table-builder/src/lib/table/animations/fade.animation';
 
@@ -97,5 +97,10 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
 
     public copyId(id: string): void {
         window.alert('Copy on buffer - ' + id);
+    }
+
+    public updatedSchema(event: Partial<TableSchema>): void {
+        // tslint:disable-next-line:no-console
+        console.log(JSON.parse(JSON.stringify(event)));
     }
 }

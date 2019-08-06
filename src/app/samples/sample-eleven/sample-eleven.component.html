@@ -121,7 +121,13 @@
             <mat-tab label="Custom sub menu">
                 <br />
                 <div>
-                    <ngx-table-builder #table height="500" [source]="data" [enable-selection]="true">
+                    <ngx-table-builder
+                        #table
+                        height="500"
+                        [source]="data"
+                        [enable-selection]="true"
+                        (schemaChanges)="updatedSchema($event)"
+                    >
                         <ngx-options [resizable]="true" [sortable]="true"></ngx-options>
 
                         <ngx-column key="action" custom-key [sticky]="true" [resizable]="false" [width]="50">
@@ -254,7 +260,7 @@
       &lt;ngx-menu-content>Column list&lt;/ngx-menu-content>
 
       &lt;ngx-context-menu-item
-          *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
+          *ngFor="let columnType of table.columnsSimpleOptions | keyvalue"
           (onClick)="table.toggleColumnVisibility(columnType.key); $event.preventDefault()"
           [visible]="columnType.value.isModel"
       >

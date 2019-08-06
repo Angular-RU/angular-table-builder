@@ -14,6 +14,7 @@ const COLUMN: TableColumn = {
     cssClass: [],
     cssStyle: [],
     resizable: null,
+    draggable: null,
     sortable: null,
     customColumn: false,
     verticalLine: false,
@@ -21,10 +22,12 @@ const COLUMN: TableColumn = {
 };
 
 export const ACTUAL_TEMPLATE: TableSchema = {
+    displayedColumns: [],
+    allRenderedColumnKeys: [],
+    columnsSimpleOptions: {},
     columns: {
         position: COLUMN,
         name: COLUMN,
         weight: COLUMN
-    },
-    columnsAllowedKeys: {}
+    }
 };

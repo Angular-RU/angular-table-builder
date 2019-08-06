@@ -1,0 +1,8 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Example drag-and-drop</span>
+    <button class="show-simple" mat-raised-button>show code sample</button>
+</mat-toolbar>
+
+<ngx-table-builder [source]="data" (schemaChanges)="updatedSchema($event)">
+    <ngx-options [draggable]="true" [sortable]="true"></ngx-options>
+</ngx-table-builder>

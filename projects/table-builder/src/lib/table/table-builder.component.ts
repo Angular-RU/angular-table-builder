@@ -39,6 +39,7 @@ import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { FilterableService } from './services/filterable/filterable.service';
 import { FilterType } from './services/filterable/filterable.interface';
+import { DraggableService } from './services/draggable/draggable.service';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -53,7 +54,8 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = T
         SelectionService,
         ResizableService,
         ContextMenuService,
-        FilterableService
+        FilterableService,
+        DraggableService
     ],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
@@ -65,7 +67,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public isRendered: boolean = false;
     public contentInit: boolean = false;
     public contentCheck: boolean = false;
-    public displayedColumns: string[] = [];
     public detectOverload: boolean = false;
     public showedCellByDefault: boolean = true;
     public tableViewportChecked: boolean = true;
@@ -79,7 +80,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private checkedTaskId: number = null;
     private renderTaskId: number = null;
     private renderCount: number = 0;
-    private fullyColumnKeyList: string[] = [];
 
     constructor(
         public readonly selection: SelectionService,
@@ -91,9 +91,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         public readonly sortable: SortableService,
         public readonly contextMenu: ContextMenuService,
         protected readonly app: ApplicationRef,
-        public readonly filterable: FilterableService
+        public readonly filterable: FilterableService,
+        protected readonly draggable: DraggableService
     ) {
         super();
+    }
+
+    public get displayedColumns(): string[] {
+        return (this.templateParser.schema && this.templateParser.schema.displayedColumns) || [];
     }
 
     public get selectionEntries(): KeyMap<boolean> {
@@ -226,19 +231,23 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         if (!this.rendering) {
             this.rendering = true;
             const columnList: string[] = this.generateDisplayedColumns();
-            const canInvalidate: boolean = columnList.length !== this.fullyColumnKeyList.length;
+            const canInvalidate: boolean =
+                columnList.length !== this.templateParser.schema.allRenderedColumnKeys.length;
 
             if (canInvalidate) {
-                this.fullyColumnKeyList = columnList;
-                this.templateParser.setAllowedKeyMap(this.fullyColumnKeyList, this.modelColumnKeys);
+                this.templateParser.schema.allRenderedColumnKeys = columnList;
+                this.templateParser.setAllowedKeyMap(
+                    this.templateParser.schema.allRenderedColumnKeys,
+                    this.modelColumnKeys
+                );
 
-                const visibleColumns: string[] = this.fullyColumnKeyList.filter(
-                    (key: string) => this.schema.columnsAllowedKeys[key]
+                const visibleColumns: string[] = this.templateParser.schema.allRenderedColumnKeys.filter(
+                    (key: string) => this.schema.columnsSimpleOptions[key]
                 );
 
                 if (visibleColumns.length) {
                     this.renderCount++;
-                    this.displayedColumns = [];
+                    this.templateParser.schema.displayedColumns = [];
                     this.draw(visibleColumns, (): void => this.emitRendered());
                 }
             }
@@ -249,6 +258,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.templateParser.toggleColumnVisibility(columnKey);
         this.recalculateVisibleColumns();
         this.tableViewportChecked = false;
+        this.changeSchema();
         this.detectChanges();
 
         this.ngZone.runOutsideAngular(() => {
@@ -261,17 +271,23 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public resetSchema(): void {
-        this.templateParser.schema.columnsAllowedKeys = {};
+        this.templateParser.schema.columnsSimpleOptions = {};
         this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
-        this.templateParser.setAllowedKeyMap(this.fullyColumnKeyList, this.modelColumnKeys);
+        this.templateParser.setAllowedKeyMap(this.templateParser.schema.allRenderedColumnKeys, this.modelColumnKeys);
         this.recalculateVisibleColumns();
+        this.changeSchema();
         this.detectChanges();
     }
 
     public recalculateVisibleColumns(): void {
-        this.displayedColumns = this.fullyColumnKeyList.filter(
-            (key: string) => this.schema.columnsAllowedKeys[key].visible
-        );
+        const displayedColumns: string[] = [];
+        this.templateParser.schema.allRenderedColumnKeys.forEach((key: string) => {
+            if (this.schema.columnsSimpleOptions[key].visible) {
+                displayedColumns.push(key);
+            }
+        });
+
+        this.schema.displayedColumns = displayedColumns;
     }
 
     private checkFilterValues(): void {
@@ -354,7 +370,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.ngZone.runOutsideAngular(() => {
             const drawTask: Fn = (): void => {
                 const columnName: string = originList[startIndex];
-                this.displayedColumns.push(columnName);
+                this.templateParser.schema.displayedColumns.push(columnName);
 
                 this.detectChanges();
                 const isNotLastElement: boolean = startIndex + 1 !== originList.length;

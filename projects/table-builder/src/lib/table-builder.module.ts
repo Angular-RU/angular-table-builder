@@ -1,5 +1,6 @@
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 
 import { NGX_TABLE_OPTIONS } from './table/config/table-builder.tokens';
@@ -32,7 +33,7 @@ import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.com
 import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 
 @NgModule({
-    imports: [CommonModule, VirtualScrollerModule],
+    imports: [CommonModule, VirtualScrollerModule, DragDropModule],
     declarations: [
         TableBuilderComponent,
         WheelThrottlingDirective,

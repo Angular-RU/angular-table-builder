@@ -20,6 +20,10 @@ table-cell {
         &--content {
             overflow: hidden;
         }
+
+        &:hover .table-grid__column--draggable {
+            opacity: 0.2;
+        }
     }
 
     table-tbody &__cell:last-child {

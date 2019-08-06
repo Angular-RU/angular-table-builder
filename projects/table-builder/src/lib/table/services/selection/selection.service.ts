@@ -5,6 +5,7 @@ import { SelectionMap } from './selection';
 import { SelectionRange } from './selection-range';
 import { TableRow } from '../../interfaces/table-builder.external';
 import { Fn, KeyMap, KeyType, PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
 export class SelectionService implements OnDestroy {
@@ -16,7 +17,7 @@ export class SelectionService implements OnDestroy {
     public onChanges: Subject<void> = new Subject<void>();
     private readonly handler: KeyMap<Fn> = {};
 
-    constructor(private readonly ngZone: NgZone) {}
+    constructor(private readonly ngZone: NgZone, private utils: UtilsService) {}
 
     public listenShiftKey(): void {
         this.listenShiftKeyByType(KeyType.KEYDOWN);
@@ -28,8 +29,8 @@ export class SelectionService implements OnDestroy {
         this.removeListenerByType(KeyType.KEYUP);
     }
 
-    private static validateSelectionId(id: RowId): void {
-        if (!id) {
+    private validateSelectionId(id: RowId): void {
+        if (this.utils.checkValueIsEmpty(id)) {
             throw new Error(`Can't select item, make sure you pass the correct primary key`);
         }
     }
@@ -74,7 +75,7 @@ export class SelectionService implements OnDestroy {
 
     public getIdByRow(row: TableRow): RowId {
         const id: RowId = row[this.primaryKey];
-        SelectionService.validateSelectionId(id);
+        this.validateSelectionId(id);
         return id;
     }
 
