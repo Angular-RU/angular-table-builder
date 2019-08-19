@@ -101,6 +101,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                                 import('./samples/sample-fifteen/sample-fifteen.module').then(
                                     (m) => m.SampleFifteenModule
                                 )
+                        },
+                        {
+                            path: 'sixteen',
+                            loadChildren: () =>
+                                import('./samples/sample-sixteen/sample-sixteen.module').then(
+                                    (m) => m.SampleSixteenModule
+                                )
                         }
                     ]
                 }

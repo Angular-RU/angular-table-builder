@@ -44,7 +44,7 @@ describe('[TEST]: Resizable service', () => {
         const utils: UtilsService = new UtilsService();
         const zone: NgZone = mockNgZone as NgZone;
         const app: ApplicationRef = appRef as ApplicationRef;
-        const parser: TemplateParserService = new TemplateParserService();
+        const parser: TemplateParserService = new TemplateParserService(utils);
 
         resizeService = new ResizableService();
         draggable = new DraggableService(parser);

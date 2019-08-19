@@ -64,13 +64,6 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
                 description: 'Automatic height calculation',
                 code: `
 <style>
-    #main-column,
-    #widget1,
-    #widget2 {
-        border: 1px dotted darkgray;
-        padding: 10px;
-    }
-
     #main-column {
         flex: 1;
         display: flex;

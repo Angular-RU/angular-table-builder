@@ -56,6 +56,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     }
 
     public ngOnDestroy(): void {
+        this.removeEventListener();
         this.subscription.unsubscribe();
     }
 
@@ -63,7 +64,6 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
         this.ngZone.runOutsideAngular(() => {
             window.setTimeout(() => {
                 this.isViewed = this.state.opened;
-
                 this.updateView();
 
                 if (this.state.opened) {
@@ -80,21 +80,28 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     private listenInsideClick(): void {
         this.ngZone.runOutsideAngular(() => {
             this.listener = (event: MouseEvent): void => {
-                const origin: Node = this.targetElement.nativeElement;
-                const target: Node = event.target as Node;
-                if (!origin.contains(target)) {
-                    this.taskId = window.setTimeout(() => this.removeListener(event), this.closeTime);
+                try {
+                    const origin: Node = this.targetElement.nativeElement;
+                    const target: Node = event.target as Node;
+                    if (!origin.contains(target)) {
+                        this.taskId = window.setTimeout(() => this.removeListener(event), this.closeTime);
+                    }
+                } catch (e) {
+                    this.removeEventListener();
                 }
             };
-
             window.addEventListener('click', this.listener, true);
         });
     }
 
     private removeListener(event: MouseEvent): void {
-        window.removeEventListener('click', this.listener, true);
+        this.removeEventListener();
         this.close(event);
         this.cd.detectChanges();
+    }
+
+    private removeEventListener(): void {
+        window.removeEventListener('click', this.listener, true);
     }
 
     public preventClose(): void {

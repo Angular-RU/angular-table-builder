@@ -236,10 +236,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
             if (canInvalidate) {
                 this.templateParser.schema.allRenderedColumnKeys = columnList;
-                this.templateParser.setAllowedKeyMap(
-                    this.templateParser.schema.allRenderedColumnKeys,
-                    this.modelColumnKeys
-                );
+                this.templateParser.setAllowedKeyMap(this.modelColumnKeys);
 
                 const visibleColumns: string[] = this.templateParser.schema.allRenderedColumnKeys.filter(
                     (key: string) => this.schema.columnsSimpleOptions[key]
@@ -271,10 +268,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public resetSchema(): void {
-        this.templateParser.schema.columnsSimpleOptions = {};
-        this.compileTemplates(this.customModelColumnsKeys, this.modelColumnKeys);
-        this.templateParser.setAllowedKeyMap(this.templateParser.schema.allRenderedColumnKeys, this.modelColumnKeys);
-        this.recalculateVisibleColumns();
+        this.templateParser.reset(this.columnOptions, this.customModelColumnsKeys, this.modelColumnKeys);
+        this.schema.displayedColumns = this.generateDisplayedColumns();
+        this.checkUnCompiledTemplates(this.schema.displayedColumns);
         this.changeSchema();
         this.detectChanges();
     }
@@ -397,7 +393,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.detectChanges();
 
         this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => this.app.tick());
+            window.requestAnimationFrame(() => this.app.tick());
         });
     }
 
@@ -408,7 +404,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.modelColumnKeys
         );
 
-        if (this.keys.length) {
+        if (this.customSchemaOptions.displayedColumns && this.customSchemaOptions.displayedColumns.length) {
+            generatedList = this.customSchemaOptions.displayedColumns;
+        } else if (this.keys.length) {
             generatedList = this.customModelColumnsKeys;
         } else if (simpleRenderedKeys.length) {
             generatedList = allRenderedKeys;
@@ -425,7 +423,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             ? this.generateColumnsKeyMap(customModelColumnsKeys)
             : this.generateColumnsKeyMap(modelColumnKeys);
 
-        this.templateParser.initialSchema(this.columnOptions).parse(allowedKeyMap, this.columnTemplates);
+        this.templateParser
+            .initialSchema(this.columnOptions, this.customSchemaOptions)
+            .parse(allowedKeyMap, this.columnTemplates);
 
         return {
             allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys),

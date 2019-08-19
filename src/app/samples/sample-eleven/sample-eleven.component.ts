@@ -101,6 +101,6 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
 
     public updatedSchema(event: Partial<TableSchema>): void {
         // tslint:disable-next-line:no-console
-        console.log(JSON.parse(JSON.stringify(event)));
+        console.log(event);
     }
 }

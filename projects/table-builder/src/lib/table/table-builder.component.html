@@ -29,6 +29,7 @@
         wheelThrottling
         class="table-grid"
         (scrollEnd)="scrollEnd()"
+        [cdkDropListDisabled]="!accessDragging"
         (scrollOffset)="updateScrollOffset($event)"
         (scrollOverload)="updateScrollOverload($event)"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
@@ -53,6 +54,8 @@
                 observerView
                 [attr.column-id]="key"
                 [rendered]="isRendered"
+                [cdkDragStartDelay]="100"
+                [cdkDragDisabled]="!accessDragging"
                 class="table-grid__column"
                 [style.height.px]="columnHeight"
                 [ngStyle]="columns[key]?.cssStyle"
@@ -60,7 +63,6 @@
                 [style.width.px]="columns[key]?.width"
                 cdkDragBoundary=".table-grid__column-area-content"
                 *ngFor="let key of displayedColumns; let index = index"
-                [cdkDragDisabled]="!columns[key]?.draggable || !isRendered"
                 [style.min-width.px]="columns[key]?.width || clientColWidth"
                 [class.table-grid__column--with-footer-content]="footerTemplate"
                 [class.table-grid__column--vertical-line]="verticalBorder || columns[key]?.verticalLine"
@@ -80,6 +82,7 @@
                 >
                     <table-thead
                         [column-key]="key"
+                        (mouseenter)="enableDragging()"
                         [header-top]="headerRef?.nativeElement.offsetHeight || 0"
                         [sortable-definition]="sortable.definition"
                         [filterable-definition]="filterable.definition"
@@ -110,6 +113,7 @@
                         [is-rendered]="isRendered"
                         [primary-key]="primaryKey"
                         [throttling]="throttling"
+                        (mouseenter)="disableDragging()"
                         [buffer-amount]="bufferAmount"
                         [table-viewport]="tableViewport"
                         [scroll-overload]="scrollOverload"

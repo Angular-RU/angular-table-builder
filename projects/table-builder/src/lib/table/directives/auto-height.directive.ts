@@ -91,7 +91,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     private get columnHeight(): number {
-        return this.autoHeight.columnHeight;
+        return this.autoHeight.columnHeight || 0;
     }
 
     private get autoViewHeight(): number {
@@ -174,7 +174,9 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     private getHeightByViewPort({ paddingTop, paddingBottom }: BoxView): string {
         const viewportHeight: number = this.autoViewHeight - parseInt(AutoHeightDirective.HEAD_TOP);
-        return `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
+        return this.columnHeight > viewportHeight
+            ? `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`
+            : this.getDefaultHeight();
     }
 
     private setHeightByParent(): void {

@@ -2,27 +2,27 @@
     [style.top.px]="headerTop"
     class="table-grid__cell table-grid__header-cell"
     [class.table-grid__cell--custom-cell]="columnsSchema[key]?.customColumn"
-    [class.table-grid__cell--text-bold]="columnsSchema[key]?.th.textBold"
+    [class.table-grid__cell--text-bold]="columnsSchema[key]?.th?.textBold"
     [class.table-grid__cell--resizable]="columnsSchema[key]?.resizable"
-    [style.min-height.px]="columnsSchema[key]?.th.height || clientRowHeight"
-    [style.max-height.px]="columnsSchema[key]?.th.height || clientRowHeight"
-    [ngClass]="columnsSchema[key]?.th.class"
-    [ngStyle]="columnsSchema[key]?.th.style"
+    [style.min-height.px]="columnsSchema[key]?.th?.height || clientRowHeight"
+    [style.max-height.px]="columnsSchema[key]?.th?.height || clientRowHeight"
+    [ngClass]="columnsSchema[key]?.th?.class"
+    [ngStyle]="columnsSchema[key]?.th?.style"
 >
     <div
         class="table-grid__cell--content table-grid__header-cell--content"
         [class.table-grid__cell--content-sortable]="columnsSchema[key]?.sortable"
-        [class.table-grid__cell--nowrap]="columnsSchema[key]?.th.nowrap"
+        [class.table-grid__cell--nowrap]="columnsSchema[key]?.th?.nowrap"
         (click)="columnsSchema[key]?.sortable ? sortByKey.emit(key) : null"
     >
         <ng-template
-            [ngIf]="columnsSchema[key]?.th.template"
-            [ngTemplateOutlet]="columnsSchema[key]?.th.template"
+            [ngIf]="columnsSchema[key]?.th?.template"
+            [ngTemplateOutlet]="columnsSchema[key]?.th?.template"
             [ngIfElse]="defaultTh"
         ></ng-template>
         <ng-template #defaultTh>
-            <ng-template [ngIf]="!columnsSchema[key]?.th.emptyHead">
-                {{ columnsSchema[key]?.th.headTitle || (key | titlecase) }}
+            <ng-template [ngIf]="!columnsSchema[key]?.th?.emptyHead">
+                {{ columnsSchema[key]?.th?.headTitle || (key | titlecase) }}
             </ng-template>
         </ng-template>
     </div>

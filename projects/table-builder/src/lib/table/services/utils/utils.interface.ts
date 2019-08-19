@@ -4,6 +4,8 @@ export interface UtilsInterface {
     clone<T = Any>(obj: T): T;
     isFirefox(userAgent: string): boolean;
     checkValueIsEmpty(value: Any): boolean;
+    isObject<T = object>(obj: T): boolean;
+    mergeDeep(...objects: Array<KeyMap<Any>>): KeyMap<Any>;
     getValueByPath(object: KeyMap, path: string): KeyMap | undefined;
     readonly bodyRect: ClientRect | DOMRect;
 }

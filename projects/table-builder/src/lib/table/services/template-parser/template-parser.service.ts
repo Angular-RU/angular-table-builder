@@ -1,21 +1,36 @@
 import { Injectable } from '@angular/core';
 
 import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
-import { ImplicitContext, TableCellOptions, TableColumn } from '../../interfaces/table-builder.external';
-import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
+import {
+    ColumnsSchema,
+    ColumnsSimpleOptions,
+    ImplicitContext,
+    TableCellOptions,
+    TableColumn,
+    TableSchema
+} from '../../interfaces/table-builder.external';
+import { DeepPartial, KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { SchemaBuilder } from './schema-builder.class';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
 import { ColumnOptions } from '../../components/common/column-options';
+import { UtilsService } from '../utils/utils.service';
+
+interface TemplateParser {
+    mergeWithSchema(schema: DeepPartial<TableSchema>): SchemaBuilder;
+}
 
 @Injectable()
-export class TemplateParserService {
+export class TemplateParserService implements TemplateParser {
     public schema: SchemaBuilder;
     public templateKeys: Set<string>;
     public fullTemplateKeys: Set<string>;
     public overrideTemplateKeys: Set<string>;
     public columnOptions: ColumnOptions;
+    private columnsSchema: ColumnsSchema = {};
+
+    constructor(private readonly utils: UtilsService) {}
 
     private static templateContext(key: string, cell: TemplateCellCommon, options: ColumnOptions): TableCellOptions {
         return {
@@ -41,6 +56,13 @@ export class TemplateParserService {
         return leftPredicate === null ? rightPredicate : leftPredicate;
     }
 
+    public reset(columnOptions: ColumnOptions, customModelColumnsKeys: string[], modelColumnKeys: string[]): void {
+        this.columnsSchema = {};
+        this.schema = new SchemaBuilder([], this.schema.allRenderedColumnKeys);
+        this.initialColumnOptions(columnOptions);
+        this.setAllowedKeyMap(modelColumnKeys);
+    }
+
     public toggleColumnVisibility(key: string): void {
         this.schema.columnsSimpleOptions = {
             ...this.schema.columnsSimpleOptions,
@@ -51,13 +73,25 @@ export class TemplateParserService {
         };
     }
 
-    public initialSchema(columnOptions: ColumnOptions): TemplateParserService {
-        this.schema = new SchemaBuilder();
+    public initialSchema(columnOptions: ColumnOptions, schema: DeepPartial<TableSchema>): TemplateParserService {
+        this.schema = this.schema || this.mergeWithSchema(schema || {});
+        this.initialColumnOptions(columnOptions);
+        return this;
+    }
+
+    public mergeWithSchema(schema: DeepPartial<TableSchema>): SchemaBuilder {
+        const displayedColumns: string[] = schema.displayedColumns || [];
+        const allRenderedColumnKeys: string[] = schema.allRenderedColumnKeys || [];
+        const columnsSimpleOptions: ColumnsSimpleOptions = schema.columnsSimpleOptions as ColumnsSimpleOptions;
+        this.columnsSchema = schema.columns as ColumnsSchema;
+        return new SchemaBuilder(displayedColumns, allRenderedColumnKeys, columnsSimpleOptions);
+    }
+
+    public initialColumnOptions(columnOptions: ColumnOptions): void {
         this.templateKeys = new Set<string>();
         this.overrideTemplateKeys = new Set<string>();
         this.fullTemplateKeys = new Set<string>();
         this.columnOptions = columnOptions || new ColumnOptions();
-        return this;
     }
 
     public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListRef<NgxColumnComponent>): void {
@@ -82,8 +116,8 @@ export class TemplateParserService {
         }
     }
 
-    public setAllowedKeyMap(fullyKeyList: string[], modelKeys: string[]): void {
-        fullyKeyList.forEach((key: string) => {
+    public setAllowedKeyMap(modelKeys: string[]): void {
+        this.schema.allRenderedColumnKeys.forEach((key: string) => {
             this.schema.columnsSimpleOptions[key] = {
                 isModel: modelKeys.includes(key),
                 visible:
@@ -108,25 +142,35 @@ export class TemplateParserService {
         const isEmptyHead: boolean = TemplateParserService.getValidHtmlBooleanAttribute(emptyHead);
         const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
 
-        this.schema.columns[key] = this.schema.columns[key] || {
-            th: {
-                ...thOptions,
-                headTitle,
-                emptyHead: isEmptyHead,
-                template: isEmptyHead ? null : thOptions.template
-            },
-            td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
-            stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
-            stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
-            customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
-            width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
-            cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
-            cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
-            resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
-            sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
-            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
-            draggable: TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable),
-            verticalLine: column.verticalLine
-        };
+        this.schema.columns[key] =
+            this.schema.columns[key] ||
+            this.utils.mergeDeep<TableColumn>(
+                {
+                    th: {
+                        ...thOptions,
+                        headTitle,
+                        emptyHead: isEmptyHead,
+                        template: isEmptyHead ? null : thOptions.template
+                    },
+                    td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
+                    stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
+                    stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
+                    customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
+                    width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
+                    cssClass:
+                        TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
+                    cssStyle:
+                        TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
+                    resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
+                    sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
+                    filterable: TemplateParserService.getValidPredicate(
+                        column.filterable,
+                        this.columnOptions.filterable
+                    ),
+                    draggable: TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable),
+                    verticalLine: column.verticalLine
+                },
+                (this.columnsSchema || {})[key]
+            );
     }
 }

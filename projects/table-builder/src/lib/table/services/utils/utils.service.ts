@@ -24,6 +24,29 @@ export class UtilsService implements UtilsInterface {
         return path ? path.split('.').reduce((value: string, key: string) => value && value[key], object) : object;
     }
 
+    public isObject<T = object>(obj: T): boolean {
+        return obj === Object(obj);
+    }
+
+    public mergeDeep<T>(target: T, source: T): T {
+        const output: T = { ...target };
+        if (this.isObject(target) && this.isObject(source)) {
+            Object.keys(source).forEach((key: string) => {
+                if (this.isObject(source[key])) {
+                    if (!(key in target)) {
+                        Object.assign(output, { [key]: source[key] });
+                    } else {
+                        output[key] = this.mergeDeep(target[key], source[key]);
+                    }
+                } else {
+                    Object.assign(output, { [key]: source[key] });
+                }
+            });
+        }
+
+        return output;
+    }
+
     public flattenKeysByRow(row: TableRow, parentKey: string = null, keys: string[] = []): string[] {
         for (const key in row) {
             if (!row.hasOwnProperty(key)) {

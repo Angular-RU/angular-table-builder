@@ -1,0 +1,33 @@
+<mat-toolbar class="simple-toolbar">
+    <span>Persistent state</span>
+    <button class="show-simple" mat-raised-button>show code sample</button>
+</mat-toolbar>
+
+<ngx-table-builder *ngIf="schema" #table [source]="data" [schema]="schema" (schemaChanges)="updatedSchema($event)">
+    <ngx-options [draggable]="true" [sortable]="true" [resizable]="true"></ngx-options>
+
+    <ngx-context-menu>
+        <ngx-context-menu-item contextTitle divider>
+            <ngx-menu-content>Menu</ngx-menu-content>
+        </ngx-context-menu-item>
+
+        <ngx-context-menu-item>
+            <ngx-menu-content>Column list</ngx-menu-content>
+
+            <ngx-context-menu-item
+                *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
+                (onClick)="table.toggleVisibleColumns(columnType.key); $event.preventDefault()"
+                [visible]="columnType.value.isModel"
+            >
+                <ngx-menu-content no-margin>{{ columnType.key }}</ngx-menu-content>
+                <ngx-menu-content no-margin align-center>
+                    <mat-checkbox color="primary" [checked]="columnType.value.visible"></mat-checkbox>
+                </ngx-menu-content>
+            </ngx-context-menu-item>
+        </ngx-context-menu-item>
+
+        <ngx-context-menu-item (onClick)="table.resetSchema()" divider>
+            <ngx-menu-content>Reset table settings</ngx-menu-content>
+        </ngx-context-menu-item>
+    </ngx-context-menu>
+</ngx-table-builder>

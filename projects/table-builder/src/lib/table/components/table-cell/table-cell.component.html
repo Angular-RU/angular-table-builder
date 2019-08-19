@@ -1,11 +1,11 @@
 <ng-template [ngIf]="loaded || isRendered">
-    <ng-template [ngIf]="columnsSchema[key]?.td.template" [ngIfElse]="defaultTd">
+    <ng-template [ngIf]="columnsSchema[key]?.td?.template" [ngIfElse]="defaultTd">
         <ng-template
-            [ngTemplateOutlet]="columnsSchema[key]?.td.template"
+            [ngTemplateOutlet]="columnsSchema[key]?.td?.template"
             [ngTemplateOutletContext]="{
                 $implicit:
-                    columnsSchema[key]?.td.context === contextType.CELL
-                        ? columnsSchema[key]?.td.useDeepPath
+                    columnsSchema[key]?.td?.context === contextType.CELL
+                        ? columnsSchema[key]?.td?.useDeepPath
                             ? (item | deepPath: key)
                             : (item | defaultValue: key)
                         : item
@@ -17,11 +17,11 @@
             <ngx-filter-viewer
                 [key]="key"
                 [index]="index"
-                [text]="columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)"
+                [text]="columnsSchema[key]?.td?.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)"
             ></ngx-filter-viewer>
         </ng-template>
         <ng-template #simple>{{
-            columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)
+            columnsSchema[key]?.td?.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)
         }}</ng-template>
     </ng-template>
 </ng-template>

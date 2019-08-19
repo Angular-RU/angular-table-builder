@@ -56,10 +56,10 @@ describe('[TEST]: Lifecycle table', () => {
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
         const zone: NgZone = mockNgZone as NgZone;
         const app: ApplicationRef = appRef as ApplicationRef;
-        const parser: TemplateParserService = new TemplateParserService();
-
-        draggable = new DraggableService(parser);
         utils = new UtilsService();
+
+        const parser: TemplateParserService = new TemplateParserService(utils);
+        draggable = new DraggableService(parser);
 
         resizeService = new ResizableService();
         sortable = new SortableService(worker, utils, zone);
@@ -261,7 +261,7 @@ describe('[TEST]: Lifecycle table', () => {
 
         tick(1000);
 
-        expect(table['renderCount']).toEqual(2);
+        expect(table['renderCount']).toEqual(1);
     }));
 
     it('should be correct template changes', fakeAsync(() => {

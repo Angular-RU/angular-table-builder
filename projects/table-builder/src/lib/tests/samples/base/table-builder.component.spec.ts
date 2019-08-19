@@ -82,7 +82,7 @@ describe('[TEST]: TableBuilder', () => {
 
         utils = new UtilsService();
         selection = new SelectionService(zone, utils);
-        templateParser = new TemplateParserService();
+        templateParser = new TemplateParserService(utils);
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
         draggable = new DraggableService(templateParser);
         resizable = new ResizableService();
@@ -97,7 +97,7 @@ describe('[TEST]: TableBuilder', () => {
 
         table = new TableBuilderComponent(
             selection,
-            new TemplateParserService(),
+            new TemplateParserService(utils),
             mockChangeDetector as ChangeDetectorRef,
             zone,
             utils,
@@ -201,7 +201,7 @@ describe('[TEST]: TableBuilder', () => {
         const templates: QueryList<NgxColumnComponent> = new QueryList();
         templates.reset([position, name, weight]);
 
-        templateParser.initialSchema(null).parse(table.generateColumnsKeyMap(modelKeys), templates);
+        templateParser.initialSchema(null, null).parse(table.generateColumnsKeyMap(modelKeys), templates);
         expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
     });
 

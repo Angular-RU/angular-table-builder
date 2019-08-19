@@ -1,3 +1,4 @@
+import { CdkDragSortEvent } from '@angular/cdk/drag-drop';
 import {
     AfterContentInit,
     AfterViewChecked,
@@ -17,8 +18,15 @@ import {
     ViewRef
 } from '@angular/core';
 
-import { Fn, PrimaryKey, QueryListRef, ResizeEvent, ScrollOverload } from './interfaces/table-builder.internal';
-import { ColumnsSimpleOptions, ColumnsSchema, TableRow, TableSchema } from './interfaces/table-builder.external';
+import {
+    DeepPartial,
+    Fn,
+    PrimaryKey,
+    QueryListRef,
+    ResizeEvent,
+    ScrollOverload
+} from './interfaces/table-builder.internal';
+import { ColumnsSchema, ColumnsSimpleOptions, TableRow, TableSchema } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
@@ -35,7 +43,6 @@ import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component
 import { FilterableService } from './services/filterable/filterable.service';
 import { FilterWorkerEvent } from './services/filterable/filterable.interface';
 import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
-import { CdkDragSortEvent } from '@angular/cdk/drag-drop';
 import { DraggableService } from './services/draggable/draggable.service';
 
 const { ROW_HEIGHT, FILTER_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
@@ -50,6 +57,7 @@ export abstract class TableBuilderApiImpl
     @Input() public lazy: boolean = true;
     @Input() public throttling: boolean = false;
     @Input('async-columns') public asyncColumns: boolean = true;
+    @Input('schema') public customSchemaOptions: DeepPartial<TableSchema> = {};
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('enable-filtering') public enableFiltering: boolean = false;
@@ -96,11 +104,13 @@ export abstract class TableBuilderApiImpl
     public abstract contextMenu: ContextMenuService;
     public abstract filterable: FilterableService;
     public abstract ngZone: NgZone;
+    public accessDragging: boolean = false;
     protected abstract app: ApplicationRef;
     protected abstract draggable: DraggableService;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
+    private frameIdTask: number = null;
 
     public get schema(): Partial<TableSchema> {
         return this.templateParser.schema || {};
@@ -168,7 +178,20 @@ export abstract class TableBuilderApiImpl
 
     public abstract ngOnDestroy(): void;
 
+    public disableDragging(): void {
+        this.accessDragging = false;
+        this.requestDetectChanges();
+    }
+
+    public enableDragging(): void {
+        this.accessDragging = true;
+        this.requestDetectChanges();
+    }
+
     public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
+        this.disableDragging();
+        this.detectChanges();
+
         this.resize.resize(
             event as MouseEvent,
             column,
@@ -217,10 +240,6 @@ export abstract class TableBuilderApiImpl
         this.changeSchema();
     }
 
-    protected changeSchema(): void {
-        this.schemaChanges.emit(this.templateParser.schema.toJSON());
-    }
-
     public checkVisible(visible: boolean): void {
         this.inViewport = visible;
         this.detectChanges();
@@ -244,6 +263,10 @@ export abstract class TableBuilderApiImpl
         }
     }
 
+    protected changeSchema(): void {
+        this.schemaChanges.emit(this.templateParser.schema.toJSON());
+    }
+
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
@@ -262,9 +285,16 @@ export abstract class TableBuilderApiImpl
         return this.excluding(this.utils.flattenKeysByRow(this.firstItem));
     }
 
+    protected requestDetectChanges(): void {
+        this.ngZone.runOutsideAngular(() => {
+            window.cancelAnimationFrame(this.frameIdTask);
+            this.frameIdTask = window.requestAnimationFrame(() => this.detectChanges());
+        });
+    }
+
     private onMouseResizeColumn(key: string, width: number): void {
         this.templateParser.updateState(key, { width });
-        this.cd.detectChanges();
+        this.requestDetectChanges();
     }
 
     private excluding(keys: string[]): string[] {
