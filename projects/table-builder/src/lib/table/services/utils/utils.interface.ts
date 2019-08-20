@@ -5,7 +5,7 @@ export interface UtilsInterface {
     isFirefox(userAgent: string): boolean;
     checkValueIsEmpty(value: Any): boolean;
     isObject<T = object>(obj: T): boolean;
-    mergeDeep(...objects: Array<KeyMap<Any>>): KeyMap<Any>;
+    mergeDeep(...objects: KeyMap[]): KeyMap;
     getValueByPath(object: KeyMap, path: string): KeyMap | undefined;
     readonly bodyRect: ClientRect | DOMRect;
 }

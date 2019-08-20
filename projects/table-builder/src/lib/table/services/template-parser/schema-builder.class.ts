@@ -1,5 +1,5 @@
 import { ColumnsSchema, ColumnsSimpleOptions, TableSchema } from '../../interfaces/table-builder.external';
-import { Any, DeepPartial } from '../../interfaces/table-builder.internal';
+import { Any } from '../../interfaces/table-builder.internal';
 
 export class SchemaBuilder<T = Any> implements TableSchema<T> {
     public columns: ColumnsSchema = {};

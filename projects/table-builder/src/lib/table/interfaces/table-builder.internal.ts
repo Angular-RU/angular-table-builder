@@ -67,10 +67,10 @@ export interface MousePosition {
     top: number;
 }
 
-export type DeepPartial<T> = {
+export type DeepPartial<T = Any> = {
     [P in keyof T]?: T[P] extends Array<infer U>
         ? Array<DeepPartial<U>>
-        : T[P] extends ReadonlyArray<infer U>
-        ? ReadonlyArray<DeepPartial<U>>
+        : T[P] extends ReadonlyArray<infer R>
+        ? ReadonlyArray<DeepPartial<R>>
         : DeepPartial<T[P]>;
 };
