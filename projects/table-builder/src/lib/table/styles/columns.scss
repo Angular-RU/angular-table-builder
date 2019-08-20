@@ -39,6 +39,21 @@
             cursor: ew-resize;
             right: 0;
             top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &--line {
+                height: 70%;
+                width: 2px;
+                vertical-align: middle;
+                background: $borderColor;
+                display: flex;
+            }
+        }
+
+        &:last-child .table-grid__column--resize {
+            display: none;
         }
 
         &--vertical-line {
@@ -105,4 +120,16 @@
 .table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
     transition: opacity 0.2s ease-in-out;
     opacity: 0.5;
+}
+
+.table-grid .table-grid__column:last-child {
+    width: 100% !important;
+}
+
+.table-grid__column:not(table-grid__column--vertical-line).table-grid__column--is-dragging {
+    border-right: 1px solid $borderColor;
+}
+
+.table-grid__column--vertical-line .table-grid__column--resize--line {
+    display: none;
 }

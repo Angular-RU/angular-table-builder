@@ -21,6 +21,7 @@ import {
 import {
     DeepPartial,
     Fn,
+    KeyMap,
     PrimaryKey,
     QueryListRef,
     ResizeEvent,
@@ -95,6 +96,7 @@ export abstract class TableBuilderApiImpl
     public isFrozenView: boolean = false;
     public modelColumnKeys: string[] = [];
     public customModelColumnsKeys: string[] = [];
+    public isDragging: KeyMap<boolean> = {};
     public abstract templateParser: TemplateParserService;
     public abstract selection: SelectionService;
     public abstract utils: UtilsService;
@@ -195,8 +197,14 @@ export abstract class TableBuilderApiImpl
         this.resize.resize(
             event as MouseEvent,
             column,
-            (width: number) => this.onMouseResizeColumn(key, width),
-            () => this.changeSchema()
+            (width: number) => {
+                this.isDragging[key] = true;
+                this.onMouseResizeColumn(key, width);
+            },
+            () => {
+                this.isDragging = {};
+                this.changeSchema();
+            }
         );
 
         event.preventDefault();
@@ -265,6 +273,7 @@ export abstract class TableBuilderApiImpl
 
     protected changeSchema(): void {
         this.schemaChanges.emit(this.templateParser.schema.toJSON());
+        this.detectChanges();
     }
 
     protected reCheckDefinitions(): void {

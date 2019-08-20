@@ -3,7 +3,14 @@
     <button class="show-simple" mat-raised-button>show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder *ngIf="schema" #table [source]="data" [schema]="schema" (schemaChanges)="updatedSchema($event)">
+<ngx-table-builder
+    #table
+    *ngIf="schema"
+    [source]="data"
+    [schema]="schema"
+    [vertical-border]="false"
+    (schemaChanges)="updatedSchema($event)"
+>
     <ngx-options [draggable]="true" [sortable]="true" [resizable]="true"></ngx-options>
 
     <ngx-context-menu>

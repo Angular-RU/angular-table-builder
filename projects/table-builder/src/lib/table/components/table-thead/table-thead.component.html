@@ -70,5 +70,7 @@
         *ngIf="columnsSchema[key]?.resizable"
         class="table-grid__column--resize"
         (mousedown)="resize.emit({ event: $event, key: key })"
-    ></div>
+    >
+        <div class="table-grid__column--resize--line"></div>
+    </div>
 </div>

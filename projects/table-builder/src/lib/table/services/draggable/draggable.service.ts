@@ -10,6 +10,14 @@ export class DraggableService {
         if (this.canDropped(event)) {
             const columns: string[] = [...this.parser.schema.displayedColumns];
             const { previousIndex, currentIndex }: CdkDragSortEvent = event;
+
+            if (currentIndex === columns.length - 1) {
+                const currentKey: string = columns[currentIndex];
+                const previousKey: string = columns[previousIndex];
+                this.parser.schema.columns[currentKey].width = this.parser.schema.columns[previousKey].width;
+                this.parser.schema.columns[previousKey].width = null;
+            }
+
             moveItemInArray(columns, previousIndex, currentIndex);
             this.parser.schema.displayedColumns = columns;
         }
