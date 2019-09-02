@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-
 import { TableLineRow } from '../common/table-line-row';
-import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { SortOrderType } from '../../services/sortable/sortable.interfaces';
@@ -23,12 +21,11 @@ export class TableTheadComponent extends TableLineRow {
     public orderType: typeof SortOrderType = SortOrderType;
 
     constructor(
-        protected readonly templateParser: TemplateParserService,
         public readonly selection: SelectionService,
         protected readonly utils: UtilsService,
         protected readonly filterable: FilterableService
     ) {
-        super(templateParser, selection, utils);
+        super(selection, utils);
     }
 
     public openFilter(key: string, event: MouseEvent): void {

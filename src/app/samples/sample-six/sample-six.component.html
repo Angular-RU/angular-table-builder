@@ -6,11 +6,7 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<mat-checkbox [(ngModel)]="scrollTrolling">Enable throttling for scrolling</mat-checkbox>
-<br />
-<br />
-
-<ngx-table-builder [source]="data" [throttling]="scrollTrolling">
+<ngx-table-builder [source]="data">
     <!--
        <ngx-options /> - declaration common options for columns
 

@@ -21,22 +21,30 @@ export const ACTUAL_TEMPLATES: string = `
               <div class="scrollable-content">
                 <div class="table-grid__cell table-grid__cell--strip">
                   <div class="table-grid__cell--content table-grid__cell--nowrap">
-                    <table-cell>SINGLE</table-cell>
+                    <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">SINGLE</div>
+                    </table-cell>
                   </div>
                 </div>
                 <div class="table-grid__cell">
                   <div class="table-grid__cell--content table-grid__cell--nowrap">
-                    <table-cell>DEVELOPER</table-cell>
+                    <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">DEVELOPER</div>
+                    </table-cell>
                   </div>
                 </div>
                 <div class="table-grid__cell table-grid__cell--strip">
                   <div class="table-grid__cell--content table-grid__cell--nowrap">
-                    <table-cell>PREMIUM</table-cell>
+                    <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">PREMIUM</div>
+                    </table-cell>
                   </div>
                 </div>
                 <div class="table-grid__cell">
                   <div class="table-grid__cell--content table-grid__cell--nowrap">
-                    <table-cell>ENTERPRISE</table-cell>
+                    <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">ENTERPRISE</div>
+                    </table-cell>
                   </div>
                 </div>
               </div>
@@ -61,22 +69,30 @@ export const ACTUAL_TEMPLATES: string = `
                 <div class="scrollable-content">
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>$29.30</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">$29.30</div>
+                      </table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>$49.80</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">$49.80</div>
+                      </table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>$99.50</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">$99.50</div>
+                      </table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>$199.00</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">$199.00</div>
+                      </table-cell>
                     </div>
                   </div>
                 </div>

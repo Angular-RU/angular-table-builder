@@ -47,17 +47,13 @@ export interface ResizeEvent {
     key: string;
 }
 
-export interface ScrollOverload {
-    isOverload: boolean;
-}
-
 // Bug: 'QueryList' is imported from external module '@angular/core' but never used
 export type QueryListRef<T> = QueryList<T>;
 
 export interface TemplateKeys {
     allRenderedKeys: string[];
-    simpleRenderedKeys: string[];
-    overridingRenderedKeys: string[];
+    simpleRenderedKeys: Set<string>;
+    overridingRenderedKeys: Set<string>;
 }
 
 export type Resolver<T> = (value?: T | PromiseLike<T>) => void;

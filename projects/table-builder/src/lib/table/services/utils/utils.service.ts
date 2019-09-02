@@ -1,15 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 
 import { TableRow } from '../../interfaces/table-builder.external';
-import { Any, KeyMap } from '../../interfaces/table-builder.internal';
+import { Any, Fn, KeyMap } from '../../interfaces/table-builder.internal';
 import { UtilsInterface } from './utils.interface';
+import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
     public static readonly SCROLLBAR_WIDTH: number = 10;
 
+    constructor(private readonly zone: NgZone) {}
+
     public get bodyRect(): ClientRect | DOMRect {
         return document.querySelector('body').getBoundingClientRect();
+    }
+
+    private static replaceUndefinedOrNull(_: string, value: unknown): unknown {
+        return checkValueIsEmpty(value) ? undefined : value;
     }
 
     public isFirefox(userAgent: string = null): boolean {
@@ -18,10 +25,6 @@ export class UtilsService implements UtilsInterface {
 
     public clone<T = Any>(obj: T): T {
         return JSON.parse(JSON.stringify(obj || null)) || {};
-    }
-
-    public getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
-        return path ? path.split('.').reduce((value: string, key: string) => value && value[key], object) : object;
     }
 
     public isObject<T = object>(obj: T): boolean {
@@ -67,16 +70,36 @@ export class UtilsService implements UtilsInterface {
         return keys;
     }
 
-    public checkValueIsEmpty(value: Any): boolean {
-        const val: string = typeof value === 'string' ? value.trim() : value;
-        return [undefined, null, NaN, '', 'null', Infinity].includes(val);
-    }
-
     public clean(obj: KeyMap): KeyMap {
-        return JSON.parse(JSON.stringify(obj, this.replaceUndefinedOrNull.bind(this)));
+        return JSON.parse(JSON.stringify(obj, UtilsService.replaceUndefinedOrNull.bind(this)));
     }
 
-    private replaceUndefinedOrNull(_: string, value: unknown): unknown {
-        return this.checkValueIsEmpty(value) ? undefined : value;
+    public requestAnimationFrame(callback: Fn): Promise<void> {
+        return new Promise((resolve: Fn): void => {
+            this.zone.runOutsideAngular(() => {
+                window.requestAnimationFrame(() => {
+                    callback();
+                    resolve();
+                });
+            });
+        });
+    }
+
+    public microtask(callback: Fn): Promise<void> {
+        return new Promise((resolve: Fn): void => {
+            callback();
+            resolve();
+        });
+    }
+
+    public macrotask(callback: Fn, time: number = 0): Promise<void> {
+        return new Promise((resolve: Fn): void => {
+            this.zone.runOutsideAngular(() => {
+                window.setTimeout(() => {
+                    callback();
+                    resolve();
+                }, time);
+            });
+        });
     }
 }

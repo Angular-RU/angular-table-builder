@@ -124,6 +124,7 @@
 
 .table-grid .table-grid__column:last-child {
     width: 100% !important;
+    max-width: initial !important;
 }
 
 .table-grid__column:not(table-grid__column--vertical-line).table-grid__column--is-dragging {

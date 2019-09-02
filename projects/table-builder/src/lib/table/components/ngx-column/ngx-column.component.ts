@@ -20,4 +20,9 @@ export class NgxColumnComponent extends ColumnOptions {
     @Input('vertical-line') public verticalLine: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
+
+    public withKey(key: string): NgxColumnComponent {
+        this.key = key;
+        return this;
+    }
 }

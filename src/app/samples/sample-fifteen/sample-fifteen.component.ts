@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { TableRow, TableSchema } from '@angular-ru/table-builder';
+import { SimpleSchemaColumns, TableRow } from '@angular-ru/table-builder';
 
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { MatDialog } from '@angular/material';
@@ -29,7 +29,7 @@ export class SampleFifteenComponent implements OnInit, AfterViewInit {
         });
     }
 
-    public updatedSchema(event: Partial<TableSchema>): void {
+    public updatedSchema(event: SimpleSchemaColumns): void {
         // tslint:disable-next-line:no-console
         console.log(event);
     }

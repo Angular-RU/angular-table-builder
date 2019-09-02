@@ -1,5 +1,5 @@
 import { EventEmitter, TemplateRef } from '@angular/core';
-import { Any, KeyMap, TableBrowserEvent } from './table-builder.internal';
+import { Any, DeepPartial, KeyMap, TableBrowserEvent } from './table-builder.internal';
 
 export type TableRow<T = Any> =
     | Any
@@ -10,7 +10,6 @@ export type TableRow<T = Any> =
 export interface TableBuilderOptions {
     bufferAmount: number;
     wheelMaxDelta: number;
-    defaultValueSeparator: string;
 }
 
 export enum ImplicitContext {
@@ -40,10 +39,7 @@ export interface TableHeadCellOptions<T = Any> {
 }
 
 export interface ColumnsSchema<T = Any> {
-    [key: string]: TableColumn<T>;
-}
-
-export interface TableColumn<T = Any> {
+    key: string;
     td: TableCellOptions<T>;
     th: TableCellOptions<T> & TableHeadCellOptions;
     width: number;
@@ -57,22 +53,13 @@ export interface TableColumn<T = Any> {
     draggable: boolean;
     customColumn: boolean;
     verticalLine: boolean;
-}
-
-export interface ColumnsSimpleOptions {
-    [key: string]: ColumnSimpleOptions;
-}
-
-export interface ColumnSimpleOptions {
     isModel: boolean;
-    visible: boolean;
+    isVisible: boolean;
 }
 
-export interface TableSchema<T = Any> {
-    columns: ColumnsSchema<T>;
-    displayedColumns: string[];
-    allRenderedColumnKeys: string[];
-    columnsSimpleOptions: ColumnsSimpleOptions;
+export interface TableUpdateSchema<T = Any> {
+    columns: SimpleSchemaColumns;
+    name: string | null;
 }
 
 export interface TableEvent<T = Any> {
@@ -85,3 +72,5 @@ export interface TableEvent<T = Any> {
 export interface ContextItemEvent {
     preventDefault(): void;
 }
+
+export type SimpleSchemaColumns = Array<DeepPartial<ColumnsSchema>>;

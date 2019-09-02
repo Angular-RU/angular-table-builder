@@ -1,16 +1,14 @@
 import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { Fn, ScrollOverload } from '../interfaces/table-builder.internal';
+import { Fn } from '../interfaces/table-builder.internal';
 import { UtilsService } from '../services/utils/utils.service';
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
     @Output() public scrollOffset: EventEmitter<boolean> = new EventEmitter();
     @Output() public scrollEnd: EventEmitter<void> = new EventEmitter();
-    @Output() public scrollOverload: EventEmitter<ScrollOverload> = new EventEmitter();
     public scrollTopOffset: boolean = false;
-    public isDetectOverload: boolean = false;
     public isScrolling: number = null;
     public isPassive: boolean;
     private handler: Fn;
@@ -25,7 +23,7 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Firefox can't correct rendering when mouse wheel delta X, Y more then 200-500px
+     * @description: firefox can't correct rendering when mouse wheel delta X, Y more then 200-500px
      */
     public get listenerOptions(): boolean | AddEventListenerOptions {
         return this.isPassive ? { passive: true } : true;
@@ -50,37 +48,23 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
         const deltaY: number = Math.abs(Number($event.deltaY));
         const isLimitExceeded: boolean = deltaY > this.options.wheelMaxDelta;
 
-        if (isLimitExceeded) {
-            if (!this.isDetectOverload) {
-                this.fireOnScroll(true);
-            }
-
-            if (!this.isPassive) {
-                $event.preventDefault();
-            }
+        if (isLimitExceeded && !this.isPassive) {
+            $event.preventDefault();
         }
 
-        window.clearTimeout(this.isScrolling);
         this.ngZone.runOutsideAngular(() => {
+            window.clearTimeout(this.isScrolling);
             this.isScrolling = window.setTimeout(() => {
-                this.fireOnScroll(false);
-                this.scrollEnd.emit();
+                const isOffset: boolean = this.element.scrollTop > 0 && !this.scrollTopOffset;
+
+                if (isOffset) {
+                    this.scrollTopOffset = true;
+                    this.scrollOffset.emit(this.scrollTopOffset);
+                } else if (this.element.scrollTop === 0 && this.scrollTopOffset) {
+                    this.scrollTopOffset = false;
+                    this.scrollOffset.emit(this.scrollTopOffset);
+                }
             }, TableBuilderOptionsImpl.FRAME_TIME);
         });
-
-        const isOffset: boolean = this.element.scrollTop > 0 && !this.scrollTopOffset;
-
-        if (isOffset) {
-            this.scrollTopOffset = true;
-            this.scrollOffset.emit(this.scrollTopOffset);
-        } else if (this.element.scrollTop === 0 && this.scrollTopOffset) {
-            this.scrollTopOffset = false;
-            this.scrollOffset.emit(this.scrollTopOffset);
-        }
-    }
-
-    private fireOnScroll(overload: boolean): void {
-        this.isDetectOverload = overload;
-        this.scrollOverload.emit({ isOverload: this.isDetectOverload });
     }
 }

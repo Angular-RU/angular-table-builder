@@ -20,17 +20,23 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                   <div class="scrollable-content">
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>1</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">1</div>
+                        </table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>2</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">2</div>
+                        </table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>3</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">3</div>
+                        </table-cell>
                       </div>
                     </div>
                   </div>
@@ -55,17 +61,23 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                   <div class="scrollable-content">
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>Max</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">Max</div>
+                        </table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>Ivan</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">Ivan</div>
+                        </table-cell>
                       </div>
                     </div>
                     <div class="table-grid__cell table-grid__cell--strip">
                       <div class="table-grid__cell--content table-grid__cell--nowrap">
-                        <table-cell>Petr</table-cell>
+                        <table-cell>
+                            <div class="table-grid__cell--inner-content loaded">Petr</div>
+                        </table-cell>
                       </div>
                     </div>
                   </div>
@@ -90,17 +102,23 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
                 <div class="scrollable-content">
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>Ivanov</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">Ivanov</div>
+                      </table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>Petrov</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">Petrov</div>
+                      </table-cell>
                     </div>
                   </div>
                   <div class="table-grid__cell table-grid__cell--strip">
                     <div class="table-grid__cell--content table-grid__cell--nowrap">
-                      <table-cell>Sidorov</table-cell>
+                      <table-cell>
+                        <div class="table-grid__cell--inner-content loaded">Sidorov</div>
+                      </table-cell>
                     </div>
                   </div>
                 </div>

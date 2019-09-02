@@ -1,5 +1,5 @@
 <mat-toolbar class="simple-toolbar">
-    <span>Example mouse event</span>
+    <span>Example mouse events</span>
 </mat-toolbar>
 
 <div class="column-samples">
@@ -17,7 +17,7 @@
                   [checked]="tableFirst.selectionModel.isAll"
               >&lt;/mat-checkbox>
           &lt;/ng-template>
-          &lt;ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+          &lt;ng-template ngx-td [row]="true" let-row (onClick)="$events.preventDefault()">
               &lt;mat-checkbox
                   [checked]="tableFirst.selectionModel.get($any(row).id)"
                   (change)="tableFirst.selection.toggle(row)"
@@ -26,7 +26,7 @@
       &lt;/ngx-column>
 
       &lt;ngx-column *ngFor="let key of tableFirst.modelColumnKeys" [key]="key">
-          &lt;ng-template ngx-td (onClick)="rowOnClick($event)" let-cell>
+          &lt;ng-template ngx-td (onClick)="rowOnClick($events)" let-cell>
             &#123;&#123; cell }}
             &lt;/ng-template>
       &lt;/ngx-column>
@@ -43,7 +43,7 @@
                   [checked]="tableSecond.selectionModel.isAll"
               >&lt;/mat-checkbox>
           &lt;/ng-template>
-          &lt;ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+          &lt;ng-template ngx-td [row]="true" let-row (onClick)="$events.preventDefault()">
               &lt;mat-checkbox
                   [checked]="tableSecond.selectionModel.get($any(row).id)"
                   (change)="tableSecond.selection.toggle(row)"
@@ -52,7 +52,7 @@
       &lt;/ngx-column>
 
       &lt;ngx-column *ngFor="let key of tableSecond.modelColumnKeys" [key]="key">
-          &lt;ng-template ngx-td (dblClick)="rowDblClick($event)" let-cell>
+          &lt;ng-template ngx-td (dblClick)="rowDblClick($events)" let-cell>
             &#123;&#123; cell }}
             &lt;/ng-template>
       &lt;/ngx-column>
@@ -143,12 +143,12 @@
     public data: Data[] = [ .. ];
     constructor(private toast: ToastService) &#123;}
 
-    public rowOnClick(event: TableEvent): void &#123;
-        this.toast.success('OnClick', event);
+    public rowOnClick(events: TableEvent): void &#123;
+        this.toast.success('OnClick', events);
     }
 
-    public rowDblClick(event: TableEvent): void &#123;
-        this.toast.success('DblClick', event);
+    public rowDblClick(events: TableEvent): void &#123;
+        this.toast.success('DblClick', events);
     }
 
   }

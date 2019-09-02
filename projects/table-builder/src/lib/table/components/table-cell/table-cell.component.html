@@ -1,13 +1,13 @@
-<ng-template [ngIf]="loaded || isRendered">
-    <ng-template [ngIf]="columnsSchema[key]?.td?.template" [ngIfElse]="defaultTd">
+<div class="table-grid__cell--inner-content"  [class.loaded]="loaded">
+    <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">
         <ng-template
-            [ngTemplateOutlet]="columnsSchema[key]?.td?.template"
+            [ngTemplateOutlet]="columnSchema?.td?.template"
             [ngTemplateOutletContext]="{
                 $implicit:
-                    columnsSchema[key]?.td?.context === contextType.CELL
-                        ? columnsSchema[key]?.td?.useDeepPath
-                            ? (item | deepPath: key)
-                            : (item | defaultValue: key)
+                    columnSchema?.td?.context === contextType.CELL
+                        ? columnSchema?.td?.useDeepPath
+                            ? (item | deepPath: columnSchema.key)
+                            : (item | defaultValue: columnSchema.key)
                         : item
             }"
         ></ng-template>
@@ -15,13 +15,19 @@
     <ng-template #defaultTd>
         <ng-template [ngIf]="isFilterable" [ngIfElse]="simple">
             <ngx-filter-viewer
-                [key]="key"
                 [index]="index"
-                [text]="columnsSchema[key]?.td?.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)"
+                [key]="columnSchema.key"
+                [text]="
+                    columnSchema?.td?.useDeepPath
+                        ? (item | deepPath: columnSchema.key)
+                        : (item | defaultValue: columnSchema.key)
+                "
             ></ngx-filter-viewer>
         </ng-template>
         <ng-template #simple>{{
-            columnsSchema[key]?.td?.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key)
+            columnSchema?.td?.useDeepPath
+                ? (item | deepPath: columnSchema.key)
+                : (item | defaultValue: columnSchema.key)
         }}</ng-template>
     </ng-template>
-</ng-template>
+</div>

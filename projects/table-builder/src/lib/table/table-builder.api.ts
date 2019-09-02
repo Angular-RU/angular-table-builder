@@ -18,16 +18,8 @@ import {
     ViewRef
 } from '@angular/core';
 
-import {
-    DeepPartial,
-    Fn,
-    KeyMap,
-    PrimaryKey,
-    QueryListRef,
-    ResizeEvent,
-    ScrollOverload
-} from './interfaces/table-builder.internal';
-import { ColumnsSchema, ColumnsSimpleOptions, TableRow, TableSchema } from './interfaces/table-builder.external';
+import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
+import { ColumnsSchema, SimpleSchemaColumns, TableRow } from './interfaces/table-builder.external';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SelectionMap } from './services/selection/selection';
 import { SelectionService } from './services/selection/selection.service';
@@ -45,6 +37,7 @@ import { FilterableService } from './services/filterable/filterable.service';
 import { FilterWorkerEvent } from './services/filterable/filterable.interface';
 import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
 import { DraggableService } from './services/draggable/draggable.service';
+import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
 
 const { ROW_HEIGHT, FILTER_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -56,12 +49,7 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public lazy: boolean = true;
-    @Input() public throttling: boolean = false;
-    @Input('async-columns') public asyncColumns: boolean = true;
-    @Input('schema') public customSchemaOptions: DeepPartial<TableSchema> = {};
-    @Input('vertical-border') public verticalBorder: boolean = true;
-    @Input('enable-selection') public enableSelection: boolean = false;
-    @Input('enable-filtering') public enableFiltering: boolean = false;
+    @Input() public name: string = null;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -69,9 +57,14 @@ export abstract class TableBuilderApiImpl
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
     @Input('column-width') public columnWidth: string | number = null;
     @Input('row-height') public rowHeight: string | number = null;
+    @Input('async-columns') public asyncColumns: boolean = true;
+    @Input('vertical-border') public verticalBorder: boolean = true;
+    @Input('enable-selection') public enableSelection: boolean = false;
+    @Input('enable-filtering') public enableFiltering: boolean = false;
     @Input('buffer-amount') public bufferAmount: number = null;
+    @Input('schema-columns') public schemaColumns: SimpleSchemaColumns = [];
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
-    @Output() public schemaChanges: EventEmitter<Partial<TableSchema>> = new EventEmitter();
+    @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();
 
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;
@@ -92,38 +85,54 @@ export abstract class TableBuilderApiImpl
     public filterTemplate: NgxFilterComponent = null;
 
     public inViewport: boolean;
-    public scrollOverload: Partial<ScrollOverload> = {};
+    public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;
+
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder #table
+     *        [source]="[{ id: 1, name: 'hello', value: 'world', description: 'text' }, ...]"
+     *        [exclude]="[ 'description' ]">
+     *      <ngx-column *ngFor="let key of table.modelColumnKeys"></ngx-column>
+     *    </table-builder>
+     *    ------------------------
+     *    modelColumnKeys === [ 'id', 'hello', 'value' ]
+     */
     public modelColumnKeys: string[] = [];
+
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder [keys]=[ 'id', 'description', 'name', 'description' ] />
+     *    customModelColumnsKeys === [ 'id', 'description', 'name', 'description' ]
+     *    ------------------------
+     *    <table-builder [keys]=[ 'id', 'description', 'name', 'description' ] [exclude]=[ 'id', 'description' ] />
+     *    customModelColumnsKeys === [ 'name' ]
+     */
     public customModelColumnsKeys: string[] = [];
+
     public isDragging: KeyMap<boolean> = {};
-    public abstract templateParser: TemplateParserService;
-    public abstract selection: SelectionService;
-    public abstract utils: UtilsService;
+    public abstract readonly templateParser: TemplateParserService;
+    public abstract readonly selection: SelectionService;
+    public abstract readonly utils: UtilsService;
     public abstract readonly cd: ChangeDetectorRef;
-    public abstract resize: ResizableService;
-    public abstract sortable: SortableService;
-    public abstract contextMenu: ContextMenuService;
-    public abstract filterable: FilterableService;
-    public abstract ngZone: NgZone;
+    public abstract readonly resize: ResizableService;
+    public abstract readonly sortable: SortableService;
+    public abstract readonly contextMenu: ContextMenuService;
+    public abstract readonly filterable: FilterableService;
+    public abstract readonly ngZone: NgZone;
     public accessDragging: boolean = false;
-    protected abstract app: ApplicationRef;
-    protected abstract draggable: DraggableService;
+    protected abstract readonly app: ApplicationRef;
+    protected abstract readonly viewChanges: NgxTableViewChangesService;
+    protected abstract readonly draggable: DraggableService;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
     private frameIdTask: number = null;
 
-    public get schema(): Partial<TableSchema> {
-        return this.templateParser.schema || {};
-    }
-
-    public get columns(): ColumnsSchema {
-        return this.schema.columns || {};
-    }
-
-    public get columnsAllowedKeys(): ColumnsSimpleOptions {
-        return this.schema.columnsSimpleOptions;
+    public get columnSchema(): ColumnsSchema[] {
+        return (this.templateParser.schema && this.templateParser.schema.columns) || [];
     }
 
     public get selectedItems(): TableRow[] {
@@ -180,31 +189,34 @@ export abstract class TableBuilderApiImpl
 
     public abstract ngOnDestroy(): void;
 
-    public disableDragging(): void {
-        this.accessDragging = false;
-        this.requestDetectChanges();
+    public recheckViewportChecked(): void {
+        this.tableViewportChecked = !this.tableViewportChecked;
+        this.idleDetectChanges();
     }
 
-    public enableDragging(): void {
-        this.accessDragging = true;
-        this.requestDetectChanges();
+    public enableDragging(key: string): void {
+        if (this.templateParser.compiledTemplates[key].draggable) {
+            this.accessDragging = true;
+            this.detectChanges();
+        }
+    }
+
+    public disableDragging(): void {
+        if (this.accessDragging) {
+            this.accessDragging = false;
+            this.detectChanges();
+        }
     }
 
     public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
+        this.recheckViewportChecked();
         this.disableDragging();
-        this.detectChanges();
 
         this.resize.resize(
             event as MouseEvent,
             column,
-            (width: number) => {
-                this.isDragging[key] = true;
-                this.onMouseResizeColumn(key, width);
-            },
-            () => {
-                this.isDragging = {};
-                this.changeSchema();
-            }
+            (width: number) => this.calculateWidth(key, width),
+            () => this.afterCalculateWidth()
         );
 
         event.preventDefault();
@@ -272,8 +284,10 @@ export abstract class TableBuilderApiImpl
     }
 
     protected changeSchema(): void {
-        this.schemaChanges.emit(this.templateParser.schema.toJSON());
-        this.detectChanges();
+        const columns: SimpleSchemaColumns = this.templateParser.schema.exportColumns();
+        this.viewChanges.update({ name: this.name, columns });
+        this.schemaChanges.emit(columns);
+        this.idleDetectChanges();
     }
 
     protected reCheckDefinitions(): void {
@@ -282,28 +296,49 @@ export abstract class TableBuilderApiImpl
         this.detectChanges();
     }
 
+    /**
+     * @description: returns the number of keys in the model
+     * @example: <table-builder [source]=[{ id: 1, name: 'hello' }, ...] /> a value of 2 will be returned
+     */
     protected getCountKeys(): number {
         return Object.keys(this.firstItem).length;
     }
 
+    /**
+     * @see TableBuilderApiImpl#customModelColumnsKeys for further information
+     */
     protected generateCustomModelColumnsKeys(): string[] {
         return this.excluding(this.keys);
     }
 
+    /**
+     * @see TableBuilderApiImpl#modelColumnKeys for further information
+     */
     protected generateModelColumnKeys(): string[] {
         return this.excluding(this.utils.flattenKeysByRow(this.firstItem));
     }
 
-    protected requestDetectChanges(): void {
+    protected idleDetectChanges(): void {
         this.ngZone.runOutsideAngular(() => {
             window.cancelAnimationFrame(this.frameIdTask);
             this.frameIdTask = window.requestAnimationFrame(() => this.detectChanges());
         });
     }
 
+    private calculateWidth(key: string, width: number): void {
+        this.isDragging[key] = true;
+        this.onMouseResizeColumn(key, width);
+    }
+
+    private afterCalculateWidth(): void {
+        this.isDragging = {};
+        this.recheckViewportChecked();
+        this.changeSchema();
+    }
+
     private onMouseResizeColumn(key: string, width: number): void {
-        this.templateParser.updateState(key, { width });
-        this.requestDetectChanges();
+        this.templateParser.mutateColumnSchema(key, { width });
+        this.idleDetectChanges();
     }
 
     private excluding(keys: string[]): string[] {

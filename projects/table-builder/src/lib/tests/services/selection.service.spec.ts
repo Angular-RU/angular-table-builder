@@ -47,7 +47,7 @@ describe('[TEST]: Selection service', () => {
     let utils: UtilsService;
 
     beforeEach(() => {
-        utils = new UtilsService();
+        utils = new UtilsService(null);
         selection = new SelectionService(mockNgZone as NgZone, utils);
     });
 

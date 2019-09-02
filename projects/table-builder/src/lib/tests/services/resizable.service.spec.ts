@@ -1,4 +1,9 @@
-import { TableBuilderComponent, TableRow, TableSchema } from '@angular-ru/table-builder';
+import {
+    NgxTableViewChangesService,
+    SimpleSchemaColumns,
+    TableBuilderComponent,
+    TableRow
+} from '@angular-ru/table-builder';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { ApplicationRef, ChangeDetectorRef, NgZone, SimpleChanges } from '@angular/core';
@@ -24,6 +29,7 @@ describe('[TEST]: Resizable service', () => {
     let sortable: SortableService;
     const columnWidth: number = 200;
     let changes: SimpleChanges;
+    const positionIdColumn: number = 0;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
@@ -41,10 +47,11 @@ describe('[TEST]: Resizable service', () => {
 
     beforeEach(() => {
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
-        const utils: UtilsService = new UtilsService();
+        const viewChanges: NgxTableViewChangesService = new NgxTableViewChangesService();
         const zone: NgZone = mockNgZone as NgZone;
+        const utils: UtilsService = new UtilsService(zone);
         const app: ApplicationRef = appRef as ApplicationRef;
-        const parser: TemplateParserService = new TemplateParserService(utils);
+        const parser: TemplateParserService = new TemplateParserService();
 
         resizeService = new ResizableService();
         draggable = new DraggableService(parser);
@@ -58,10 +65,11 @@ describe('[TEST]: Resizable service', () => {
             utils,
             resizeService,
             sortable,
-            new ContextMenuService(utils),
+            new ContextMenuService(),
             app,
             new FilterableService(worker, utils, zone, app),
-            draggable
+            draggable,
+            viewChanges
         );
     });
 
@@ -96,7 +104,7 @@ describe('[TEST]: Resizable service', () => {
             })
         });
 
-        let schema: TableSchema = null;
+        let schema: SimpleSchemaColumns = null;
 
         table.resizeColumn(
             {
@@ -108,24 +116,28 @@ describe('[TEST]: Resizable service', () => {
 
         expect(resizeService.startWidth).toEqual(columnWidth);
         expect(resizeService.startX).toEqual(0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(null);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(null);
 
         // ColumnWidth { 200 } + pageX { 140 }
         MocksGenerator.dispatchMouseEvent('mousemove', 140, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(340);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(340);
 
         tick(100);
 
         // ColumnWidth { 200 } + pageX { 210 }
         MocksGenerator.dispatchMouseEvent('mousemove', 210, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(410);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(410);
 
-        table.schemaChanges.subscribe((data: TableSchema) => (schema = data));
+        table.schemaChanges.subscribe((data: SimpleSchemaColumns) => (schema = data));
         MocksGenerator.dispatchMouseEvent('mouseup', 210, 0);
 
         tick(1000);
 
-        expect(schema.columns['id'].width).toEqual(410);
+        expect(schema).toEqual([
+            { key: 'id', width: 410, isVisible: true, isModel: true },
+            { key: 'value', width: null, isVisible: true, isModel: true }
+        ]);
+
         expect(removeAll).toEqual(2);
     }));
 
@@ -146,10 +158,10 @@ describe('[TEST]: Resizable service', () => {
 
         tick(100);
 
-        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(150);
         expect(documentEmpty).toEqual(1);
 
         MocksGenerator.dispatchMouseEvent('mousemove', -350, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(150);
     }));
 });

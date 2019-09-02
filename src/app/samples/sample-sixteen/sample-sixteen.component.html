@@ -3,14 +3,7 @@
     <button class="show-simple" mat-raised-button>show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder
-    #table
-    *ngIf="schema"
-    [source]="data"
-    [schema]="schema"
-    [vertical-border]="false"
-    (schemaChanges)="updatedSchema($event)"
->
+<ngx-table-builder #table [name]="testName" [source]="data" [schema-columns]="schema" [vertical-border]="false">
     <ngx-options [draggable]="true" [sortable]="true" [resizable]="true"></ngx-options>
 
     <ngx-context-menu>
@@ -22,13 +15,13 @@
             <ngx-menu-content>Column list</ngx-menu-content>
 
             <ngx-context-menu-item
-                *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
-                (onClick)="table.toggleVisibleColumns(columnType.key); $event.preventDefault()"
-                [visible]="columnType.value.isModel"
+                *ngFor="let column of table.columnSchema"
+                (onClick)="table.toggleColumnVisibility(column.key); $event.preventDefault()"
+                [visible]="column.isModel"
             >
-                <ngx-menu-content no-margin>{{ columnType.key }}</ngx-menu-content>
+                <ngx-menu-content no-margin>{{ column.key }}</ngx-menu-content>
                 <ngx-menu-content no-margin align-center>
-                    <mat-checkbox color="primary" [checked]="columnType.value.visible"></mat-checkbox>
+                    <mat-checkbox color="primary" [checked]="column.isVisible"></mat-checkbox>
                 </ngx-menu-content>
             </ngx-context-menu-item>
         </ngx-context-menu-item>

@@ -6,6 +6,7 @@ import { SelectionRange } from './selection-range';
 import { TableRow } from '../../interfaces/table-builder.external';
 import { Fn, KeyMap, KeyType, PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
 import { UtilsService } from '../utils/utils.service';
+import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
 
 @Injectable()
 export class SelectionService implements OnDestroy {
@@ -27,12 +28,6 @@ export class SelectionService implements OnDestroy {
     public unListenShiftKey(): void {
         this.removeListenerByType(KeyType.KEYDOWN);
         this.removeListenerByType(KeyType.KEYUP);
-    }
-
-    private validateSelectionId(id: RowId): void {
-        if (this.utils.checkValueIsEmpty(id)) {
-            throw new Error(`Can't select item, make sure you pass the correct primary key`);
-        }
     }
 
     public ngOnDestroy(): void {
@@ -75,7 +70,11 @@ export class SelectionService implements OnDestroy {
 
     public getIdByRow(row: TableRow): RowId {
         const id: RowId = row[this.primaryKey];
-        this.validateSelectionId(id);
+
+        if (checkValueIsEmpty(id)) {
+            throw new Error(`Can't select item, make sure you pass the correct primary key`);
+        }
+
         return id;
     }
 

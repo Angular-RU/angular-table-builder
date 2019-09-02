@@ -20,7 +20,7 @@ interface BoxView {
 }
 
 @Directive({ selector: '[autoHeight]' })
-export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     private static readonly DEFAULT_VALUE: number = 0;
     private static readonly HEAD_TOP: string = '10px';
     private static readonly DELAY: number = 100;
@@ -35,9 +35,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     private taskId: number;
     private handler: Fn;
 
-    constructor(private readonly element: ElementRef, public ngZone: NgZone) {
-        this.ngZone = ngZone;
-    }
+    constructor(private readonly element: ElementRef, public readonly ngZone: NgZone) {}
 
     private get height(): number {
         return this.autoHeight.height;
@@ -122,10 +120,6 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         });
     }
 
-    public ngAfterViewInit(): void {
-        this.markForCheck();
-    }
-
     public ngOnChanges(changes: SimpleChanges): void {
         if ('autoHeight' in changes) {
             this.recalculateTableSize();
@@ -140,6 +134,10 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         this.ngZone.runOutsideAngular(() => {
             clearTimeout(this.taskId);
             this.taskId = window.setTimeout(() => {
+                if (this.canCalculated && !this.isDirtyCheck) {
+                    this.markForCheck();
+                }
+
                 if (this.isDirtyCheck && this.autoHeight.inViewport) {
                     this.calculateHeight();
                     this.recalculatedHeight.emit();

@@ -1,39 +1,39 @@
 <div
     [style.top.px]="headerTop"
     class="table-grid__cell table-grid__header-cell"
-    [class.table-grid__cell--custom-cell]="columnsSchema[key]?.customColumn"
-    [class.table-grid__cell--text-bold]="columnsSchema[key]?.th?.textBold"
-    [class.table-grid__cell--resizable]="columnsSchema[key]?.resizable"
-    [style.min-height.px]="columnsSchema[key]?.th?.height || clientRowHeight"
-    [style.max-height.px]="columnsSchema[key]?.th?.height || clientRowHeight"
-    [ngClass]="columnsSchema[key]?.th?.class"
-    [ngStyle]="columnsSchema[key]?.th?.style"
+    [class.table-grid__cell--custom-cell]="columnSchema?.customColumn"
+    [class.table-grid__cell--text-bold]="columnSchema?.th?.textBold"
+    [class.table-grid__cell--resizable]="columnSchema?.resizable"
+    [style.min-height.px]="columnSchema?.th?.height || clientRowHeight"
+    [style.max-height.px]="columnSchema?.th?.height || clientRowHeight"
+    [ngClass]="columnSchema?.th?.class"
+    [ngStyle]="columnSchema?.th?.style"
 >
     <div
         class="table-grid__cell--content table-grid__header-cell--content"
-        [class.table-grid__cell--content-sortable]="columnsSchema[key]?.sortable"
-        [class.table-grid__cell--nowrap]="columnsSchema[key]?.th?.nowrap"
-        (click)="columnsSchema[key]?.sortable ? sortByKey.emit(key) : null"
+        [class.table-grid__cell--content-sortable]="columnSchema?.sortable"
+        [class.table-grid__cell--nowrap]="columnSchema?.th?.nowrap"
+        (click)="columnSchema?.sortable ? sortByKey.emit(columnSchema.key) : null"
     >
         <ng-template
-            [ngIf]="columnsSchema[key]?.th?.template"
-            [ngTemplateOutlet]="columnsSchema[key]?.th?.template"
+            [ngIf]="columnSchema?.th?.template"
+            [ngTemplateOutlet]="columnSchema?.th?.template"
             [ngIfElse]="defaultTh"
         ></ng-template>
         <ng-template #defaultTh>
-            <ng-template [ngIf]="!columnsSchema[key]?.th?.emptyHead">
-                {{ columnsSchema[key]?.th?.headTitle || (key | titlecase) }}
+            <ng-template [ngIf]="!columnSchema?.th?.emptyHead">
+                {{ columnSchema?.th?.headTitle || (columnSchema.key | titlecase) }}
             </ng-template>
         </ng-template>
     </div>
 
     <div
-        *ngIf="!columnsSchema[key]?.customColumn && columnsSchema[key]?.sortable"
+        *ngIf="!columnSchema?.customColumn && columnSchema?.sortable"
         class="table-grid__column--sortable"
-        [class.table-grid__column--sortable-active]="sortableDefinition[key]"
-        [class.table-grid__column--sortable-asc]="sortableDefinition[key] === orderType.ASC"
-        [class.table-grid__column--sortable-desc]="sortableDefinition[key] === orderType.DESC"
-        (click)="columnsSchema[key]?.sortable ? sortByKey.emit(key) : null"
+        [class.table-grid__column--sortable-active]="sortableDefinition[columnSchema.key]"
+        [class.table-grid__column--sortable-asc]="sortableDefinition[columnSchema.key] === orderType.ASC"
+        [class.table-grid__column--sortable-desc]="sortableDefinition[columnSchema.key] === orderType.DESC"
+        (click)="columnSchema?.sortable ? sortByKey.emit(columnSchema.key) : null"
     >
         <img
             class="table-grid-icon--sortable"
@@ -44,9 +44,9 @@
 
     <div
         class="table-grid__column--filterable"
-        [class.table-grid__column--filterable-active]="filterableDefinition[key]"
-        *ngIf="!columnsSchema[key]?.customColumn && columnsSchema[key]?.filterable"
-        (click)="columnsSchema[key]?.filterable ? openFilter(key, $event) : null"
+        [class.table-grid__column--filterable-active]="filterableDefinition[columnSchema.key]"
+        *ngIf="!columnSchema?.customColumn && columnSchema?.filterable"
+        (click)="columnSchema?.filterable ? openFilter(columnSchema.key, $event) : null"
     >
         <svg
             class="table-grid-icon--filterable"
@@ -67,9 +67,9 @@
     <ng-content select="[slot=draggable]"></ng-content>
 
     <div
-        *ngIf="columnsSchema[key]?.resizable"
+        *ngIf="columnSchema?.resizable"
         class="table-grid__column--resize"
-        (mousedown)="resize.emit({ event: $event, key: key })"
+        (mousedown)="resize.emit({ event: $event, key: columnSchema.key })"
     >
         <div class="table-grid__column--resize--line"></div>
     </div>

@@ -6,7 +6,7 @@ import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
 import { SelectionService } from '../../../table/services/selection/selection.service';
-import { TableEvent, TableRow } from '../../../table/interfaces/table-builder.external';
+import { ColumnsSchema, TableEvent, TableRow } from '../../../table/interfaces/table-builder.external';
 import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-column.component';
 import { TableBuilderComponent } from '../../../table/table-builder.component';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
@@ -20,6 +20,7 @@ import { WebWorkerThreadService } from '../../../table/worker/worker-thread.serv
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
+import { NgxTableViewChangesService } from '@angular-ru/table-builder';
 
 interface PeriodicElement {
     name: string;
@@ -79,14 +80,15 @@ describe('[TEST]: TableBuilder', () => {
 
     beforeEach(() => {
         const zone: NgZone = mockNgZone as NgZone;
+        const viewChanges: NgxTableViewChangesService = new NgxTableViewChangesService();
 
-        utils = new UtilsService();
+        utils = new UtilsService(zone);
         selection = new SelectionService(zone, utils);
-        templateParser = new TemplateParserService(utils);
-        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
+        templateParser = new TemplateParserService();
+        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(zone), mockNgZone as NgZone);
         draggable = new DraggableService(templateParser);
         resizable = new ResizableService();
-        contextMenu = new ContextMenuService(utils);
+        contextMenu = new ContextMenuService();
 
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
 
@@ -97,16 +99,17 @@ describe('[TEST]: TableBuilder', () => {
 
         table = new TableBuilderComponent(
             selection,
-            new TemplateParserService(utils),
+            new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
             zone,
             utils,
             resizeService,
             sortable,
-            new ContextMenuService(utils),
+            new ContextMenuService(),
             app,
             new FilterableService(worker, utils, zone, app),
-            draggable
+            draggable,
+            viewChanges
         );
     });
 
@@ -182,27 +185,32 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.dirty).toEqual(false);
     }));
 
-    it('should be correct displayedColumns when set custom keys', () => {
+    it('should be correct displayedColumns when set custom keys', fakeAsync(() => {
         table.keys = customKeys;
         table.ngOnChanges();
         table.ngAfterContentInit();
-        expect(table.displayedColumns).toEqual(customKeys);
-    });
+        tick(1000);
 
-    it('should be correct displayedColumns when set custom keys and exclude keys', () => {
+        expect(table.columnSchema.map((column: ColumnsSchema) => column.key)).toEqual(customKeys);
+    }));
+
+    it('should be correct displayedColumns when set custom keys and exclude keys', fakeAsync(() => {
         table.keys = customKeys;
         table.excludeKeys = ['position'];
         table.ngOnChanges();
         table.ngAfterContentInit();
-        expect(table.displayedColumns).toEqual(['name', 'symbol', 'name']);
-    });
+        tick(1000);
+
+        expect(table.columnSchema.map((column: ColumnsSchema) => column.key)).toEqual(['name', 'symbol', 'name']);
+    }));
 
     it('should be correct parse template', () => {
         const templates: QueryList<NgxColumnComponent> = new QueryList();
         templates.reset([position, name, weight]);
 
-        templateParser.initialSchema(null, null).parse(table.generateColumnsKeyMap(modelKeys), templates);
-        expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
+        templateParser.initialSchema(null);
+        templateParser.parse(table.generateColumnsKeyMap(modelKeys), templates);
+        expect(templateParser.compiledTemplates).toEqual(ACTUAL_TEMPLATE);
     });
 
     it('should be correct rendered', fakeAsync(() => {
@@ -283,21 +291,14 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             contextMenu,
             new TableBuilderOptionsImpl(),
-            null,
             mockNgZone as NgZone,
             utils
         );
 
         tableBody.primaryKey = 'id';
-        tableBody.throttling = true;
         tableBody.source = [item];
 
-        tableBody.scrollOverload = { isOverload: true };
-        expect(tableBody.trackByIdx(index, item)).toEqual(index);
-
-        tableBody.scrollOverload = { isOverload: false };
         expect(tableBody.trackByIdx(index, item)).toEqual(item.id);
-
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
         tableBody.enableSelection = true;
@@ -316,7 +317,6 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             contextMenu,
             new TableBuilderOptionsImpl(),
-            null,
             mockNgZone as NgZone,
             utils
         );
@@ -339,7 +339,7 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be invoke preventDefault', () => {
-        const cell: TableEvent = new TableLineRow(templateParser, selection, utils).generateTableCellInfo(
+        const cell: TableEvent = new TableLineRow(selection, utils).generateTableCellInfo(
             item,
             'id',
             mockMouseEvent as MouseEvent
@@ -360,22 +360,6 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.modelColumnKeys).toEqual(['a1', 'a2']);
     });
 
-    it('should be correct update scroll', fakeAsync(() => {
-        table.throttling = true;
-
-        table.updateScrollOverload({ isOverload: true });
-        expect(table['detectOverload']).toEqual(true);
-
-        table.scrollEnd();
-
-        expect(table['isFrozenView']).toEqual(true);
-        expect(table.showedCellByDefault).toEqual(true);
-        expect(table['detectOverload']).toEqual(false);
-
-        tick(TableBuilderOptionsImpl.TIME_RELOAD);
-        expect(table['isFrozenView']).toEqual(false);
-    }));
-
     it('should be correct selection entries', () => {
         table.enableSelection = true;
         expect(table.selectionEntries).toEqual({});
@@ -385,14 +369,6 @@ describe('[TEST]: TableBuilder', () => {
 
         table.selection.selectRow(data[3], mockMouseEvent as MouseEvent, data);
         expect(table.selectionEntries).toEqual({ 4: true });
-    });
-
-    it('should be correct check content dirty', () => {
-        expect(table.contentIsDirty).toEqual(false);
-
-        table['renderCount']++;
-
-        expect(table.contentIsDirty).toEqual(true);
     });
 
     it('should be correct toggleFreeze', () => {

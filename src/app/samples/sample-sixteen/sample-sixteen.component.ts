@@ -1,10 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { TableRow, TableSchema } from '@angular-ru/table-builder';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+    ColumnsSchema,
+    NgxTableViewChangesService,
+    SimpleSchemaColumns,
+    TableRow,
+    TableUpdateSchema
+} from '@angular-ru/table-builder';
 
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { Any, DeepPartial } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { MatDialog } from '@angular/material';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
-import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 declare const hljs: Any;
 
@@ -13,30 +19,29 @@ declare const hljs: Any;
     templateUrl: './sample-sixteen.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SampleSixteenComponent implements OnInit, AfterViewInit {
+export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy {
     public data: TableRow[];
-    public schema: TableSchema = null;
+    public schema: SimpleSchemaColumns = null;
+    public readonly testName: string = 'test';
+    private sub: Subscription;
 
     constructor(
         public readonly dialog: MatDialog,
         private readonly cd: ChangeDetectorRef,
-        private readonly http: HttpClient
+        private readonly tableChanges: NgxTableViewChangesService
     ) {}
 
     public ngOnInit(): void {
-        const tableName: string = 'test';
-        this.http
-            .get(`http://10.219.177.131:8102/settings?tableName=${tableName}&username=m.ivanov4`)
-            .subscribe((response: any) => {
-                this.schema = JSON.parse(response.settings);
-                console.log(this.schema);
-                this.cd.detectChanges();
-            });
+        const schema: TableUpdateSchema =
+            (JSON.parse(window.localStorage.getItem(this.testName)) as TableUpdateSchema) || null;
+        this.schema = schema && schema.columns;
 
         MocksGenerator.generator(10000, 59).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
+
+        this.sub = this.tableChanges.events.subscribe((event: TableUpdateSchema) => this.save(event));
     }
 
     public ngAfterViewInit(): void {
@@ -45,16 +50,13 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit {
         });
     }
 
-    public updatedSchema(event: Partial<TableSchema>): void {
-        // tslint:disable-next-line:no-console
-        console.log(event);
+    public ngOnDestroy(): void {
+        this.sub.unsubscribe();
+    }
 
-        this.http
-            .post(`http://10.219.177.131:8102/settings`, {
-                username: 'm.ivanov4',
-                tableName: 'test',
-                settings: JSON.stringify(event)
-            })
-            .subscribe((e) => console.log(e));
+    private save(event: TableUpdateSchema): void {
+        // tslint:disable-next-line:no-console
+        console.log(event); // NOSONAR
+        window.localStorage.setItem(this.testName, JSON.stringify(event));
     }
 }

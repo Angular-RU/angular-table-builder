@@ -75,7 +75,6 @@ describe('[TEST]: auto height', () => {
     it('should be correct calculate auto height when columnHeight = 45px', fakeAsync(() => {
         directive.autoHeight = { detect: true, inViewport: true, sourceLength: 1, columnHeight: 45 };
 
-        directive.ngAfterViewInit();
         directive.recalculateTableSize();
         tick(100);
 
@@ -85,7 +84,6 @@ describe('[TEST]: auto height', () => {
     it('should be correct calculate auto height when columnHeight = 2000px', fakeAsync(() => {
         directive.autoHeight = { detect: true, inViewport: true, sourceLength: 45, columnHeight: 2000 };
 
-        directive.ngAfterViewInit();
         directive.recalculateTableSize();
         tick(100);
 
@@ -117,7 +115,6 @@ describe('[TEST]: auto height', () => {
     it('should be correct recalculate height', fakeAsync(() => {
         directive.autoHeight = { height: 200, inViewport: true, sourceLength: 1 };
 
-        directive.ngAfterViewInit();
         directive.recalculateTableSize();
         tick(100);
 

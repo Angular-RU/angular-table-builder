@@ -32,15 +32,18 @@ export class MocksGenerator {
                                 reverseId: Math.round(Math.random() * rows),
                                 name: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
                                 description: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
-                                guid: '5cdae5b2ba0a57f709b72142' + '__' + idx,
-                                ['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud']:
+                                guid: '5cdae5b2ba0a57f709b72142' + '__' + idx
+                            };
+
+                            if (cols === 6) {
+                                baseRow['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud'] =
                                     'Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa' +
                                     ' consectetur veniam Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis' +
                                     ' incididunt culpa consectetur veniam. Fugiat tempor sunt nostrud ad fugiat.' +
-                                    ' Laboris velit duis incididunt culpa consectetur veniam'
-                            };
+                                    ' Laboris velit duis incididunt culpa consectetur veniam';
+                            }
 
-                            if (cols > 5) {
+                            if (cols > 6) {
                                 for (let i: number = 6; i <= cols; i++) {
                                     baseRow['column-' + i] = `$row-${idx} $col-${i}`;
                                 }
@@ -77,10 +80,10 @@ export class MocksGenerator {
         const mouseMoveEvent: MouseEvent = document.createEvent('MouseEvents');
 
         mouseMoveEvent.initMouseEvent(
-            type, // event type : emitClick, mousedown, mouseup, mouseover, mousemove, mouseout.
+            type, // events type : emitClick, mousedown, mouseup, mouseover, mousemove, mouseout.
             true, // canBubble
             false, // cancelable
-            window, // event's AbstractView : should be window
+            window, // events's AbstractView : should be window
             1, // detail : Event's mouse emitClick count
             x, // screenX
             y, // screenY
@@ -91,7 +94,7 @@ export class MocksGenerator {
             false, // shiftKey
             false, // metaKey
             0, // button : 0 = emitClick, 1 = middle button, 2 = right button
-            null // relatedTarget : Only used with some event types (e.g. mouseover and mouseout).
+            null // relatedTarget : Only used with some events types (e.g. mouseover and mouseout).
             // In other cases, pass null.
         );
 

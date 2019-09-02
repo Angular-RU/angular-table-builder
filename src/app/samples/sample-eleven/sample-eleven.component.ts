@@ -7,7 +7,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow, TableSchema } from '@angular-ru/table-builder';
+import { SimpleSchemaColumns, TableRow } from '@angular-ru/table-builder';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { NGX_ANIMATION } from '../../../../projects/table-builder/src/lib/table/animations/fade.animation';
 
@@ -99,8 +99,8 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
         window.alert('Copy on buffer - ' + id);
     }
 
-    public updatedSchema(event: Partial<TableSchema>): void {
+    public updatedSchema(event: SimpleSchemaColumns): void {
         // tslint:disable-next-line:no-console
-        console.log(event);
+        console.log('Update schema', event); // NOSONAR
     }
 }

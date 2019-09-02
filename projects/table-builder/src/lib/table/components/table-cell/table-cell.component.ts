@@ -4,15 +4,16 @@ import {
     Component,
     Input,
     NgZone,
+    OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    ViewRef
+    ViewEncapsulation
 } from '@angular/core';
+
 import { SelectionService } from '../../services/selection/selection.service';
 import { ImplicitContext, TableRow } from '../../interfaces/table-builder.external';
 import { TableLineRow } from '../common/table-line-row';
-import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { UtilsService } from '../../services/utils/utils.service';
+import { detectChanges } from '../../operators/detect-changes';
 
 @Component({
     selector: 'table-cell',
@@ -20,37 +21,39 @@ import { UtilsService } from '../../services/utils/utils.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent extends TableLineRow implements OnInit {
+export class TableCellComponent extends TableLineRow implements OnInit, OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input('is-filterable') public isFilterable: boolean;
 
-    public contextType: typeof ImplicitContext = ImplicitContext;
     public loaded: boolean;
+    private taskId: number;
+    public contextType: typeof ImplicitContext = ImplicitContext;
 
     constructor(
         public readonly cd: ChangeDetectorRef,
-        protected readonly templateParser: TemplateParserService,
         public readonly selection: SelectionService,
         protected readonly utils: UtilsService,
         private readonly ngZone: NgZone
     ) {
-        super(templateParser, selection, utils);
+        super(selection, utils);
         this.cd.reattach();
     }
 
     public ngOnInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => {
-                this.loaded = true;
-                this.detectChanges();
-            }, this.index);
-        });
+        if (this.isRendered) {
+            this.loaded = true;
+        } else {
+            this.ngZone.runOutsideAngular(() => {
+                this.taskId = window.setTimeout(() => {
+                    this.loaded = true;
+                    detectChanges(this.cd);
+                }, this.index);
+            });
+        }
     }
 
-    public detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
-        }
+    public ngOnDestroy(): void {
+        window.clearTimeout(this.taskId);
     }
 }

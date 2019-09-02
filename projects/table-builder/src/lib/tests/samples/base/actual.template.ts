@@ -1,13 +1,9 @@
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
-import { TableColumn, TableSchema } from '../../../table/interfaces/table-builder.external';
+import { ColumnsSchema } from '../../../table/interfaces/table-builder.external';
+import { KeyMap } from '../../../table/interfaces/table-builder.internal';
 
-const COLUMN: TableColumn = {
-    th: {
-        ...MocksGenerator.generateCell(true),
-        emptyHead: null,
-        headTitle: null
-    },
-    td: MocksGenerator.generateCell(),
+const COLUMN: ColumnsSchema = {
+    key: null,
     width: null,
     stickyLeft: false,
     stickyRight: false,
@@ -18,16 +14,19 @@ const COLUMN: TableColumn = {
     sortable: null,
     customColumn: false,
     verticalLine: false,
-    filterable: null
+    filterable: null,
+    isModel: true,
+    isVisible: null,
+    th: {
+        ...MocksGenerator.generateCell(true),
+        emptyHead: null,
+        headTitle: null
+    },
+    td: MocksGenerator.generateCell()
 };
 
-export const ACTUAL_TEMPLATE: TableSchema = {
-    displayedColumns: [],
-    allRenderedColumnKeys: [],
-    columnsSimpleOptions: {},
-    columns: {
-        position: COLUMN,
-        name: COLUMN,
-        weight: COLUMN
-    }
+export const ACTUAL_TEMPLATE: KeyMap<ColumnsSchema> = {
+    position: { ...COLUMN, key: 'position' },
+    name: { ...COLUMN, key: 'name' },
+    weight: { ...COLUMN, key: 'weight' }
 };
