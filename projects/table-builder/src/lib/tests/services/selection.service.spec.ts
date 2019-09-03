@@ -64,7 +64,6 @@ describe('[TEST]: Selection service', () => {
         const firstIndex: number = 0;
 
         selection.primaryKey = 'position';
-
         selection.selectRow(
             data[lastIndex],
             {
