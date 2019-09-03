@@ -90,7 +90,9 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
                     this.removeEventListener();
                 }
             };
+
             window.addEventListener('click', this.listener, true);
+            window.addEventListener('contextmenu', this.listener, true);
         });
     }
 
@@ -102,6 +104,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
 
     private removeEventListener(): void {
         window.removeEventListener('click', this.listener, true);
+        window.addEventListener('contextmenu', this.listener, true);
     }
 
     public preventClose(): void {
