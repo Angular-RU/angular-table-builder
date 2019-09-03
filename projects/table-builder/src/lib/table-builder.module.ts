@@ -64,7 +64,7 @@ import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-s
         DragIconComponent,
         NgxSourceNullComponent
     ],
-    providers: [UtilsService, WebWorkerThreadService, NgxTableViewChangesService],
+    providers: [UtilsService, WebWorkerThreadService],
     exports: [
         TableBuilderComponent,
         TemplateHeadThDirective,
