@@ -48,7 +48,9 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        this.defaultHtmlValue();
+        if (changes['text'] && changes['text'].firstChange) {
+            this.defaultHtmlValue();
+        }
     }
 
     public ngOnInit(): void {
