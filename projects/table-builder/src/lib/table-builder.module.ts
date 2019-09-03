@@ -33,6 +33,7 @@ import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.com
 import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { NgxTableViewChangesService } from './table/services/table-view-changes/ngx-table-view-changes.service';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
+import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
 
 @NgModule({
     imports: [CommonModule, VirtualScrollerModule, DragDropModule],
@@ -60,7 +61,8 @@ import { DragIconComponent } from './table/components/drag-icon/drag-icon.compon
         NgxFilterViewerComponent,
         NgxFilterComponent,
         NgxFilterDirective,
-        DragIconComponent
+        DragIconComponent,
+        NgxSourceNullComponent
     ],
     providers: [UtilsService, WebWorkerThreadService, NgxTableViewChangesService],
     exports: [
@@ -78,7 +80,8 @@ import { DragIconComponent } from './table/components/drag-icon/drag-icon.compon
         NgxFooterComponent,
         NgxFilterViewerComponent,
         NgxFilterComponent,
-        NgxFilterDirective
+        NgxFilterDirective,
+        NgxSourceNullComponent
     ]
 })
 export class TableBuilderModule {

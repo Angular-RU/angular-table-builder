@@ -90,3 +90,7 @@ table-cell {
         }
     }
 }
+
+.cdk-drag-preview .table-grid__header-cell {
+    top: 0 !important;
+}

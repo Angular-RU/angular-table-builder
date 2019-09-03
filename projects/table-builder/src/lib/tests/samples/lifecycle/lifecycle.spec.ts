@@ -67,7 +67,7 @@ describe('[TEST]: Lifecycle table', () => {
         sortable = new SortableService(worker, utils, zone);
 
         table = new TableBuilderComponent(
-            new SelectionService(zone, utils),
+            new SelectionService(zone),
             parser,
             mockChangeDetector as ChangeDetectorRef,
             zone,

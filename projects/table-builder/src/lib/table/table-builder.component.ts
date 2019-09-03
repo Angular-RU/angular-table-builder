@@ -67,6 +67,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public headerRef: ElementRef<HTMLDivElement>;
     @ViewChild('footer', { static: false })
     public footerRef: ElementRef<HTMLDivElement>;
+    public sourceIsNull: boolean;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -100,8 +101,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return this.contentCheck && !this.forcedRefresh;
     }
 
+    public checkSourceIsNull(): boolean {
+        return !('length' in (this.source || {}));
+    }
+
     public ngOnChanges(changes: SimpleChanges = {}): void {
         const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
+        this.sourceIsNull = this.checkSourceIsNull();
 
         if (nonIdenticalStructure) {
             this.renderedCountKeys = this.getCountKeys();

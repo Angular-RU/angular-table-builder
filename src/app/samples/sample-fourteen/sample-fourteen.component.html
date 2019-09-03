@@ -5,6 +5,8 @@
 
 <ngx-table-builder #table [source]="data" [enable-filtering]="true">
     <ngx-options [sortable]="true" [filterable]="true"></ngx-options>
+    <ngx-source-null>Loading...</ngx-source-null>
+    <ngx-empty>Not found</ngx-empty>
 
     <ngx-header [css-class]="['my-filter']" height="65">
         <div class="filter-form">
@@ -61,6 +63,8 @@
     </ngx-filter>
 
     <ngx-footer>
-        <p style="padding: 3px 0 0 20px"><b>Size</b>: {{ table.source?.length }} x {{ table?.displayedColumns?.length }}</p>
+        <p style="padding: 3px 0 0 20px">
+            <b>Size</b>: {{ table.source?.length }} x {{ table?.displayedColumns?.length }}
+        </p>
     </ngx-footer>
 </ngx-table-builder>

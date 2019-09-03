@@ -45,7 +45,7 @@ export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
     @Input() public height: number;
     @Input() public width: string;
-    @Input() public source: TableRow[] = [];
+    @Input() public source: TableRow[] = null;
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public lazy: boolean = true;
@@ -244,6 +244,10 @@ export abstract class TableBuilderApiImpl
     }
 
     public filter(): void {
+        if (!this.enableFiltering) {
+            throw new Error('You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />');
+        }
+
         this.ngZone.runOutsideAngular(() => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {

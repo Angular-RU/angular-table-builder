@@ -83,7 +83,7 @@ describe('[TEST]: TableBuilder', () => {
         const viewChanges: NgxTableViewChangesService = new NgxTableViewChangesService();
 
         utils = new UtilsService(zone);
-        selection = new SelectionService(zone, utils);
+        selection = new SelectionService(zone);
         templateParser = new TemplateParserService();
         sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(zone), mockNgZone as NgZone);
         draggable = new DraggableService(templateParser);
@@ -285,7 +285,7 @@ describe('[TEST]: TableBuilder', () => {
     it('should be correct generate table body without emitter', () => {
         const index: number = 0;
 
-        const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone, utils);
+        const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
             mockChangeDetector as ChangeDetectorRef,

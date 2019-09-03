@@ -75,6 +75,7 @@
                     [class.table-grid__column--is-invisible]="!column['visible']"
                     [class.table-grid__column--is-dragging]="isDragging[columnSchema.key]"
                     [class.table-grid__column--default-width]="!autoWidth"
+                    [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
                     <div
@@ -137,8 +138,12 @@
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
 
-<div *ngIf="!source?.length">
+<div *ngIf="(source && source.length) === 0">
     <ng-content select="ngx-empty"></ng-content>
+</div>
+
+<div *ngIf="sourceIsNull">
+    <ng-content select="ngx-source-null"></ng-content>
 </div>
 
 <ng-template [ngIf]="filterTemplate">

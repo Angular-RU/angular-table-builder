@@ -48,14 +48,14 @@ describe('[TEST]: Selection service', () => {
 
     beforeEach(() => {
         utils = new UtilsService(null);
-        selection = new SelectionService(mockNgZone as NgZone, utils);
+        selection = new SelectionService(mockNgZone as NgZone);
     });
 
     it('should be correct exception', () => {
         try {
             selection.selectRow(data[0], mockPreventDefault as MouseEvent, data);
         } catch (e) {
-            expect(e.message).toEqual(`Can't select item, make sure you pass the correct primary key`);
+            expect(e.message).toContain(`Can't select item, make sure you pass the correct primary key`);
         }
     });
 
