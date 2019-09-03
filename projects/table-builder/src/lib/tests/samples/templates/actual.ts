@@ -7,8 +7,10 @@ export const ACTUAL_TEMPLATES: string = `
         <div 
           cdkdrag="" 
           cdkdragboundary=".table-grid__column-area-content" 
-          class="table-grid__column cdk-drag table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
-          observerview="" column-id="name">
+          cdkdraghandle=""
+          class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
+          observerview="" 
+          column-id="name">
         <div class="table-grid__column-area">
           <table-thead>
             <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
@@ -55,8 +57,10 @@ export const ACTUAL_TEMPLATES: string = `
         <div 
           cdkdrag="" 
           cdkdragboundary=".table-grid__column-area-content" 
-          class="table-grid__column cdk-drag table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
-          observerview="" column-id="price">
+          cdkdraghandle=""
+          class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
+          observerview="" 
+          column-id="price">
           <div class="table-grid__column-area">
             <table-thead>
               <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">

@@ -120,7 +120,7 @@ export class TemplateParserService {
             draggable: TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable),
             verticalLine: column.verticalLine,
             isModel: customKey === false,
-            isVisible: null
+            isVisible: true
         };
     }
 }

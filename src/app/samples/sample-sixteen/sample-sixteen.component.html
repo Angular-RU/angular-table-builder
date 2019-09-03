@@ -30,4 +30,12 @@
             <ngx-menu-content>Reset table settings</ngx-menu-content>
         </ngx-context-menu-item>
     </ngx-context-menu>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
+
+    <ngx-column key="edit" custom-key width="100" [vertical-line]="true" sticky-end empty-head>
+        <ng-template ngx-td [row]="true">
+            <button mat-button><mat-icon>info</mat-icon></button>
+        </ng-template>
+    </ngx-column>
 </ngx-table-builder>

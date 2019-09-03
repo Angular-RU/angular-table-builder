@@ -83,12 +83,25 @@
 }
 
 .table-grid__cell--inner-content {
-    visibility: hidden;
     opacity: 0;
+    visibility: hidden;
+    will-change: opacity;
     transition: visibility 0.5s linear, opacity 0.5s linear;
 }
 
+.table-grid__scroll-offset {
+    .table-grid__header-cell {
+        transition: box-shadow 0.3s ease-in-out;
+        box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
+    }
+}
+
+.table-grid__scroll-offset .table-grid__cell--inner-content,
 .loaded {
     visibility: visible;
     opacity: 1;
+}
+
+.table-grid__scroll-offset .table-grid__cell--inner-content {
+    transition-duration: 0ms;
 }

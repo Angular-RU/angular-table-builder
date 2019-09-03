@@ -95,6 +95,10 @@
             opacity: 0;
         }
 
+        &--draggable--handle-hidden {
+            visibility: hidden;
+        }
+
         &--draggable {
             &-active {
                 opacity: 0.8;

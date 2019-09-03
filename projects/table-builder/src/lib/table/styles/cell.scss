@@ -89,11 +89,4 @@ table-cell {
             align-items: center;
         }
     }
-
-    .table-head__offset {
-        .table-grid__header-cell {
-            transition: box-shadow 0.3s ease-in-out;
-            box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
-        }
-    }
 }

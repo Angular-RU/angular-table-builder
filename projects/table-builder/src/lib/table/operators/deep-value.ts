@@ -1,7 +1,7 @@
 import { Any } from '../interfaces/table-builder.internal';
 
 export function getDeepValue(obj: Any, path: string): Any {
-    if (!path.length) {
+    if (!(path && path.length)) {
         return obj;
     }
 

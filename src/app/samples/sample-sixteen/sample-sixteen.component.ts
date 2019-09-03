@@ -36,7 +36,7 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
             (JSON.parse(window.localStorage.getItem(this.testName)) as TableUpdateSchema) || null;
         this.schema = schema && schema.columns;
 
-        MocksGenerator.generator(10000, 59).then((data: TableRow[]) => {
+        MocksGenerator.generator(1000, 59).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });

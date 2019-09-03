@@ -88,22 +88,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         super();
     }
 
-    /**
-     * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
-     * returned unique displayed columns [ 'id', 'value', 'position' ]
-     */
-    public get displayedColumns(): string[] {
-        return Object.keys(this.templateParser.compiledTemplates) || [];
-    }
-
-    /**
-     * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
-     * returned ordered displayed columns [ 'id', 'value', 'id', 'position', 'value' ]
-     */
-    public get positionColumns(): string[] {
-        return this.columnSchema.map((column: ColumnsSchema) => column.key);
-    }
-
     public get selectionEntries(): KeyMap<boolean> {
         return this.selection.selectionModel.entries;
     }
@@ -223,6 +207,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const columnList: string[] = this.generateDisplayedColumns();
         const drawTask: Promise<void> =
             this.asyncColumns && async ? this.asyncDrawColumns(columnList) : this.syncDrawColumns(columnList);
+
         drawTask.then(() => this.emitRendered());
     }
 
@@ -304,7 +289,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     private async asyncDrawColumns(columnList: string[]): Promise<void> {
         for (let index: number = 0; index < columnList.length; index++) {
-            await this.utils.requestAnimationFrame(() => this.processedColumnList(columnList[index], index, true));
+            const key: string = columnList[index];
+            const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
+
+            if (schema.isVisible) {
+                await this.utils.requestAnimationFrame(() => this.processedColumnList(schema, key, true));
+            } else {
+                this.processedColumnList(schema, key, true);
+            }
         }
     }
 
@@ -314,36 +306,47 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private async syncDrawColumns(columnList: string[]): Promise<void> {
         await this.utils.microtask(() => {
             for (let index: number = 0; index < columnList.length; index++) {
-                this.processedColumnList(columnList[index], index, false);
+                const key: string = columnList[index];
+                const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
+                this.processedColumnList(schema, columnList[index], false);
             }
         });
     }
 
+    private getCustomColumnSchemaByIndex(index: number): Partial<ColumnsSchema> {
+        return ((this.schemaColumns && this.schemaColumns[index]) || ({} as Any)) as Partial<ColumnsSchema>;
+    }
+
     /**
-     * @description: column meta information processing
-     * @param key - column name
-     * @param index - position column in table
-     * @param async - whether to draw a column asynchronously
+     * @description - it is necessary to combine the templates given from the server and default
+     * @param key - column schema from rendered templates map
+     * @param index - column position
      */
-    private processedColumnList(key: string, index: number, async: boolean): void {
-        const customSchema: Partial<ColumnsSchema> = ((this.schemaColumns && this.schemaColumns[index]) || null) as Any;
+    private mergeColumnSchema(key: string, index: number): ColumnsSchema {
+        const customColumn: Partial<ColumnsSchema> = this.getCustomColumnSchemaByIndex(index);
 
         if (!this.templateParser.compiledTemplates[key]) {
             const column: NgxColumnComponent = new NgxColumnComponent().withKey(key);
             this.templateParser.compileColumnMetadata(column);
         }
 
-        this.templateParser.compiledTemplates[key].isVisible = true;
+        const defaultColumn: ColumnsSchema = this.templateParser.compiledTemplates[key];
 
-        if (customSchema && customSchema.key === key) {
-            this.templateParser.compiledTemplates[key] = {
-                ...this.templateParser.compiledTemplates[key],
-                ...customSchema
-            };
+        if (customColumn.key === defaultColumn.key) {
+            this.templateParser.compiledTemplates[key] = { ...defaultColumn, ...customColumn } as ColumnsSchema;
         }
 
-        this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
+        return this.templateParser.compiledTemplates[key];
+    }
 
+    /**
+     * @description: column meta information processing
+     * @param schema - column schema
+     * @param key - column name
+     * @param async - whether to draw a column asynchronously
+     */
+    private processedColumnList(schema: ColumnsSchema, key: string, async: boolean): void {
+        this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
         if (async) {
             this.idleDetectChanges();
         }

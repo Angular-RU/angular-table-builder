@@ -16,7 +16,7 @@ const COLUMN: ColumnsSchema = {
     verticalLine: false,
     filterable: null,
     isModel: true,
-    isVisible: null,
+    isVisible: true,
     th: {
         ...MocksGenerator.generateCell(true),
         emptyHead: null,

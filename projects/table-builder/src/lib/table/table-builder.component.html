@@ -30,6 +30,7 @@
         class="table-grid"
         [cdkDropListDisabled]="!accessDragging"
         (scrollOffset)="updateScrollOffset($event)"
+        [class.table-grid__scroll-offset]="scrollOffset.offset"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
         cdkDropListOrientation="horizontal"
         (cdkDropListDropped)="drop($event)"
@@ -51,10 +52,10 @@
                     #column
                     cdkDrag
                     observerView
+                    cdkDragHandle
                     *ngIf="columnSchema.isVisible"
                     [attr.column-id]="columnSchema.key"
                     [rendered]="isRendered"
-                    [cdkDragStartDelay]="100"
                     [cdkDragDisabled]="!accessDragging"
                     class="table-grid__column"
                     [style.height.px]="columnHeight"
@@ -88,16 +89,15 @@
                             [sortable-definition]="sortable.definition"
                             [filterable-definition]="filterable.definition"
                             [client-row-height]="clientRowHeight"
-                            [class.table-head__offset]="scrollOffset.offset"
                             (resize)="resizeColumn($event, column)"
                             (sortByKey)="sortByKey($event)"
                         >
                             <div
-                                cdkDragHandle
                                 slot="draggable"
-                                (mouseenter)="enableDragging(columnSchema.key)"
                                 *ngIf="columnSchema?.draggable"
                                 class="table-grid__column--draggable"
+                                (mouseenter)="enableDragging(columnSchema.key)"
+                                [class.table-grid__column--draggable--handle-hidden]="scrollOffset.offset"
                             >
                                 <drag-icon></drag-icon>
                             </div>

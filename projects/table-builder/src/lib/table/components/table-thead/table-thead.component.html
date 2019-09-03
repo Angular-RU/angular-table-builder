@@ -64,7 +64,9 @@
         </svg>
     </div>
 
-    <ng-content select="[slot=draggable]"></ng-content>
+    <ng-template [ngIf]="!columnSchema.customColumn">
+        <ng-content select="[slot=draggable]"></ng-content>
+    </ng-template>
 
     <div
         *ngIf="columnSchema?.resizable"

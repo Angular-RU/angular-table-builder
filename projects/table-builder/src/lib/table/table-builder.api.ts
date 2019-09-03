@@ -129,7 +129,28 @@ export abstract class TableBuilderApiImpl
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
-    private frameIdTask: number = null;
+
+    /**
+     * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
+     * returned unique displayed columns [ 'id', 'value', 'position' ]
+     */
+    public get displayedColumns(): string[] {
+        return Object.keys(this.templateParser.compiledTemplates) || [];
+    }
+
+    public get visibleColumns(): string[] {
+        return this.columnSchema
+            .filter((column: ColumnsSchema) => column.isVisible)
+            .map((column: ColumnsSchema) => column.key);
+    }
+
+    /**
+     * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
+     * returned ordered displayed columns [ 'id', 'value', 'id', 'position', 'value' ]
+     */
+    public get positionColumns(): string[] {
+        return this.columnSchema.map((column: ColumnsSchema) => column.key);
+    }
 
     public get columnSchema(): ColumnsSchema[] {
         return (this.templateParser.schema && this.templateParser.schema.columns) || [];
@@ -255,8 +276,10 @@ export abstract class TableBuilderApiImpl
         this.sortAndFilter().then(() => this.reCheckDefinitions());
     }
 
-    public drop(event: CdkDragSortEvent): void {
-        this.draggable.drop(event);
+    public drop({ previousIndex, currentIndex }: CdkDragSortEvent): void {
+        const previousKey: string = this.visibleColumns[previousIndex];
+        const currentKey: string = this.visibleColumns[currentIndex];
+        this.draggable.drop(previousKey, currentKey);
         this.changeSchema();
     }
 
@@ -319,10 +342,7 @@ export abstract class TableBuilderApiImpl
     }
 
     protected idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.cancelAnimationFrame(this.frameIdTask);
-            this.frameIdTask = window.requestAnimationFrame(() => this.detectChanges());
-        });
+        this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.detectChanges()));
     }
 
     private calculateWidth(key: string, width: number): void {
