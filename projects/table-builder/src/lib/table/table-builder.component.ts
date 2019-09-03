@@ -31,7 +31,7 @@ import { ResizableService } from './services/resizer/resizable.service';
 import { TableBuilderOptionsImpl } from './config/table-builder-options';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { FilterableService } from './services/filterable/filterable.service';
-import { FilterType } from './services/filterable/filterable.interface';
+import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 
@@ -239,7 +239,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.filterable.filterType =
                 this.filterable.filterType ||
                 (this.columnOptions && this.columnOptions.filterType) ||
-                FilterType.START_WITH;
+                TableFilterType.START_WITH;
 
             this.modelColumnKeys.forEach((key: string) => {
                 this.filterable.filterTypeDefinition[key] =

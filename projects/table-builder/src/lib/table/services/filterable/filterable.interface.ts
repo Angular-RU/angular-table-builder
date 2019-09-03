@@ -3,23 +3,23 @@ import { Fn, KeyMap, MousePosition } from '../../interfaces/table-builder.intern
 
 export interface FilterGlobalOpts {
     value: string;
-    type: FilterType;
+    type: TableFilterType;
 }
 
 export interface FilterColumnsOpts {
     isEmpty: boolean;
     values: KeyMap<string>;
-    types: KeyMap<FilterType>;
+    types: KeyMap<TableFilterType>;
 }
 
 export interface FilterableMessage {
     source: TableRow[];
-    types: typeof FilterType;
+    types: typeof TableFilterType;
     global: FilterGlobalOpts;
     columns: FilterColumnsOpts;
 }
 
-export enum FilterType {
+export enum TableFilterType {
     START_WITH = 'START_WITH',
     END_WITH = 'END_WITH',
     CONTAINS = 'CONTAINS',
@@ -30,7 +30,7 @@ export enum FilterType {
 
 export interface FilterEvent {
     value: string;
-    type: FilterType;
+    type: TableFilterType;
 }
 
 export class FilterStateEvent {

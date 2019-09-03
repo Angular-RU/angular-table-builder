@@ -1,4 +1,4 @@
-import { FilterableMessage, FilterGlobalOpts, FilterType } from './filterable.interface';
+import { FilterableMessage, FilterGlobalOpts, TableFilterType } from './filterable.interface';
 import { TableRow } from '../../interfaces/table-builder.external';
 import { KeyMap } from '../../interfaces/table-builder.internal';
 
@@ -52,7 +52,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
         for (const fieldKey of Object.keys(columns.values)) {
             const fieldValue: string = String(getValueByPath(item, fieldKey) || '').trim();
             const findKeyValue: string = String(columns.values[fieldKey]);
-            const fieldType: FilterType = columns.types[fieldKey];
+            const fieldType: TableFilterType = columns.types[fieldKey];
             const [terminate, satisfies]: Satisfies = getSatisfies(fieldValue, findKeyValue, fieldType);
             matches = matches && satisfies;
 
@@ -66,7 +66,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
 
     type Satisfies = [Terminate, boolean];
 
-    function getSatisfies(field: string, substring: string, fieldType: FilterType): Satisfies {
+    function getSatisfies(field: string, substring: string, fieldType: TableFilterType): Satisfies {
         let satisfies: boolean = false;
         let terminate: Terminate = Terminate.NEXT;
 

@@ -9,7 +9,7 @@ import {
     FilterableMessage,
     FilterEvent,
     FilterStateEvent,
-    FilterType,
+    TableFilterType,
     FilterWorkerEvent
 } from './filterable.interface';
 import { filterAllWorker } from './filter.worker';
@@ -22,12 +22,13 @@ export class FilterableService {
     public filterValue: string = null;
     public definition: KeyMap<string> = {};
     public state: FilterStateEvent = new FilterStateEvent();
-    public types: typeof FilterType = FilterType;
+    public types: typeof TableFilterType = TableFilterType;
     public readonly filterOpenEvents: Subject<void> = new Subject();
     public readonly events: Subject<FilterEvent> = new ReplaySubject();
-    public filterType: FilterType;
-    public filterTypeDefinition: KeyMap<FilterType> = {};
+    public filterType: TableFilterType;
+    public filterTypeDefinition: KeyMap<TableFilterType> = {};
     public filtering: boolean = false;
+    private previousFiltering: boolean = false;
 
     constructor(
         private readonly thread: WebWorkerThreadService,
@@ -42,6 +43,12 @@ export class FilterableService {
 
     public changeFilteringStatus(): void {
         this.filtering = this.filterValueExist;
+
+        if (this.filtering !== this.previousFiltering) {
+            this.events.next({ value: null, type: null });
+        }
+
+        this.previousFiltering = this.filtering;
     }
 
     public get filterValueExist(): boolean {
@@ -65,13 +72,13 @@ export class FilterableService {
     }
 
     public filter(source: TableRow[]): Promise<FilterWorkerEvent> {
-        const type: FilterType = this.filterType;
+        const type: TableFilterType = this.filterType;
         const value: string = this.globalFilterValue ? String(this.globalFilterValue).trim() : null;
 
         return new Promise((resolve: Resolver<FilterWorkerEvent>): void => {
             const message: FilterableMessage = {
                 source,
-                types: FilterType,
+                types: TableFilterType,
                 global: { value, type },
                 columns: {
                     values: this.definition,
