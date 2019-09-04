@@ -11,6 +11,7 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
+    SimpleChange,
     SimpleChanges,
     ViewChild,
     ViewEncapsulation
@@ -130,6 +131,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         } else if (TableSimpleChanges.SOURCE_KEY in changes) {
             this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
             this.sortAndFilter().then(() => this.reCheckDefinitions());
+        }
+
+        if (TableSimpleChanges.SCHEMA_COLUMNS in changes) {
+            const schemaChange: SimpleChange = changes[TableSimpleChanges.SCHEMA_COLUMNS];
+            if (!schemaChange.currentValue) {
+                console.warn(`You need set correct <ngx-table-builder [schema-columns]="[..]" /> for one time binding`);
+            }
         }
     }
 

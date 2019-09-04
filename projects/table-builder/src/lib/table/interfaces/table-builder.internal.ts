@@ -5,7 +5,8 @@ export enum PrimaryKey {
 }
 
 export enum TableSimpleChanges {
-    SOURCE_KEY = 'source'
+    SOURCE_KEY = 'source',
+    SCHEMA_COLUMNS = 'schemaColumns'
 }
 
 export interface DynamicHeightOptions {

@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { UtilsService } from '../../services/utils/utils.service';
 import { Fn, MousePosition } from '../../interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+import { detectChanges } from '../../operators/detect-changes';
 
 export interface PositionState {
     key: string;
@@ -19,7 +19,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     protected subscription: Subscription = null;
     protected abstract targetElement: ElementRef<HTMLDivElement>;
     protected taskId: number;
-    private listener: Fn;
+    private clickListener: Fn;
 
     protected constructor(
         protected readonly cd: ChangeDetectorRef,
@@ -67,7 +67,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
                 this.updateView();
 
                 if (this.state.opened) {
-                    window.removeEventListener('click', this.listener, true);
+                    this.removeEventListener();
                     this.preventClose();
                     this.listenInsideClick();
                 }
@@ -79,11 +79,12 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
 
     private listenInsideClick(): void {
         this.ngZone.runOutsideAngular(() => {
-            this.listener = (event: MouseEvent): void => {
+            this.clickListener = (event: MouseEvent): void => {
                 try {
                     const origin: Node = this.targetElement.nativeElement;
                     const target: Node = event.target as Node;
                     if (!origin.contains(target)) {
+                        this.removeListener(event);
                         this.taskId = window.setTimeout(() => this.removeListener(event), this.closeTime);
                     }
                 } catch (e) {
@@ -91,20 +92,18 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
                 }
             };
 
-            window.addEventListener('click', this.listener, true);
-            window.addEventListener('contextmenu', this.listener, true);
+            window.addEventListener('mousedown', this.clickListener, true);
         });
     }
 
     private removeListener(event: MouseEvent): void {
         this.removeEventListener();
         this.close(event);
-        this.cd.detectChanges();
+        detectChanges(this.cd);
     }
 
     private removeEventListener(): void {
-        window.removeEventListener('click', this.listener, true);
-        window.addEventListener('contextmenu', this.listener, true);
+        window.removeEventListener('mousedown', this.clickListener, true);
     }
 
     public preventClose(): void {

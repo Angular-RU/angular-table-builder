@@ -31,7 +31,6 @@ import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.com
 import { NgxFilterViewerComponent } from './table/components/ngx-filter-viewer/ngx-filter-viewer.component';
 import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.component';
 import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
-import { NgxTableViewChangesService } from './table/services/table-view-changes/ngx-table-view-changes.service';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
 import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
 

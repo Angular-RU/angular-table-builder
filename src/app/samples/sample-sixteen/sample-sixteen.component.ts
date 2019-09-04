@@ -58,5 +58,7 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
         // tslint:disable-next-line:no-console
         console.log(event); // NOSONAR
         window.localStorage.setItem(this.testName, JSON.stringify(event));
+        this.schema = [...event.columns];
+        this.cd.detectChanges();
     }
 }
