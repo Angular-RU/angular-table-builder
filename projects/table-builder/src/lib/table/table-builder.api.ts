@@ -50,6 +50,7 @@ export abstract class TableBuilderApiImpl
     @Input() public striped: boolean = true;
     @Input() public lazy: boolean = true;
     @Input() public name: string = null;
+    @Input('sort-types') public sortTypes: KeyMap = null;
     @Input('exclude-keys') public excludeKeys: string[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -264,7 +265,7 @@ export abstract class TableBuilderApiImpl
             const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource);
             this.source = await this.sortable.sort(filter.source);
             filter.fireSelection();
-        } else if (!this.sortable.empty) {
+        } else if (!this.sortable.empty && this.source) {
             this.source = await this.sortable.sort(this.originalSource);
         }
 
@@ -310,8 +311,9 @@ export abstract class TableBuilderApiImpl
         }
     }
 
-    protected changeSchema(): void {
-        const columns: SimpleSchemaColumns = this.templateParser.schema.exportColumns();
+    public changeSchema(defaultColumns: SimpleSchemaColumns = null): void {
+        const renderedColumns: SimpleSchemaColumns = this.templateParser.schema.exportColumns();
+        const columns: SimpleSchemaColumns = defaultColumns || renderedColumns;
         this.viewChanges.update({ name: this.name, columns });
         this.schemaChanges.emit(columns);
         this.idleDetectChanges();

@@ -35,7 +35,7 @@ export class SortableService {
     }
 
     public setDefinition(definition: KeyMap<string>): void {
-        this.definition = (definition as KeyMap<SortOrderType>) || {};
+        this.definition = this.empty ? (definition as KeyMap<SortOrderType>) || {} : this.definition;
     }
 
     public updateSortKey(key: string): void {

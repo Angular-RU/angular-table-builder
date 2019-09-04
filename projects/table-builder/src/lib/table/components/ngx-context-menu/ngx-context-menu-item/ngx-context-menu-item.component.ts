@@ -29,6 +29,7 @@ export class NgxContextMenuItemComponent implements OnInit {
     @Input() public contextTitle: boolean = null;
     @Input() public disable: boolean = false;
     @Input() public divider: boolean = false;
+    @Input('disable-sub-menu') public disableSubMenu: boolean = false;
     @Input('sub-menu-width') public subMenuWidth: number = 300;
     @Output() public onClick: EventEmitter<ContextItemEvent> = new EventEmitter();
     @ViewChild('item', { static: false }) public itemRef: ElementRef<HTMLDivElement>;

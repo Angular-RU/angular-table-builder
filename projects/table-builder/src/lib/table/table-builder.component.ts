@@ -19,7 +19,14 @@ import {
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { Any, KeyMap, ScrollOffsetStatus, TableSimpleChanges, TemplateKeys } from './interfaces/table-builder.internal';
+import {
+    Any,
+    Fn,
+    KeyMap,
+    ScrollOffsetStatus,
+    TableSimpleChanges,
+    TemplateKeys
+} from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { ColumnsSchema } from './interfaces/table-builder.external';
@@ -109,6 +116,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public ngOnChanges(changes: SimpleChanges = {}): void {
         const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
         this.sourceIsNull = this.checkSourceIsNull();
+        this.sortable.setDefinition(this.sortTypes);
 
         if (nonIdenticalStructure) {
             this.renderedCountKeys = this.getCountKeys();
@@ -128,7 +136,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             if (recycleView) {
                 this.renderTable();
             }
-        } else if (TableSimpleChanges.SOURCE_KEY in changes) {
+        } else if (TableSimpleChanges.SOURCE_KEY in changes && this.isRendered) {
             this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
             this.sortAndFilter().then(() => this.reCheckDefinitions());
         }
@@ -136,7 +144,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         if (TableSimpleChanges.SCHEMA_COLUMNS in changes) {
             const schemaChange: SimpleChange = changes[TableSimpleChanges.SCHEMA_COLUMNS];
             if (!schemaChange.currentValue) {
-                console.warn(`You need set correct <ngx-table-builder [schema-columns]="[..]" /> for one time binding`);
+                throw new Error(
+                    `You need set correct <ngx-table-builder [schema-columns]="[] || [..]" /> for one time binding`
+                );
             }
         }
     }
@@ -219,10 +229,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         this.rendering = true;
         const columnList: string[] = this.generateDisplayedColumns();
-        const drawTask: Promise<void> =
-            this.asyncColumns && async ? this.asyncDrawColumns(columnList) : this.syncDrawColumns(columnList);
+        const drawTask: Fn<string[], Promise<void>> =
+            this.asyncColumns && async ? this.asyncDrawColumns.bind(this) : this.syncDrawColumns.bind(this);
 
-        drawTask.then(() => this.emitRendered());
+        if (!this.sortable.empty) {
+            this.sortAndFilter().then(() => drawTask(columnList).then(() => this.emitRendered()));
+        } else {
+            drawTask(columnList).then(() => this.emitRendered());
+        }
     }
 
     public toggleColumnVisibility(key: string): void {
@@ -237,9 +251,19 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public resetSchema(): void {
+        this.tableViewportChecked = false;
         this.schemaColumns = null;
+        this.detectChanges();
+
         this.renderTable({ async: false });
-        this.changeSchema();
+        this.changeSchema([]);
+
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => {
+                this.tableViewportChecked = true;
+                this.detectChanges();
+            }, TableBuilderOptionsImpl.TIME_IDLE);
+        });
     }
 
     private checkFilterValues(): void {

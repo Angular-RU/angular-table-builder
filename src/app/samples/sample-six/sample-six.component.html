@@ -6,7 +6,10 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder [source]="data">
+<ngx-table-builder [source]="data" [sort-types]="{ id: 'desc' }">
+    <ngx-empty>No data</ngx-empty>
+    <ngx-source-null>Loading</ngx-source-null>
+
     <!--
        <ngx-options /> - declaration common options for columns
 
