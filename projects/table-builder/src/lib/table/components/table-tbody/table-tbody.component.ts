@@ -74,6 +74,11 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
         });
     }
 
+    public trackByIdx(index: number, item: TableRow): number {
+        const id: number = parseInt(item[this.primaryKey] as string);
+        return id !== undefined ? id : index;
+    }
+
     /**
      * @description: we hove some memory leak after destroy component
      * because VirtualScrollerComponent work with requestAnimationFrame
