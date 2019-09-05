@@ -90,6 +90,41 @@ table-cell {
             align-items: center;
         }
     }
+
+    &__cell-overflow-content {
+        position: fixed;
+        background: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 0 0 10px 2px $borderColor;
+        opacity: 0;
+        z-index: 1;
+        visibility: hidden;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 20px;
+        transition: visibility 100ms linear, opacity 100ms linear;
+        transform: translate(-9999px);
+        max-height: 300px;
+        max-width: 300px;
+        overflow: auto;
+        overflow-x: hidden;
+        margin-top: -10px;
+        margin-left: -50px;
+        font-weight: 400;
+        font-size: 15px;
+
+        &.text-center {
+            text-align: center;
+        }
+    }
+
+    &__cell-overflow-content.visible {
+        visibility: visible;
+        transition: visibility 100ms linear, opacity 100ms linear;
+        opacity: 1;
+        transform: translate(0);
+    }
 }
 
 .cdk-drag-preview .table-grid__header-cell {

@@ -15,6 +15,7 @@
     (vsChange)="vsChange()"
 >
     <div
+        #parent
         class="table-grid__cell"
         *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
         (selectstart)="(canSelectTextInTable)"
@@ -39,6 +40,7 @@
             <table-cell
                 [item]="item"
                 [index]="index"
+                [parent]="parent"
                 [is-rendered]="isRendered"
                 *ngIf="showedCellByDefault"
                 [column-index]="columnIndex"

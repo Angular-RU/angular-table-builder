@@ -24,6 +24,7 @@ import { detectChanges } from '../../operators/detect-changes';
 export class TableCellComponent extends TableLineRow implements OnInit, OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
+    @Input() public parent: HTMLDivElement;
     @Input('is-filterable') public isFilterable: boolean;
 
     public loaded: boolean;

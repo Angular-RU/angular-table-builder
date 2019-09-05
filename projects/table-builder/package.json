@@ -1,6 +1,6 @@
 {
     "name": "@angular-ru/ng-table-builder",
-    "version": "0.0.60",
+    "version": "0.0.61",
     "peerDependencies": {
         "@angular/common": ">=7.2.0 <9.0.0",
         "@angular/core": ">=7.2.0  <9.0.0",

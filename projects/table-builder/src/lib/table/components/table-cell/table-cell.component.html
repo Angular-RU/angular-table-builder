@@ -1,4 +1,4 @@
-<div class="table-grid__cell--inner-content"  [class.loaded]="loaded">
+<div #divElement class="table-grid__cell--inner-content" [overflowTooltip]="divElement" [parent]="parent" [class.loaded]="loaded">
     <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">
         <ng-template
             [ngTemplateOutlet]="columnSchema?.td?.template"
