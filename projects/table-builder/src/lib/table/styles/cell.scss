@@ -49,6 +49,7 @@ table-cell {
         }
 
         &--content {
+            line-height: 25px;
             overflow: hidden;
             @extend .vertical-align;
 

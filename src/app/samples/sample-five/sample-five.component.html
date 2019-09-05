@@ -13,7 +13,8 @@
 <ngx-table-builder
     #table
     [source]="data"
-    [column-width]="150"
+    [row-height]="55"
+    [column-width]="200"
     [exclude-keys]="['guid']"
     (schemaChanges)="updatedSchema($event)"
 >
@@ -23,5 +24,7 @@
        Also you can customize your columns manually
        <ngx-column key="myKey" [resizable]="true">...</ngx-column>
     -->
-    <ngx-options [resizable]="true"></ngx-options>
+    <ngx-options [resizable]="true" [nowrap]="false"></ngx-options>
+
+    <ngx-column key="id" width="80" important-template sticky></ngx-column>
 </ngx-table-builder>

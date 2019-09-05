@@ -35,16 +35,14 @@ export class MocksGenerator {
                                 guid: '5cdae5b2ba0a57f709b72142' + '__' + idx
                             };
 
-                            if (cols === 6) {
+                            if (cols > 6) {
                                 baseRow['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud'] =
                                     'Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa' +
                                     ' consectetur veniam Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis' +
                                     ' incididunt culpa consectetur veniam. Fugiat tempor sunt nostrud ad fugiat.' +
                                     ' Laboris velit duis incididunt culpa consectetur veniam';
-                            }
 
-                            if (cols > 6) {
-                                for (let i: number = 6; i <= cols; i++) {
+                                for (let i: number = 6; i <= cols - 1; i++) {
                                     baseRow['column-' + i] = `$row-${idx} $col-${i}`;
                                 }
                             }

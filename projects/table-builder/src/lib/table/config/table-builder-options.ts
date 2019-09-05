@@ -9,6 +9,6 @@ export class TableBuilderOptionsImpl implements TableBuilderOptions {
     public static readonly FRAME_TIME: number = 66;
     public static readonly ROW_HEIGHT: number = 45;
     public static readonly TIME_IDLE: number = 200;
-    public bufferAmount: number = 2;
     public wheelMaxDelta: number = 400;
+    public bufferAmount: number = 0;
 }

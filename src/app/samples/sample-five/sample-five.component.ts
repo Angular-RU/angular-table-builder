@@ -17,7 +17,7 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(1000, 30).then((data: TableRow[]) => {
+        MocksGenerator.generator(1000, 40).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });

@@ -231,7 +231,6 @@ export abstract class TableBuilderApiImpl
     }
 
     public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
-        this.recheckViewportChecked();
         this.disableDragging();
 
         this.resize.resize(
@@ -358,8 +357,12 @@ export abstract class TableBuilderApiImpl
 
     private afterCalculateWidth(): void {
         this.isDragging = {};
-        this.recheckViewportChecked();
         this.changeSchema();
+
+        this.tableViewportChecked = false;
+        this.detectChanges();
+
+        this.utils.microtask(() => (this.tableViewportChecked = true)).then(() => this.detectChanges());
     }
 
     private onMouseResizeColumn(key: string, width: number): void {
