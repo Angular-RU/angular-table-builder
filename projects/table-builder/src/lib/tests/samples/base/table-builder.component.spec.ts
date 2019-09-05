@@ -283,8 +283,6 @@ describe('[TEST]: TableBuilder', () => {
     }));
 
     it('should be correct generate table body without emitter', () => {
-        const index: number = 0;
-
         const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
@@ -298,7 +296,6 @@ describe('[TEST]: TableBuilder', () => {
         tableBody.primaryKey = 'id';
         tableBody.source = [item];
 
-        expect(tableBody.trackByIdx(index, item)).toEqual(item.id);
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
         tableBody.enableSelection = true;

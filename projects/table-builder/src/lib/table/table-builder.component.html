@@ -11,8 +11,8 @@
     [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
+    (recalculatedHeight)="recalculateHeight()"
     (observeVisible)="checkVisible($event)"
-    (recalculatedHeight)="detectChanges()"
     [autoHeight]="{
         detect: autoHeightDetect,
         height: height,
@@ -63,8 +63,8 @@
                     [ngStyle]="columnSchema?.cssStyle"
                     [ngClass]="columnSchema?.cssClass"
                     cdkDragBoundary=".table-grid__column-area-content"
-                    [style.width.px]="columnSchema?.width"
-                    [style.max-width.px]="columnSchema?.width"
+                    [style.max-width.px]="columnSchema?.width || clientColWidth"
+                    [style.width.px]="columnSchema?.width || clientColWidth"
                     [style.min-width.px]="columnSchema?.width || clientColWidth"
                     [class.table-grid__column--with-footer-content]="footerTemplate"
                     [class.table-grid__column--vertical-line]="verticalBorder || columnSchema?.verticalLine"
@@ -80,9 +80,9 @@
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
                     <div
+                        [@fadeAnimation]
                         class="table-grid__column-area"
                         *ngIf="asyncColumns === false || column['visible']"
-                        [@fadeAnimation]
                     >
                         <table-thead
                             [column-schema]="columnSchema"
@@ -107,12 +107,13 @@
 
                         <table-tbody
                             [source]="source"
-                            [column-schema]="columnSchema"
                             [striped]="striped"
                             [column-index]="index"
                             [is-rendered]="isRendered"
                             [primary-key]="primaryKey"
+                            [recalculated]="recalculated"
                             [buffer-amount]="bufferAmount"
+                            [column-schema]="columnSchema"
                             [table-viewport]="tableViewport"
                             [context-menu]="contextMenuTemplate"
                             [enable-selection]="enableSelection"

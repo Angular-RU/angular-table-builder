@@ -6,7 +6,17 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [exclude-keys]="['guid']" (schemaChanges)="updatedSchema($event)">
+<b>Default col width</b>: 150px
+<br />
+<br />
+
+<ngx-table-builder
+    #table
+    [source]="data"
+    [column-width]="150"
+    [exclude-keys]="['guid']"
+    (schemaChanges)="updatedSchema($event)"
+>
     <!--
        <ngx-options /> - declaration common options for columns
 

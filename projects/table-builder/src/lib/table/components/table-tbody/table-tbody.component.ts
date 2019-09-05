@@ -1,3 +1,4 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -5,6 +6,9 @@ import {
     Inject,
     Input,
     NgZone,
+    OnChanges,
+    OnDestroy,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -13,7 +17,7 @@ import { TableClickEventEmitter, TableRow } from '../../interfaces/table-builder
 import { SelectionService } from '../../services/selection/selection.service';
 import { NGX_TABLE_OPTIONS } from '../../config/table-builder.tokens';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { KeyMap } from '../../interfaces/table-builder.internal';
+import { Any, KeyMap, RecalculatedStatus } from '../../interfaces/table-builder.internal';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
 import { UtilsService } from '../../services/utils/utils.service';
@@ -25,9 +29,10 @@ import { detectChanges } from '../../operators/detect-changes';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableTbodyComponent extends TableLineRow {
+export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDestroy {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
+    @Input() public recalculated: RecalculatedStatus;
     @Input('primary-key') public primaryKey: string;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
     @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
@@ -36,6 +41,8 @@ export class TableTbodyComponent extends TableLineRow {
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('buffer-amount') public bufferAmount: number;
+    @ViewChild('scroll', { static: true }) public scroll: VirtualScrollerComponent;
+    private frameId: number;
 
     constructor(
         public selection: SelectionService,
@@ -56,6 +63,46 @@ export class TableTbodyComponent extends TableLineRow {
         return !this.selection.selectionStart.status;
     }
 
+    public ngOnChanges(): void {
+        this.ngZone.runOutsideAngular(() => {
+            clearInterval(this.frameId);
+            this.frameId = window.setTimeout(() => {
+                if (this.scroll) {
+                    this.scroll.invalidateAllCachedMeasurements();
+                }
+            }, TableBuilderOptionsImpl.TIME_IDLE);
+        });
+    }
+
+    /**
+     * @description: we hove some memory leak after destroy component
+     * because VirtualScrollerComponent work with requestAnimationFrame
+     * invalidate cache (VirtualScrollerComponent)
+     */
+    public ngOnDestroy(): void {
+        const scroll: VirtualScrollerComponent & Any = this.scroll as Any;
+        scroll.removeScrollEventHandlers();
+        scroll.wrapGroupDimensions = null;
+        scroll.parentScroll = null;
+        scroll.viewPortItems = null;
+        scroll.items = null;
+        /**
+         * Internally
+         */
+        scroll['invalidateAllCachedMeasurements'] = (): void => {};
+        scroll['calculateViewport'] = (): Any => ({ startIndex: 0, scrollLength: 0 });
+        scroll['previousViewPort'] = { startIndex: 0, scrollLength: 0 };
+        scroll['invisiblePaddingElementRef'] = { nativeElement: null };
+        scroll['getScrollStartPosition'] = (): number => 0;
+        scroll['calculateDimensions'] = (): void => {};
+        scroll['refresh_internal'] = (): void => {};
+        scroll['element'] = { nativeElement: null };
+        scroll['contentElementRef'] = null;
+        scroll['_items'] = null;
+        scroll['zone'] = null;
+        this.scroll = null;
+    }
+
     public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
         if (this.contextMenuTemplate) {
             const selectOnlyUnSelectedRow: boolean = this.enableSelection && !this.checkSelectedItem(row);
@@ -66,11 +113,6 @@ export class TableTbodyComponent extends TableLineRow {
 
             this.contextMenu.openContextMenu(event, key, row);
         }
-    }
-
-    public trackByIdx(index: number, item: TableRow): number {
-        const id: number = parseInt(item[this.primaryKey] as string);
-        return id !== undefined ? id : index;
     }
 
     public handleDblClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {

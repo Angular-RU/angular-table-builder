@@ -22,6 +22,10 @@ export interface ScrollOffsetStatus {
     offset: boolean;
 }
 
+export interface RecalculatedStatus {
+    recalculateHeight: boolean;
+}
+
 export interface KeyMap<T = Any> {
     [key: string]: T;
 }

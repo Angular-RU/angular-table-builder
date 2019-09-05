@@ -23,6 +23,7 @@ import {
     Any,
     Fn,
     KeyMap,
+    RecalculatedStatus,
     ScrollOffsetStatus,
     TableSimpleChanges,
     TemplateKeys
@@ -71,6 +72,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public contentCheck: boolean = false;
     public showedCellByDefault: boolean = true;
     public scrollOffset: ScrollOffsetStatus = { offset: false };
+    public recalculated: RecalculatedStatus = { recalculateHeight: false };
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;
     @ViewChild('footer', { static: false })
@@ -111,6 +113,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public checkSourceIsNull(): boolean {
         return !('length' in (this.source || {}));
+    }
+
+    public recalculateHeight(): void {
+        this.recalculated = { recalculateHeight: true };
+        this.detectChanges();
     }
 
     public ngOnChanges(changes: SimpleChanges = {}): void {

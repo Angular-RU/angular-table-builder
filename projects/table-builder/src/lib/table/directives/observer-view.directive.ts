@@ -9,7 +9,7 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     private previousRation: number = 0.0;
     private frameId: number;
 
-    constructor(private readonly element: ElementRef, private readonly ngZone: NgZone) {}
+    constructor(private element: ElementRef, private readonly ngZone: NgZone) {}
 
     public ngAfterViewInit(): void {
         this.observer = new IntersectionObserver(
@@ -43,6 +43,9 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
+        this.element = { nativeElement: null };
+        this.observeVisible.unsubscribe();
+        clearTimeout(this.frameId);
         this.observer.disconnect();
     }
 }

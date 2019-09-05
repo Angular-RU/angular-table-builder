@@ -1,6 +1,6 @@
 import { animate, AnimationTriggerMetadata, state, style, transition, trigger } from '@angular/animations';
 
-const DEFAULT_TIME_ANIMATION: number = 200;
+const DEFAULT_TIME_ANIMATION: number = 150;
 
 export const NGX_ANIMATION: AnimationTriggerMetadata = trigger('fadeAnimation', [
     // the "in" style determines the "resting" state of the element when it is visible.

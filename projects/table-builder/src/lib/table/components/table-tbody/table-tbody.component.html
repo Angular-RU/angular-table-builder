@@ -1,11 +1,11 @@
 <virtual-scroller
     #scroll
     [items]="source"
-    [checkResizeInterval]="0"
-    [scrollAnimationTime]="1000"
-    [parentScroll]="tableViewport"
     [stripedTable]="true"
-    [enableUnequalChildrenSizes]="false"
+    [checkResizeInterval]="0"
+    [scrollAnimationTime]="2000"
+    [parentScroll]="tableViewport"
+    [enableUnequalChildrenSizes]="true"
     [bufferAmount]="clientBufferAmount"
     [executeRefreshOutsideAngularZone]="true"
     [useMarginInsteadOfTranslate]="true"
@@ -16,7 +16,7 @@
 >
     <div
         class="table-grid__cell"
-        *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
+        *ngFor="let item of scroll.viewPortItems; let index = index"
         (selectstart)="(canSelectTextInTable)"
         (contextmenu)="openContextMenu($event, columnSchema.key, item)"
         (click)="handleOnClick(item, columnSchema.key, $event, columnSchema?.td?.onClick)"
