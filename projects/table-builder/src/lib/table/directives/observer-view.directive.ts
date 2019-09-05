@@ -44,7 +44,6 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
 
     public ngOnDestroy(): void {
         this.element = { nativeElement: null };
-        this.observeVisible.unsubscribe();
         clearTimeout(this.frameId);
         this.observer.disconnect();
     }
