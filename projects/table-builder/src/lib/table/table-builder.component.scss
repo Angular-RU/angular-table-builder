@@ -6,17 +6,20 @@
 @import './styles/icon';
 @import './styles/draggable';
 
+.table-grid__root--is-rendered .table-grid {
+    overflow: auto;
+    //noinspection CssOverwrittenProperties
+    overflow-y: auto;
+}
+
 .table-grid {
     position: relative;
-    overflow: auto;
+    overflow: hidden;
     background: $backgroundColor;
     will-change: auto;
     scroll-behavior: smooth;
     overflow-x: visible;
     height: 100%;
-
-    //noinspection CssOverwrittenProperties
-    overflow-y: auto;
 
     &__column-area-content {
         display: flex;

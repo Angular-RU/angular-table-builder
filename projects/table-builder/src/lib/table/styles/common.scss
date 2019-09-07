@@ -8,11 +8,11 @@
 }
 
 .table-grid__root {
-    opacity: 0;
+    opacity: 0.0012;
     overflow: hidden;
     position: relative;
     border: 1px solid transparent;
-    transition: opacity 0.5s linear;
+    transition: opacity 0.2s ease-in-out;
     transform: translate(0);
 
     &.table-grid__root--visible {
@@ -21,6 +21,10 @@
     }
 
     &.table-grid__root--content-is-init {
+        opacity: 0.4;
+    }
+
+    &.table-grid__root--is-rendered {
         opacity: 1;
     }
 }
@@ -88,4 +92,8 @@ table-tbody {
     100% {
         transform: translateX(100%);
     }
+}
+
+.filter-founded {
+    border-bottom: 1px dotted #000;
 }

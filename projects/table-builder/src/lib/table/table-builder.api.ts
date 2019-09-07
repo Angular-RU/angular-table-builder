@@ -39,7 +39,7 @@ import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
 
-const { ROW_HEIGHT, FILTER_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -231,6 +231,7 @@ export abstract class TableBuilderApiImpl
     }
 
     public resizeColumn({ event, key }: ResizeEvent, column: HTMLDivElement): void {
+        this.recheckViewportChecked();
         this.disableDragging();
 
         this.resize.resize(
@@ -253,7 +254,7 @@ export abstract class TableBuilderApiImpl
             this.filterIdTask = window.setTimeout(() => {
                 this.filterable.changeFilteringStatus();
                 this.sortAndFilter().then(() => this.reCheckDefinitions());
-            }, FILTER_TIME);
+            }, MACRO_TIME);
         });
     }
 
@@ -357,12 +358,8 @@ export abstract class TableBuilderApiImpl
 
     private afterCalculateWidth(): void {
         this.isDragging = {};
+        this.recheckViewportChecked();
         this.changeSchema();
-
-        this.tableViewportChecked = false;
-        this.detectChanges();
-
-        this.utils.microtask(() => (this.tableViewportChecked = true)).then(() => this.detectChanges());
     }
 
     private onMouseResizeColumn(key: string, width: number): void {

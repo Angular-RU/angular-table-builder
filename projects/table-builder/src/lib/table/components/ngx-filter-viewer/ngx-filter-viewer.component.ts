@@ -22,7 +22,7 @@ const { TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-filter-viewer',
-    template: '<span [innerHTML]="html"></span>',
+    template: '<span [class.filter-founded]="founded" [innerHTML]="html"></span>',
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
@@ -31,6 +31,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     @Input() public key: string = null;
     @Input() public index: number = 0;
     public html: string | SafeHtml;
+    public founded: boolean = false;
     private subscription: Subscription;
     private taskId: number;
 
@@ -112,9 +113,14 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
         );
 
         this.html = this.sanitizer.bypassSecurityTrustHtml(trustedHtml);
+
+        if (trustedHtml.includes('span')) {
+            this.founded = true;
+        }
     }
 
     private defaultHtmlValue(): void {
         this.html = this.text;
+        this.founded = false;
     }
 }

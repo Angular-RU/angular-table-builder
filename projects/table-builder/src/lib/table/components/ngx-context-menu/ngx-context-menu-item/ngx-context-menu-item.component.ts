@@ -6,16 +6,18 @@ import {
     EventEmitter,
     Input,
     NgZone,
+    OnDestroy,
     OnInit,
     Output,
     ViewChild,
-    ViewEncapsulation,
-    ViewRef
+    ViewEncapsulation
 } from '@angular/core';
 import { ContextMenuService } from '../../../services/context-menu/context-menu.service';
 import { ContextMenuState } from '../../../services/context-menu/context-menu.interface';
 import { ContextItemEvent } from '../../../interfaces/table-builder.external';
 import { UtilsService } from '../../../services/utils/utils.service';
+import { Subscription } from 'rxjs';
+import { detectChanges } from '../../../operators/detect-changes';
 
 @Component({
     selector: 'ngx-context-menu-item',
@@ -23,7 +25,7 @@ import { UtilsService } from '../../../services/utils/utils.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class NgxContextMenuItemComponent implements OnInit {
+export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     private static readonly MIN_PADDING: number = 25;
     @Input() public visible: boolean = true;
     @Input() public contextTitle: boolean = null;
@@ -35,6 +37,7 @@ export class NgxContextMenuItemComponent implements OnInit {
     @ViewChild('item', { static: false }) public itemRef: ElementRef<HTMLDivElement>;
     public offsetX: number = null;
     public offsetY: number = null;
+    private subscription: Subscription;
     private taskId: number;
 
     constructor(
@@ -57,7 +60,12 @@ export class NgxContextMenuItemComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.contextMenu.events.subscribe(() => this.detectChanges());
+        this.subscription = this.contextMenu.events.subscribe(() => detectChanges(this.cd));
+    }
+
+    public ngOnDestroy(): void {
+        this.itemRef = null;
+        this.subscription.unsubscribe();
     }
 
     public calculateSubMenuPosition(ref: HTMLDivElement): void {
@@ -92,12 +100,6 @@ export class NgxContextMenuItemComponent implements OnInit {
             });
 
             event.stopPropagation();
-        }
-    }
-
-    private detectChanges(): void {
-        if (!(this.cd as ViewRef).destroyed) {
-            this.cd.detectChanges();
         }
     }
 

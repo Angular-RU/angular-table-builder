@@ -30,6 +30,12 @@ table-cell {
         border-bottom: none;
     }
 
+    table-tbody &__cell {
+        &--content {
+            line-height: 25px;
+        }
+    }
+
     &__cell {
         color: rgba(0, 0, 0, 1);
         width: 100%;
@@ -49,7 +55,6 @@ table-cell {
         }
 
         &--content {
-            line-height: 25px;
             overflow: hidden;
             @extend .vertical-align;
 

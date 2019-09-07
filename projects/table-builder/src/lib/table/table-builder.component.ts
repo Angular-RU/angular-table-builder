@@ -43,6 +43,7 @@ import { FilterableService } from './services/filterable/filterable.service';
 import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
+import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -58,7 +59,8 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = T
         ResizableService,
         ContextMenuService,
         FilterableService,
-        DraggableService
+        DraggableService,
+        OverloadScrollService
     ],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
@@ -201,6 +203,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnDestroy(): void {
+        this.templateParser.schema = null;
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
     }
@@ -338,7 +341,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
 
             if (schema.isVisible) {
-                await this.utils.requestAnimationFrame(() => this.processedColumnList(schema, key, true));
+                await this.utils.requestAnimationFrame(() => {
+                    this.processedColumnList && this.processedColumnList(schema, key, true);
+                });
             } else {
                 this.processedColumnList(schema, key, true);
             }
@@ -405,7 +410,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.isRendered = true;
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
-        this.idleDetectChanges();
+        this.recalculateHeight();
     }
 
     /**

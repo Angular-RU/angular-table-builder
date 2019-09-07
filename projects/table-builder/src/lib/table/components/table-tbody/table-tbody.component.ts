@@ -1,4 +1,6 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -8,6 +10,8 @@ import {
     NgZone,
     OnChanges,
     OnDestroy,
+    OnInit,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
@@ -20,6 +24,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { Any, KeyMap, RecalculatedStatus } from '../../interfaces/table-builder.internal';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
+import { OverloadScrollService } from '../../services/overload-scroll/overload-scroll.service';
 import { UtilsService } from '../../services/utils/utils.service';
 import { detectChanges } from '../../operators/detect-changes';
 
@@ -29,7 +34,7 @@ import { detectChanges } from '../../operators/detect-changes';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDestroy {
+export class TableTbodyComponent extends TableLineRow implements OnChanges, OnInit, OnDestroy {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
     @Input() public recalculated: RecalculatedStatus;
@@ -42,7 +47,12 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
     @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('buffer-amount') public bufferAmount: number;
     @ViewChild('scroll', { static: true }) public scroll: VirtualScrollerComponent;
-    private frameId: number;
+    private destroy$: Subject<boolean> = new Subject<boolean>();
+    private runLazy: boolean = false;
+    private needRefresh: boolean;
+    private taskId: number;
+    private reloadTaskId: number;
+    private delta: number;
 
     constructor(
         public selection: SelectionService,
@@ -50,7 +60,8 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
         public contextMenu: ContextMenuService,
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         private readonly ngZone: NgZone,
-        protected readonly utils: UtilsService
+        protected readonly utils: UtilsService,
+        private readonly overload: OverloadScrollService
     ) {
         super(selection, utils);
     }
@@ -63,20 +74,18 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
         return !this.selection.selectionStart.status;
     }
 
-    public ngOnChanges(): void {
-        this.ngZone.runOutsideAngular(() => {
-            clearInterval(this.frameId);
-            this.frameId = window.setTimeout(() => {
-                if (this.scroll) {
-                    this.scroll.invalidateAllCachedMeasurements();
-                }
-            }, TableBuilderOptionsImpl.TIME_IDLE);
-        });
+    public ngOnChanges(changes: SimpleChanges): void {
+        if ('recalculated' in changes && !changes['recalculated'].firstChange && this.scroll) {
+            this.scroll.invalidateAllCachedMeasurements();
+        }
     }
 
-    public trackByIdx(index: number, item: TableRow): number {
-        const id: number = parseInt(item[this.primaryKey] as string);
-        return id !== undefined ? id : index;
+    public ngOnInit(): void {
+        if (!this.enableSelection) {
+            this.overload.scrollDelta.pipe(takeUntil(this.destroy$)).subscribe((delta: number) => (this.delta = delta));
+        }
+
+        this.overload.scrollEnd.pipe(takeUntil(this.destroy$)).subscribe(() => this.refresh());
     }
 
     /**
@@ -85,15 +94,14 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
      * invalidate cache (VirtualScrollerComponent)
      */
     public ngOnDestroy(): void {
+        this.destroy$.next(true);
+        this.destroy$.unsubscribe();
         const scroll: VirtualScrollerComponent & Any = this.scroll as Any;
         scroll.removeScrollEventHandlers();
         scroll.wrapGroupDimensions = null;
         scroll.parentScroll = null;
         scroll.viewPortItems = null;
         scroll.items = null;
-        /**
-         * Internally
-         */
         scroll['invalidateAllCachedMeasurements'] = (): void => {};
         scroll['calculateViewport'] = (): Any => ({ startIndex: 0, scrollLength: 0 });
         scroll['previousViewPort'] = { startIndex: 0, scrollLength: 0 };
@@ -105,6 +113,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
         scroll['contentElementRef'] = null;
         scroll['_items'] = null;
         scroll['zone'] = null;
+        this.destroy$ = null;
         this.scroll = null;
     }
 
@@ -131,7 +140,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
                 this.selection.selectionTaskIdle = window.setTimeout(() => {
                     this.selection.selectRow(row, event, this.source);
                     event.preventDefault();
-                    this.cd.detectChanges();
+                    detectChanges(this.cd);
                 });
             }
         });
@@ -140,7 +149,36 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnDe
     }
 
     public vsChange(): void {
-        detectChanges(this.cd);
+        if (this.delta > OverloadScrollService.MIN_DELTA && !this.enableSelection) {
+            this.runLazy = true;
+            window.clearTimeout(this.taskId);
+            this.lazyVsChanges();
+        } else if (!this.runLazy) {
+            detectChanges(this.cd);
+        }
+    }
+
+    private refresh(): void {
+        window.clearTimeout(this.reloadTaskId);
+        this.ngZone.runOutsideAngular(() => {
+            this.reloadTaskId = window.setTimeout(() => {
+                if (this.scroll) {
+                    this.scroll.invalidateAllCachedMeasurements();
+                    detectChanges(this.cd);
+                }
+            }, TableBuilderOptionsImpl.MICRO_TIME);
+        });
+
+        this.needRefresh = false;
+    }
+
+    private lazyVsChanges(): void {
+        this.ngZone.runOutsideAngular(() => {
+            this.taskId = window.setTimeout(() => {
+                detectChanges(this.cd);
+                this.runLazy = false;
+            }, TableBuilderOptionsImpl.TIME_IDLE);
+        });
     }
 
     private handleEventEmitter(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {

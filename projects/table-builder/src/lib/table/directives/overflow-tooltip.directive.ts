@@ -1,24 +1,25 @@
-import { AfterViewInit, Directive, Input, NgZone, OnDestroy } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import { AfterViewInit, Directive, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { fromEvent, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-import { TableBuilderOptionsImpl } from '../config/table-builder-options';
+import { OverloadScrollService } from '../services/overload-scroll/overload-scroll.service';
 
 @Directive({ selector: '[overflowTooltip]' })
-export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
+export class OverflowTooltipDirective implements OnInit, AfterViewInit, OnDestroy {
     @Input('overflowTooltip') public element: HTMLDivElement = null;
     @Input('parent') public parent: HTMLDivElement = null;
     @Input('text-center') public textCenter: boolean = null;
-    private subscriptions: Subscription[] = [];
+    private destroy$: Subject<boolean> = new Subject<boolean>();
+    private canBindMouseEvent: boolean = true;
 
     /**
      * Minimal time before show tooltip
      */
     private readonly timeIdle: number = 500;
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
-    private mainTask: number = null;
     private frameId: number = null;
 
-    constructor(private readonly ngZone: NgZone) {}
+    constructor(private overload: OverloadScrollService, private ngZone: NgZone) {}
 
     private get overflowContentElem(): HTMLDivElement {
         return document.querySelector(`.${this.overflowSelector}`);
@@ -33,36 +34,50 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
         );
     }
 
-    public ngAfterViewInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.mainTask = window.setTimeout(() => {
-                const mouseenter: Subscription = fromEvent(this.element, 'mouseenter').subscribe(() =>
-                    this.detectCheckOverflow()
-                );
-                const mouseleave: Subscription = fromEvent(this.element, 'mouseleave').subscribe(() => {
-                    clearInterval(this.frameId);
-                });
-
-                this.subscriptions = [mouseenter, mouseleave];
-            }, TableBuilderOptionsImpl.TIME_RELOAD);
+    public ngOnInit(): void {
+        this.overload.scrollDelta.pipe(takeUntil(this.destroy$)).subscribe((delta: number) => {
+            if (delta > OverloadScrollService.MIN_DELTA) {
+                this.canBindMouseEvent = false;
+            }
         });
     }
 
-    public ngOnDestroy(): void {
-        clearInterval(this.mainTask);
-        clearInterval(this.frameId);
-        this.removeElement();
-        for (const subscription of this.subscriptions) {
-            if (!subscription.closed) {
-                subscription.unsubscribe();
-            }
+    public ngAfterViewInit(): void {
+        if (this.canBindMouseEvent) {
+            fromEvent(this.element, 'mouseenter')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => this.detectCheckOverflow());
+            fromEvent(this.element, 'mouseleave')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                    clearInterval(this.frameId);
+                });
         }
     }
 
+    /**
+     * fix problem with memory leak
+     */
+    public ngOnDestroy(): void {
+        clearInterval(this.frameId);
+        this.removeElement();
+        this.destroy$.next(true);
+        this.destroy$.unsubscribe();
+        this.overload = null;
+        this.ngZone = null;
+        this.element = null;
+        this.parent = null;
+        this.destroy$ = null;
+    }
+
     private detectCheckOverflow(): void {
+        clearInterval(this.frameId);
         this.ngZone.runOutsideAngular(() => {
-            clearInterval(this.frameId);
             this.frameId = window.setTimeout(() => {
+                if (!this.overload) {
+                    return;
+                }
+
                 const isOverflow: boolean = OverflowTooltipDirective.checkOverflow(this.element, this.parent);
                 if (isOverflow) {
                     this.showTooltip();
@@ -83,18 +98,17 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
         elem.style.cssText = `left: ${rect.left}px; top: ${rect.top}px`;
         document.body.appendChild(elem);
 
-        const overflowEvents: Subscription = fromEvent(this.overflowContentElem, 'mouseleave').subscribe(() => {
-            this.removeElement();
-            if (!overflowEvents.closed) {
-                overflowEvents.unsubscribe();
-            }
-        });
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => {
+                if (this.overflowContentElem) {
+                    this.overflowContentElem.classList.add('visible');
+                    this.overflowContentElem.innerHTML = this.element.innerHTML;
 
-        this.subscriptions.push(overflowEvents);
-
-        window.setTimeout(() => {
-            this.overflowContentElem.classList.add('visible');
-            this.overflowContentElem.innerText = this.element.innerText;
+                    fromEvent(this.overflowContentElem, 'mouseleave')
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(() => this.removeElement());
+                }
+            });
         });
     }
 

@@ -1,8 +1,10 @@
 import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
+
+import { OverloadScrollService } from '../services/overload-scroll/overload-scroll.service';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { Fn } from '../interfaces/table-builder.internal';
+import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
 import { UtilsService } from '../services/utils/utils.service';
+import { Fn } from '../interfaces/table-builder.internal';
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
@@ -10,6 +12,7 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     @Output() public scrollEnd: EventEmitter<void> = new EventEmitter();
     public scrollTopOffset: boolean = false;
     public isScrolling: number = null;
+    private lastDelta: number = 0;
     public isPassive: boolean;
     private handler: Fn;
 
@@ -17,7 +20,8 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
         private readonly elementRef: ElementRef,
         private readonly ngZone: NgZone,
-        private readonly utils: UtilsService
+        private readonly utils: UtilsService,
+        private readonly overload: OverloadScrollService
     ) {
         this.isPassive = !this.utils.isFirefox(null);
     }
@@ -36,7 +40,7 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
             this.handler = (event: WheelEvent): void => this.onElementScroll(event);
-            this.element.addEventListener('wheel', this.handler, this.listenerOptions);
+            this.element.addEventListener('mousewheel', this.handler, this.listenerOptions);
         });
     }
 
@@ -46,10 +50,15 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
 
     public onElementScroll($event: WheelEvent): void {
         const deltaY: number = Math.abs(Number($event.deltaY));
-        const isLimitExceeded: boolean = deltaY > this.options.wheelMaxDelta;
+        const isLimitExceeded: boolean = deltaY >= this.options.wheelMaxDelta;
 
         if (isLimitExceeded && !this.isPassive) {
             $event.preventDefault();
+        }
+
+        if (this.lastDelta !== deltaY) {
+            this.lastDelta = deltaY;
+            this.overload.scrollDelta.next(this.lastDelta);
         }
 
         this.ngZone.runOutsideAngular(() => {
@@ -64,7 +73,9 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
                     this.scrollTopOffset = false;
                     this.scrollOffset.emit(this.scrollTopOffset);
                 }
-            }, TableBuilderOptionsImpl.FRAME_TIME);
+
+                this.overload.scrollEnd.next();
+            }, TableBuilderOptionsImpl.TIME_IDLE);
         });
     }
 }

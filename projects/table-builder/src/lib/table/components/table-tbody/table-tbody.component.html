@@ -8,7 +8,7 @@
     [enableUnequalChildrenSizes]="true"
     [bufferAmount]="clientBufferAmount"
     [resizeBypassRefreshThreshold]="0"
-    [useMarginInsteadOfTranslate]="false"
+    [useMarginInsteadOfTranslate]="true"
     [executeRefreshOutsideAngularZone]="true"
     [modifyOverflowStyleOfParentScroll]="false"
     [style.height.px]="columnVirtualHeight"
@@ -17,7 +17,7 @@
     <div
         #parent
         class="table-grid__cell"
-        *ngFor="let item of scroll.viewPortItems; let index = index; trackBy: trackByIdx.bind(this)"
+        *ngFor="let item of scroll.viewPortItems; let index = index"
         (selectstart)="(canSelectTextInTable)"
         (contextmenu)="openContextMenu($event, columnSchema.key, item)"
         (click)="handleOnClick(item, columnSchema.key, $event, columnSchema?.td?.onClick)"
