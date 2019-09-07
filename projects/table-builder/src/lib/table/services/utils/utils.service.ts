@@ -19,10 +19,6 @@ export class UtilsService implements UtilsInterface {
         return checkValueIsEmpty(value) ? undefined : value;
     }
 
-    public isFirefox(userAgent: string = null): boolean {
-        return (userAgent || navigator.userAgent).toLowerCase().indexOf('firefox') > -1;
-    }
-
     public clone<T = Any>(obj: T): T {
         return JSON.parse(JSON.stringify(obj || null)) || {};
     }

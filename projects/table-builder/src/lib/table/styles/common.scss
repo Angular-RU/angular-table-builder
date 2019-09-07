@@ -34,6 +34,14 @@
     height: 0;
 }
 
+.table-grid__root:not(.table-grid__root--is-rendered),
+.table-grid__root--is-scrolling {
+    table-tbody,
+    table-cell {
+        pointer-events: none;
+    }
+}
+
 .table-grid__root--empty-list {
     transform: translate(9999px) !important;
     border: none !important;

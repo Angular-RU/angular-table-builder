@@ -1,7 +1,5 @@
 import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../table/config/table-builder-options';
-import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('[TEST]: Deep path pipe', () => {
     let pipe: DeepPathPipe;

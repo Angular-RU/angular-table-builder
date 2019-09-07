@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     Directive,
     ElementRef,
     EventEmitter,
@@ -73,7 +72,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private get parentOffsetHeight(): number {
-        return this.rootCurrentElement.offsetHeight || AutoHeightDirective.DEFAULT_VALUE;
+        return this.rootCurrentElement.clientHeight || AutoHeightDirective.DEFAULT_VALUE;
     }
 
     private get currentElement(): HTMLDivElement {
@@ -154,7 +153,6 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     public markForCheck(): void {
         this.isDirtyCheck = true;
-
         if (this.parentOffsetHeight <= TableBuilderOptionsImpl.ROW_HEIGHT) {
             this.useOnlyAutoViewPort = true;
         }

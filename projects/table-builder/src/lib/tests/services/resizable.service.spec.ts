@@ -17,6 +17,7 @@ import { WebWorkerThreadService } from '../../table/worker/worker-thread.service
 import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../table/services/draggable/draggable.service';
+import { OverloadScrollService } from '../../table/services/overload-scroll/overload-scroll.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -52,6 +53,7 @@ describe('[TEST]: Resizable service', () => {
         const utils: UtilsService = new UtilsService(zone);
         const app: ApplicationRef = appRef as ApplicationRef;
         const parser: TemplateParserService = new TemplateParserService();
+        const scroll: OverloadScrollService = new OverloadScrollService();
 
         resizeService = new ResizableService();
         draggable = new DraggableService(parser);
@@ -69,7 +71,8 @@ describe('[TEST]: Resizable service', () => {
             app,
             new FilterableService(worker, utils, zone, app),
             draggable,
-            viewChanges
+            viewChanges,
+            scroll
         );
     });
 

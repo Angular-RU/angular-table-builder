@@ -11,5 +11,5 @@ export class TableBuilderOptionsImpl implements TableBuilderOptions {
     public static readonly ROW_HEIGHT: number = 45;
     public static readonly TIME_IDLE: number = 200;
     public wheelMaxDelta: number = 300;
-    public bufferAmount: number = 1;
+    public bufferAmount: number = 0;
 }

@@ -21,6 +21,7 @@ import { ContextMenuService } from '../../../table/services/context-menu/context
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
 import { NgxTableViewChangesService } from '@angular-ru/table-builder';
+import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 interface PeriodicElement {
     name: string;
@@ -54,6 +55,7 @@ describe('[TEST]: TableBuilder', () => {
     let sortable: SortableService;
     let contextMenu: ContextMenuService;
     let resizeService: ResizableService;
+    let scroll: OverloadScrollService;
     let utils: UtilsService;
     let draggable: DraggableService;
     let preventDefaultInvoked: number = 0;
@@ -91,7 +93,7 @@ describe('[TEST]: TableBuilder', () => {
         contextMenu = new ContextMenuService();
 
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
-
+        scroll = new OverloadScrollService();
         const app: ApplicationRef = appRef as ApplicationRef;
 
         resizeService = new ResizableService();
@@ -109,7 +111,8 @@ describe('[TEST]: TableBuilder', () => {
             app,
             new FilterableService(worker, utils, zone, app),
             draggable,
-            viewChanges
+            viewChanges,
+            scroll
         );
     });
 
@@ -290,7 +293,8 @@ describe('[TEST]: TableBuilder', () => {
             contextMenu,
             new TableBuilderOptionsImpl(),
             mockNgZone as NgZone,
-            utils
+            utils,
+            scroll
         );
 
         tableBody.primaryKey = 'id';
@@ -315,7 +319,8 @@ describe('[TEST]: TableBuilder', () => {
             contextMenu,
             new TableBuilderOptionsImpl(),
             mockNgZone as NgZone,
-            utils
+            utils,
+            scroll
         );
 
         tableBody.source = [item];

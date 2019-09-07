@@ -34,7 +34,7 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
     public ngOnInit(): void {
         const schema: TableUpdateSchema =
             (JSON.parse(window.localStorage.getItem(this.testName)) as TableUpdateSchema) || null;
-        this.schema = schema && schema.columns;
+        this.schema = (schema && schema.columns) || [];
 
         MocksGenerator.generator(1000, 59).then((data: TableRow[]) => {
             this.data = data;

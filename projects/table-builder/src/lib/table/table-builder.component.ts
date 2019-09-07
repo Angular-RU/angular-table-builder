@@ -80,6 +80,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     @ViewChild('footer', { static: false })
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
+    public isScrolling: boolean;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -96,7 +97,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         protected readonly app: ApplicationRef,
         public readonly filterable: FilterableService,
         protected readonly draggable: DraggableService,
-        protected readonly viewChanges: NgxTableViewChangesService
+        protected readonly viewChanges: NgxTableViewChangesService,
+        protected readonly overloadScroll: OverloadScrollService
     ) {
         super();
     }
@@ -194,6 +196,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenTemplateChanges();
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
+        this.listenScrollEvents();
     }
 
     public ngAfterViewChecked(): void {
@@ -273,6 +276,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.tableViewportChecked = true;
                 this.detectChanges();
             }, TableBuilderOptionsImpl.TIME_IDLE);
+        });
+    }
+
+    private listenScrollEvents(): void {
+        this.overloadScroll.scrollStatus.pipe(takeUntil(this.destroy$)).subscribe((scrolling: boolean) => {
+            this.isScrolling = scrolling;
+            this.detectChanges();
         });
     }
 

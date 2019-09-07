@@ -1,65 +1,58 @@
-import { Directive, ElementRef, EventEmitter, Inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import { Directive, EventEmitter, Inject, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import { fromEvent, Subscription } from 'rxjs';
 
 import { OverloadScrollService } from '../services/overload-scroll/overload-scroll.service';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
+import { getScrollLineHeight } from '../operators/get-scroll-line-height';
 import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
-import { UtilsService } from '../services/utils/utils.service';
-import { Fn } from '../interfaces/table-builder.internal';
+import { isFirefox } from '../operators/is-firefox';
+
+const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
+    @Input() public wheelThrottling: HTMLDivElement;
     @Output() public scrollOffset: EventEmitter<boolean> = new EventEmitter();
-    @Output() public scrollEnd: EventEmitter<void> = new EventEmitter();
     public scrollTopOffset: boolean = false;
+    private firefoxScrollLineHeight: number;
     public isScrolling: number = null;
+    private scrolling: boolean = false;
+    private subscription: Subscription;
     private lastDelta: number = 0;
-    public isPassive: boolean;
-    private handler: Fn;
 
     constructor(
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
-        private readonly elementRef: ElementRef,
         private readonly ngZone: NgZone,
-        private readonly utils: UtilsService,
         private readonly overload: OverloadScrollService
-    ) {
-        this.isPassive = !this.utils.isFirefox(null);
-    }
-
-    /**
-     * @description: firefox can't correct rendering when mouse wheel delta X, Y more then 200-500px
-     */
-    public get listenerOptions(): boolean | AddEventListenerOptions {
-        return this.isPassive ? { passive: true } : true;
-    }
+    ) {}
 
     private get element(): HTMLElement {
-        return this.elementRef.nativeElement;
+        return this.wheelThrottling;
     }
 
     public ngOnInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.handler = (event: WheelEvent): void => this.onElementScroll(event);
-            this.element.addEventListener('mousewheel', this.handler, this.listenerOptions);
-        });
+        this.subscription = fromEvent(this.element, 'wheel').subscribe((event: WheelEvent): void =>
+            this.onElementScroll(event)
+        );
+
+        if (isFirefox()) {
+            this.firefoxScrollLineHeight = getScrollLineHeight();
+        }
     }
 
     public ngOnDestroy(): void {
-        this.element.removeEventListener('wheel', this.handler, this.listenerOptions);
+        this.subscription.unsubscribe();
+        this.wheelThrottling = null;
+        this.scrollOffset = null;
     }
 
+    /**
+     * Correct works only Chrome
+     * @param $event
+     */
     public onElementScroll($event: WheelEvent): void {
-        const deltaY: number = Math.abs(Number($event.deltaY));
-        const isLimitExceeded: boolean = deltaY >= this.options.wheelMaxDelta;
-
-        if (isLimitExceeded && !this.isPassive) {
-            $event.preventDefault();
-        }
-
-        if (this.lastDelta !== deltaY) {
-            this.lastDelta = deltaY;
-            this.overload.scrollDelta.next(this.lastDelta);
-        }
+        this.preventScroll($event);
+        this.scrollStart();
 
         this.ngZone.runOutsideAngular(() => {
             window.clearTimeout(this.isScrolling);
@@ -74,8 +67,36 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
                     this.scrollOffset.emit(this.scrollTopOffset);
                 }
 
-                this.overload.scrollEnd.next();
-            }, TableBuilderOptionsImpl.TIME_IDLE);
+                this.scrollEnd();
+            }, TIME_IDLE);
         });
+    }
+
+    private scrollStart(): void {
+        if (!this.scrolling) {
+            this.scrolling = true;
+            this.overload.scrollStatus.next(this.scrolling);
+        }
+    }
+
+    private scrollEnd(): void {
+        this.scrolling = false;
+        this.overload.scrollStatus.next(this.scrolling);
+    }
+
+    private preventScroll($event: WheelEvent): void {
+        const DOM_DELTA_PIXEL: number = 0x00;
+        const deltaY: number = Math.abs($event.deltaY);
+
+        if (this.firefoxScrollLineHeight) {
+            const limit: number = this.firefoxScrollLineHeight * deltaY;
+            const minimalPx: number = 100;
+            if (limit > minimalPx) {
+                $event.preventDefault();
+            }
+        } else if (this.lastDelta !== deltaY && $event.deltaMode === DOM_DELTA_PIXEL) {
+            this.lastDelta = deltaY;
+            this.overload.scrollDelta.next(this.lastDelta);
+        }
     }
 }

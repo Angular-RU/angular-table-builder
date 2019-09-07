@@ -18,26 +18,27 @@ import {
     ViewRef
 } from '@angular/core';
 
+import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
 import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
 import { ColumnsSchema, SimpleSchemaColumns, TableRow } from './interfaces/table-builder.external';
+import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
-import { SelectionMap } from './services/selection/selection';
-import { SelectionService } from './services/selection/selection.service';
-import { UtilsService } from './services/utils/utils.service';
-import { TableBuilderOptionsImpl } from './config/table-builder-options';
-import { ResizableService } from './services/resizer/resizable.service';
-import { SortableService } from './services/sortable/sortable.service';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
-import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { NgxHeaderComponent } from './components/ngx-header/ngx-header.component';
 import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component';
-import { FilterableService } from './services/filterable/filterable.service';
-import { FilterWorkerEvent } from './services/filterable/filterable.interface';
 import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
+import { FilterWorkerEvent } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
-import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
+import { FilterableService } from './services/filterable/filterable.service';
+import { SelectionService } from './services/selection/selection.service';
+import { TableBuilderOptionsImpl } from './config/table-builder-options';
+import { ResizableService } from './services/resizer/resizable.service';
+import { SortableService } from './services/sortable/sortable.service';
+import { UtilsService } from './services/utils/utils.service';
+import { SelectionMap } from './services/selection/selection';
+import { isFirefox } from './operators/is-firefox';
 
 const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -88,6 +89,7 @@ export abstract class TableBuilderApiImpl
     public inViewport: boolean;
     public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;
+    public isFirefoxMode: boolean = isFirefox();
 
     /**
      * @description: the custom names of the column list to be displayed in the view.

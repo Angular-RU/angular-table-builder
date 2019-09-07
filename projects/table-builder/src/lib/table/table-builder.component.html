@@ -5,8 +5,9 @@
     class="table-grid__root"
     [style.height.px]="height"
     [class.table-grid__root--is-rendered]="isRendered"
-    [class.table-grid__no-display]="!(columnSchema.length > 0)"
+    [class.table-grid__root--is-scrolling]="isScrolling"
     [class.table-grid__root-auto-height]="autoHeightDetect"
+    [class.table-grid__no-display]="!(columnSchema.length > 0)"
     [class.table-grid__root--content-is-init]="contentInit && inViewport"
     [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
     [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
@@ -28,8 +29,8 @@
     <div
         cdkDropList
         #tableViewport
-        wheelThrottling
         class="table-grid"
+        [wheelThrottling]="tableViewport"
         [cdkDropListDisabled]="!accessDragging"
         (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__scroll-offset]="scrollOffset.offset"
@@ -112,6 +113,7 @@
                             [column-index]="index"
                             [is-rendered]="isRendered"
                             [primary-key]="primaryKey"
+                            [is-firefox]="isFirefoxMode"
                             [recalculated]="recalculated"
                             [buffer-amount]="bufferAmount"
                             [column-schema]="columnSchema"

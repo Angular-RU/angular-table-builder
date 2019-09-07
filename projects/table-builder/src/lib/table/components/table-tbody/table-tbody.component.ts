@@ -37,6 +37,7 @@ import { detectChanges } from '../../operators/detect-changes';
 export class TableTbodyComponent extends TableLineRow implements OnChanges, OnInit, OnDestroy {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
+    @Input('is-firefox') public isFirefox: boolean;
     @Input() public recalculated: RecalculatedStatus;
     @Input('primary-key') public primaryKey: string;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
@@ -81,11 +82,16 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     }
 
     public ngOnInit(): void {
-        if (!this.enableSelection) {
-            this.overload.scrollDelta.pipe(takeUntil(this.destroy$)).subscribe((delta: number) => (this.delta = delta));
+        const canNotCalculateDelta: boolean = !this.enableSelection || !this.isFirefox;
+        if (canNotCalculateDelta) {
+            this.overload.scrollDelta.pipe(takeUntil(this.destroy$)).subscribe((delta: number) => {
+                this.delta = delta;
+            });
         }
 
-        this.overload.scrollEnd.pipe(takeUntil(this.destroy$)).subscribe(() => this.refresh());
+        this.overload.scrollStatus
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((scrolling: boolean) => !scrolling && this.refresh());
     }
 
     /**
@@ -149,7 +155,12 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     }
 
     public vsChange(): void {
-        if (this.delta > OverloadScrollService.MIN_DELTA && !this.enableSelection) {
+        const enableLazy: boolean =
+            this.isFirefox || this.enableSelection
+                ? false
+                : this.runLazy || this.delta > OverloadScrollService.MIN_DELTA;
+
+        if (enableLazy) {
             this.runLazy = true;
             window.clearTimeout(this.taskId);
             this.lazyVsChanges();
@@ -175,8 +186,8 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     private lazyVsChanges(): void {
         this.ngZone.runOutsideAngular(() => {
             this.taskId = window.setTimeout(() => {
-                detectChanges(this.cd);
                 this.runLazy = false;
+                requestAnimationFrame(() => detectChanges(this.cd));
             }, TableBuilderOptionsImpl.TIME_IDLE);
         });
     }

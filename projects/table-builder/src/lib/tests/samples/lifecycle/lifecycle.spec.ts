@@ -13,6 +13,7 @@ import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
+import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 // tslint:disable-next-line:no-big-function
 describe('[TEST]: Lifecycle table', () => {
@@ -58,6 +59,7 @@ describe('[TEST]: Lifecycle table', () => {
         const zone: NgZone = mockNgZone as NgZone;
         const view: NgxTableViewChangesService = new NgxTableViewChangesService();
         const app: ApplicationRef = appRef as ApplicationRef;
+        const scroll: OverloadScrollService = new OverloadScrollService();
         utils = new UtilsService(zone);
 
         const parser: TemplateParserService = new TemplateParserService();
@@ -78,7 +80,8 @@ describe('[TEST]: Lifecycle table', () => {
             app,
             new FilterableService(worker, utils, zone, app),
             draggable,
-            view
+            view,
+            scroll
         );
 
         table.primaryKey = 'position';

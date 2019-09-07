@@ -1,8 +1,8 @@
 /* tslint:disable */
 export const ACTUAL_TEMPLATES: string = `
 <ngx-table-builder>
-  <div class="table-grid__root table-grid__root-auto-height table-grid__root--content-is-init" observerview="">
-    <div class="table-grid cdk-drop-list cdk-drop-list-disabled" cdkdroplist="" cdkdroplistorientation="horizontal" wheelthrottling="" id="cdk-drop-list-0">
+  <div class="table-grid__root table-grid__root-auto-height table-grid__root--content-is-init table-grid__root--is-rendered" observerview="">
+    <div class="table-grid cdk-drop-list cdk-drop-list-disabled" cdkdroplist="" cdkdroplistorientation="horizontal" id="cdk-drop-list-0">
       <div class="table-grid__column-area-content">
         <div 
           cdkdrag="" 
