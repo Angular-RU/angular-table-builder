@@ -1,5 +1,5 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import {
     ChangeDetectionStrategy,
@@ -51,9 +51,10 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     private destroy$: Subject<boolean> = new Subject<boolean>();
     private runLazy: boolean = false;
     private needRefresh: boolean;
-    private taskId: number;
     private reloadTaskId: number;
     private delta: number;
+    private lazyId: number;
+    private isNonLazy: boolean;
 
     constructor(
         public selection: SelectionService,
@@ -75,6 +76,10 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
         return !this.selection.selectionStart.status;
     }
 
+    private get enableLazy(): boolean {
+        return this.isNonLazy ? false : this.runLazy || this.delta >= OverloadScrollService.MIN_DELTA;
+    }
+
     public ngOnChanges(changes: SimpleChanges): void {
         if ('recalculated' in changes && !changes['recalculated'].firstChange && this.scroll) {
             this.scroll.invalidateAllCachedMeasurements();
@@ -82,16 +87,27 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     }
 
     public ngOnInit(): void {
-        const canNotCalculateDelta: boolean = !this.enableSelection || !this.isFirefox;
-        if (canNotCalculateDelta) {
-            this.overload.scrollDelta.pipe(takeUntil(this.destroy$)).subscribe((delta: number) => {
-                this.delta = delta;
-            });
+        this.isNonLazy = this.isFirefox || this.enableSelection;
+
+        if (this.canCalculateDelta) {
+            this.overload.scrollDelta
+                .pipe(
+                    filter((delta: number) => !this.runLazy && delta !== this.delta),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe((delta: number) => (this.delta = delta));
         }
 
         this.overload.scrollStatus
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((scrolling: boolean) => !scrolling && this.refresh());
+            .pipe(
+                filter((scrolling: boolean) => !scrolling),
+                takeUntil(this.destroy$)
+            )
+            .subscribe(() => this.refresh());
+    }
+
+    private get canCalculateDelta(): boolean {
+        return !this.enableSelection || !this.isFirefox;
     }
 
     /**
@@ -155,40 +171,39 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     }
 
     public vsChange(): void {
-        const enableLazy: boolean =
-            this.isFirefox || this.enableSelection
-                ? false
-                : this.runLazy || this.delta > OverloadScrollService.MIN_DELTA;
-
-        if (enableLazy) {
-            this.runLazy = true;
-            window.clearTimeout(this.taskId);
+        if (this.enableLazy) {
             this.lazyVsChanges();
         } else if (!this.runLazy) {
             detectChanges(this.cd);
         }
     }
 
-    private refresh(): void {
-        window.clearTimeout(this.reloadTaskId);
+    private lazyVsChanges(): void {
+        this.runLazy = true;
         this.ngZone.runOutsideAngular(() => {
+            window.cancelAnimationFrame(this.lazyId);
+            this.lazyId = window.requestAnimationFrame(() => {
+                detectChanges(this.cd);
+                this.needRefresh = true;
+                this.runLazy = false;
+            });
+        });
+    }
+
+    private refresh(): void {
+        if (!this.needRefresh) {
+            return;
+        }
+
+        this.ngZone.runOutsideAngular(() => {
+            window.clearTimeout(this.reloadTaskId);
             this.reloadTaskId = window.setTimeout(() => {
                 if (this.scroll) {
                     this.scroll.invalidateAllCachedMeasurements();
                     detectChanges(this.cd);
+                    this.needRefresh = false;
                 }
             }, TableBuilderOptionsImpl.MICRO_TIME);
-        });
-
-        this.needRefresh = false;
-    }
-
-    private lazyVsChanges(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.taskId = window.setTimeout(() => {
-                this.runLazy = false;
-                requestAnimationFrame(() => detectChanges(this.cd));
-            }, TableBuilderOptionsImpl.TIME_IDLE);
         });
     }
 

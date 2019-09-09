@@ -3,7 +3,6 @@ import { fromEvent, Subscription } from 'rxjs';
 
 import { OverloadScrollService } from '../services/overload-scroll/overload-scroll.service';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { getScrollLineHeight } from '../operators/get-scroll-line-height';
 import { NGX_TABLE_OPTIONS } from '../config/table-builder.tokens';
 import { isFirefox } from '../operators/is-firefox';
 
@@ -11,14 +10,15 @@ const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Directive({ selector: '[wheelThrottling]' })
 export class WheelThrottlingDirective implements OnInit, OnDestroy {
+    private static readonly DOM_DELTA_PIXEL: number = 0x00;
     @Input() public wheelThrottling: HTMLDivElement;
     @Output() public scrollOffset: EventEmitter<boolean> = new EventEmitter();
     public scrollTopOffset: boolean = false;
-    private firefoxScrollLineHeight: number;
     public isScrolling: number = null;
     private scrolling: boolean = false;
     private subscription: Subscription;
     private lastDelta: number = 0;
+    private isFirefox: boolean;
 
     constructor(
         @Inject(NGX_TABLE_OPTIONS) private readonly options: TableBuilderOptionsImpl,
@@ -31,13 +31,10 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
+        this.isFirefox = isFirefox();
         this.subscription = fromEvent(this.element, 'wheel').subscribe((event: WheelEvent): void =>
             this.onElementScroll(event)
         );
-
-        if (isFirefox()) {
-            this.firefoxScrollLineHeight = getScrollLineHeight();
-        }
     }
 
     public ngOnDestroy(): void {
@@ -85,18 +82,20 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
     }
 
     private preventScroll($event: WheelEvent): void {
-        const DOM_DELTA_PIXEL: number = 0x00;
         const deltaY: number = Math.abs($event.deltaY);
+        const chromiumThrottle: boolean = !this.isFirefox && this.lastDelta !== deltaY;
 
-        if (this.firefoxScrollLineHeight) {
-            const limit: number = this.firefoxScrollLineHeight * deltaY;
-            const minimalPx: number = 100;
-            if (limit > minimalPx) {
-                $event.preventDefault();
-            }
-        } else if (this.lastDelta !== deltaY && $event.deltaMode === DOM_DELTA_PIXEL) {
+        if (chromiumThrottle) {
             this.lastDelta = deltaY;
             this.overload.scrollDelta.next(this.lastDelta);
+
+            const isPrevented: boolean =
+                $event.deltaMode === WheelThrottlingDirective.DOM_DELTA_PIXEL &&
+                deltaY >= OverloadScrollService.MIN_DELTA;
+
+            if (isPrevented) {
+                $event.preventDefault();
+            }
         }
     }
 }
