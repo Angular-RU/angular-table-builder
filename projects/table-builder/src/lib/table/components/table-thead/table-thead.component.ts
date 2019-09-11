@@ -14,6 +14,7 @@ import { FilterableService } from '../../services/filterable/filterable.service'
 })
 export class TableTheadComponent extends TableLineRow {
     @Input('header-top') public headerTop: number;
+    @Input('head-height') public headHeight: number;
     @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
     @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();

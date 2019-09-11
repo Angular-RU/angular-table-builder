@@ -58,6 +58,7 @@ export abstract class TableBuilderApiImpl
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
     @Input('column-width') public columnWidth: string | number = null;
+    @Input('head-height') public headHeight: string | number = null;
     @Input('row-height') public rowHeight: string | number = null;
     @Input('async-columns') public asyncColumns: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
