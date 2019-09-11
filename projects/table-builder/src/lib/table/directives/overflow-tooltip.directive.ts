@@ -76,7 +76,7 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
 
         const elem: HTMLDivElement = document.createElement('div');
         const rect: ClientRect | DOMRect = this.element.getBoundingClientRect();
-        elem.classList.add(this.overflowSelector, this.textCenter ? 'text-center' : null);
+        elem.classList.add(this.overflowSelector, this.textCenter ? 'text-center' : '');
         elem.style.cssText = `left: ${rect.left}px; top: ${rect.top}px`;
         document.body.appendChild(elem);
 
@@ -84,7 +84,7 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
             window.setTimeout(() => {
                 if (this.overflowContentElem) {
                     this.overflowContentElem.classList.add('visible');
-                    this.overflowContentElem.innerHTML = this.element.innerHTML;
+                    this.overflowContentElem.innerHTML = this.element.innerHTML.trim().replace(/<!--.*?-->/g, '');
 
                     fromEvent(this.overflowContentElem, 'mouseleave')
                         .pipe(takeUntil(this.destroy$))

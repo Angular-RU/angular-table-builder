@@ -14,7 +14,7 @@ export const ACTUAL_TEMPLATES: string = `
         <div class="table-grid__column-area">
           <table-thead>
             <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
-              <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap">License</div>
+              <div class="table-grid__cell--content table-grid__header-cell--content">License</div>
             </div>
           </table-thead>
           <table-tbody>
@@ -64,7 +64,7 @@ export const ACTUAL_TEMPLATES: string = `
           <div class="table-grid__column-area">
             <table-thead>
               <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
-                <div class="table-grid__cell--content table-grid__header-cell--content table-grid__cell--nowrap">Cost</div>
+                <div class="table-grid__cell--content table-grid__header-cell--content">Cost</div>
               </div>
             </table-thead>
             <table-tbody>

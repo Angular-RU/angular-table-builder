@@ -65,6 +65,7 @@ table-cell {
             font-weight: bold;
         }
 
+        &--nowrap,
         &--nowrap .table-grid__cell--inner-content {
             white-space: nowrap;
             text-overflow: ellipsis;
