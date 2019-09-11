@@ -54,6 +54,7 @@ export interface ColumnsSchema<T = Any> {
     customColumn: boolean;
     verticalLine: boolean;
     isModel: boolean;
+    excluded: boolean;
     isVisible: boolean;
 }
 

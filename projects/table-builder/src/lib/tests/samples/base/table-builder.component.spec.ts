@@ -212,7 +212,9 @@ describe('[TEST]: TableBuilder', () => {
         templates.reset([position, name, weight]);
 
         templateParser.initialSchema(null);
-        templateParser.parse(table.generateColumnsKeyMap(modelKeys), templates);
+        templateParser.allowedKeyMap = table.generateColumnsKeyMap(modelKeys);
+        templateParser.keyMap = table.generateColumnsKeyMap(modelKeys);
+        templateParser.parse(templates);
         expect(templateParser.compiledTemplates).toEqual(ACTUAL_TEMPLATE);
     });
 

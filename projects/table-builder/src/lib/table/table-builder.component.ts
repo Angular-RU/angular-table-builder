@@ -44,6 +44,7 @@ import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
+import { CdkDragStart } from '@angular/cdk/drag-drop';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -115,6 +116,17 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return this.contentCheck && !this.forcedRefresh;
     }
 
+    private static checkCorrectInitialSchema(changes: SimpleChanges = {}): void {
+        if (TableSimpleChanges.SCHEMA_COLUMNS in changes) {
+            const schemaChange: SimpleChange = changes[TableSimpleChanges.SCHEMA_COLUMNS];
+            if (!schemaChange.currentValue) {
+                throw new Error(
+                    `You need set correct <ngx-table-builder [schema-columns]="[] || [..]" /> for one time binding`
+                );
+            }
+        }
+    }
+
     public checkSourceIsNull(): boolean {
         return !('length' in (this.source || {}));
     }
@@ -125,40 +137,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnChanges(changes: SimpleChanges = {}): void {
+        TableBuilderComponent.checkCorrectInitialSchema(changes);
+
         const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
         this.sourceIsNull = this.checkSourceIsNull();
         this.sortable.setDefinition(this.sortTypes);
 
         if (nonIdenticalStructure) {
-            this.renderedCountKeys = this.getCountKeys();
-            this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
-            this.modelColumnKeys = this.generateModelColumnKeys();
-            this.originalSource = this.source;
-            const unDirty: boolean = !this.dirty;
-
-            this.checkFilterValues();
-
-            if (unDirty) {
-                this.markForCheck();
-            }
-
-            const recycleView: boolean = unDirty && this.isRendered && this.contentInit;
-
-            if (recycleView) {
-                this.renderTable();
-            }
+            this.preRenderTable();
         } else if (TableSimpleChanges.SOURCE_KEY in changes && this.isRendered) {
-            this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
-            this.sortAndFilter().then(() => this.reCheckDefinitions());
-        }
-
-        if (TableSimpleChanges.SCHEMA_COLUMNS in changes) {
-            const schemaChange: SimpleChange = changes[TableSimpleChanges.SCHEMA_COLUMNS];
-            if (!schemaChange.currentValue) {
-                throw new Error(
-                    `You need set correct <ngx-table-builder [schema-columns]="[] || [..]" /> for one time binding`
-                );
-            }
+            this.preSortAndFilterTable(changes);
         }
     }
 
@@ -197,6 +185,17 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
         this.listenScrollEvents();
+    }
+
+    public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
+        const preview: HTMLElement = event.source._dragRef['_preview'];
+        const transform: string = event.source._dragRef['_preview'].style.transform || '';
+        const [x, , z]: [number, number, number] = transform
+            .replace(/translate3d|\(|\)|px/g, '')
+            .split(',')
+            .map((val: string) => parseFloat(val)) as [number, number, number];
+
+        preview.style.transform = `translate3d(${x}px, ${root.getBoundingClientRect().top}px, ${z}px)`;
     }
 
     public ngAfterViewChecked(): void {
@@ -277,6 +276,31 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.detectChanges();
             }, TableBuilderOptionsImpl.TIME_IDLE);
         });
+    }
+
+    private preSortAndFilterTable(changes: SimpleChanges = {}): void {
+        this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
+        this.sortAndFilter().then(() => this.reCheckDefinitions());
+    }
+
+    private preRenderTable(): void {
+        this.renderedCountKeys = this.getCountKeys();
+        this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
+        this.modelColumnKeys = this.generateModelColumnKeys();
+        this.originalSource = this.source;
+        const unDirty: boolean = !this.dirty;
+
+        this.checkFilterValues();
+
+        if (unDirty) {
+            this.markForCheck();
+        }
+
+        const recycleView: boolean = unDirty && this.isRendered && this.contentInit;
+
+        if (recycleView) {
+            this.renderTable();
+        }
     }
 
     private listenScrollEvents(): void {
@@ -406,9 +430,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @param async - whether to draw a column asynchronously
      */
     private processedColumnList(schema: ColumnsSchema, key: string, async: boolean): void {
-        this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
-        if (async) {
-            this.idleDetectChanges();
+        if (this.templateParser.schema) {
+            this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
+            if (async) {
+                this.idleDetectChanges();
+            }
         }
     }
 
@@ -450,11 +476,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * because users can draw the wrong keys in the template (ngx-column key=invalid)
      */
     private parseTemplateKeys(): TemplateKeys {
-        const allowedKeyMap: KeyMap<boolean> = this.keys.length
+        this.templateParser.keyMap = this.generateColumnsKeyMap(this.keys.length ? this.keys : this.getModelKeys());
+
+        this.templateParser.allowedKeyMap = this.keys.length
             ? this.generateColumnsKeyMap(this.customModelColumnsKeys)
             : this.generateColumnsKeyMap(this.modelColumnKeys);
 
-        this.templateParser.parse(allowedKeyMap, this.columnTemplates);
+        this.templateParser.parse(this.columnTemplates);
 
         return {
             allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys),

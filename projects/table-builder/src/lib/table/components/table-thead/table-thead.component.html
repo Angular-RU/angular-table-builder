@@ -3,6 +3,7 @@
     [style.top.px]="headerTop"
     class="table-grid__cell table-grid__header-cell"
     [class.table-grid__cell--custom-cell]="columnSchema?.customColumn"
+    [class.table-grid__cell--is-model-cell]="columnSchema?.isModel"
     [class.table-grid__cell--text-bold]="columnSchema?.th?.textBold"
     [class.table-grid__cell--resizable]="columnSchema?.resizable"
     [style.min-height.px]="columnSchema?.th?.height || clientRowHeight"
@@ -33,7 +34,7 @@
     </div>
 
     <div
-        *ngIf="!columnSchema?.customColumn && columnSchema?.sortable"
+        *ngIf="columnSchema?.isModel && columnSchema?.sortable"
         class="table-grid__column--sortable"
         [class.table-grid__column--sortable-active]="sortableDefinition[columnSchema.key]"
         [class.table-grid__column--sortable-asc]="sortableDefinition[columnSchema.key] === orderType.ASC"
@@ -50,7 +51,7 @@
     <div
         class="table-grid__column--filterable"
         [class.table-grid__column--filterable-active]="filterableDefinition[columnSchema.key]"
-        *ngIf="!columnSchema?.customColumn && columnSchema?.filterable"
+        *ngIf="columnSchema?.isModel && columnSchema?.filterable"
         (click)="columnSchema?.filterable ? openFilter(columnSchema.key, $event) : null"
     >
         <svg
@@ -69,13 +70,13 @@
         </svg>
     </div>
 
-    <ng-template [ngIf]="!columnSchema.customColumn">
+    <ng-template [ngIf]="columnSchema?.isModel && columnSchema?.draggable">
         <ng-content select="[slot=draggable]"></ng-content>
     </ng-template>
 
     <div
-        *ngIf="columnSchema?.resizable"
         class="table-grid__column--resize"
+        *ngIf="columnSchema?.isModel && columnSchema?.resizable"
         (mousedown)="resize.emit({ event: $event, key: columnSchema.key })"
     >
         <div class="table-grid__column--resize--line"></div>

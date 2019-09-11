@@ -6,14 +6,13 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
       <div class="table-grid__column-area-content">
         <div 
           cdkdrag="" 
-          cdkdragboundary=".table-grid__column-area-content" 
           cdkdraghandle="" 
           class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
           observerview="" 
           column-id="id">
           <div class="table-grid__column-area">
              <table-thead>
-                <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
+                <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
                   <div class="table-grid__cell--content table-grid__header-cell--content"> Id </div>
                 </div>
               </table-thead>
@@ -49,14 +48,13 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
         </div>
         <div 
           cdkdrag="" 
-          cdkdragboundary=".table-grid__column-area-content" 
-          cdkdraghandle=""
+          cdkdraghandle="" 
           class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
           observerview="" 
           column-id="name">
           <div class="table-grid__column-area">
              <table-thead>
-                <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
+                <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
                   <div class="table-grid__cell--content table-grid__header-cell--content"> Name </div>
                 </div>
               </table-thead>
@@ -92,14 +90,13 @@ export const SIMPLE_TABLE_TEMPLATE: string = `
         </div>
         <div 
           cdkdrag="" 
-          cdkdragboundary=".table-grid__column-area-content"
-          cdkdraghandle="" 
+          cdkdraghandle=""
           class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
           observerview="" 
           column-id="lastName">
           <div class="table-grid__column-area">
             <table-thead>
-              <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
+              <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
                 <div class="table-grid__cell--content table-grid__header-cell--content"> Lastname </div>
               </div>
             </table-thead>

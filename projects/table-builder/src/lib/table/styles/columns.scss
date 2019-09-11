@@ -82,18 +82,14 @@
 
             width: 24px;
             height: 20px;
-            font-size: 12px;
             opacity: 0.2;
+            font-size: 12px;
             transition: all 0.2s ease-in-out;
             transform: rotate(180deg);
+            cursor: pointer;
 
             &-active {
                 opacity: 1;
-            }
-
-            &:hover {
-                opacity: 1;
-                cursor: pointer;
             }
         }
 
@@ -107,10 +103,6 @@
 
         &--draggable {
             opacity: 0;
-        }
-
-        &--draggable--handle-hidden {
-            visibility: hidden;
         }
 
         &--draggable {
@@ -135,6 +127,7 @@
     cursor: pointer;
 }
 
+.table-grid__column--sortable:not(.table-grid__column--sortable-active):hover,
 .table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
     transition: opacity 0.2s ease-in-out;
     opacity: 0.5;
@@ -151,4 +144,8 @@
 
 .table-grid__column--vertical-line .table-grid__column--resize--line {
     display: none;
+}
+
+.cdk-drag-preview .scrollable-content {
+    margin-top: 0 !important;
 }

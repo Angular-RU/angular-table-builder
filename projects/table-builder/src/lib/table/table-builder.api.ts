@@ -346,7 +346,11 @@ export abstract class TableBuilderApiImpl
      * @see TableBuilderApiImpl#modelColumnKeys for further information
      */
     protected generateModelColumnKeys(): string[] {
-        return this.excluding(this.utils.flattenKeysByRow(this.firstItem));
+        return this.excluding(this.getModelKeys());
+    }
+
+    protected getModelKeys(): string[] {
+        return this.utils.flattenKeysByRow(this.firstItem);
     }
 
     protected idleDetectChanges(): void {

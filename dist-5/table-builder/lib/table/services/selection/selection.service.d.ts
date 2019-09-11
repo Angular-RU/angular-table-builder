@@ -1,0 +1,31 @@
+import { NgZone, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { SelectionMap } from './selection';
+import { SelectionRange } from './selection-range';
+import { TableRow } from '../../interfaces/table-builder.external';
+import { RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
+export declare class SelectionService implements OnDestroy {
+    private readonly ngZone;
+    selectionModel: SelectionMap;
+    range: SelectionRange;
+    selectionStart: SelectionStatus;
+    primaryKey: string;
+    selectionTaskIdle: number;
+    onChanges: Subject<void>;
+    private readonly handler;
+    constructor(ngZone: NgZone);
+    listenShiftKey(): void;
+    unListenShiftKey(): void;
+    ngOnDestroy(): void;
+    toggleAll(rows: TableRow[]): void;
+    toggle(row: TableRow): void;
+    selectRow(row: TableRow, event: MouseEvent, rows: TableRow[]): void;
+    getIdByRow(row: TableRow): RowId;
+    shiftKeyDetectSelection({ shiftKey }: KeyboardEvent): void;
+    private listenShiftKeyByType;
+    private removeListenerByType;
+    private checkIsAllSelected;
+    private multipleSelectByShiftKeydown;
+    private multipleSelectByCtrlKeydown;
+    private singleSelect;
+}

@@ -76,7 +76,12 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
 
         const elem: HTMLDivElement = document.createElement('div');
         const rect: ClientRect | DOMRect = this.element.getBoundingClientRect();
-        elem.classList.add(this.overflowSelector, this.textCenter ? 'text-center' : '');
+        elem.classList.add(this.overflowSelector);
+
+        if (this.textCenter) {
+            elem.classList.add('text-center');
+        }
+
         elem.style.cssText = `left: ${rect.left}px; top: ${rect.top}px`;
         document.body.appendChild(elem);
 

@@ -1,0 +1,25 @@
+{
+  "name": "@angular-ru/ng-table-builder",
+  "version": "0.0.66",
+  "peerDependencies": {
+    "@angular/common": ">=7.2.0 <9.0.0",
+    "@angular/core": ">=7.2.0  <9.0.0",
+    "@angular/cdk": ">=7.2.0  <9.0.0",
+    "@angular/animations": ">=7.2.0 <9.0.0",
+    "ngx-virtual-scroller": ">=3.0.1",
+    "rxjs": ">=6.1.0"
+  },
+  "main": "bundles/table-builder.umd.js",
+  "module": "fesm5/table-builder.js",
+  "es2015": "fesm2015/table-builder.js",
+  "esm5": "esm5/table-builder.js",
+  "esm2015": "esm2015/table-builder.js",
+  "fesm5": "fesm5/table-builder.js",
+  "fesm2015": "fesm2015/table-builder.js",
+  "typings": "table-builder.d.ts",
+  "metadata": "table-builder.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}

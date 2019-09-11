@@ -44,7 +44,7 @@ table-cell {
         justify-content: center;
         padding: 5px 20px;
 
-        &--custom-cell {
+        &--custom-cell:not(&--model-cell) {
             padding: 0;
         }
 

@@ -6,14 +6,13 @@ export const ACTUAL_TEMPLATES: string = `
       <div class="table-grid__column-area-content">
         <div 
           cdkdrag="" 
-          cdkdragboundary=".table-grid__column-area-content" 
-          cdkdraghandle=""
+          cdkdraghandle="" 
           class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
           observerview="" 
           column-id="name">
         <div class="table-grid__column-area">
           <table-thead>
-            <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
+            <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
               <div class="table-grid__cell--content table-grid__header-cell--content">License</div>
             </div>
           </table-thead>
@@ -56,14 +55,13 @@ export const ACTUAL_TEMPLATES: string = `
         </div>
         <div 
           cdkdrag="" 
-          cdkdragboundary=".table-grid__column-area-content" 
-          cdkdraghandle=""
+          cdkdraghandle="" 
           class="table-grid__column cdk-drag cdk-drag-handle table-grid__column--vertical-line table-grid__column--default-width cdk-drag-disabled table-grid__column--is-visible" 
           observerview="" 
           column-id="price">
           <div class="table-grid__column-area">
             <table-thead>
-              <div class="table-grid__cell table-grid__header-cell table-grid__cell--text-bold">
+              <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
                 <div class="table-grid__cell--content table-grid__header-cell--content">Cost</div>
               </div>
             </table-thead>

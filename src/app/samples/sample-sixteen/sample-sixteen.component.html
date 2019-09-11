@@ -3,7 +3,14 @@
     <button class="show-simple" mat-raised-button>show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [name]="testName" [source]="data" [schema-columns]="schema" [vertical-border]="false">
+<ngx-table-builder
+    #table
+    [name]="testName"
+    [source]="data"
+    [schema-columns]="schema"
+    [vertical-border]="false"
+    [exclude-keys]="['reverseId']"
+>
     <ngx-options [draggable]="true" [sortable]="true" [resizable]="true"></ngx-options>
 
     <ngx-context-menu>
@@ -30,6 +37,18 @@
             <ngx-menu-content>Reset table settings</ngx-menu-content>
         </ngx-context-menu-item>
     </ngx-context-menu>
+
+    <ngx-column
+        key="id"
+        custom-key
+        width="100"
+        [vertical-line]="true"
+        [resizable]="false"
+        important-template
+        sticky
+    ></ngx-column>
+
+    <ngx-column key="reverseId" custom-key width="150" [vertical-line]="true" important-template></ngx-column>
 
     <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
 

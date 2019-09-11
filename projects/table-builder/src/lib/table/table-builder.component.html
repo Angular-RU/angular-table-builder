@@ -43,6 +43,7 @@
         </div>
 
         <div
+            #area
             class="table-grid__column-area-content"
             [style.width.px]="
                 tableViewportChecked && tableViewport.scrollWidth > tableViewport.clientWidth
@@ -56,15 +57,16 @@
                     cdkDrag
                     observerView
                     cdkDragHandle
-                    *ngIf="columnSchema.isVisible"
-                    [attr.column-id]="columnSchema.key"
                     [rendered]="isRendered"
-                    [cdkDragDisabled]="!accessDragging"
+                    [cdkDragBoundary]="area"
                     class="table-grid__column"
+                    *ngIf="columnSchema.isVisible"
                     [style.height.px]="columnHeight"
                     [ngStyle]="columnSchema?.cssStyle"
                     [ngClass]="columnSchema?.cssClass"
-                    cdkDragBoundary=".table-grid__column-area-content"
+                    [attr.column-id]="columnSchema.key"
+                    [cdkDragDisabled]="!accessDragging"
+                    (cdkDragMoved)="cdkDragMoved($event, root)"
                     [style.max-width.px]="columnSchema?.width || clientColWidth"
                     [style.width.px]="columnSchema?.width || clientColWidth"
                     [style.min-width.px]="columnSchema?.width || clientColWidth"
@@ -101,7 +103,6 @@
                                 *ngIf="columnSchema?.draggable"
                                 class="table-grid__column--draggable"
                                 (mouseenter)="enableDragging(columnSchema.key)"
-                                [class.table-grid__column--draggable--handle-hidden]="scrollOffset.offset"
                             >
                                 <drag-icon></drag-icon>
                             </div>

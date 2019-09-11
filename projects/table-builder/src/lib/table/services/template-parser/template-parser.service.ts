@@ -18,6 +18,30 @@ export class TemplateParserService {
     public columnOptions: ColumnOptions;
     public compiledTemplates: KeyMap<ColumnsSchema> = {};
 
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder #table
+     *        [source]="[{ id: 1, name: 'hello', value: 'world', description: 'text' }, ...]"
+     *        [exclude]="[ 'description' ]">
+     *    </table-builder>
+     *    ------------------------
+     *    allowedKeyMap === { 'id': true, 'hello': true, 'value': true }
+     */
+    public allowedKeyMap: KeyMap<boolean> = {};
+
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder #table
+     *        [source]="[{ id: 1, name: 'hello', value: 'world', description: 'text' }, ...]"
+     *        [exclude]="[ 'description' ]">
+     *    </table-builder>
+     *    ------------------------
+     *    allowedKeyMap === { 'id': true, 'hello': true, 'value': true, 'description': false }
+     */
+    public keyMap: KeyMap<boolean> = {};
+
     private static templateContext(key: string, cell: TemplateCellCommon, options: ColumnOptions): TableCellOptions {
         return {
             textBold: cell.bold,
@@ -63,14 +87,14 @@ export class TemplateParserService {
         this.columnOptions = columnOptions || new ColumnOptions();
     }
 
-    public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListRef<NgxColumnComponent>): void {
+    public parse(templates: QueryListRef<NgxColumnComponent>): void {
         if (!templates) {
             return;
         }
 
         templates.forEach((column: NgxColumnComponent) => {
             const { key, customKey, importantTemplate }: NgxColumnComponent = column;
-            const needTemplateCheck: boolean = allowedKeyMap[key] || customKey !== false;
+            const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
 
             if (needTemplateCheck) {
                 if (importantTemplate !== false) {
@@ -94,13 +118,20 @@ export class TemplateParserService {
     }
 
     public compileColumnMetadata(column: NgxColumnComponent): void {
-        const { key, th, td, emptyHead, headTitle, customKey }: NgxColumnComponent = column;
+        const { key, th, td, emptyHead, headTitle }: NgxColumnComponent = column;
         const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
         const isEmptyHead: boolean = TemplateParserService.getValidHtmlBooleanAttribute(emptyHead);
         const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
+        const stickyLeft: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft);
+        const stickyRight: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight);
+        const canBeAddDraggable: boolean = !(stickyLeft || stickyRight);
+        const isModel: boolean = this.keyMap[key];
+
         this.compiledTemplates[key] = {
             key,
+            isModel,
+            isVisible: true,
             th: {
                 ...thOptions,
                 headTitle,
@@ -115,12 +146,15 @@ export class TemplateParserService {
             cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
             cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
-            sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
-            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
-            draggable: TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable),
             verticalLine: column.verticalLine,
-            isModel: customKey === false,
-            isVisible: true
+            excluded: !this.allowedKeyMap[key],
+            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
+            sortable: isModel
+                ? TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable)
+                : false,
+            draggable: canBeAddDraggable
+                ? TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable)
+                : false
         };
     }
 }
