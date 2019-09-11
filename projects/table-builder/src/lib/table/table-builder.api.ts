@@ -374,7 +374,7 @@ export abstract class TableBuilderApiImpl
             ? keys.filter((key: string) => {
                   return !this.excludeKeys.some((excludeKey: string | RegExp) => {
                       return excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey;
-                  }, true);
+                  });
               })
             : keys;
     }
