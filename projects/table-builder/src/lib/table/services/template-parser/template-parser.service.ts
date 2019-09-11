@@ -75,6 +75,14 @@ export class TemplateParserService {
                   }
                 : column
         );
+
+        this.synchronizedReference();
+    }
+
+    private synchronizedReference(): void {
+        this.schema.columns.forEach((column: ColumnsSchema) => {
+            this.compiledTemplates[column.key] = column;
+        });
     }
 
     public initialSchema(columnOptions: ColumnOptions): void {
