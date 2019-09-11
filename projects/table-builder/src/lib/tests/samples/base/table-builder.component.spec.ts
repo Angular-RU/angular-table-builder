@@ -360,6 +360,11 @@ describe('[TEST]: TableBuilder', () => {
         table.excludeKeys = ['a3'];
         table.ngOnChanges();
         expect(table.modelColumnKeys).toEqual(['a1', 'a2']);
+
+        table.source = [{ a1: 1, a2: 2, a3: 3, a4: { a: 1, b: 2, c: null }, a5: { c: null, d: 4, e: 5 } }];
+        table.excludeKeys = ['a3', /a4/, /c/];
+        table.ngOnChanges();
+        expect(table.modelColumnKeys).toEqual(['a1', 'a2', 'a5.d', 'a5.e']);
     });
 
     it('should be correct selection entries', () => {

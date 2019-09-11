@@ -52,7 +52,7 @@ export abstract class TableBuilderApiImpl
     @Input() public lazy: boolean = true;
     @Input() public name: string = null;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('exclude-keys') public excludeKeys: string[] = [];
+    @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
@@ -370,6 +370,12 @@ export abstract class TableBuilderApiImpl
     }
 
     private excluding(keys: string[]): string[] {
-        return this.excludeKeys.length ? keys.filter((key: string) => !this.excludeKeys.includes(key)) : keys;
+        return this.excludeKeys.length
+            ? keys.filter((key: string) => {
+                  return !this.excludeKeys.some((excludeKey: string | RegExp) => {
+                      return excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey;
+                  }, true);
+              })
+            : keys;
     }
 }
