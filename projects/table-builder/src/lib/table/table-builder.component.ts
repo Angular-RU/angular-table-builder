@@ -1,3 +1,6 @@
+import { CdkDragStart } from '@angular/cdk/drag-drop';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import {
     AfterContentInit,
     AfterViewChecked,
@@ -16,8 +19,6 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 
 import {
     Any,
@@ -44,7 +45,6 @@ import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
-import { CdkDragStart } from '@angular/cdk/drag-drop';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 

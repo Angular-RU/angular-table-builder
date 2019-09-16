@@ -2,6 +2,8 @@ import { AfterViewInit, Directive, Input, NgZone, OnDestroy } from '@angular/cor
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { trim } from '../operators/trim';
+
 @Directive({ selector: '[overflowTooltip]' })
 export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
     @Input('overflowTooltip') public element: HTMLDivElement = null;
@@ -69,7 +71,9 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
     }
 
     private showTooltip(): void {
-        if (this.overflowContentElem) {
+        const empty: boolean = trim(this.element.innerText).length === 0;
+
+        if (this.overflowContentElem || empty) {
             this.removeElement();
             return;
         }
@@ -89,7 +93,7 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
             window.setTimeout(() => {
                 if (this.overflowContentElem) {
                     this.overflowContentElem.classList.add('visible');
-                    this.overflowContentElem.innerHTML = this.element.innerHTML.trim().replace(/<!--.*?-->/g, '');
+                    this.overflowContentElem.innerHTML = trim(this.element.innerHTML);
 
                     fromEvent(this.overflowContentElem, 'mouseleave')
                         .pipe(takeUntil(this.destroy$))
