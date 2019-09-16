@@ -160,8 +160,15 @@ export abstract class TableBuilderApiImpl
         return (this.templateParser.schema && this.templateParser.schema.columns) || [];
     }
 
+    /**
+     * @description - return selected item by selection map
+     * Don't use in angular templates, because function not pure
+     * avoid: {{ table.selectedItems.length  }}
+     * recommendation: {{ table.selectionModel.size  }}
+     */
     public get selectedItems(): TableRow[] {
-        return this.source.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
+        const source: TableRow[] = this.source || [];
+        return source.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
     }
 
     public get firstItem(): TableRow {
