@@ -12,12 +12,14 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 import { ContextMenuService } from '../../../services/context-menu/context-menu.service';
 import { ContextMenuState } from '../../../services/context-menu/context-menu.interface';
 import { ContextItemEvent } from '../../../interfaces/table-builder.external';
 import { UtilsService } from '../../../services/utils/utils.service';
-import { Subscription } from 'rxjs';
 import { detectChanges } from '../../../operators/detect-changes';
+import { MIN_PADDING_CONTEXT_ITEM, SCROLLBAR_WIDTH } from '../../../symbols';
 
 @Component({
     selector: 'ngx-context-menu-item',
@@ -26,7 +28,6 @@ import { detectChanges } from '../../../operators/detect-changes';
     encapsulation: ViewEncapsulation.None
 })
 export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
-    private static readonly MIN_PADDING: number = 25;
     @Input() public visible: boolean = true;
     @Input() public contextTitle: boolean = null;
     @Input() public disable: boolean = false;
@@ -71,22 +72,21 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     public calculateSubMenuPosition(ref: HTMLDivElement): void {
         const contentExist: boolean = ref.innerHTML.trim().length !== 0;
         if (contentExist) {
-            this.offsetX = this.clientRect.left + this.subMenuWidth - NgxContextMenuItemComponent.MIN_PADDING;
+            this.offsetX = this.clientRect.left + this.subMenuWidth - MIN_PADDING_CONTEXT_ITEM;
             this.offsetX = this.offsetX - this.overflowX();
-
-            this.offsetY = this.clientRect.top - NgxContextMenuItemComponent.MIN_PADDING;
+            this.offsetY = this.clientRect.top - MIN_PADDING_CONTEXT_ITEM;
             this.offsetY = this.offsetY - this.overflowY(ref);
         }
     }
 
     public overflowX(): number {
         const overflowX: number = this.subMenuWidth + this.offsetX - this.utils.bodyRect.width;
-        return overflowX > 0 ? overflowX + UtilsService.SCROLLBAR_WIDTH : 0;
+        return overflowX > 0 ? overflowX + SCROLLBAR_WIDTH : 0;
     }
 
     public overflowY(ref: HTMLDivElement): number {
         const overflowY: number = ref.offsetHeight + this.offsetY - this.utils.bodyRect.height;
-        return overflowY > 0 ? overflowY + UtilsService.SCROLLBAR_WIDTH : 0;
+        return overflowY > 0 ? overflowY + SCROLLBAR_WIDTH : 0;
     }
 
     public emitClick(event: MouseEvent): void {
@@ -105,9 +105,7 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
 
     private deferCloseMenu(): void {
         this.ngZone.runOutsideAngular(() => {
-            this.taskId = window.setTimeout(() => {
-                this.contextMenu.close();
-            });
+            this.taskId = window.setTimeout(() => this.contextMenu.close());
         });
     }
 }

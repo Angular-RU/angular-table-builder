@@ -4,14 +4,15 @@
     background: white;
 
     $tableScrollWidth: 10px;
+    $minPadding: 2px;
 
     &::-webkit-scrollbar,
     &::-webkit-scrollbar-thumb {
         width: $tableScrollWidth;
+        height: $tableScrollWidth + $minPadding;
         border-radius: $tableScrollWidth;
         background-clip: padding-box;
         border: 2px solid transparent;
-        height: $tableScrollWidth + 2;
     }
 
     &::-webkit-scrollbar-thumb {

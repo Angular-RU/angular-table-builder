@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { UtilsService } from '../../services/utils/utils.service';
 import { Fn, MousePosition } from '../../interfaces/table-builder.internal';
 import { detectChanges } from '../../operators/detect-changes';
+import { SCROLLBAR_WIDTH } from '../../symbols';
 
 export interface PositionState {
     key: string;
@@ -38,12 +39,12 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
 
     public get overflowX(): number {
         const overflowX: number = this.width + this.left - this.utils.bodyRect.width;
-        return overflowX > 0 ? overflowX + UtilsService.SCROLLBAR_WIDTH : 0;
+        return overflowX > 0 ? overflowX + SCROLLBAR_WIDTH : 0;
     }
 
     public get overflowY(): number {
         const overflowY: number = this.height + this.top - this.utils.bodyRect.height;
-        return overflowY > 0 ? overflowY + UtilsService.SCROLLBAR_WIDTH : 0;
+        return overflowY > 0 ? overflowY + SCROLLBAR_WIDTH : 0;
     }
 
     public abstract get state(): Partial<T>;

@@ -75,3 +75,8 @@ export type DeepPartial<T = Any> = {
         ? ReadonlyArray<DeepPartial<R>>
         : DeepPartial<T[P]>;
 };
+
+export interface BoxView {
+    paddingTop: string;
+    paddingBottom: string;
+}

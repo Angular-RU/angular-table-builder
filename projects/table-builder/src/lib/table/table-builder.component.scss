@@ -14,11 +14,9 @@
 
 .table-grid {
     position: relative;
-    overflow: hidden;
     background: $backgroundColor;
     will-change: auto;
     scroll-behavior: smooth;
-    overflow-x: visible;
     height: 100%;
 
     &__column-area-content {

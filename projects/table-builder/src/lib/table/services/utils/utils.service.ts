@@ -7,8 +7,6 @@ import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
-    public static readonly SCROLLBAR_WIDTH: number = 10;
-
     constructor(private readonly zone: NgZone) {}
 
     public get bodyRect(): ClientRect | DOMRect {
