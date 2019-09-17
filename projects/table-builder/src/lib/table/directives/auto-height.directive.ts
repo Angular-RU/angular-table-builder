@@ -19,7 +19,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     @Input() public headerHeight: number = 0;
     @Input() public footerHeight: number = 0;
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
-    @Input() public tableViewport: HTMLDivElement = null;
+    @Input() public tableViewport: Partial<HTMLDivElement> = {};
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
     private readonly minHeight: number = 0;
     private readonly delay: number = 100;
