@@ -9,7 +9,7 @@ declare const hljs: Any;
     templateUrl: './code-dialog.template.html'
 })
 export class CodeDialogComponent implements AfterViewInit {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: unknown, public dialogRef: MatDialogRef<unknown>) {}
+    constructor(@Inject(MAT_DIALOG_DATA) public data: Any, public dialogRef: MatDialogRef<unknown>) {}
 
     public ngAfterViewInit(): void {
         document.querySelectorAll('pre code').forEach((block: Any) => {
