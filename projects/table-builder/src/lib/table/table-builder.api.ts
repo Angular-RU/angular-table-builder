@@ -196,7 +196,8 @@ export abstract class TableBuilderApiImpl
     }
 
     public get columnHeight(): number {
-        return this.size * this.clientRowHeight + this.clientRowHeight;
+        const headLineHeight: number = this.headHeight ? parseInt(this.headHeight as string) : this.clientRowHeight;
+        return this.size * this.clientRowHeight + headLineHeight;
     }
 
     public get size(): number {
