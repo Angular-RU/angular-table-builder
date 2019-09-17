@@ -5,6 +5,7 @@ import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { SortOrderType } from '../../services/sortable/sortable.interfaces';
 import { UtilsService } from '../../services/utils/utils.service';
 import { FilterableService } from '../../services/filterable/filterable.service';
+import { OVERLOAD_WIDTH_TABLE_HEAD_CELL } from '../../symbols';
 
 @Component({
     selector: 'table-thead',
@@ -14,12 +15,14 @@ import { FilterableService } from '../../services/filterable/filterable.service'
 })
 export class TableTheadComponent extends TableLineRow {
     @Input('header-top') public headerTop: number;
-    @Input('head-height') public headHeight: number;
+    @Input('column-width') public columnWidth: number;
+    @Input('head-height') public headHeight: string | number;
     @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
     @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
     public orderType: typeof SortOrderType = SortOrderType;
+    public limit: number = OVERLOAD_WIDTH_TABLE_HEAD_CELL;
 
     constructor(
         public readonly selection: SelectionService,

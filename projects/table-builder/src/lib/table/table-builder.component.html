@@ -85,11 +85,13 @@
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
                     <div
+                        #col
                         [@fadeAnimation]
                         class="table-grid__column-area"
                         *ngIf="asyncColumns === false || column['visible']"
                     >
                         <table-thead
+                            [column-width]="col.offsetWidth"
                             [column-schema]="columnSchema"
                             (mouseleave)="disableDragging()"
                             [header-top]="headerRef?.nativeElement.offsetHeight || 0"

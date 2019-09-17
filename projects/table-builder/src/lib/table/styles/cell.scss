@@ -19,6 +19,19 @@ table-cell {
 
         &--content {
             overflow: hidden;
+            min-width: 25px;
+        }
+
+        &--min-width {
+            .table-grid__header-cell--content:not(.table-grid__cell--content-sortable-is-active) {
+                cursor: default;
+            }
+
+            .table-grid__column--draggable,
+            .table-grid__column--sortable:not(.table-grid__column--sortable-active),
+            .table-grid__column--filterable:not(.table-grid__column--filterable-active) {
+                display: none;
+            }
         }
 
         &:hover .table-grid__column--draggable {

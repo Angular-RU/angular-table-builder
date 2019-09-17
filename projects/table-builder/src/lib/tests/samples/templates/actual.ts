@@ -12,7 +12,7 @@ export const ACTUAL_TEMPLATES: string = `
           column-id="name">
         <div class="table-grid__column-area">
           <table-thead>
-            <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
+            <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold table-grid__header-cell--min-width">
               <div class="table-grid__cell--content table-grid__header-cell--content">License</div>
             </div>
           </table-thead>
@@ -61,7 +61,7 @@ export const ACTUAL_TEMPLATES: string = `
           column-id="price">
           <div class="table-grid__column-area">
             <table-thead>
-              <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold">
+              <div class="table-grid__cell table-grid__header-cell table-grid__cell--is-model-cell table-grid__cell--text-bold table-grid__header-cell--min-width">
                 <div class="table-grid__cell--content table-grid__header-cell--content">Cost</div>
               </div>
             </table-thead>
