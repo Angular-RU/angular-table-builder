@@ -6,6 +6,6 @@ export function checkValueIsEmpty(value: Any): boolean {
     } else if (typeof value === 'string') {
         return value.trim().length === 0;
     } else {
-        return !value;
+        return typeof value === 'boolean' ? false : !value;
     }
 }

@@ -121,14 +121,14 @@
 
   @Component(&#123;
     selector: 'app',
-    templateUrl: './app.component.html' 
+    templateUrl: './app.component.html'
   })
   export class AppComponent &#123;
     public data: Elements[] = [
-          &#123; position: null, name: 'Hydrogen', date: &#123; value: NaN }, symbol: 'H' },
-          &#123; position: 2, name: '', date: &#123; value: new Date() }, symbol: undefined },
-          &#123; position: 3, name: 'Lithium', date: &#123; value: Infinity }, symbol: 'Li' },
-          &#123; position: 4, name: 'Beryllium', date: &#123; value: 0 }, symbol: '    ' }
+     &#123; position: null, name: 'Hydrogen', date: &#123; value: NaN }, symbol: 'H', status: true },
+     &#123; position: 2, name: '', date: &#123; value: new Date() }, symbol: undefined, status: false },
+     &#123; position: 3, name: 'Lithium', date: &#123; value: Infinity }, symbol: 'Li', status: true },
+     &#123; position: 4, name: 'Beryllium', date: &#123; value: 0 }, symbol: '    ', status: false }
     ];
   }
 

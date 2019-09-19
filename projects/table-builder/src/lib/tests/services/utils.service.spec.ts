@@ -31,6 +31,8 @@ describe('UtilsService', () => {
         expect(checkValueIsEmpty(Infinity)).toEqual(true);
         expect(checkValueIsEmpty(undefined)).toEqual(true);
         expect(checkValueIsEmpty('    ')).toEqual(true);
+        expect(checkValueIsEmpty(false)).toEqual(false);
+        expect(checkValueIsEmpty(true)).toEqual(false);
     });
 
     it('should be correct deep object', () => {
