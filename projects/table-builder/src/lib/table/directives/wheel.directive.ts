@@ -48,6 +48,10 @@ export class WheelThrottlingDirective implements OnInit, OnDestroy {
         this.ngZone.runOutsideAngular(() => {
             window.clearTimeout(this.isScrolling);
             this.isScrolling = window.setTimeout(() => {
+                if (!this.element) {
+                    return;
+                }
+
                 const isOffset: boolean = this.element.scrollTop > 0 && !this.scrollTopOffset;
 
                 if (isOffset) {

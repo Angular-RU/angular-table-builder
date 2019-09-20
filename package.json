@@ -1,5 +1,5 @@
 {
-    "name": "ng-table-builder",
+    "name": "table-builder",
     "version": "0.0.0",
     "scripts": {
         "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('You must use Yarn to install, not NPM')\"",
@@ -12,7 +12,7 @@
         "test:ci": "yarn jest:ci --config ./jest.config.js --coverage --maxConcurrency=3",
         "start": "ng serve --open --aot=false --port 4300",
         "build": "yarn ng:ci build && yarn ng:ci build table-builder",
-        "build:lib": "ng build table-builder",
+        "build:lib": "ng build table-builder && ts-node --project tsconfig.tools.json ./tools/copy-readme",
         "build.meta": "echo 'prebuild'",
         "format": "prettier --write \"src/**/*.*\" \"projects/**/*.*\" \"!src/assets/**\" \"!src/favicon.ico\""
     },
@@ -55,6 +55,7 @@
         "ng-packagr": "^5.2.0",
         "pretty": "^2.0.0",
         "protractor": "~5.4.0",
+        "colors": "^1.3.3",
         "ts-node": "~7.0.0",
         "tsickle": "^0.37.0",
         "tslib": "^1.9.0",
