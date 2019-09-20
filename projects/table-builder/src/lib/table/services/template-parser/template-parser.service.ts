@@ -140,12 +140,8 @@ export class TemplateParserService {
             key,
             isModel,
             isVisible: true,
-            th: {
-                ...thOptions,
-                headTitle,
-                emptyHead: isEmptyHead,
-                template: isEmptyHead ? null : thOptions.template
-            },
+            verticalLine: column.verticalLine,
+            excluded: !this.allowedKeyMap[key],
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
@@ -154,8 +150,7 @@ export class TemplateParserService {
             cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
             cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
-            verticalLine: column.verticalLine,
-            excluded: !this.allowedKeyMap[key],
+            stub: TemplateParserService.getValidPredicate(this.columnOptions.stub, column.stub),
             filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
             sortable: isModel
                 ? TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable)
@@ -166,7 +161,13 @@ export class TemplateParserService {
             overflowTooltip: TemplateParserService.getValidPredicate(
                 this.columnOptions.overflowTooltip,
                 column.overflowTooltip
-            )
+            ),
+            th: {
+                ...thOptions,
+                headTitle,
+                emptyHead: isEmptyHead,
+                template: isEmptyHead ? null : thOptions.template
+            }
         };
     }
 }

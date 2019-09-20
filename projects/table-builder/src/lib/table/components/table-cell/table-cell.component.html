@@ -13,8 +13,8 @@
                 $implicit:
                     columnSchema?.td?.context === contextType.CELL
                         ? columnSchema?.td?.useDeepPath
-                            ? (item | deepPath: columnSchema.key)
-                            : (item | defaultValue: columnSchema.key)
+                            ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                            : (item | defaultValue: columnSchema.key:columnSchema?.stub)
                         : item
             }"
         ></ng-template>
@@ -26,15 +26,15 @@
                 [key]="columnSchema.key"
                 [text]="
                     columnSchema?.td?.useDeepPath
-                        ? (item | deepPath: columnSchema.key)
-                        : (item | defaultValue: columnSchema.key)
+                        ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                        : (item | defaultValue: columnSchema.key:columnSchema?.stub)
                 "
             ></ngx-filter-viewer>
         </ng-template>
         <ng-template #simple>{{
             columnSchema?.td?.useDeepPath
-                ? (item | deepPath: columnSchema.key)
-                : (item | defaultValue: columnSchema.key)
+                ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                : (item | defaultValue: columnSchema.key:columnSchema?.stub)
         }}</ng-template>
     </ng-template>
 </div>

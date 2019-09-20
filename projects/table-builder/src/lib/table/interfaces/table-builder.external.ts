@@ -57,6 +57,7 @@ export interface ColumnsSchema<T = Any> {
     excluded: boolean;
     isVisible: boolean;
     overflowTooltip: boolean;
+    stub: string;
 }
 
 export interface TableUpdateSchema<T = Any> {

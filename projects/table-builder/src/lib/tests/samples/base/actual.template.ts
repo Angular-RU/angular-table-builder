@@ -4,6 +4,7 @@ import { KeyMap } from '../../../table/interfaces/table-builder.internal';
 
 const COLUMN: ColumnsSchema = {
     key: null,
+    stub: '-',
     width: null,
     stickyLeft: false,
     stickyRight: false,

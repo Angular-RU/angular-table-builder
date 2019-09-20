@@ -19,4 +19,5 @@ export class ColumnOptions {
     @Input() public draggable: boolean = null;
     @Input('css-class') public cssClass: string[];
     @Input('css-style') public cssStyle: string[];
+    @Input() public stub: string = null;
 }
