@@ -162,7 +162,11 @@ export class TemplateParserService {
                 : false,
             draggable: canBeAddDraggable
                 ? TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable)
-                : false
+                : false,
+            overflowTooltip: TemplateParserService.getValidPredicate(
+                this.columnOptions.overflowTooltip,
+                column.overflowTooltip
+            )
         };
     }
 }

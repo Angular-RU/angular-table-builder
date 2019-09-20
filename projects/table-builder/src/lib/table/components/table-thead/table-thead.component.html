@@ -17,6 +17,7 @@
         [parent]="parent"
         [text-center]="true"
         [overflowTooltip]="divElement"
+        [enable-overflow-tooltip]="columnSchema?.overflowTooltip"
         class="table-grid__cell--content table-grid__header-cell--content"
         [class.table-grid__cell--content-sortable-is-active]="sortableDefinition[columnSchema.key]"
         [class.table-grid__cell--content-sortable]="columnSchema?.sortable"

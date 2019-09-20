@@ -56,6 +56,7 @@ export interface ColumnsSchema<T = Any> {
     isModel: boolean;
     excluded: boolean;
     isVisible: boolean;
+    overflowTooltip: boolean;
 }
 
 export interface TableUpdateSchema<T = Any> {

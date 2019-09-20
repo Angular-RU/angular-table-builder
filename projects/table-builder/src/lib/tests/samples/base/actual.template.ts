@@ -18,6 +18,7 @@ const COLUMN: ColumnsSchema = {
     isModel: true,
     isVisible: true,
     excluded: false,
+    overflowTooltip: true,
     th: {
         ...MocksGenerator.generateCell(true),
         nowrap: false,

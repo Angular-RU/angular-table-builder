@@ -7,6 +7,7 @@ import { trim } from '../operators/trim';
 @Directive({ selector: '[overflowTooltip]' })
 export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
     @Input('overflowTooltip') public element: HTMLDivElement = null;
+    @Input('enable-overflow-tooltip') public enableOverflowTooltip: boolean;
     @Input('parent') public parent: HTMLDivElement = null;
     @Input('text-center') public textCenter: boolean = null;
     private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -34,6 +35,10 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
     }
 
     public ngAfterViewInit(): void {
+        if (!this.enableOverflowTooltip) {
+            return;
+        }
+
         fromEvent(this.element, 'mouseenter')
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.detectCheckOverflow());
@@ -48,6 +53,10 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
      * fix problem with memory leak
      */
     public ngOnDestroy(): void {
+        if (!this.enableOverflowTooltip) {
+            return;
+        }
+
         clearInterval(this.frameId);
         this.removeElement();
         this.destroy$.next(true);
