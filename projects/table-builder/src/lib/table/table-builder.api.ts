@@ -167,16 +167,15 @@ export abstract class TableBuilderApiImpl
      * recommendation: {{ table.selectionModel.size  }}
      */
     public get selectedItems(): TableRow[] {
-        const source: TableRow[] = this.source || [];
-        return source.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
+        return this.sourceRef.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
     }
 
     public get firstItem(): TableRow {
-        return (this.source && this.source[0]) || {};
+        return this.sourceRef[0] || {};
     }
 
     public get lastItem(): TableRow {
-        return (this.source && this.source[this.source.length - 1]) || {};
+        return this.sourceRef[this.sourceRef.length - 1] || {};
     }
 
     public get selectionModel(): SelectionMap {
@@ -192,7 +191,7 @@ export abstract class TableBuilderApiImpl
     }
 
     public get columnVirtualHeight(): number {
-        return this.source.length * this.clientRowHeight;
+        return this.sourceRef.length * this.clientRowHeight;
     }
 
     public get columnHeight(): number {
@@ -201,7 +200,11 @@ export abstract class TableBuilderApiImpl
     }
 
     public get size(): number {
-        return (this.source && this.source.length) || 0;
+        return this.sourceRef.length;
+    }
+
+    protected get sourceRef(): TableRow[] {
+        return this.source && this.source.length ? this.source : [];
     }
 
     public abstract markDirtyCheck(): void;

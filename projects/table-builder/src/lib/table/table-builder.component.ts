@@ -109,7 +109,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public get sourceExists(): boolean {
-        return !!this.source && this.source.length > 0;
+        return this.sourceRef.length > 0;
     }
 
     private get viewIsDirty(): boolean {
