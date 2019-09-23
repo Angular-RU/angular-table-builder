@@ -5,7 +5,7 @@ import { getDeepValue } from '../operators/deep-value';
 
 @Pipe({ name: 'deepPath', pure: true })
 export class DeepPathPipe implements PipeTransform {
-    public transform(item: KeyMap, path: string, stub: string): Any {
+    public transform(item: KeyMap, path: string, stub: string = ''): Any {
         const result: Any = getDeepValue(item, path);
         return checkValueIsEmpty(result) ? stub : result;
     }
