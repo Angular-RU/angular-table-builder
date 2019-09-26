@@ -1,12 +1,10 @@
 import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../table/config/table-builder-options';
-import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('[TEST]: Deep path pipe', () => {
     let pipe: DeepPathPipe;
 
-    beforeEach(() => (pipe = new DeepPathPipe(new TableBuilderOptionsImpl(), new UtilsService())));
+    beforeEach(() => (pipe = new DeepPathPipe()));
 
     it('should be correct extract', () => {
         const b: KeyMap = pipe.transform(
@@ -46,7 +44,10 @@ describe('[TEST]: Deep path pipe', () => {
     it('should be correct create cache and invalidate', () => {
         const a: KeyMap = { a: { b: 1 } };
         const b: KeyMap = { a: { b: 2 } };
+        const c: KeyMap = { a: { b: [1, 2, 3] } };
         expect(pipe.transform(a, 'a.b')).toEqual(1);
         expect(pipe.transform(b, 'a.b')).toEqual(2);
+        expect(pipe.transform(b, 'a')).toEqual({ b: 2 });
+        expect(pipe.transform(c, 'a.b.2')).toEqual(3);
     });
 });

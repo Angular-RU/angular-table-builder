@@ -2,17 +2,13 @@
     <span>Example dynamic changes</span>
 </mat-toolbar>
 
-<mat-checkbox [(ngModel)]="scrollTrolling">Enable throttling for scrolling</mat-checkbox>
-<br />
-<br />
-
 <style>
     .example-full-width {
         padding: 5px;
     }
 </style>
 
-<ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false" [throttling]="scrollTrolling">
+<ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false">
     <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" important-template>
         <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>

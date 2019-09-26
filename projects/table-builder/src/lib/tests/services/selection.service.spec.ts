@@ -3,6 +3,7 @@ import { Any, RowId } from '../../table/interfaces/table-builder.internal';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { TableRow } from '../../table/interfaces/table-builder.external';
 import { SelectionMap } from '../../table/services/selection/selection';
+import { UtilsService } from '../../table/services/utils/utils.service';
 
 // tslint:disable-next-line
 describe('[TEST]: Selection service', () => {
@@ -43,8 +44,10 @@ describe('[TEST]: Selection service', () => {
     });
 
     let selection: SelectionService;
+    let utils: UtilsService;
 
     beforeEach(() => {
+        utils = new UtilsService(null);
         selection = new SelectionService(mockNgZone as NgZone);
     });
 
@@ -52,7 +55,7 @@ describe('[TEST]: Selection service', () => {
         try {
             selection.selectRow(data[0], mockPreventDefault as MouseEvent, data);
         } catch (e) {
-            expect(e.message).toEqual(`Can't select item, make sure you pass the correct primary key`);
+            expect(e.message).toContain(`Can't select item, make sure you pass the correct primary key`);
         }
     });
 
@@ -61,7 +64,6 @@ describe('[TEST]: Selection service', () => {
         const firstIndex: number = 0;
 
         selection.primaryKey = 'position';
-
         selection.selectRow(
             data[lastIndex],
             {
@@ -153,6 +155,7 @@ describe('[TEST]: Selection service', () => {
     });
 
     it('should be correct remove listener before ngOnDestroy', () => {
+        selection.listenShiftKey();
         expect(listenKeydown).toEqual(true);
         expect(listenKeyup).toEqual(true);
         selection.ngOnDestroy();

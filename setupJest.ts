@@ -10,7 +10,7 @@ const dom: Any = new JSDOM('<!DOCTYPE html><html><head></head><body></body></htm
 global['window'] = dom.window;
 global['document'] = dom.window.document;
 
-// Simulate window resize event
+// Simulate window resize events
 const resizeEvent: Any = document.createEvent('Event');
 resizeEvent.initEvent('resize', true, true);
 

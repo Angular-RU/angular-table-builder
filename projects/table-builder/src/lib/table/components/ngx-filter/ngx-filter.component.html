@@ -1,0 +1,19 @@
+<div class="table-grid__filter-menu" *ngIf="state.opened">
+    <div
+        #targetElement
+        class="filter-menu"
+        (contextmenu)="close($event)"
+        [ngStyle]="{
+            'width.px': width,
+            'min-height.px': height,
+            'max-height.px': maxHeight,
+            'top.px': state?.position?.top + leftX - overflowY,
+            'left.px': state?.position?.left - topY - overflowX,
+            visibility: state?.position ? 'visible' : 'hidden'
+        }"
+    >
+        <ng-template [ngIf]="isViewed">
+            <ng-content></ng-content>
+        </ng-template>
+    </div>
+</div>

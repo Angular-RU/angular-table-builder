@@ -1,5 +1,5 @@
 import { EventEmitter, TemplateRef } from '@angular/core';
-import { Any, KeyMap, TableBrowserEvent } from './table-builder.internal';
+import { Any, DeepPartial, KeyMap, TableBrowserEvent } from './table-builder.internal';
 
 export type TableRow<T = Any> =
     | Any
@@ -10,7 +10,6 @@ export type TableRow<T = Any> =
 export interface TableBuilderOptions {
     bufferAmount: number;
     wheelMaxDelta: number;
-    defaultValueSeparator: string;
 }
 
 export enum ImplicitContext {
@@ -21,15 +20,15 @@ export enum ImplicitContext {
 export type TableClickEventEmitter = EventEmitter<TableEvent> | null;
 
 export interface TableCellOptions<T = Any> {
-    template: TemplateRef<T>;
-    context: ImplicitContext;
+    class: string | string[] | KeyMap;
     textBold: boolean;
     nowrap: boolean;
     useDeepPath: boolean;
-    class: string | string[] | KeyMap<Any>;
-    style: KeyMap<Any>;
+    style: KeyMap;
     width: number;
     height: number;
+    template: TemplateRef<T>;
+    context: ImplicitContext;
     onClick: EventEmitter<Any>;
     dblClick: EventEmitter<Any>;
 }
@@ -40,10 +39,7 @@ export interface TableHeadCellOptions<T = Any> {
 }
 
 export interface ColumnsSchema<T = Any> {
-    [key: string]: TableColumn<T>;
-}
-
-export interface TableColumn<T = Any> {
+    key: string;
     td: TableCellOptions<T>;
     th: TableCellOptions<T> & TableHeadCellOptions;
     width: number;
@@ -53,22 +49,20 @@ export interface TableColumn<T = Any> {
     stickyRight: boolean;
     resizable: boolean;
     sortable: boolean;
+    filterable: boolean;
+    draggable: boolean;
     customColumn: boolean;
     verticalLine: boolean;
-}
-
-export interface ColumnsAllowedKeys {
-    [key: string]: AllowedKeysProperties;
-}
-
-export interface AllowedKeysProperties {
     isModel: boolean;
-    visible: boolean;
+    excluded: boolean;
+    isVisible: boolean;
+    overflowTooltip: boolean;
+    stub: string;
 }
 
-export interface TableSchema<T = Any> {
-    columns: ColumnsSchema<T>;
-    columnsAllowedKeys: ColumnsAllowedKeys;
+export interface TableUpdateSchema<T = Any> {
+    columns: SimpleSchemaColumns;
+    name: string | null;
 }
 
 export interface TableEvent<T = Any> {
@@ -81,3 +75,5 @@ export interface TableEvent<T = Any> {
 export interface ContextItemEvent {
     preventDefault(): void;
 }
+
+export type SimpleSchemaColumns = Array<DeepPartial<ColumnsSchema>>;

@@ -6,7 +6,7 @@ import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
 import { SelectionService } from '../../../table/services/selection/selection.service';
-import { TableEvent, TableRow } from '../../../table/interfaces/table-builder.external';
+import { ColumnsSchema, TableEvent, TableRow } from '../../../table/interfaces/table-builder.external';
 import { NgxColumnComponent } from '../../../table/components/ngx-column/ngx-column.component';
 import { TableBuilderComponent } from '../../../table/table-builder.component';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
@@ -18,6 +18,10 @@ import { TableLineRow } from '../../../table/components/common/table-line-row';
 import { SortableService } from '../../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
+import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../../table/services/draggable/draggable.service';
+import { NgxTableViewChangesService } from '@angular-ru/table-builder';
+import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 interface PeriodicElement {
     name: string;
@@ -50,7 +54,10 @@ describe('[TEST]: TableBuilder', () => {
     let resizable: ResizableService;
     let sortable: SortableService;
     let contextMenu: ContextMenuService;
+    let resizeService: ResizableService;
+    let scroll: OverloadScrollService;
     let utils: UtilsService;
+    let draggable: DraggableService;
     let preventDefaultInvoked: number = 0;
     let clearIntervalInvoked: number = 0;
 
@@ -74,22 +81,38 @@ describe('[TEST]: TableBuilder', () => {
     let weight: NgxColumnComponent;
 
     beforeEach(() => {
-        selection = new SelectionService(mockNgZone as NgZone);
+        const zone: NgZone = mockNgZone as NgZone;
+        const viewChanges: NgxTableViewChangesService = new NgxTableViewChangesService();
+
+        utils = new UtilsService(zone);
+        selection = new SelectionService(zone);
         templateParser = new TemplateParserService();
-        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
+        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(zone), mockNgZone as NgZone);
+        draggable = new DraggableService(templateParser);
         resizable = new ResizableService();
-        contextMenu = new ContextMenuService(utils);
-        utils = new UtilsService();
+        contextMenu = new ContextMenuService();
+
+        const worker: WebWorkerThreadService = new WebWorkerThreadService();
+        scroll = new OverloadScrollService();
+        const app: ApplicationRef = appRef as ApplicationRef;
+
+        resizeService = new ResizableService();
+        sortable = new SortableService(worker, utils, zone);
+
         table = new TableBuilderComponent(
             selection,
-            templateParser,
+            new TemplateParserService(),
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone,
+            zone,
             utils,
-            resizable,
+            resizeService,
             sortable,
-            contextMenu,
-            appRef as ApplicationRef
+            new ContextMenuService(),
+            app,
+            new FilterableService(worker, utils, zone, app),
+            draggable,
+            viewChanges,
+            scroll
         );
     });
 
@@ -124,6 +147,7 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be correct selected items', () => {
+        table.enableSelection = true;
         table.primaryKey = 'position';
         table.ngOnInit();
 
@@ -164,27 +188,34 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.dirty).toEqual(false);
     }));
 
-    it('should be correct displayedColumns when set custom keys', () => {
+    it('should be correct displayedColumns when set custom keys', fakeAsync(() => {
         table.keys = customKeys;
         table.ngOnChanges();
         table.ngAfterContentInit();
-        expect(table.displayedColumns).toEqual(customKeys);
-    });
+        tick(1000);
 
-    it('should be correct displayedColumns when set custom keys and exclude keys', () => {
+        expect(table.columnSchema.map((column: ColumnsSchema) => column.key)).toEqual(customKeys);
+    }));
+
+    it('should be correct displayedColumns when set custom keys and exclude keys', fakeAsync(() => {
         table.keys = customKeys;
         table.excludeKeys = ['position'];
         table.ngOnChanges();
         table.ngAfterContentInit();
-        expect(table.displayedColumns).toEqual(['name', 'symbol', 'name']);
-    });
+        tick(1000);
+
+        expect(table.columnSchema.map((column: ColumnsSchema) => column.key)).toEqual(['name', 'symbol', 'name']);
+    }));
 
     it('should be correct parse template', () => {
         const templates: QueryList<NgxColumnComponent> = new QueryList();
         templates.reset([position, name, weight]);
 
-        templateParser.initialSchema(null).parse(table.generateColumnsKeyMap(modelKeys), templates);
-        expect(templateParser.schema).toEqual(ACTUAL_TEMPLATE);
+        templateParser.initialSchema(null);
+        templateParser.allowedKeyMap = table.generateColumnsKeyMap(modelKeys);
+        templateParser.keyMap = table.generateColumnsKeyMap(modelKeys);
+        templateParser.parse(templates);
+        expect(templateParser.compiledTemplates).toEqual(ACTUAL_TEMPLATE);
     });
 
     it('should be correct rendered', fakeAsync(() => {
@@ -257,28 +288,19 @@ describe('[TEST]: TableBuilder', () => {
     }));
 
     it('should be correct generate table body without emitter', () => {
-        const index: number = 0;
-
         const mySelection: SelectionService = new SelectionService(mockNgZone as NgZone);
         const tableBody: TableTbodyComponent = new TableTbodyComponent(
             mySelection,
             mockChangeDetector as ChangeDetectorRef,
             contextMenu,
             new TableBuilderOptionsImpl(),
-            null,
             mockNgZone as NgZone,
-            utils
+            utils,
+            scroll
         );
 
         tableBody.primaryKey = 'id';
-        tableBody.throttling = true;
         tableBody.source = [item];
-
-        tableBody.scrollOverload = { isOverload: true };
-        expect(tableBody.trackByIdx(index, item)).toEqual(index);
-
-        tableBody.scrollOverload = { isOverload: false };
-        expect(tableBody.trackByIdx(index, item)).toEqual(item.id);
 
         expect(tableBody.canSelectTextInTable).toEqual(true);
 
@@ -298,9 +320,9 @@ describe('[TEST]: TableBuilder', () => {
             mockChangeDetector as ChangeDetectorRef,
             contextMenu,
             new TableBuilderOptionsImpl(),
-            null,
             mockNgZone as NgZone,
-            utils
+            utils,
+            scroll
         );
 
         tableBody.source = [item];
@@ -321,7 +343,7 @@ describe('[TEST]: TableBuilder', () => {
     });
 
     it('should be invoke preventDefault', () => {
-        const cell: TableEvent = new TableLineRow(templateParser, selection, utils).generateTableCellInfo(
+        const cell: TableEvent = new TableLineRow(selection, utils).generateTableCellInfo(
             item,
             'id',
             mockMouseEvent as MouseEvent
@@ -340,25 +362,15 @@ describe('[TEST]: TableBuilder', () => {
         table.excludeKeys = ['a3'];
         table.ngOnChanges();
         expect(table.modelColumnKeys).toEqual(['a1', 'a2']);
+
+        table.source = [{ a1: 1, a2: 2, a3: 3, a4: { a: 1, b: 2, c: null }, a5: { c: null, d: 4, e: 5 } }];
+        table.excludeKeys = ['a3', /a4/, /c/];
+        table.ngOnChanges();
+        expect(table.modelColumnKeys).toEqual(['a1', 'a2', 'a5.d', 'a5.e']);
     });
 
-    it('should be correct update scroll', fakeAsync(() => {
-        table.throttling = true;
-
-        table.updateScrollOverload({ isOverload: true });
-        expect(table['detectOverload']).toEqual(true);
-
-        table.scrollEnd();
-
-        expect(table['isFrozenView']).toEqual(true);
-        expect(table.showedCellByDefault).toEqual(true);
-        expect(table['detectOverload']).toEqual(false);
-
-        tick(TableBuilderOptionsImpl.TIME_RELOAD);
-        expect(table['isFrozenView']).toEqual(false);
-    }));
-
     it('should be correct selection entries', () => {
+        table.enableSelection = true;
         expect(table.selectionEntries).toEqual({});
 
         table.primaryKey = 'position';
@@ -366,14 +378,6 @@ describe('[TEST]: TableBuilder', () => {
 
         table.selection.selectRow(data[3], mockMouseEvent as MouseEvent, data);
         expect(table.selectionEntries).toEqual({ 4: true });
-    });
-
-    it('should be correct check content dirty', () => {
-        expect(table.contentIsDirty).toEqual(false);
-
-        table['renderCount']++;
-
-        expect(table.contentIsDirty).toEqual(true);
     });
 
     it('should be correct toggleFreeze', () => {

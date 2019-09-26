@@ -1,9 +1,11 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+
 import { SelectionMap } from './selection';
 import { SelectionRange } from './selection-range';
 import { TableRow } from '../../interfaces/table-builder.external';
-import { PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
-import { Subject } from 'rxjs';
+import { Fn, KeyMap, KeyType, PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
+import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
 
 @Injectable()
 export class SelectionService implements OnDestroy {
@@ -13,21 +15,22 @@ export class SelectionService implements OnDestroy {
     public primaryKey: string = PrimaryKey.ID;
     public selectionTaskIdle: number;
     public onChanges: Subject<void> = new Subject<void>();
+    private readonly handler: KeyMap<Fn> = {};
 
-    constructor(private readonly ngZone: NgZone) {
-        this.listenShiftKeyByType('keydown');
-        this.listenShiftKeyByType('keyup');
+    constructor(private readonly ngZone: NgZone) {}
+
+    public listenShiftKey(): void {
+        this.listenShiftKeyByType(KeyType.KEYDOWN);
+        this.listenShiftKeyByType(KeyType.KEYUP);
     }
 
-    private static validateSelectionId(id: RowId): void {
-        if (!id) {
-            throw new Error(`Can't select item, make sure you pass the correct primary key`);
-        }
+    public unListenShiftKey(): void {
+        this.removeListenerByType(KeyType.KEYDOWN);
+        this.removeListenerByType(KeyType.KEYUP);
     }
 
     public ngOnDestroy(): void {
-        this.removeListenerByType('keydown');
-        this.removeListenerByType('keyup');
+        this.unListenShiftKey();
     }
 
     public toggleAll(rows: TableRow[]): void {
@@ -66,26 +69,33 @@ export class SelectionService implements OnDestroy {
 
     public getIdByRow(row: TableRow): RowId {
         const id: RowId = row[this.primaryKey];
-        SelectionService.validateSelectionId(id);
+
+        if (checkValueIsEmpty(id)) {
+            throw new Error(
+                `Can't select item, make sure you pass the correct primary key, or you forgot enable selection
+                <ngx-table-builder [enable-selection]="true" primary-key="fieldId" />
+                `
+            );
+        }
+
         return id;
     }
 
     public shiftKeyDetectSelection({ shiftKey }: KeyboardEvent): void {
-        this.changeSelectionStart(shiftKey);
+        this.selectionStart = { status: shiftKey };
     }
 
-    private listenShiftKeyByType(type: string): void {
+    private listenShiftKeyByType(type: KeyType): void {
         this.ngZone.runOutsideAngular(() => {
-            window.addEventListener(type, this.shiftKeyDetectSelection.bind(this), true);
+            this.handler[type] = ({ shiftKey }: KeyboardEvent): void => {
+                this.selectionStart = { status: shiftKey };
+            };
+            window.addEventListener(type, this.handler[type], true);
         });
     }
 
     private removeListenerByType(type: string): void {
-        window.removeEventListener(type, this.shiftKeyDetectSelection.bind(this), true);
-    }
-
-    private changeSelectionStart(shiftKey: boolean): void {
-        this.selectionStart = { status: shiftKey };
+        window.removeEventListener(type, this.handler[type], true);
     }
 
     private checkIsAllSelected(rows: TableRow[]): void {

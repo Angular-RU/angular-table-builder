@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     Directive,
     ElementRef,
     EventEmitter,
@@ -8,27 +7,28 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
-    Output
+    Output,
+    SimpleChanges
 } from '@angular/core';
-import { Any, DynamicHeightOptions } from '../interfaces/table-builder.internal';
+import { Any, BoxView, DynamicHeightOptions, Fn } from '../interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-
-const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+import { HEAD_TOP } from '../symbols';
 
 @Directive({ selector: '[autoHeight]' })
-export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-    private static readonly DEFAULT_VALUE: number = 0;
-    private static readonly HEAD_TOP: string = '10px';
+export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
+    @Input() public headerHeight: number = 0;
+    @Input() public footerHeight: number = 0;
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
+    @Input() public tableViewport: Partial<HTMLDivElement> = {};
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
-
-    private useOnlyAutoViewPort: boolean;
+    private readonly minHeight: number = 0;
+    private readonly delay: number = 100;
+    private useOnlyAutoViewPort: boolean = false;
     private isDirtyCheck: boolean;
     private taskId: number;
+    private handler: Fn;
 
-    constructor(private readonly element: ElementRef, public ngZone: NgZone) {
-        this.ngZone = ngZone;
-    }
+    constructor(private readonly element: ElementRef, public readonly ngZone: NgZone) {}
 
     private get height(): number {
         return this.autoHeight.height;
@@ -44,47 +44,33 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         if (this.height) {
             height = `${this.height}px`;
         } else if (this.autoHeight.detect) {
-            let viewportHeight: number;
             const paddingTop: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-top');
             const paddingBottom: string = AutoHeightDirective.getStyle(this.rootCurrentElement, 'padding-bottom');
-            const scrollbarHeight: number = this.childElement.offsetHeight - this.childElement.clientHeight || 0;
 
-            if (this.isLessHeightViewPort) {
-                viewportHeight = this.columnHeight;
-                height = `calc(${viewportHeight + scrollbarHeight + this.headerHeight + this.footerHeight}px)`;
-            } else if (this.isLessHeightParentOffset && !this.useOnlyAutoViewPort) {
-                viewportHeight = this.parentOffsetHeight - parseInt(AutoHeightDirective.HEAD_TOP);
-                height = `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
+            if (this.useOnlyAutoViewPort && this.columnHeight > this.parentOffsetHeight) {
+                height = this.getHeightByViewPort({ paddingTop, paddingBottom });
+            } else if (this.parentOffsetHeight > this.columnHeight) {
+                height = this.getDefaultHeight();
+            } else if (!this.isEmptyParentHeight) {
+                height = this.getHeightByParent({ paddingTop, paddingBottom });
             } else {
-                viewportHeight = this.autoViewHeight - parseInt(AutoHeightDirective.HEAD_TOP);
-                height = `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
+                height = this.getHeightByViewPort({ paddingTop, paddingBottom });
             }
         }
 
         return height ? `display: block; height: ${height}` : '';
     }
 
-    private get isLessHeightParentOffset(): boolean {
-        return (
-            this.parentOffsetHeight > parseInt(AutoHeightDirective.HEAD_TOP) &&
-            this.parentOffsetHeight < this.autoViewHeight
-        );
-    }
-
-    private get isLessHeightViewPort(): boolean {
-        return this.columnHeight <= this.parentOffsetHeight || this.columnHeight < this.autoViewHeight;
+    private get isEmptyParentHeight(): boolean {
+        return this.parentOffsetHeight < parseInt(HEAD_TOP);
     }
 
     private get parentOffsetHeight(): number {
-        return this.rootCurrentElement.offsetHeight || AutoHeightDirective.DEFAULT_VALUE;
+        return this.rootCurrentElement.clientHeight || this.minHeight;
     }
 
     private get currentElement(): HTMLDivElement {
         return this.element.nativeElement;
-    }
-
-    private get childElement(): Partial<HTMLDivElement> {
-        return ((this.element.nativeElement as HTMLDivElement).firstChild as HTMLDivElement) || {};
     }
 
     private get rootCurrentElement(): Partial<HTMLElement> {
@@ -92,19 +78,11 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
     }
 
     private get columnHeight(): number {
-        return this.autoHeight.columnHeight;
+        return this.autoHeight.columnHeight || 0;
     }
 
     private get autoViewHeight(): number {
         return document.body.clientHeight - this.currentElement.getBoundingClientRect().top;
-    }
-
-    private get headerHeight(): number {
-        return (this.autoHeight.headerRef && this.autoHeight.headerRef.nativeElement.clientHeight) || 0;
-    }
-
-    private get footerHeight(): number {
-        return (this.autoHeight.footerRef && this.autoHeight.footerRef.nativeElement.clientHeight) || 0;
     }
 
     private static getStyle(element: Element | Any, strCssRule: string): string {
@@ -126,31 +104,34 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            window.addEventListener('resize', this.recalculateByResize.bind(this), { passive: true });
+            this.handler = (): void => this.recalculateTableSize();
+            window.addEventListener('resize', this.handler, { passive: true });
         });
     }
 
-    public ngAfterViewInit(): void {
-        this.markForCheck();
-    }
-
-    public ngOnChanges(): void {
-        if (this.isDirtyCheck) {
-            this.recalculateByResize();
+    public ngOnChanges(changes: SimpleChanges): void {
+        if ('autoHeight' in changes) {
+            this.recalculateTableSize();
         }
     }
 
     public ngOnDestroy(): void {
-        window.removeEventListener('resize', this.recalculateByResize.bind(this));
+        window.removeEventListener('resize', this.handler);
     }
 
-    public recalculateByResize(): void {
-        this.calculateHeight();
+    public recalculateTableSize(): void {
         this.ngZone.runOutsideAngular(() => {
             clearTimeout(this.taskId);
             this.taskId = window.setTimeout(() => {
-                this.recalculatedHeight.emit();
-            }, TIME_IDLE);
+                if (this.canCalculated && !this.isDirtyCheck) {
+                    this.markForCheck();
+                }
+
+                if (this.isDirtyCheck && this.autoHeight.inViewport) {
+                    this.calculateHeight();
+                    this.recalculatedHeight.emit();
+                }
+            }, this.delay);
         });
     }
 
@@ -160,12 +141,28 @@ export class AutoHeightDirective implements OnInit, OnChanges, AfterViewInit, On
         }
     }
 
-    private markForCheck(): void {
+    public markForCheck(): void {
         this.isDirtyCheck = true;
-
-        if (this.parentOffsetHeight <= parseInt(AutoHeightDirective.HEAD_TOP)) {
+        if (this.parentOffsetHeight <= TableBuilderOptionsImpl.ROW_HEIGHT) {
             this.useOnlyAutoViewPort = true;
         }
+    }
+
+    private getDefaultHeight(): string {
+        const scrollbarHeight: number = this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+        return `calc(${this.columnHeight + scrollbarHeight + this.headerHeight + this.footerHeight}px)`;
+    }
+
+    private getHeightByParent({ paddingTop, paddingBottom }: BoxView): string {
+        const viewportHeight: number = this.parentOffsetHeight - parseInt(HEAD_TOP);
+        return `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`;
+    }
+
+    private getHeightByViewPort({ paddingTop, paddingBottom }: BoxView): string {
+        const viewportHeight: number = this.autoViewHeight - parseInt(HEAD_TOP);
+        return this.columnHeight > viewportHeight
+            ? `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`
+            : this.getDefaultHeight();
     }
 
     private setHeightByParent(): void {

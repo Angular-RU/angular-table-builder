@@ -1,4 +1,9 @@
-import { TableBuilderComponent, TableRow, TableSchema } from '@angular-ru/table-builder';
+import {
+    NgxTableViewChangesService,
+    SimpleSchemaColumns,
+    TableBuilderComponent,
+    TableRow
+} from '@angular-ru/table-builder';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { ApplicationRef, ChangeDetectorRef, NgZone, SimpleChanges } from '@angular/core';
@@ -10,6 +15,9 @@ import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { SortableService } from '../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
+import { FilterableService } from '../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../table/services/draggable/draggable.service';
+import { OverloadScrollService } from '../../table/services/overload-scroll/overload-scroll.service';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 
@@ -18,9 +26,11 @@ describe('[TEST]: Resizable service', () => {
     let removeAll: number = 0;
     let documentEmpty: number = 0;
     let resizeService: ResizableService;
+    let draggable: DraggableService;
     let sortable: SortableService;
     const columnWidth: number = 200;
     let changes: SimpleChanges;
+    const positionIdColumn: number = 0;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
@@ -37,18 +47,32 @@ describe('[TEST]: Resizable service', () => {
     };
 
     beforeEach(() => {
+        const worker: WebWorkerThreadService = new WebWorkerThreadService();
+        const viewChanges: NgxTableViewChangesService = new NgxTableViewChangesService();
+        const zone: NgZone = mockNgZone as NgZone;
+        const utils: UtilsService = new UtilsService(zone);
+        const app: ApplicationRef = appRef as ApplicationRef;
+        const parser: TemplateParserService = new TemplateParserService();
+        const scroll: OverloadScrollService = new OverloadScrollService();
+
         resizeService = new ResizableService();
-        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
+        draggable = new DraggableService(parser);
+        sortable = new SortableService(worker, utils, zone);
+
         table = new TableBuilderComponent(
-            new SelectionService(mockNgZone as NgZone),
-            new TemplateParserService(),
+            new SelectionService(zone),
+            parser,
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone,
-            new UtilsService(),
+            zone,
+            utils,
             resizeService,
             sortable,
-            new ContextMenuService(new UtilsService()),
-          appRef as ApplicationRef
+            new ContextMenuService(),
+            app,
+            new FilterableService(worker, utils, zone, app),
+            draggable,
+            viewChanges,
+            scroll
         );
     });
 
@@ -64,7 +88,7 @@ describe('[TEST]: Resizable service', () => {
         };
 
         table.ngAfterContentInit();
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         tick(1000); // async rendering
     }));
 
@@ -83,7 +107,7 @@ describe('[TEST]: Resizable service', () => {
             })
         });
 
-        let schema: TableSchema = null;
+        let schema: SimpleSchemaColumns = null;
 
         table.resizeColumn(
             {
@@ -95,24 +119,28 @@ describe('[TEST]: Resizable service', () => {
 
         expect(resizeService.startWidth).toEqual(columnWidth);
         expect(resizeService.startX).toEqual(0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(null);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(null);
 
         // ColumnWidth { 200 } + pageX { 140 }
         MocksGenerator.dispatchMouseEvent('mousemove', 140, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(340);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(340);
 
         tick(100);
 
         // ColumnWidth { 200 } + pageX { 210 }
         MocksGenerator.dispatchMouseEvent('mousemove', 210, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(410);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(410);
 
-        table.schemaChanges.subscribe((data: TableSchema) => (schema = data));
+        table.schemaChanges.subscribe((data: SimpleSchemaColumns) => (schema = data));
         MocksGenerator.dispatchMouseEvent('mouseup', 210, 0);
 
         tick(1000);
 
-        expect(schema.columns['id'].width).toEqual(410);
+        expect(schema).toEqual([
+            { key: 'id', width: 410, isVisible: true, isModel: true },
+            { key: 'value', width: null, isVisible: true, isModel: true }
+        ]);
+
         expect(removeAll).toEqual(2);
     }));
 
@@ -133,10 +161,10 @@ describe('[TEST]: Resizable service', () => {
 
         tick(100);
 
-        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(150);
         expect(documentEmpty).toEqual(1);
 
         MocksGenerator.dispatchMouseEvent('mousemove', -350, 0);
-        expect(table.templateParser.schema.columns['id'].width).toEqual(150);
+        expect(table.templateParser.schema.columns[positionIdColumn].width).toEqual(150);
     }));
 });

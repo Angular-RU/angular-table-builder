@@ -4,18 +4,20 @@
 @import './styles/columns';
 @import './styles/cell';
 @import './styles/icon';
+@import './styles/draggable';
+
+.table-grid__root--is-rendered .table-grid {
+    overflow: auto;
+    //noinspection CssOverwrittenProperties
+    overflow-y: auto;
+}
 
 .table-grid {
     position: relative;
-    overflow: auto;
     background: $backgroundColor;
     will-change: auto;
     scroll-behavior: smooth;
-    overflow-x: visible;
     height: 100%;
-
-    //noinspection CssOverwrittenProperties
-    overflow-y: auto;
 
     &__column-area-content {
         display: flex;
@@ -79,4 +81,34 @@
             font-weight: bold;
         }
     }
+}
+
+.table-grid__cell--inner-content {
+    opacity: 0;
+    visibility: hidden;
+    will-change: opacity;
+    transition: visibility 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.table-grid__scroll-offset {
+    .table-grid__header-cell {
+        transition: box-shadow 0.3s ease-in-out;
+        box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
+    }
+}
+
+.table-grid__scroll-offset .table-grid__cell--inner-content,
+.loaded {
+    visibility: visible;
+    opacity: 1;
+}
+
+.table-grid__scroll-offset .table-grid__cell--inner-content {
+    transition-duration: 0ms;
+}
+
+.table-grid__no-display {
+    // don't use [display: none]
+    // for correct work mutation observer
+    opacity: 0.012 !important;
 }

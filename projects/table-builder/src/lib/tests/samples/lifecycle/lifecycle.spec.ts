@@ -1,25 +1,28 @@
+import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/table-builder';
+import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
+import { async, fakeAsync, tick } from '@angular/core/testing';
+
 import { SelectionService } from '../../../table/services/selection/selection.service';
-import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList } from '@angular/core';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { SortableService } from '../../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 import { UtilsService } from '../../../table/services/utils/utils.service';
 import { ResizableService } from '../../../table/services/resizer/resizable.service';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
-import { NgxColumnComponent, TableBuilderComponent } from '@angular-ru/table-builder';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
-import { fakeAsync, tick } from '@angular/core/testing';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
+import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { DraggableService } from '../../../table/services/draggable/draggable.service';
+import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 // tslint:disable-next-line:no-big-function
 describe('[TEST]: Lifecycle table', () => {
     let table: TableBuilderComponent;
-    let selection: SelectionService;
-    let templateParser: TemplateParserService;
-    let resizable: ResizableService;
     let sortable: SortableService;
-    let contextMenu: ContextMenuService;
     let utils: UtilsService;
+    let draggable: DraggableService;
+    let resizeService: ResizableService;
+    let changes: SimpleChanges;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
         detectChanges: (): void => {}
@@ -52,25 +55,37 @@ describe('[TEST]: Lifecycle table', () => {
     ];
 
     beforeEach(() => {
-        selection = new SelectionService(mockNgZone as NgZone);
-        templateParser = new TemplateParserService();
-        sortable = new SortableService(new WebWorkerThreadService(), new UtilsService(), mockNgZone as NgZone);
-        resizable = new ResizableService();
-        contextMenu = new ContextMenuService(utils);
-        utils = new UtilsService();
+        const worker: WebWorkerThreadService = new WebWorkerThreadService();
+        const zone: NgZone = mockNgZone as NgZone;
+        const view: NgxTableViewChangesService = new NgxTableViewChangesService();
+        const app: ApplicationRef = appRef as ApplicationRef;
+        const scroll: OverloadScrollService = new OverloadScrollService();
+        utils = new UtilsService(zone);
+
+        const parser: TemplateParserService = new TemplateParserService();
+        draggable = new DraggableService(parser);
+
+        resizeService = new ResizableService();
+        sortable = new SortableService(worker, utils, zone);
+
         table = new TableBuilderComponent(
-            selection,
-            templateParser,
+            new SelectionService(zone),
+            parser,
             mockChangeDetector as ChangeDetectorRef,
-            mockNgZone as NgZone,
+            zone,
             utils,
-            resizable,
+            resizeService,
             sortable,
-            contextMenu,
-            appRef as ApplicationRef
+            new ContextMenuService(),
+            app,
+            new FilterableService(worker, utils, zone, app),
+            draggable,
+            view,
+            scroll
         );
 
         table.primaryKey = 'position';
+        changes = {};
     });
 
     it('should be unchecked state before ngOnChange', () => {
@@ -84,14 +99,13 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(0);
     });
 
     it('should be correct generate modelColumnKeys after ngOnChange', () => {
         table.source = JSON.parse(JSON.stringify(data));
-        table.ngOnChanges();
+        table.enableSelection = true;
+        table.ngOnChanges(changes);
         table.ngOnInit();
 
         expect(table.isRendered).toEqual(false);
@@ -102,15 +116,14 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
         expect(table.selection.primaryKey).toEqual('position');
-        expect(table['renderCount']).toEqual(0);
     });
 
     it('should be correct state after ngAfterContentInit when source empty', () => {
         table.source = null;
-        table.ngOnChanges();
+        table.enableSelection = true;
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
 
@@ -122,14 +135,12 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(false);
-        expect(table['renderCount']).toEqual(0);
     });
 
     it('should be correct state after ngAfterContentInit', fakeAsync(() => {
         table.source = JSON.parse(JSON.stringify(data));
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
 
@@ -141,25 +152,19 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(0);
-        expect(table['renderTaskId']).not.toBeNull();
 
         tick(TableBuilderOptionsImpl.TIME_IDLE);
 
         expect(table.rendering).toEqual(true);
         expect(table.isRendered).toEqual(false);
-        expect(table.displayedColumns).toEqual([]);
-        expect(table['renderTaskId']).not.toBeNull();
+        expect(table.positionColumns).toEqual([]);
 
         tick(TableBuilderOptionsImpl.TIME_IDLE + 100);
 
         expect(table.rendering).toEqual(false);
         expect(table.isRendered).toEqual(true);
-        expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
-        expect(table['renderCount']).toEqual(1);
-        expect(table['renderTaskId']).not.toBeNull();
+        expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
     }));
 
     it('should be correct template changes', fakeAsync(() => {
@@ -167,7 +172,7 @@ describe('[TEST]: Lifecycle table', () => {
         table.columnTemplates = templates;
         table.source = [];
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
         table.ngAfterViewInit();
@@ -180,9 +185,7 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(false);
-        expect(table['renderCount']).toEqual(0);
 
         table.source = JSON.parse(JSON.stringify(data));
         templates.reset([new NgxColumnComponent()]);
@@ -198,9 +201,7 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(0);
     }));
 
     it('should be correct template changes with check renderCount', fakeAsync(() => {
@@ -208,7 +209,7 @@ describe('[TEST]: Lifecycle table', () => {
         table.columnTemplates = templates;
         table.source = JSON.parse(JSON.stringify(data));
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
         table.ngAfterViewInit();
@@ -222,15 +223,13 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(0);
+
+        tick(500);
 
         table.source = JSON.parse(JSON.stringify(data));
         templates.reset([new NgxColumnComponent()]);
         templates.notifyOnChanges();
-
-        tick(1000);
 
         expect(table.isRendered).toEqual(true);
         expect(table.modelColumnKeys).toEqual(['position', 'name', 'weight', 'symbol']);
@@ -240,17 +239,13 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(1);
 
         templates.reset([new NgxColumnComponent(), new NgxColumnComponent()]);
         templates.notifyOnChanges();
         table.ngAfterViewChecked();
 
-        tick(1000);
-
-        expect(table['renderCount']).toEqual(1);
+        tick(500);
     }));
 
     it('should be correct template changes', fakeAsync(() => {
@@ -258,7 +253,7 @@ describe('[TEST]: Lifecycle table', () => {
         table.columnTemplates = templates;
         table.source = [];
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
         table.ngAfterViewInit();
@@ -268,7 +263,7 @@ describe('[TEST]: Lifecycle table', () => {
         templates.notifyOnChanges();
 
         table.source = JSON.parse(JSON.stringify(data));
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
 
         tick(1000);
 
@@ -280,9 +275,7 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual([]);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(0);
 
         table.ngAfterViewChecked();
 
@@ -296,15 +289,13 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
-        expect(table.contentIsDirty).toEqual(false);
         expect(table.sourceExists).toEqual(true);
-        expect(table['renderCount']).toEqual(1);
     }));
 
     it('should be correct ngOnDestroy', () => {
         expect(table['destroy$'].closed).toEqual(false);
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.ngOnInit();
         table.ngAfterContentInit();
         table.ngAfterViewInit();
@@ -319,21 +310,26 @@ describe('[TEST]: Lifecycle table', () => {
         table.source = JSON.parse(JSON.stringify(data));
         expect(table.lazy).toEqual(false);
 
-        table.ngOnChanges();
+        table.ngOnChanges(changes);
         table.renderTable();
 
-        expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
+        tick(100);
+
+        expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
     }));
 
-    it('should be correct async rendering', fakeAsync(() => {
+    it('should be correct async rendering', (done: Fn) => {
         table.source = JSON.parse(JSON.stringify(data));
         expect(table.lazy).toEqual(true);
 
         table.ngOnChanges();
         table.renderTable();
 
-        tick(100);
+        expect(table.positionColumns).toEqual([]);
 
-        expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
-    }));
+        table.afterRendered.subscribe(() => {
+            expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
+            done();
+        });
+    });
 });

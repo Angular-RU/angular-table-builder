@@ -1,9 +1,10 @@
 import { UtilsService } from '../../table/services/utils/utils.service';
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
+import { checkValueIsEmpty } from '../../table/operators/check-value-is-empty';
 
 describe('UtilsService', () => {
     let utils: UtilsService;
-    beforeEach(() => (utils = new UtilsService()));
+    beforeEach(() => (utils = new UtilsService(null)));
 
     it('should be created', () => {
         expect(utils).toBeTruthy();
@@ -25,11 +26,13 @@ describe('UtilsService', () => {
     });
 
     it('should be correct check invalid value', () => {
-        expect(utils.checkValueIsEmpty(null)).toEqual(true);
-        expect(utils.checkValueIsEmpty(NaN)).toEqual(true);
-        expect(utils.checkValueIsEmpty(Infinity)).toEqual(true);
-        expect(utils.checkValueIsEmpty(undefined)).toEqual(true);
-        expect(utils.checkValueIsEmpty('    ')).toEqual(true);
+        expect(checkValueIsEmpty(null)).toEqual(true);
+        expect(checkValueIsEmpty(NaN)).toEqual(true);
+        expect(checkValueIsEmpty(Infinity)).toEqual(true);
+        expect(checkValueIsEmpty(undefined)).toEqual(true);
+        expect(checkValueIsEmpty('    ')).toEqual(true);
+        expect(checkValueIsEmpty(false)).toEqual(false);
+        expect(checkValueIsEmpty(true)).toEqual(false);
     });
 
     it('should be correct deep object', () => {

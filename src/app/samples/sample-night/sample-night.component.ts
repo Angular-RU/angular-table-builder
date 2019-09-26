@@ -21,7 +21,8 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleNightComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public dataFirst: TableRow[];
+    public dataSecond: TableRow[];
     public nativeScrollbar: boolean = false;
 
     constructor(
@@ -32,10 +33,13 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     ) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(1000, 30).then((data: TableRow[]) => {
-            this.data = data;
-            this.cd.detectChanges();
-        });
+        Promise.all([MocksGenerator.generator(11, 30), MocksGenerator.generator(10000, 30)]).then(
+            ([first, second]: [TableRow[], TableRow[]]) => {
+                this.dataFirst = first;
+                this.dataSecond = second;
+                this.cd.detectChanges();
+            }
+        );
     }
 
     public ngAfterViewInit(): void {
@@ -60,13 +64,6 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
                 description: 'Automatic height calculation',
                 code: `
 <style>
-    #main-column,
-    #widget1,
-    #widget2 {
-        border: 1px dotted darkgray;
-        padding: 10px;
-    }
-
     #main-column {
         flex: 1;
         display: flex;

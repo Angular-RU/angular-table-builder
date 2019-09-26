@@ -1,12 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
 
-import { KeyMap } from '../../interfaces/table-builder.internal';
-import { SortableMessage, SortableResolver, SortOrderType } from './sortable.interfaces';
-import { TableRow } from '../../interfaces/table-builder.external';
+import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
+import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 import { WebWorkerThreadService } from '../../worker/worker-thread.service';
+import { SortableMessage, SortOrderType } from './sortable.interfaces';
+import { TableRow } from '../../interfaces/table-builder.external';
 import { UtilsService } from '../utils/utils.service';
 import { sortWorker } from './sort.worker';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 
 @Injectable()
 export class SortableService {
@@ -18,35 +18,31 @@ export class SortableService {
         private readonly zone: NgZone
     ) {}
 
-    public sort(data: TableRow[], key: string = null): Promise<TableRow[]> {
-        if (key) {
-            this.updateSortKey(key);
-        }
+    public get empty(): boolean {
+        return Object.keys(this.definition).length === 0;
+    }
 
-        return new Promise((resolve: SortableResolver<TableRow[]>): void => {
+    public sort(data: TableRow[]): Promise<TableRow[]> {
+        return new Promise((resolve: Resolver<TableRow[]>): void => {
             this.thread
                 .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
                 .then((sorted: TableRow[]) => {
                     this.zone.runOutsideAngular(() =>
-                        setTimeout(() => resolve(sorted), TableBuilderOptionsImpl.TIME_IDLE)
+                        window.setTimeout(() => resolve(sorted), TableBuilderOptionsImpl.TIME_IDLE)
                     );
                 });
         });
     }
 
-    public get empty(): boolean {
-        return Object.keys(this.definition).length === 0;
-    }
-
     public setDefinition(definition: KeyMap<string>): void {
-        this.definition = (definition as KeyMap<SortOrderType>) || {};
+        this.definition = this.empty ? (definition as KeyMap<SortOrderType>) || {} : this.definition;
     }
 
-    private updateSortKey(key: string): void {
-        this.definition = this.getImmutableDefinitionWithKey(key);
+    public updateSortKey(key: string): void {
+        this.definition = this.updateImmutableDefinitions(key);
     }
 
-    private getImmutableDefinitionWithKey(key: string): KeyMap<SortOrderType> {
+    private updateImmutableDefinitions(key: string): KeyMap<SortOrderType> {
         const existKey: SortOrderType = this.definition[key];
 
         if (existKey) {

@@ -2,11 +2,14 @@
     <span>
         Example selection
         <span *ngIf="table.isRendered"> ({{ table.source?.length }}x{{ table.displayedColumns?.length }})</span>
+        <span style="margin-left: 5px">Selected: {{ table.selection.selectionModel.size }}</span>
     </span>
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
 <ngx-table-builder #table [source]="data" [enable-selection]="true">
+    <ngx-options [overflow-tooltip]="false"></ngx-options>
+
     <ngx-column key="selection" [sticky]="true" width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox

@@ -1,21 +1,46 @@
 import { Injectable } from '@angular/core';
 
-import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
-import { ImplicitContext, TableCellOptions, TableColumn, TableSchema } from '../../interfaces/table-builder.external';
-import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
-import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
-import { SchemaBuilder } from './schema-builder.class';
+import { ColumnsSchema, ImplicitContext, TableCellOptions } from '../../interfaces/table-builder.external';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
+import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
+import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
+import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { ColumnOptions } from '../../components/common/column-options';
+import { SchemaBuilder } from './schema-builder.class';
 
 @Injectable()
 export class TemplateParserService {
-    public schema: TableSchema;
+    public schema: SchemaBuilder;
     public templateKeys: Set<string>;
     public fullTemplateKeys: Set<string>;
     public overrideTemplateKeys: Set<string>;
     public columnOptions: ColumnOptions;
+    public compiledTemplates: KeyMap<ColumnsSchema> = {};
+
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder #table
+     *        [source]="[{ id: 1, name: 'hello', value: 'world', description: 'text' }, ...]"
+     *        [exclude]="[ 'description' ]">
+     *    </table-builder>
+     *    ------------------------
+     *    allowedKeyMap === { 'id': true, 'hello': true, 'value': true }
+     */
+    public allowedKeyMap: KeyMap<boolean> = {};
+
+    /**
+     * @description: the custom names of the column list to be displayed in the view.
+     * @example:
+     *    <table-builder #table
+     *        [source]="[{ id: 1, name: 'hello', value: 'world', description: 'text' }, ...]"
+     *        [exclude]="[ 'description' ]">
+     *    </table-builder>
+     *    ------------------------
+     *    allowedKeyMap === { 'id': true, 'hello': true, 'value': true, 'description': false }
+     */
+    public keyMap: KeyMap<boolean> = {};
 
     private static templateContext(key: string, cell: TemplateCellCommon, options: ColumnOptions): TableCellOptions {
         return {
@@ -42,63 +67,62 @@ export class TemplateParserService {
     }
 
     public toggleColumnVisibility(key: string): void {
-        this.schema.columnsAllowedKeys = {
-            ...this.schema.columnsAllowedKeys,
-            [key]: {
-                isModel: this.schema.columnsAllowedKeys[key].isModel,
-                visible: !this.schema.columnsAllowedKeys[key].visible
-            }
-        };
+        this.schema.columns = this.schema.columns.map((column: ColumnsSchema) =>
+            key === column.key
+                ? {
+                      ...column,
+                      isVisible: !column.isVisible
+                  }
+                : column
+        );
+
+        this.synchronizedReference();
     }
 
-    public initialSchema(columnOptions: ColumnOptions): TemplateParserService {
-        this.schema = new SchemaBuilder();
+    private synchronizedReference(): void {
+        this.schema.columns.forEach((column: ColumnsSchema) => {
+            this.compiledTemplates[column.key] = column;
+        });
+    }
+
+    public initialSchema(columnOptions: ColumnOptions): void {
+        this.schema = this.schema || new SchemaBuilder();
+        this.schema.columns = [];
+        this.compiledTemplates = {};
         this.templateKeys = new Set<string>();
         this.overrideTemplateKeys = new Set<string>();
         this.fullTemplateKeys = new Set<string>();
         this.columnOptions = columnOptions || new ColumnOptions();
-        return this;
     }
 
-    public parse(allowedKeyMap: KeyMap<boolean>, templates: QueryListRef<NgxColumnComponent>): void {
-        if (templates) {
-            templates.forEach((column: NgxColumnComponent) => {
-                const { key, customKey, importantTemplate }: NgxColumnComponent = column;
-                const needTemplateCheck: boolean = allowedKeyMap[key] || customKey !== false;
-
-                if (needTemplateCheck) {
-                    if (importantTemplate !== false) {
-                        this.templateKeys.delete(key);
-                        this.compileColumnMetadata(column);
-                        this.overrideTemplateKeys.add(key);
-                    } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
-                        this.compileColumnMetadata(column);
-                        this.templateKeys.add(key);
-                    }
-
-                    this.fullTemplateKeys.add(key);
-                }
-            });
+    public parse(templates: QueryListRef<NgxColumnComponent>): void {
+        if (!templates) {
+            return;
         }
-    }
 
-    public setAllowedKeyMap(fullyKeyList: string[], modelKeys: string[]): void {
-        fullyKeyList.forEach((key: string) => {
-            this.schema.columnsAllowedKeys[key] = {
-                isModel: modelKeys.includes(key),
-                visible:
-                    this.schema.columnsAllowedKeys[key] !== undefined
-                        ? this.schema.columnsAllowedKeys[key].visible
-                        : true
-            };
+        templates.forEach((column: NgxColumnComponent) => {
+            const { key, customKey, importantTemplate }: NgxColumnComponent = column;
+            const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
+
+            if (needTemplateCheck) {
+                if (importantTemplate !== false) {
+                    this.templateKeys.delete(key);
+                    this.compileColumnMetadata(column);
+                    this.overrideTemplateKeys.add(key);
+                } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
+                    this.compileColumnMetadata(column);
+                    this.templateKeys.add(key);
+                }
+
+                this.fullTemplateKeys.add(key);
+            }
         });
     }
 
-    public updateState(key: string, value: Partial<TableColumn>): void {
-        this.schema.columns = {
-            ...this.schema.columns,
-            [key]: { ...this.schema.columns[key], ...value }
-        };
+    public mutateColumnSchema(key: string, partialSchema: Partial<ColumnsSchema>): void {
+        for (const option of Object.keys(partialSchema)) {
+            this.compiledTemplates[key][option] = partialSchema[option];
+        }
     }
 
     public compileColumnMetadata(column: NgxColumnComponent): void {
@@ -107,14 +131,17 @@ export class TemplateParserService {
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
         const isEmptyHead: boolean = TemplateParserService.getValidHtmlBooleanAttribute(emptyHead);
         const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
+        const stickyLeft: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft);
+        const stickyRight: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight);
+        const canBeAddDraggable: boolean = !(stickyLeft || stickyRight);
+        const isModel: boolean = this.keyMap[key];
 
-        this.schema.columns[key] = this.schema.columns[key] || {
-            th: {
-                ...thOptions,
-                headTitle,
-                emptyHead: isEmptyHead,
-                template: isEmptyHead ? null : thOptions.template
-            },
+        this.compiledTemplates[key] = {
+            key,
+            isModel,
+            isVisible: true,
+            verticalLine: column.verticalLine,
+            excluded: !this.allowedKeyMap[key],
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
@@ -123,8 +150,24 @@ export class TemplateParserService {
             cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
             cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
-            sortable: TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable),
-            verticalLine: column.verticalLine
+            stub: TemplateParserService.getValidPredicate(this.columnOptions.stub, column.stub),
+            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
+            sortable: isModel
+                ? TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable)
+                : false,
+            draggable: canBeAddDraggable
+                ? TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable)
+                : false,
+            overflowTooltip: TemplateParserService.getValidPredicate(
+                this.columnOptions.overflowTooltip,
+                column.overflowTooltip
+            ),
+            th: {
+                ...thOptions,
+                headTitle,
+                emptyHead: isEmptyHead,
+                template: isEmptyHead ? null : thOptions.template
+            }
         };
     }
 }

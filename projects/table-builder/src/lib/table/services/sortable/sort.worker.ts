@@ -98,5 +98,5 @@ export function sortWorker(message: SortableMessage): TableRow[] {
         }
     }
 
-    return Sortable.sortByKeys(message.source, message.definition as any);
+    return Sortable.sortByKeys(message.source, message.definition as Any);
 }

@@ -1,17 +1,40 @@
-<ng-template
-    [ngIf]="columnsSchema[key]?.td.template"
-    [ngTemplateOutlet]="columnsSchema[key]?.td.template"
-    [ngTemplateOutletContext]="{
-        $implicit:
-            columnsSchema[key]?.td.context === contextType.CELL
-                ? columnsSchema[key]?.td.useDeepPath
-                    ? (item | deepPath: key)
-                    : (item | defaultValue: key)
-                : item
-    }"
-    [ngIfElse]="defaultTd"
+<div
+    #divElement
+    [parent]="parent"
+    [class.loaded]="loaded"
+    [overflowTooltip]="divElement"
+    class="table-grid__cell--inner-content"
+    [enable-overflow-tooltip]="columnSchema?.overflowTooltip"
 >
-</ng-template>
-<ng-template #defaultTd>
-    {{ columnsSchema[key]?.td.useDeepPath ? (item | deepPath: key) : (item | defaultValue: key) }}
-</ng-template>
+    <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">
+        <ng-template
+            [ngTemplateOutlet]="columnSchema?.td?.template"
+            [ngTemplateOutletContext]="{
+                $implicit:
+                    columnSchema?.td?.context === contextType.CELL
+                        ? columnSchema?.td?.useDeepPath
+                            ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                            : (item | defaultValue: columnSchema.key:columnSchema?.stub)
+                        : item
+            }"
+        ></ng-template>
+    </ng-template>
+    <ng-template #defaultTd>
+        <ng-template [ngIf]="isFilterable" [ngIfElse]="simple">
+            <ngx-filter-viewer
+                [index]="index"
+                [key]="columnSchema.key"
+                [text]="
+                    columnSchema?.td?.useDeepPath
+                        ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                        : (item | defaultValue: columnSchema.key:columnSchema?.stub)
+                "
+            ></ngx-filter-viewer>
+        </ng-template>
+        <ng-template #simple>{{
+            columnSchema?.td?.useDeepPath
+                ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                : (item | defaultValue: columnSchema.key:columnSchema?.stub)
+        }}</ng-template>
+    </ng-template>
+</div>

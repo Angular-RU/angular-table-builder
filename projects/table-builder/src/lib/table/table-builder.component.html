@@ -4,99 +4,136 @@
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
-    [class.table-grid__root--empty-list]="!source?.length"
+    [class.table-grid__root--is-rendered]="isRendered"
+    [class.table-grid__root--is-scrolling]="isScrolling"
     [class.table-grid__root-auto-height]="autoHeightDetect"
+    [class.table-grid__no-display]="!(columnSchema.length > 0)"
     [class.table-grid__root--content-is-init]="contentInit && inViewport"
-    (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
+    [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
+    [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
+    (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
+    (recalculatedHeight)="recalculateHeight()"
     (observeVisible)="checkVisible($event)"
-    (recalculatedHeight)="detectChanges()"
     [autoHeight]="{
         detect: autoHeightDetect,
         height: height,
         inViewport: inViewport,
         columnHeight: columnHeight,
         statusRendered: isRendered,
-        sourceLength: source?.length || 0,
-        headerRef: headerRef,
-        footerRef: footerRef
+        sourceLength: source?.length || 0
     }"
+    [tableViewport]="tableViewport"
+    [headerHeight]="headerRef?.nativeElement.clientHeight"
+    [footerHeight]="footerRef?.nativeElement.clientHeight"
 >
     <div
+        cdkDropList
         #tableViewport
-        wheelThrottling
         class="table-grid"
-        (scrollEnd)="scrollEnd()"
+        [wheelThrottling]="tableViewport"
+        [cdkDropListDisabled]="!accessDragging"
         (scrollOffset)="updateScrollOffset($event)"
-        (scrollOverload)="updateScrollOverload($event)"
+        [class.table-grid__scroll-offset]="scrollOffset.offset"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
+        cdkDropListOrientation="horizontal"
+        (cdkDropListDropped)="drop($event)"
     >
         <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
             <ng-content select="ngx-header"></ng-content>
         </div>
 
         <div
+            #area
             class="table-grid__column-area-content"
-            [style.width.px]="tableViewport.scrollWidth > tableViewport.clientWidth ? tableViewport.scrollWidth : null"
+            [style.width.px]="
+                tableViewportChecked && tableViewport.scrollWidth > tableViewport.clientWidth
+                    ? tableViewport.scrollWidth
+                    : null
+            "
         >
-            <div
-                #column
-                observerView
-                [attr.column-id]="key"
-                [rendered]="isRendered"
-                class="table-grid__column"
-                [style.height.px]="columnHeight"
-                [ngStyle]="columns[key]?.cssStyle"
-                [ngClass]="columns[key]?.cssClass"
-                [style.width.px]="columns[key]?.width"
-                *ngFor="let key of displayedColumns; let index = index"
-                [style.min-width.px]="columns[key]?.width || clientColWidth"
-                [class.table-grid__column--with-footer-content]="footerTemplate"
-                [class.table-grid__column--vertical-line]="verticalBorder || columns[key]?.verticalLine"
-                [class.table-grid__column--custom-column]="columns[key]?.customColumn"
-                [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
-                [class.table-grid__column--sticky-left]="columns[key]?.stickyLeft"
-                [class.table-grid__column--sticky-right]="columns[key]?.stickyRight"
-                [class.table-grid__column--is-visible]="column['visible']"
-                [class.table-grid__column--is-invisible]="!column['visible']"
-                [class.table-grid__column--default-width]="!autoWidth"
-                (observeVisible)="markVisibleColumn(column, $event)"
-            >
+            <ng-container *ngFor="let columnSchema of columnSchema; let index = index">
                 <div
-                    class="table-grid__column-area"
-                    *ngIf="asyncColumns === false || column['visible']"
-                    [@fadeAnimation]
+                    #column
+                    cdkDrag
+                    observerView
+                    cdkDragHandle
+                    [rendered]="isRendered"
+                    [cdkDragBoundary]="area"
+                    class="table-grid__column"
+                    *ngIf="columnSchema.isVisible"
+                    [style.height.px]="columnHeight"
+                    [ngStyle]="columnSchema?.cssStyle"
+                    [ngClass]="columnSchema?.cssClass"
+                    [attr.column-id]="columnSchema.key"
+                    [cdkDragDisabled]="!accessDragging"
+                    (cdkDragMoved)="cdkDragMoved($event, root)"
+                    [style.max-width.px]="columnSchema?.width || clientColWidth"
+                    [style.width.px]="columnSchema?.width || clientColWidth"
+                    [style.min-width.px]="columnSchema?.width || clientColWidth"
+                    [class.table-grid__column--with-footer-content]="footerTemplate"
+                    [class.table-grid__column--vertical-line]="verticalBorder || columnSchema?.verticalLine"
+                    [class.table-grid__column--custom-column]="columnSchema?.customColumn"
+                    [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
+                    [class.table-grid__column--sticky-left]="columnSchema?.stickyLeft"
+                    [class.table-grid__column--sticky-right]="columnSchema?.stickyRight"
+                    [class.table-grid__column--is-visible]="column['visible']"
+                    [class.table-grid__column--is-invisible]="!column['visible']"
+                    [class.table-grid__column--is-dragging]="isDragging[columnSchema.key]"
+                    [class.table-grid__column--default-width]="!autoWidth"
+                    [class.table-grid__column--filter-enable]="filterTemplate"
+                    (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <table-thead
-                        [column-key]="key"
-                        [header-top]="headerRef?.nativeElement.offsetHeight || 0"
-                        [definition]="sortable.definition"
-                        [client-row-height]="clientRowHeight"
-                        [class.table-head__offset]="scrollOffset.offset"
-                        (resize)="resizeColumn($event, column)"
-                        (sortByKey)="sortByKey($event)"
-                    ></table-thead>
-
-                    <table-tbody
-                        [source]="source"
-                        [column-key]="key"
-                        [striped]="striped"
-                        [column-index]="index"
-                        [primary-key]="primaryKey"
-                        [throttling]="throttling"
-                        [buffer-amount]="bufferAmount"
-                        [table-viewport]="tableViewport"
-                        [scroll-overload]="scrollOverload"
-                        [context-menu]="contextMenuTemplate"
-                        [enable-selection]="enableSelection"
-                        [client-row-height]="clientRowHeight"
-                        [selection-entries]="selectionEntries"
-                        [showed-cell-by-default]="showedCellByDefault"
-                        [column-virtual-height]="columnVirtualHeight"
+                    <div
+                        #col
+                        [@fadeAnimation]
+                        class="table-grid__column-area"
+                        *ngIf="asyncColumns === false || column['visible']"
                     >
-                    </table-tbody>
+                        <table-thead
+                            [column-width]="col.offsetWidth"
+                            [column-schema]="columnSchema"
+                            (mouseleave)="disableDragging()"
+                            [header-top]="headerRef?.nativeElement.offsetHeight || 0"
+                            [sortable-definition]="sortable.definition"
+                            [filterable-definition]="filterable.definition"
+                            [client-row-height]="clientRowHeight"
+                            [head-height]="headHeight"
+                            (resize)="resizeColumn($event, column)"
+                            (sortByKey)="sortByKey($event)"
+                        >
+                            <div
+                                slot="draggable"
+                                *ngIf="columnSchema?.draggable"
+                                class="table-grid__column--draggable"
+                                (mouseenter)="enableDragging(columnSchema.key)"
+                            >
+                                <drag-icon></drag-icon>
+                            </div>
+                        </table-thead>
+
+                        <table-tbody
+                            [source]="source"
+                            [striped]="striped"
+                            [column-index]="index"
+                            [is-rendered]="isRendered"
+                            [primary-key]="primaryKey"
+                            [is-firefox]="isFirefoxMode"
+                            [recalculated]="recalculated"
+                            [buffer-amount]="bufferAmount"
+                            [column-schema]="columnSchema"
+                            [table-viewport]="tableViewport"
+                            [context-menu]="contextMenuTemplate"
+                            [enable-selection]="enableSelection"
+                            [client-row-height]="clientRowHeight"
+                            [selection-entries]="selectionEntries"
+                            [showed-cell-by-default]="showedCellByDefault"
+                            [column-virtual-height]="columnVirtualHeight"
+                        >
+                        </table-tbody>
+                    </div>
                 </div>
-            </div>
+            </ng-container>
         </div>
 
         <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer [@fadeAnimation]>
@@ -111,6 +148,14 @@
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
 
-<div *ngIf="!source?.length">
+<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
     <ng-content select="ngx-empty"></ng-content>
 </div>
+
+<div *ngIf="sourceIsNull">
+    <ng-content select="ngx-source-null"></ng-content>
+</div>
+
+<ng-template [ngIf]="filterTemplate">
+    <ng-content select="ngx-filter"></ng-content>
+</ng-template>

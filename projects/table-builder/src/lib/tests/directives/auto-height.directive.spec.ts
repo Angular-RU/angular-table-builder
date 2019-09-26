@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { ElementRef, NgZone } from '@angular/core';
 
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
@@ -71,11 +72,23 @@ describe('[TEST]: auto height', () => {
         expect(removeEvent).toEqual(true);
     });
 
-    it('should be correct calculate auto height', () => {
-        directive.autoHeight = { detect: true, inViewport: true, sourceLength: 1 };
-        directive.calculateHeight();
+    it('should be correct calculate auto height when columnHeight = 45px', fakeAsync(() => {
+        directive.autoHeight = { detect: true, inViewport: true, sourceLength: 1, columnHeight: 45 };
+
+        directive.recalculateTableSize();
+        tick(100);
+
+        expect(style).toEqual(`display: block; height: calc(45px)`);
+    }));
+
+    it('should be correct calculate auto height when columnHeight = 2000px', fakeAsync(() => {
+        directive.autoHeight = { detect: true, inViewport: true, sourceLength: 45, columnHeight: 2000 };
+
+        directive.recalculateTableSize();
+        tick(100);
+
         expect(style).toEqual(`display: block; height: calc(980px - 0px - 0px)`);
-    });
+    }));
 
     it('should be correct hide height not in viewport', () => {
         directive.autoHeight = { detect: true, inViewport: false };
@@ -99,9 +112,12 @@ describe('[TEST]: auto height', () => {
         expect(style).toEqual(``);
     });
 
-    it('should be correct recalculate height', () => {
+    it('should be correct recalculate height', fakeAsync(() => {
         directive.autoHeight = { height: 200, inViewport: true, sourceLength: 1 };
-        directive.recalculateByResize();
+
+        directive.recalculateTableSize();
+        tick(100);
+
         expect(style).toEqual(`display: block; height: 200px`);
-    });
+    }));
 });

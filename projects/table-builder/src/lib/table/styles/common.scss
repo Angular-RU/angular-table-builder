@@ -1,11 +1,18 @@
 @import './variables';
 
+[draggable='true'] {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
 .table-grid__root {
-    opacity: 0;
+    opacity: 0.0012;
     overflow: hidden;
     position: relative;
     border: 1px solid transparent;
-    transition: opacity 0.5s linear;
+    transition: opacity 0.2s ease-in-out;
     transform: translate(0);
 
     &.table-grid__root--visible {
@@ -14,6 +21,10 @@
     }
 
     &.table-grid__root--content-is-init {
+        opacity: 0.4;
+    }
+
+    &.table-grid__root--is-rendered {
         opacity: 1;
     }
 }
@@ -21,6 +32,18 @@
 // prevent calculate all rows
 .table-grid__root-auto-height {
     height: 0;
+}
+
+.table-grid__root:not(.table-grid__root--is-rendered),
+.table-grid__root--is-scrolling {
+    table-tbody,
+    table-cell {
+        pointer-events: none;
+    }
+}
+
+.table-grid__root:not(.table-grid__root--is-rendered) {
+    cursor: wait;
 }
 
 .table-grid__root--empty-list {
@@ -37,7 +60,6 @@
 }
 
 .vertical-align {
-    display: table-cell;
     vertical-align: middle;
     margin: auto 0;
     box-sizing: border-box;
@@ -82,4 +104,8 @@ table-tbody {
     100% {
         transform: translateX(100%);
     }
+}
+
+.filter-founded {
+    border-bottom: 1px dotted #000;
 }

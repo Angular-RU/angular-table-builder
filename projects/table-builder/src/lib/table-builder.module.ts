@@ -1,5 +1,6 @@
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 
 import { NGX_TABLE_OPTIONS } from './table/config/table-builder.tokens';
@@ -27,9 +28,15 @@ import { NgxMenuContentComponent } from './table/components/ngx-context-menu/ngx
 import { NgxEmptyComponent } from './table/components/ngx-empty/ngx-empty.component';
 import { NgxHeaderComponent } from './table/components/ngx-header/ngx-header.component';
 import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.component';
+import { NgxFilterViewerComponent } from './table/components/ngx-filter-viewer/ngx-filter-viewer.component';
+import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.component';
+import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
+import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
+import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
+import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.directive';
 
 @NgModule({
-    imports: [CommonModule, VirtualScrollerModule],
+    imports: [CommonModule, VirtualScrollerModule, DragDropModule],
     declarations: [
         TableBuilderComponent,
         WheelThrottlingDirective,
@@ -50,7 +57,13 @@ import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.com
         NgxMenuContentComponent,
         NgxEmptyComponent,
         NgxHeaderComponent,
-        NgxFooterComponent
+        NgxFooterComponent,
+        NgxFilterViewerComponent,
+        NgxFilterComponent,
+        NgxFilterDirective,
+        DragIconComponent,
+        NgxSourceNullComponent,
+        OverflowTooltipDirective
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
@@ -65,7 +78,11 @@ import { NgxFooterComponent } from './table/components/ngx-footer/ngx-footer.com
         NgxMenuContentComponent,
         NgxEmptyComponent,
         NgxHeaderComponent,
-        NgxFooterComponent
+        NgxFooterComponent,
+        NgxFilterViewerComponent,
+        NgxFilterComponent,
+        NgxFilterDirective,
+        NgxSourceNullComponent
     ]
 })
 export class TableBuilderModule {

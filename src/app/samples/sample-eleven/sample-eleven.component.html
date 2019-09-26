@@ -121,8 +121,14 @@
             <mat-tab label="Custom sub menu">
                 <br />
                 <div>
-                    <ngx-table-builder #table height="500" [source]="data" [enable-selection]="true">
-                        <ngx-options [resizable]="true" [sortable]="true"></ngx-options>
+                    <ngx-table-builder
+                        #table
+                        height="500"
+                        [source]="data"
+                        [enable-selection]="true"
+                        (schemaChanges)="updatedSchema($event)"
+                    >
+                        <ngx-options [resizable]="true" [draggable]="true" [sortable]="true"></ngx-options>
 
                         <ngx-column key="action" custom-key [sticky]="true" [resizable]="false" [width]="50">
                             <ng-template ngx-th></ng-template>
@@ -142,16 +148,13 @@
                                 <ngx-menu-content>Column list</ngx-menu-content>
 
                                 <ngx-context-menu-item
-                                    *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
-                                    (onClick)="table.toggleVisibleColumns(columnType.key); $event.preventDefault()"
-                                    [visible]="columnType.value.isModel"
+                                    *ngFor="let column of table.columnSchema"
+                                    (onClick)="table.toggleColumnVisibility(column.key); $event.preventDefault()"
+                                    [visible]="column.isModel"
                                 >
-                                    <ngx-menu-content no-margin>{{ columnType.key }}</ngx-menu-content>
+                                    <ngx-menu-content no-margin>{{ column.key }}</ngx-menu-content>
                                     <ngx-menu-content no-margin align-center>
-                                        <mat-checkbox
-                                            color="primary"
-                                            [checked]="columnType.value.visible"
-                                        ></mat-checkbox>
+                                        <mat-checkbox color="primary" [checked]="column.isVisible"></mat-checkbox>
                                     </ngx-menu-content>
                                 </ngx-context-menu-item>
                             </ngx-context-menu-item>
@@ -220,7 +223,7 @@
 
     &lt;ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">&lt;/ngx-column>
   &lt;/ngx-table-builder>
-                          
+
 </code></pre>
                         <br />
                         <pre><code class="javascript">
@@ -254,15 +257,15 @@
       &lt;ngx-menu-content>Column list&lt;/ngx-menu-content>
 
       &lt;ngx-context-menu-item
-          *ngFor="let columnType of table.columnsAllowedKeys | keyvalue"
-          (onClick)="table.toggleColumnVisibility(columnType.key); $event.preventDefault()"
-          [visible]="columnType.value.isModel"
+          *ngFor="let column of table.columnSchema"
+          (onClick)="table.toggleColumnVisibility(column.key); $events.preventDefault()"
+          [visible]="column.isModel"
       >
-          &lt;ngx-menu-content no-margin>&#123;&#123; columnType.key }}&lt;/ngx-menu-content>
+          &lt;ngx-menu-content no-margin>&#123;&#123; column.key }}&lt;/ngx-menu-content>
           &lt;ngx-menu-content no-margin align-center>
               &lt;mat-checkbox
                   color="primary"
-                  [checked]="columnType.value.visible"
+                  [checked]="column.visible"
               >&lt;/mat-checkbox>
           &lt;/ngx-menu-content>
       &lt;/ngx-context-menu-item>

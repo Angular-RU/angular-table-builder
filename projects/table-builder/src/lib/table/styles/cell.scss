@@ -19,7 +19,28 @@ table-cell {
 
         &--content {
             overflow: hidden;
+            min-width: 25px;
         }
+
+        &--min-width {
+            .table-grid__header-cell--content:not(.table-grid__cell--content-sortable-is-active) {
+                cursor: default;
+            }
+
+            .table-grid__column--draggable,
+            .table-grid__column--sortable:not(.table-grid__column--sortable-active),
+            .table-grid__column--filterable:not(.table-grid__column--filterable-active) {
+                display: none;
+            }
+        }
+
+        &:hover .table-grid__column--draggable {
+            opacity: 0.2;
+        }
+    }
+
+    table-tbody &__cell:last-child {
+        border-bottom: none;
     }
 
     &__cell {
@@ -36,7 +57,7 @@ table-cell {
         justify-content: center;
         padding: 5px 20px;
 
-        &--custom-cell {
+        &--custom-cell:not(&--is-model-cell) {
             padding: 0;
         }
 
@@ -47,13 +68,18 @@ table-cell {
             &:not(.table-grid__cell--content-sortable) {
                 width: 100%;
             }
+
+            .table-grid__cell--inner-content {
+                overflow: hidden;
+            }
         }
 
         &--text-bold {
             font-weight: bold;
         }
 
-        &--nowrap {
+        &--nowrap,
+        &--nowrap .table-grid__cell--inner-content {
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -78,10 +104,42 @@ table-cell {
         }
     }
 
-    .table-head__offset {
-        .table-grid__header-cell {
-            transition: box-shadow 0.3s ease-in-out;
-            box-shadow: 0 3px 2px -2px rgb(224, 224, 224);
+    &__cell-overflow-content {
+        position: fixed;
+        background: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 0 0 10px 2px $borderColor;
+        opacity: 0;
+        z-index: 1;
+        visibility: hidden;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 20px;
+        transition: visibility 100ms linear, opacity 100ms linear;
+        transform: translate(-9999px);
+        max-height: 300px;
+        max-width: 300px;
+        overflow: auto;
+        overflow-x: hidden;
+        margin-top: -10px;
+        margin-left: -50px;
+        font-weight: 400;
+        font-size: 15px;
+
+        &.text-center {
+            text-align: center;
         }
     }
+
+    &__cell-overflow-content.visible {
+        visibility: visible;
+        transition: visibility 100ms linear, opacity 100ms linear;
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+.cdk-drag-preview .table-grid__header-cell {
+    top: 0 !important;
 }

@@ -1,9 +1,8 @@
 <div class="table-grid__context-menu" *ngIf="state?.opened">
-    <div class="context-menu-outer" (click)="closeMenu($event, true)" (contextmenu)="closeMenu($event, true)"></div>
-
     <div
+        #targetElement
         class="context-menu"
-        (contextmenu)="closeMenu($event)"
+        (contextmenu)="close($event)"
         [ngStyle]="{
             'width.px': width,
             'min-height.px': height,

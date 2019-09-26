@@ -1,7 +1,12 @@
-import { ElementRef, QueryList } from '@angular/core';
+import { QueryList } from '@angular/core';
 
 export enum PrimaryKey {
     ID = 'id'
+}
+
+export enum TableSimpleChanges {
+    SOURCE_KEY = 'source',
+    SCHEMA_COLUMNS = 'schemaColumns'
 }
 
 export interface DynamicHeightOptions {
@@ -11,15 +16,17 @@ export interface DynamicHeightOptions {
     columnHeight: number;
     statusRendered: boolean;
     sourceLength: number;
-    headerRef: ElementRef<HTMLDivElement>;
-    footerRef: ElementRef<HTMLDivElement>;
 }
 
 export interface ScrollOffsetStatus {
     offset: boolean;
 }
 
-export interface KeyMap<T = unknown> {
+export interface RecalculatedStatus {
+    recalculateHeight: boolean;
+}
+
+export interface KeyMap<T = Any> {
     [key: string]: T;
 }
 
@@ -33,6 +40,11 @@ export interface SelectionStatus {
     status: boolean;
 }
 
+export enum KeyType {
+    KEYDOWN = 'keydown',
+    KEYUP = 'keyup'
+}
+
 export type TableBrowserEvent = Event | MouseEvent | KeyboardEvent;
 
 export interface ResizeEvent {
@@ -40,15 +52,31 @@ export interface ResizeEvent {
     key: string;
 }
 
-export interface ScrollOverload {
-    isOverload: boolean;
-}
-
 // Bug: 'QueryList' is imported from external module '@angular/core' but never used
 export type QueryListRef<T> = QueryList<T>;
 
 export interface TemplateKeys {
     allRenderedKeys: string[];
-    simpleRenderedKeys: string[];
-    overridingRenderedKeys: string[];
+    simpleRenderedKeys: Set<string>;
+    overridingRenderedKeys: Set<string>;
+}
+
+export type Resolver<T> = (value?: T | PromiseLike<T>) => void;
+
+export interface MousePosition {
+    left: number;
+    top: number;
+}
+
+export type DeepPartial<T = Any> = {
+    [P in keyof T]?: T[P] extends Array<infer U>
+        ? Array<DeepPartial<U>>
+        : T[P] extends ReadonlyArray<infer R>
+        ? ReadonlyArray<DeepPartial<R>>
+        : DeepPartial<T[P]>;
+};
+
+export interface BoxView {
+    paddingTop: string;
+    paddingBottom: string;
 }

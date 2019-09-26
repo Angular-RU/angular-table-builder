@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-
 import { TableLineRow } from '../common/table-line-row';
-import { TemplateParserService } from '../../services/template-parser/template-parser.service';
 import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { SortOrderType } from '../../services/sortable/sortable.interfaces';
 import { UtilsService } from '../../services/utils/utils.service';
+import { FilterableService } from '../../services/filterable/filterable.service';
+import { OVERLOAD_WIDTH_TABLE_HEAD_CELL } from '../../symbols';
 
 @Component({
     selector: 'table-thead',
@@ -15,16 +15,24 @@ import { UtilsService } from '../../services/utils/utils.service';
 })
 export class TableTheadComponent extends TableLineRow {
     @Input('header-top') public headerTop: number;
-    @Input() public definition: KeyMap<SortOrderType>;
+    @Input('column-width') public columnWidth: number;
+    @Input('head-height') public headHeight: string | number;
+    @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
+    @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
     public orderType: typeof SortOrderType = SortOrderType;
+    public limit: number = OVERLOAD_WIDTH_TABLE_HEAD_CELL;
 
     constructor(
-        protected readonly templateParser: TemplateParserService,
         public readonly selection: SelectionService,
-        protected readonly utils: UtilsService
+        protected readonly utils: UtilsService,
+        protected readonly filterable: FilterableService
     ) {
-        super(templateParser, selection, utils);
+        super(selection, utils);
+    }
+
+    public openFilter(key: string, event: MouseEvent): void {
+        this.filterable.openFilter(key, event);
     }
 }

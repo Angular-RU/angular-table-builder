@@ -35,10 +35,10 @@ export class SampleFourthComponent implements OnInit, AfterViewInit {
         ];
 
         this.elements = [
-            { position: null, name: 'Hydrogen', date: { value: NaN }, symbol: 'H' },
-            { position: 2, name: '', date: { value: new Date() }, symbol: undefined },
-            { position: 3, name: 'Lithium', date: { value: Infinity }, symbol: 'Li' },
-            { position: 4, name: 'Beryllium', date: { value: 0 }, symbol: '    ' }
+            { position: null, name: 'Hydrogen', date: { value: NaN }, symbol: 'H', status: true },
+            { position: 2, name: '', date: { value: new Date() }, symbol: undefined, status: false },
+            { position: 3, name: 'Lithium', date: { value: Infinity }, symbol: 'Li', status: true },
+            { position: 4, name: 'Beryllium', date: { value: 0 }, symbol: '    ', status: false }
         ];
     }
 

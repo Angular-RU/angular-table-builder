@@ -10,5 +10,3 @@ export interface SortableMessage {
     definition: KeyMap<SortOrderType>;
     source: TableRow[];
 }
-
-export type SortableResolver<T> = (value?: T | PromiseLike<T>) => void;

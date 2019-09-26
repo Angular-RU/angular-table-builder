@@ -11,13 +11,20 @@ import { ColumnOptions } from '../common/column-options';
 })
 export class NgxColumnComponent extends ColumnOptions {
     @Input() public key: string = null;
+    @Input() public stub: string = '-';
     @Input('sticky') public stickyLeft: boolean = false;
     @Input('empty-head') public emptyHead: boolean = null;
     @Input('head-title') public headTitle: string = null;
     @Input('custom-key') public customKey: boolean = false;
-    @Input('important-template') public importantTemplate: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
     @Input('vertical-line') public verticalLine: boolean = false;
+    @Input('overflow-tooltip') public overflowTooltip: boolean = true;
+    @Input('important-template') public importantTemplate: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;
+
+    public withKey(key: string): NgxColumnComponent {
+        this.key = key;
+        return this;
+    }
 }
