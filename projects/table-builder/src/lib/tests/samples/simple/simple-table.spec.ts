@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TableBuilderModule } from '@angular-ru/table-builder';
+import { TableBuilderModule } from '@angular-ru/ng-table-builder';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Delay } from '@helpers/utils/delay';

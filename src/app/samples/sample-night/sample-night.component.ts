@@ -8,7 +8,7 @@ import {
     OnInit
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableRow } from '@angular-ru/ng-table-builder';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 import { MatDialog } from '@angular/material';

@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { shallowUpdateRow, TableRow } from '@angular-ru/table-builder';
+import { shallowUpdateRow, TableRow } from '@angular-ru/ng-table-builder';
 
 declare const hljs: Any;
 

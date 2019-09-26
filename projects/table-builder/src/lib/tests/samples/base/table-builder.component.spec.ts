@@ -20,7 +20,7 @@ import { WebWorkerThreadService } from '../../../table/worker/worker-thread.serv
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
-import { NgxTableViewChangesService } from '@angular-ru/table-builder';
+import { NgxTableViewChangesService } from '@angular-ru/ng-table-builder';
 import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 interface PeriodicElement {

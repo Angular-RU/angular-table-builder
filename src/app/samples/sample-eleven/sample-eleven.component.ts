@@ -7,7 +7,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { SimpleSchemaColumns, TableRow } from '@angular-ru/table-builder';
+import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { NGX_ANIMATION } from '../../../../projects/table-builder/src/lib/table/animations/fade.animation';
 

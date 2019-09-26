@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { SimpleSchemaColumns, TableRow } from '@angular-ru/table-builder';
+import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
 
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { MatDialog } from '@angular/material';

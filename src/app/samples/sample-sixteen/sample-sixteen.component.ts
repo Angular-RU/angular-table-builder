@@ -5,7 +5,7 @@ import {
     SimpleSchemaColumns,
     TableRow,
     TableUpdateSchema
-} from '@angular-ru/table-builder';
+} from '@angular-ru/ng-table-builder';
 
 import { Any, DeepPartial } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { MatDialog } from '@angular/material';

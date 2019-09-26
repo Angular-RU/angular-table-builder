@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableRow } from '@angular-ru/ng-table-builder';
 
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 

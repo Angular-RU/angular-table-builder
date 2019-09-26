@@ -3,7 +3,7 @@ import {
     SimpleSchemaColumns,
     TableBuilderComponent,
     TableRow
-} from '@angular-ru/table-builder';
+} from '@angular-ru/ng-table-builder';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { SelectionService } from '../../table/services/selection/selection.service';
 import { ApplicationRef, ChangeDetectorRef, NgZone, SimpleChanges } from '@angular/core';

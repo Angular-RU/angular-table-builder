@@ -4,7 +4,7 @@ The Angular Table Builder includes a comprehensive set of ready-to-use features 
 sorting, filtering, editing, and grouping to row and column virtualization, and accessibility support.
 
 ```bash
-$ npm install --save @angular-ru/table-builder
+$ npm install --save @angular-ru/ng-table-builder
 ```
 
 After a few seconds of waiting, you should be good to go. Let's get to the actual coding! As a first step, let's add the

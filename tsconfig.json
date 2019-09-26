@@ -16,7 +16,7 @@
         "typeRoots": ["node_modules/@types"],
         "lib": ["es2018", "dom"],
         "paths": {
-            "@angular-ru/table-builder": ["./projects/table-builder/src/public-api"],
+            "@angular-ru/ng-table-builder": ["./projects/table-builder/src/public-api"],
             "@helpers/*": ["./helpers/*"]
         }
     }

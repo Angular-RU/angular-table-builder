@@ -16,7 +16,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TableBuilderModule } from '@angular-ru/table-builder';
+import { TableBuilderModule } from '@angular-ru/ng-table-builder';
 import { CodeDialogComponent } from './dialog/code-dialog.component';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule, MatTabsModule } from '@angular/material';

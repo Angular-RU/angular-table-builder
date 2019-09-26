@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { TableRow } from '@angular-ru/table-builder';
+import { TableRow } from '@angular-ru/ng-table-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 import { MocksGenerator } from '@helpers/utils/mocks-generator';

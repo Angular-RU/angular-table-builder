@@ -1,4 +1,4 @@
-import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/table-builder';
+import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/ng-table-builder';
 import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
 import { async, fakeAsync, tick } from '@angular/core/testing';
 

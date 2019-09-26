@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { TableEvent, TableRow } from '@angular-ru/table-builder';
+import { TableEvent, TableRow } from '@angular-ru/ng-table-builder';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { ToastrService } from 'ngx-toastr';
 
