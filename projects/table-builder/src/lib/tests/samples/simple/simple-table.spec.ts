@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TableBuilderModule } from '@angular-ru/ng-table-builder';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { Delay } from '@helpers/utils/delay';
-import { HtmlFormatter } from '@helpers/utils/html-formatter.class';
-import { SimpleMockComponent } from '@helpers/mocks/simple-mock.component';
 import { SIMPLE_TABLE_TEMPLATE } from './actual';
 import { Fn } from '../../../table/interfaces/table-builder.internal';
+import { SimpleMockComponent } from '../../../../../../../helpers/mocks/simple-mock.component';
+import { HtmlFormatter } from '../../../../../../../helpers/utils/html-formatter.class';
+import { Delay } from '../../../../../../../helpers/utils/delay';
 
 describe('[TEST]: Simple table', () => {
     let fixture: ComponentFixture<SimpleMockComponent>;

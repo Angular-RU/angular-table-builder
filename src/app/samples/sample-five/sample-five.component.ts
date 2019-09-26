@@ -3,7 +3,7 @@ import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces
 import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
-import { MocksGenerator } from '@helpers/utils/mocks-generator';
+import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
 
 declare const hljs: Any;
 

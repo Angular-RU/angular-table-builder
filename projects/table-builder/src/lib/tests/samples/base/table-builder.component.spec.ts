@@ -1,7 +1,6 @@
 /* tslint:disable:no-big-function */
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ApplicationRef, ChangeDetectorRef, EventEmitter, NgZone, QueryList, SimpleChanges } from '@angular/core';
-import { MocksGenerator } from '@helpers/utils/mocks-generator';
 
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
 import { TableTbodyComponent } from '../../../table/components/table-tbody/table-tbody.component';
@@ -22,6 +21,7 @@ import { FilterableService } from '../../../table/services/filterable/filterable
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
 import { NgxTableViewChangesService } from '@angular-ru/ng-table-builder';
 import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
+import { MocksGenerator } from '../../../../../../../helpers/utils/mocks-generator';
 
 interface PeriodicElement {
     name: string;

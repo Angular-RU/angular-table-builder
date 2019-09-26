@@ -11,13 +11,13 @@ import { TemplateParserService } from '../../table/services/template-parser/temp
 import { ResizableService } from '../../table/services/resizer/resizable.service';
 import { UtilsService } from '../../table/services/utils/utils.service';
 import { Any, Fn } from '../../table/interfaces/table-builder.internal';
-import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { SortableService } from '../../table/services/sortable/sortable.service';
 import { WebWorkerThreadService } from '../../table/worker/worker-thread.service';
 import { ContextMenuService } from '../../table/services/context-menu/context-menu.service';
 import { FilterableService } from '../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../table/services/draggable/draggable.service';
 import { OverloadScrollService } from '../../table/services/overload-scroll/overload-scroll.service';
+import { MocksGenerator } from '../../../../../../helpers/utils/mocks-generator';
 
 const source: TableRow[] = [{ id: 1, value: 'hello world' }];
 

@@ -1,6 +1,6 @@
-import { MocksGenerator } from '@helpers/utils/mocks-generator';
 import { ColumnsSchema } from '../../../table/interfaces/table-builder.external';
 import { KeyMap } from '../../../table/interfaces/table-builder.internal';
+import { MocksGenerator } from '../../../../../../../helpers/utils/mocks-generator';
 
 const COLUMN: ColumnsSchema = {
     key: null,

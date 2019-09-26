@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { Delay } from '@helpers/utils/delay';
 import { Fn } from '../../../table/interfaces/table-builder.internal';
-import { TemplateMockComponent } from '@helpers/mocks/template-mock.component';
-import { HtmlFormatter } from '@helpers/utils/html-formatter.class';
 import { TableBuilderModule } from '../../../table-builder.module';
 import { ACTUAL_TEMPLATES } from './actual';
+import { TemplateMockComponent } from '../../../../../../../helpers/mocks/template-mock.component';
+import { HtmlFormatter } from '../../../../../../../helpers/utils/html-formatter.class';
+import { Delay } from '../../../../../../../helpers/utils/delay';
 
 describe('[TEST]: Template mock table', () => {
     let fixture: ComponentFixture<TemplateMockComponent>;
