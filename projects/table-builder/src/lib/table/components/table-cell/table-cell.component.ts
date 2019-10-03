@@ -26,6 +26,7 @@ export class TableCellComponent extends TableLineRow implements OnInit, OnDestro
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
     @Input('is-filterable') public isFilterable: boolean;
+    @Input('enable-filtering') public enableFiltering: boolean;
 
     public loaded: boolean;
     private taskId: number;

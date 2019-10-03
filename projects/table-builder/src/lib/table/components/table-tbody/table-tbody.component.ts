@@ -43,6 +43,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
     @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
     @Input('enable-selection') public enableSelection: boolean;
+    @Input('enable-filtering') public enableFiltering: boolean;
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('showed-cell-by-default') public showedCellByDefault: boolean;
