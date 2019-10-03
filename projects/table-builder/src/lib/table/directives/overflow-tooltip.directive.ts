@@ -102,7 +102,7 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
             window.setTimeout(() => {
                 if (this.overflowContentElem) {
                     this.overflowContentElem.classList.add('visible');
-                    this.overflowContentElem.innerHTML = trim(this.element.innerHTML);
+                    this.overflowContentElem.innerText = String(this.element.innerText || '').trim();
 
                     fromEvent(this.overflowContentElem, 'mouseleave')
                         .pipe(takeUntil(this.destroy$))
