@@ -66,7 +66,7 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
 
     public ngOnDestroy(): void {
         this.itemRef = null;
-        this.subscription.unsubscribe();
+        this.subscription && this.subscription.unsubscribe();
     }
 
     public calculateSubMenuPosition(ref: HTMLDivElement): void {

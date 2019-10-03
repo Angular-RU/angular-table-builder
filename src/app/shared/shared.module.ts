@@ -19,7 +19,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableBuilderModule } from '@angular-ru/ng-table-builder';
 import { CodeDialogComponent } from './dialog/code-dialog.component';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule, MatTabsModule } from '@angular/material';
+import { MatTabsModule } from '@angular/material';
 
 @NgModule({
     imports: [TableBuilderModule.forRoot(), CommonModule, MatButtonModule],
@@ -45,8 +45,7 @@ import { MatFormFieldModule, MatTabsModule } from '@angular/material';
         CodeDialogComponent,
         MatIconModule,
         MatTableModule,
-        MatTabsModule,
-        MatFormFieldModule
+        MatTabsModule
     ]
 })
 export class SharedModule {}
