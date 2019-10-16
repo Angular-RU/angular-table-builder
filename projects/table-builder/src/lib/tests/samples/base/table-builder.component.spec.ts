@@ -399,4 +399,37 @@ describe('[TEST]: TableBuilder', () => {
         expect(table.firstItem).toEqual({});
         expect(table.lastItem).toEqual({});
     });
+
+    it('should be reset selection when trigger table source', () => {
+        table.enableSelection = true;
+        expect(table.selectionEntries).toEqual({});
+
+        table.primaryKey = 'position';
+        table.ngOnInit();
+
+        table.selection.selectRow(data[0], { ...mockMouseEvent, shiftKey: true } as MouseEvent, data);
+        table.selection.selectRow(data[data.length - 1], { ...mockMouseEvent, shiftKey: true } as MouseEvent, data);
+
+        const newData: TableRow[] = [
+            { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+            { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+            { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' }
+        ];
+
+        table.source = newData;
+
+        table.ngOnChanges({
+            source: {
+                previousValue: data,
+                currentValue: newData,
+                firstChange: false,
+                isFirstChange(): boolean {
+                    return null;
+                }
+            }
+        });
+
+        expect(table.selectionModel.size).toEqual(0);
+        expect(table.selectionModel.entries).toEqual({});
+    });
 });

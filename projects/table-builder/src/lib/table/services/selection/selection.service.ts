@@ -33,6 +33,13 @@ export class SelectionService implements OnDestroy {
         this.unListenShiftKey();
     }
 
+    public invalidate(): void {
+        this.range.clear();
+        this.selectionStart = { status: false };
+        this.selectionModel.clear();
+        this.onChanges.next();
+    }
+
     public toggleAll(rows: TableRow[]): void {
         clearInterval(this.selectionTaskIdle);
 

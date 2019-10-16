@@ -280,7 +280,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
         this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
-        this.sortAndFilter().then(() => this.reCheckDefinitions());
+        this.sortAndFilter().then(() => {
+            this.reCheckDefinitions();
+            this.checkSelectionValue();
+        });
     }
 
     private preRenderTable(): void {
@@ -290,6 +293,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.originalSource = this.source;
         const unDirty: boolean = !this.dirty;
 
+        this.checkSelectionValue();
         this.checkFilterValues();
 
         if (unDirty) {
@@ -300,6 +304,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         if (recycleView) {
             this.renderTable();
+        }
+    }
+
+    private checkSelectionValue(): void {
+        if (this.enableSelection) {
+            this.selection.invalidate();
         }
     }
 
