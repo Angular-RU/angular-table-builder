@@ -167,3 +167,7 @@ mat-form-field.mat-form-field.mat-form-field-appearance-outline
 .mat-form-field-appearance-outline .mat-form-field-outline-thick {
     color: #e0e0e0;
 }
+
+.content-visible {
+    min-height: 700px;
+}

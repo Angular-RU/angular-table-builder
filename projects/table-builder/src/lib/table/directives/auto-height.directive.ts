@@ -10,9 +10,11 @@ import {
     Output,
     SimpleChanges
 } from '@angular/core';
-import { Any, BoxView, DynamicHeightOptions, Fn } from '../interfaces/table-builder.internal';
+import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
 import { HEAD_TOP } from '../symbols';
+import { fromEvent, Subject } from 'rxjs';
+import { delay, takeUntil } from 'rxjs/operators';
 
 @Directive({ selector: '[autoHeight]' })
 export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
@@ -21,12 +23,12 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
     @Input() public tableViewport: Partial<HTMLDivElement> = {};
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
+    private destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly minHeight: number = 0;
     private readonly delay: number = 100;
     private useOnlyAutoViewPort: boolean = false;
     private isDirtyCheck: boolean;
     private taskId: number;
-    private handler: Fn;
 
     constructor(private readonly element: ElementRef, public readonly ngZone: NgZone) {}
 
@@ -104,8 +106,12 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            this.handler = (): void => this.recalculateTableSize();
-            window.addEventListener('resize', this.handler, { passive: true });
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(
+                    delay(200),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe(() => this.recalculateTableSize());
         });
     }
 
@@ -116,7 +122,8 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        window.removeEventListener('resize', this.handler);
+        this.destroy$.next(true);
+        this.destroy$.unsubscribe();
     }
 
     public recalculateTableSize(): void {
