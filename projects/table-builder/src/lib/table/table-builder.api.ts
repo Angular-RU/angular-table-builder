@@ -68,6 +68,7 @@ export abstract class TableBuilderApiImpl
     @Input('schema-columns') public schemaColumns: SimpleSchemaColumns = [];
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();
+    @Output() public onChanges: EventEmitter<TableRow[]> = new EventEmitter();
 
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;
@@ -288,6 +289,7 @@ export abstract class TableBuilderApiImpl
         }
 
         this.toggleFreeze(TIME_IDLE);
+        this.onChanges.emit(this.sourceRef);
     }
 
     public sortByKey(key: string): void {

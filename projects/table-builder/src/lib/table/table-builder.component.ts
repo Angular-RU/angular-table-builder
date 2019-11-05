@@ -457,6 +457,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
+        this.onChanges.emit(this.sourceRef);
     }
 
     /**

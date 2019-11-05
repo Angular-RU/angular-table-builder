@@ -1,6 +1,11 @@
 {
     "name": "@angular-ru/ng-table-builder",
-    "version": "0.0.87",
+    "version": "0.0.88",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Angular-RU/ng-table-builder/issues"
+    },
+    "homepage": "https://github.com/Angular-RU/ng-table-builder/#readme",
     "peerDependencies": {
         "@angular/common": ">=7.2.0 <9.0.0",
         "@angular/core": ">=7.2.0  <9.0.0",
