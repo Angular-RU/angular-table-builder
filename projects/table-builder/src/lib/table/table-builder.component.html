@@ -149,7 +149,7 @@
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
 
-<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
+<div *ngIf="(source && source.length) === 0 && !filterable.filtering && contentInit && afterViewInitDone">
     <ng-content select="ngx-empty"></ng-content>
 </div>
 

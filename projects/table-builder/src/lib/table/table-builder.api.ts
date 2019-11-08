@@ -68,7 +68,7 @@ export abstract class TableBuilderApiImpl
     @Input('schema-columns') public schemaColumns: SimpleSchemaColumns = [];
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();
-    @Output() public onChanges: EventEmitter<TableRow[]> = new EventEmitter();
+    @Output() public onChanges: EventEmitter<TableRow[] | null> = new EventEmitter();
 
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;

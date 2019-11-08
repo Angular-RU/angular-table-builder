@@ -46,7 +46,7 @@ import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
 
-const { TIME_IDLE, TIME_RELOAD, FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 @Component({
     selector: 'ngx-table-builder',
@@ -82,6 +82,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
     public isScrolling: boolean;
+    public afterViewInitDone: boolean = false;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -185,6 +186,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
         this.listenScrollEvents();
+        this.afterViewInitChecked();
     }
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
@@ -276,6 +278,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.detectChanges();
             }, TableBuilderOptionsImpl.TIME_IDLE);
         });
+    }
+
+    private afterViewInitChecked(): void {
+        this.ngZone.runOutsideAngular(() =>
+            window.setTimeout(() => {
+                this.afterViewInitDone = true;
+                if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
+                    this.emitRendered();
+                    this.detectChanges();
+                }
+            }, MACRO_TIME)
+        );
     }
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
@@ -457,7 +471,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
-        this.onChanges.emit(this.sourceRef);
+        this.onChanges.emit(this.source || null);
     }
 
     /**

@@ -1,6 +1,6 @@
 import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/ng-table-builder';
 import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
-import { async, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 import { SelectionService } from '../../../table/services/selection/selection.service';
 import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
@@ -202,6 +202,11 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
         expect(table.sourceExists).toEqual(true);
+
+        tick(1000);
+
+        expect(table.isRendered).toEqual(false);
+        expect(table.afterViewInitDone).toEqual(true);
     }));
 
     it('should be correct template changes with check renderCount', fakeAsync(() => {
@@ -215,6 +220,7 @@ describe('[TEST]: Lifecycle table', () => {
         table.ngAfterViewInit();
         table.ngAfterViewChecked();
 
+        expect(table.afterViewInitDone).toEqual(false);
         expect(table.isRendered).toEqual(false);
         expect(table.modelColumnKeys).toEqual(['position', 'name', 'weight', 'symbol']);
         expect(table.dirty).toEqual(false);
@@ -246,9 +252,11 @@ describe('[TEST]: Lifecycle table', () => {
         table.ngAfterViewChecked();
 
         tick(500);
+
+        expect(table.afterViewInitDone).toEqual(true);
     }));
 
-    it('should be correct template changes', fakeAsync(() => {
+    it('should be correct template changes query list', fakeAsync(() => {
         const templates: QueryList<NgxColumnComponent> = new QueryList();
         table.columnTemplates = templates;
         table.source = [];
