@@ -76,6 +76,7 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
             this.offsetX = this.offsetX - this.overflowX();
             this.offsetY = this.clientRect.top - MIN_PADDING_CONTEXT_ITEM;
             this.offsetY = this.offsetY - this.overflowY(ref);
+            this.deferUpdateView();
         }
     }
 
@@ -106,6 +107,13 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     private deferCloseMenu(): void {
         this.ngZone.runOutsideAngular(() => {
             this.taskId = window.setTimeout(() => this.contextMenu.close());
+        });
+    }
+
+    private deferUpdateView(): void {
+        this.ngZone.runOutsideAngular(() => {
+            window.clearInterval(this.taskId);
+            this.taskId = window.setTimeout(() => detectChanges(this.cd));
         });
     }
 }

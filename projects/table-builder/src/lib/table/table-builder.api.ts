@@ -39,6 +39,7 @@ import { SortableService } from './services/sortable/sortable.service';
 import { UtilsService } from './services/utils/utils.service';
 import { SelectionMap } from './services/selection/selection';
 import { isFirefox } from './operators/is-firefox';
+import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
 
 const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -131,6 +132,7 @@ export abstract class TableBuilderApiImpl
     protected abstract readonly app: ApplicationRef;
     protected abstract readonly viewChanges: NgxTableViewChangesService;
     protected abstract readonly draggable: DraggableService;
+    protected abstract readonly overloadScroll: OverloadScrollService;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
@@ -302,6 +304,10 @@ export abstract class TableBuilderApiImpl
         const currentKey: string = this.visibleColumns[currentIndex];
         this.draggable.drop(previousKey, currentKey);
         this.changeSchema();
+    }
+
+    public transitionEnd(): void {
+        this.overloadScroll.scrollStatus.next(false);
     }
 
     public checkVisible(visible: boolean): void {

@@ -15,6 +15,7 @@
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
     (recalculatedHeight)="recalculateHeight()"
     (observeVisible)="checkVisible($event)"
+    (transitionend)="transitionEnd()"
     [autoHeight]="{
         detect: autoHeightDetect,
         height: height,
