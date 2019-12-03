@@ -159,7 +159,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
                     this.scroll.invalidateAllCachedMeasurements();
                     detectChanges(this.cd);
                 }
-            }, TableBuilderOptionsImpl.TIME_RELOAD);
+            }, TableBuilderOptionsImpl.MACRO_TIME);
         });
     }
 
