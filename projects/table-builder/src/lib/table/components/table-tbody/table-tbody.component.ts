@@ -28,6 +28,8 @@ import { OverloadScrollService } from '../../services/overload-scroll/overload-s
 import { UtilsService } from '../../services/utils/utils.service';
 import { detectChanges } from '../../operators/detect-changes';
 
+const { FRAME_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+
 @Component({
     selector: 'table-tbody',
     templateUrl: './table-tbody.component.html',
@@ -159,7 +161,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
                     this.scroll.invalidateAllCachedMeasurements();
                     detectChanges(this.cd);
                 }
-            }, TableBuilderOptionsImpl.MACRO_TIME);
+            }, FRAME_TIME);
         });
     }
 
