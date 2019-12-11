@@ -64,6 +64,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
         private readonly overload: OverloadScrollService
     ) {
         super(selection, utils);
+        this.cd.reattach();
     }
 
     public get clientBufferAmount(): number {
