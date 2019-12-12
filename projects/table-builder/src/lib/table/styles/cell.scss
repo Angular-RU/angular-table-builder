@@ -57,6 +57,12 @@ table-cell {
             padding: 0;
         }
 
+        &--empty-head {
+            .table-grid__cell--content {
+                display: none;
+            }
+        }
+
         &--content {
             overflow: hidden;
             @extend .vertical-align;

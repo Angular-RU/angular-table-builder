@@ -62,7 +62,8 @@ describe('[TEST]: TableBuilder', () => {
     let clearIntervalInvoked: number = 0;
 
     const mockChangeDetector: Partial<ChangeDetectorRef> = {
-        detectChanges: (): void => {}
+        detectChanges(): void {},
+        reattach(): void {}
     };
     const appRef: Partial<ApplicationRef> = {
         tick: (): void => {}
