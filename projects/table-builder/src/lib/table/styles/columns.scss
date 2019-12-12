@@ -133,7 +133,7 @@
     opacity: 0.5;
 }
 
-.table-grid .table-grid__column:last-child {
+.table-grid__column:nth-last-child(2) {
     width: 100% !important;
     max-width: initial !important;
 }
