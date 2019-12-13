@@ -52,7 +52,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public abstract close(event: MouseEvent): void;
 
     public updateView(): void {
-        this.cd.detectChanges();
+        detectChanges(this.cd);
         this.app.tick();
     }
 
