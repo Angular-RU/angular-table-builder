@@ -7,23 +7,6 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<style>
-    #main-column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: calc(100% - 100px);
-    }
-
-    #widget1,
-    #widget2 {
-        flex: 1;
-        flex-shrink: 0;
-        overflow: auto;
-        margin: 5px;
-    }
-</style>
-
 <div id="main-column">
     <div id="widget1">
         <ngx-table-builder #table [source]="dataFirst" [native-scrollbar]="nativeScrollbar">
