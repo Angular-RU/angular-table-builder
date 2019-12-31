@@ -39,19 +39,24 @@ table-cell {
         }
     }
 
+    &__cell:last-child {
+        border-right: none;
+    }
+
     &__cell {
-        color: rgba(0, 0, 0, 1);
         width: 100%;
-        box-sizing: border-box;
         text-align: center;
         word-break: break-word;
-        border-bottom: 1px solid $borderColor;
+        box-sizing: border-box;
+        color: rgba(0, 0, 0, 1);
+        border-right: 1px solid $borderColor;
+        min-width: $cellWidth;
         min-height: $cellHeight;
-        max-height: $cellHeight;
         display: flex;
         overflow: hidden;
         justify-content: center;
         padding: 5px 20px;
+        transform: scale(1);
 
         &--custom-cell:not(&--is-model-cell) {
             padding: 0;

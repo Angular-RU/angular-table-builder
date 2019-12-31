@@ -14,7 +14,8 @@ export class SampleFirstComponent implements OnInit {
     public height: number;
     public rowHeight: string;
     public columnWidth: string;
-    public dataSize: string = '100x20';
+    public autosize: boolean;
+    public dataSize: string = '1000x30';
     public loading: boolean = false;
     public simple: TableRow[] = [];
 

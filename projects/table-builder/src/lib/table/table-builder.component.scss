@@ -2,14 +2,21 @@
 @import './styles/variables';
 @import './styles/scrollbar';
 @import './styles/columns';
+@import './styles/row';
 @import './styles/cell';
 @import './styles/icon';
 @import './styles/draggable';
 
 .table-grid__root--is-rendered .table-grid {
-    overflow: auto;
+    //overflow: auto;
     //noinspection CssOverwrittenProperties
-    overflow-y: auto;
+    //overflow-y: auto;
+    //overflow: hidden;
+}
+
+.virtual-scroll-viewport {
+    width: 100%;
+    height: 100%;
 }
 
 .table-grid {
@@ -21,6 +28,7 @@
 
     &__column-area-content {
         display: flex;
+        position: relative;
     }
 
     &__header-sticky,

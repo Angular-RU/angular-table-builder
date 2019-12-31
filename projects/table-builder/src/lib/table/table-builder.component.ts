@@ -45,6 +45,7 @@ import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -105,6 +106,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         super();
     }
 
+    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    public viewPort: CdkVirtualScrollViewport;
+
+    public get inverseTranslation(): string {
+        const offset: number = (this.viewPort && this.viewPort.getOffsetToRenderedContentStart()) || 0;
+        return `-${offset}px`;
+    }
+
     public get selectionEntries(): KeyMap<boolean> {
         return this.selection.selectionModel.entries;
     }
@@ -151,6 +160,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
     }
 
+    public onScroll(e) {
+        console.log(e);
+    }
+
     public markForCheck(): void {
         this.contentCheck = true;
     }
@@ -169,6 +182,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
         column['visible'] = visible;
+        this.detectChanges();
+    }
+
+    public markVisibleCell(cell: HTMLDivElement, visible: boolean): void {
+        cell['visible'] = visible;
         this.detectChanges();
     }
 
@@ -243,8 +261,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         this.rendering = true;
         const columnList: string[] = this.generateDisplayedColumns();
-        const drawTask: Fn<string[], Promise<void>> =
-            this.asyncColumns && async ? this.asyncDrawColumns.bind(this) : this.syncDrawColumns.bind(this);
+        const drawTask: Fn<string[], Promise<void>> = this.syncDrawColumns.bind(this);
+        // this.asyncColumns && async ? this.asyncDrawColumns.bind(this) : this.syncDrawColumns.bind(this);
 
         if (!this.sortable.empty) {
             this.sortAndFilter().then(() => drawTask(columnList).then(() => this.emitRendered()));
@@ -472,6 +490,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
         this.onChanges.emit(this.source || null);
+        this.viewPort.checkViewportSize();
     }
 
     /**

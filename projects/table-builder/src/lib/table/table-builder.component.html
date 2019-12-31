@@ -15,7 +15,6 @@
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
     (recalculatedHeight)="recalculateHeight()"
     (observeVisible)="checkVisible($event)"
-    (transitionend)="transitionEnd()"
     [autoHeight]="{
         detect: autoHeightDetect,
         height: height,
@@ -40,12 +39,10 @@
         cdkDropListOrientation="horizontal"
         (cdkDropListDropped)="drop($event)"
     >
-        <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
-            <ng-content select="ngx-header"></ng-content>
-        </div>
-
         <div
-            #area
+            [@fadeAnimation]
+            *ngIf="isRendered"
+            [style.height.px]="root.offsetHeight"
             class="table-grid__column-area-content"
             [style.width.px]="
                 tableViewportChecked && tableViewport.scrollWidth > tableViewport.clientWidth
@@ -53,111 +50,41 @@
                     : null
             "
         >
-            <ng-container *ngFor="let columnSchema of columnSchema; let index = index">
-                <div
-                    #column
-                    cdkDrag
-                    observerView
-                    cdkDragHandle
-                    [rendered]="isRendered"
-                    [cdkDragBoundary]="area"
-                    class="table-grid__column"
-                    *ngIf="columnSchema.isVisible"
-                    [style.height.px]="columnHeight"
-                    [ngStyle]="columnSchema?.cssStyle"
-                    [ngClass]="columnSchema?.cssClass"
-                    [attr.column-id]="columnSchema.key"
-                    [cdkDragDisabled]="!accessDragging"
-                    (cdkDragMoved)="cdkDragMoved($event, root)"
-                    [style.max-width.px]="columnSchema?.width || clientColWidth"
-                    [style.width.px]="columnSchema?.width || clientColWidth"
-                    [style.min-width.px]="columnSchema?.width || clientColWidth"
-                    [class.table-grid__column--with-footer-content]="footerTemplate"
-                    [class.table-grid__column--vertical-line]="verticalBorder || columnSchema?.verticalLine"
-                    [class.table-grid__column--custom-column]="columnSchema?.customColumn"
-                    [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
-                    [class.table-grid__column--sticky-left]="columnSchema?.stickyLeft"
-                    [class.table-grid__column--sticky-right]="columnSchema?.stickyRight"
-                    [class.table-grid__column--is-visible]="column['visible']"
-                    [class.table-grid__column--is-invisible]="!column['visible']"
-                    [class.table-grid__column--is-dragging]="isDragging[columnSchema.key]"
-                    [class.table-grid__column--default-width]="!autoWidth"
-                    [class.table-grid__column--filter-enable]="filterTemplate"
-                    (observeVisible)="markVisibleColumn(column, $event)"
+            <ngx-loading></ngx-loading>
+            <div class="virtual-scroll-viewport">
+                <cdk-virtual-scroll-viewport
+                    autosize
+                    [itemSize]="clientRowHeight"
+                    [style.height.px]="root.offsetHeight"
+                    [minBufferPx]="autosize ? root.offsetHeight * 2 : 500"
+                    [maxBufferPx]="autosize ? root.offsetHeight * 2 : 500"
                 >
-                    <div
-                        #col
-                        [@fadeAnimation]
-                        class="table-grid__column-area"
-                        *ngIf="asyncColumns === false || column['visible']"
+                    <ngx-table-body
+                        [item]="source[0]"
+                        [even]="false"
+                        [index]="0"
+                        [columnSchema]="columnSchema"
+                        [style.top]="inverseTranslation"
+                        class="table-grid__row table-grid__row--head"
+                        [style.min-height.px]="autosize ? null : clientRowHeight"
+                        [style.max-height.px]="autosize ? null : clientRowHeight"
                     >
-                        <table-thead
-                            [column-width]="col.offsetWidth"
-                            [column-schema]="columnSchema"
-                            (mouseleave)="disableDragging()"
-                            [header-top]="headerRef?.nativeElement.offsetHeight || 0"
-                            [sortable-definition]="sortable.definition"
-                            [filterable-definition]="filterable.definition"
-                            [client-row-height]="clientRowHeight"
-                            [head-height]="headHeight"
-                            (resize)="resizeColumn($event, column)"
-                            (sortByKey)="sortByKey($event)"
-                        >
-                            <div
-                                slot="draggable"
-                                *ngIf="columnSchema?.draggable"
-                                class="table-grid__column--draggable"
-                                (mouseenter)="enableDragging(columnSchema.key)"
-                            >
-                                <drag-icon></drag-icon>
-                            </div>
-                        </table-thead>
+                    </ngx-table-body>
 
-                        <table-tbody
-                            [source]="source"
+                    <ng-container *cdkVirtualFor="let item of source; let index = index; let even = even">
+                        <ngx-table-body
+                            [item]="item"
+                            [even]="even"
+                            [index]="index"
                             [striped]="striped"
-                            [column-index]="index"
-                            [is-rendered]="isRendered"
-                            [primary-key]="primaryKey"
-                            [is-firefox]="isFirefoxMode"
-                            [recalculated]="recalculated"
-                            [buffer-amount]="bufferAmount"
-                            [column-schema]="columnSchema"
-                            [table-viewport]="tableViewport"
-                            [context-menu]="contextMenuTemplate"
-                            [enable-selection]="enableSelection"
-                            [enable-filtering]="enableFiltering"
-                            [client-row-height]="clientRowHeight"
-                            [selection-entries]="selectionEntries"
-                            [showed-cell-by-default]="showedCellByDefault"
-                            [column-virtual-height]="columnVirtualHeight"
-                        >
-                        </table-tbody>
-                    </div>
-                </div>
-            </ng-container>
-        </div>
-
-        <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer [@fadeAnimation]>
-            <ng-content select="ngx-footer"></ng-content>
+                            class="table-grid__row"
+                            [columnSchema]="columnSchema"
+                            [style.min-height.px]="autosize ? null : clientRowHeight"
+                            [style.max-height.px]="autosize ? null : clientRowHeight"
+                        ></ngx-table-body>
+                    </ng-container>
+                </cdk-virtual-scroll-viewport>
+            </div>
         </div>
     </div>
-
-    <div *ngIf="isFrozenView" class="freeze"></div>
 </div>
-
-<ng-template [ngIf]="contextMenuTemplate && contextMenu.state.opened">
-    <ng-content select="ngx-context-menu"></ng-content>
-</ng-template>
-
-<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
-    <ng-content select="ngx-empty"></ng-content>
-</div>
-
-<div *ngIf="sourceIsNull">
-    <ng-content select="ngx-source-null"></ng-content>
-</div>
-
-<ng-template [ngIf]="filterTemplate">
-    <ng-content select="ngx-filter"></ng-content>
-</ng-template>

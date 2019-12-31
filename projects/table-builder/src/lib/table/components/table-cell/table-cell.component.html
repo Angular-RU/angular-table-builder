@@ -1,9 +1,7 @@
 <div
     #divElement
     [parent]="parent"
-    [class.loaded]="loaded"
     [overflowTooltip]="divElement"
-    class="table-grid__cell--inner-content"
     [enable-overflow-tooltip]="columnSchema?.overflowTooltip"
 >
     <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">

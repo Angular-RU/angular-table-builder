@@ -2,7 +2,6 @@ import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, NgZone, OnDe
 
 @Directive({ selector: '[observerView]' })
 export class ObserverViewDirective implements AfterViewInit, OnDestroy {
-    private static readonly MIN_TIME_IDLE: number = 120;
     @Output() public observeVisible: EventEmitter<boolean> = new EventEmitter();
     @Input('rendered') public isRendered: boolean;
     private observer: IntersectionObserver = null;
@@ -18,15 +17,7 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
                     this.ngZone.runOutsideAngular(() => {
                         const isVisible: boolean =
                             entry.intersectionRatio > this.previousRation || entry.isIntersecting;
-
-                        if (this.isRendered) {
-                            clearTimeout(this.frameId);
-                            this.frameId = window.setTimeout(() => {
-                                this.observeVisible.emit(isVisible);
-                            }, ObserverViewDirective.MIN_TIME_IDLE);
-                        } else {
-                            window.requestAnimationFrame(() => this.observeVisible.emit(isVisible));
-                        }
+                        this.observeVisible.emit(isVisible);
                     });
 
                     this.previousRation = entry.intersectionRatio;

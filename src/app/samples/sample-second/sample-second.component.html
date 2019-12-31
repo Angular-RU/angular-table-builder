@@ -179,13 +179,7 @@
     </div>
 
     <div class="column">
-        <ngx-table-builder
-            [source]="elements"
-            [striped]="false"
-            [keys]="columns"
-            [async-columns]="false"
-            [lazy]="false"
-        >
+        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
             <ngx-column key="name" [sticky]="true"></ngx-column>
 
             <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
@@ -204,8 +198,7 @@
   &lt;ngx-table-builder
           [source]="data"
           [striped]="false"
-          [keys]="columns"
-          [async-columns]="false">
+          [keys]="columns">
 
       &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
 
@@ -226,11 +219,6 @@
 
   &lt;/ngx-table-builder>
 </code></pre>
-
-        <p>
-            <strong>Note:</strong> If you always want the columns to be drawn regardless of their visibility in the
-            viewport, then you need to use the property [async-columns]="false"
-        </p>
 
         <hr />
 

@@ -50,7 +50,7 @@ export abstract class TableBuilderApiImpl
     @Input() public source: TableRow[] = null;
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public lazy: boolean = true;
+    @Input() public autosize: boolean = false;
     @Input() public name: string = null;
     @Input('sort-types') public sortTypes: KeyMap = null;
     @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
@@ -304,10 +304,6 @@ export abstract class TableBuilderApiImpl
         const currentKey: string = this.visibleColumns[currentIndex];
         this.draggable.drop(previousKey, currentKey);
         this.changeSchema();
-    }
-
-    public transitionEnd(): void {
-        this.overloadScroll.scrollStatus.next(false);
     }
 
     public checkVisible(visible: boolean): void {

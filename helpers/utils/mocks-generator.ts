@@ -35,12 +35,14 @@ export class MocksGenerator {
                                 guid: '5cdae5b2ba0a57f709b72142' + '__' + idx
                             };
 
+                            const random = (min: number, max: number) => min + Math.random() * (max - min);
+
                             if (cols > 6) {
-                                baseRow['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud'] =
-                                    'Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis incididunt culpa' +
-                                    ' consectetur veniam Fugiat tempor sunt nostrud ad fugiat. Laboris velit duis' +
-                                    ' incididunt culpa consectetur veniam. Fugiat tempor sunt nostrud ad fugiat.' +
-                                    ' Laboris velit duis incididunt culpa consectetur veniam';
+                                baseRow['About Big Text And More Powerful Label Fugiat Tempor Sunt Nostrud'] = [
+                                    ...Array(Math.ceil(random(0, 1000)))
+                                ]
+                                    .map((i) => (~~(Math.random() * 36)).toString(36))
+                                    .join('');
 
                                 for (let i: number = 6; i <= cols - 1; i++) {
                                     baseRow['column-' + i] = `$row-${idx} $col-${i}`;

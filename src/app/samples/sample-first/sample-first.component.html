@@ -47,6 +47,10 @@
         </mat-form-field>
 
         <button mat-raised-button (click)="showSample()">show code sample</button>
+
+        <mat-checkbox [(ngModel)]="autosize" [ngModelOptions]="{ standalone: true }" style="margin-left: 10px">
+            Autosize
+        </mat-checkbox>
     </form>
 </div>
 
@@ -56,6 +60,7 @@
         [width]="width"
         [height]="height"
         [row-height]="rowHeight"
+        [autosize]="autosize"
         [column-width]="columnWidth"
     ></ngx-table-builder>
 </div>

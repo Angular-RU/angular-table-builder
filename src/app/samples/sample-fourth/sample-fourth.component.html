@@ -63,7 +63,7 @@
 
 </code></pre>
 
-        <ngx-table-builder [source]="data" [auto-width]="true" [lazy]="true">
+        <ngx-table-builder [source]="data" [auto-width]="true">
             <ngx-column key="toppings" width="350"></ngx-column>
 
             <ngx-column key="prices.small">
@@ -88,7 +88,7 @@
 
 <div class="column-samples">
     <div class="column">
-        <ngx-table-builder [source]="elements" [auto-width]="true" [lazy]="true">
+        <ngx-table-builder [source]="elements" [auto-width]="true">
             <ngx-column key="date.value" important-template [stub]="null">
                 <ng-template ngx-th>Date</ng-template>
                 <ng-template ngx-td let-date>

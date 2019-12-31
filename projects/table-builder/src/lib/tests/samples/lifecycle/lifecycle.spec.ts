@@ -314,9 +314,7 @@ describe('[TEST]: Lifecycle table', () => {
     });
 
     it('should be correct sync rendering', fakeAsync(() => {
-        table.lazy = false;
         table.source = JSON.parse(JSON.stringify(data));
-        expect(table.lazy).toEqual(false);
 
         table.ngOnChanges(changes);
         table.renderTable();
@@ -328,7 +326,6 @@ describe('[TEST]: Lifecycle table', () => {
 
     it('should be correct async rendering', (done: Fn) => {
         table.source = JSON.parse(JSON.stringify(data));
-        expect(table.lazy).toEqual(true);
 
         table.ngOnChanges();
         table.renderTable();

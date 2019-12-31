@@ -1,5 +1,7 @@
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 
@@ -34,9 +36,12 @@ import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
 import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
 import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.directive';
+import { NgxTableBodyComponent } from './table/components/ngx-table-body/ngx-table-body.component';
+import { NgxLoadingComponent } from './table/components/ngx-loading/ngx-loading.component';
+import { NgxTableHeadComponent } from './table/components/ngx-table-head/ngx-table-head.component';
 
 @NgModule({
-    imports: [CommonModule, VirtualScrollerModule, DragDropModule],
+    imports: [CommonModule, VirtualScrollerModule, DragDropModule, ScrollingModule, ExperimentalScrollingModule],
     declarations: [
         TableBuilderComponent,
         WheelThrottlingDirective,
@@ -61,9 +66,12 @@ import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.di
         NgxFilterViewerComponent,
         NgxFilterComponent,
         NgxFilterDirective,
+        NgxTableHeadComponent,
+        NgxTableBodyComponent,
         DragIconComponent,
         NgxSourceNullComponent,
-        OverflowTooltipDirective
+        OverflowTooltipDirective,
+        NgxLoadingComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
