@@ -136,6 +136,7 @@ export class TableTbodyComponent extends TableLineRow implements OnChanges, OnIn
         this.handleEventEmitter(row, key, event, emitter);
     }
 
+    // noinspection DuplicatedCode
     public handleOnClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         this.ngZone.runOutsideAngular(() => {
             if (this.enableSelection) {

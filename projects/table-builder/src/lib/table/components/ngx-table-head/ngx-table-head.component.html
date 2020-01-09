@@ -1,0 +1,44 @@
+<ng-container *ngFor="let itemSchema of schema">
+    <div
+        #parent
+        class="table-grid__cell"
+        [style.max-width.px]="itemSchema?.width || clientColWidth"
+        [style.width.px]="itemSchema?.width || clientColWidth"
+        [style.min-width.px]="itemSchema?.width || clientColWidth"
+        [class.table-grid__cell--empty-head]="itemSchema?.th?.emptyHead"
+        [class.table-grid__cell--custom-cell]="itemSchema?.customColumn"
+        [class.table-grid__cell--is-model-cell]="itemSchema?.isModel"
+        [class.table-grid__cell--text-bold]="itemSchema?.th?.textBold"
+        [class.table-grid__cell--resizable]="itemSchema?.resizable"
+        [style.min-height.px]="headHeight || itemSchema?.th?.height || clientRowHeight"
+        [style.max-height.px]="headHeight || itemSchema?.th?.height || clientRowHeight"
+        [ngClass]="itemSchema?.th?.class"
+        [ngStyle]="itemSchema?.th?.style"
+    >
+        <div
+            #divElement
+            [parent]="parent"
+            [text-center]="true"
+            [overflowTooltip]="divElement"
+            [enable-overflow-tooltip]="itemSchema?.overflowTooltip"
+            class="table-grid__cell--content table-grid__header-cell--content"
+            [class.table-grid__cell--content-sortable-is-active]="sortable.definition[itemSchema.key]"
+            [class.table-grid__cell--content-sortable]="itemSchema?.sortable"
+            [class.table-grid__cell--nowrap]="itemSchema?.th?.nowrap"
+            (click)="
+                itemSchema?.sortable && sortable.definition[itemSchema.key] ? sortByKey.emit(itemSchema.key) : null
+            "
+        >
+            <ng-template
+                [ngIf]="itemSchema?.th?.template"
+                [ngTemplateOutlet]="itemSchema?.th?.template"
+                [ngIfElse]="defaultTh"
+            ></ng-template>
+            <ng-template #defaultTh>
+                <ng-template [ngIf]="!itemSchema?.th?.emptyHead">
+                    {{ itemSchema?.th?.headTitle || (itemSchema.key | titlecase) }}
+                </ng-template>
+            </ng-template>
+        </div>
+    </div>
+</ng-container>

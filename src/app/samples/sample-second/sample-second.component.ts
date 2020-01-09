@@ -24,7 +24,7 @@ declare const hljs: Any;
         // tslint:disable-next-line:component-max-inline-declarations
         `
             /*noinspection CssUnusedSymbol*/
-            .status-column .table-grid__cell {
+            .status-column.table-grid__cell {
                 padding: 0;
                 color: green;
             }

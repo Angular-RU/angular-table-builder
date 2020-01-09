@@ -31,7 +31,7 @@ import {
 } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
-import { ColumnsSchema } from './interfaces/table-builder.external';
+import { ColumnsSchema, TableRow } from './interfaces/table-builder.external';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SortableService } from './services/sortable/sortable.service';
@@ -84,6 +84,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public sourceIsNull: boolean;
     public isScrolling: boolean;
     public afterViewInitDone: boolean = false;
+    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    public viewPort: CdkVirtualScrollViewport;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -105,9 +107,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     ) {
         super();
     }
-
-    @ViewChild(CdkVirtualScrollViewport, { static: false })
-    public viewPort: CdkVirtualScrollViewport;
 
     public get inverseTranslation(): string {
         const offset: number = (this.viewPort && this.viewPort.getOffsetToRenderedContentStart()) || 0;
@@ -296,6 +295,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.detectChanges();
             }, TableBuilderOptionsImpl.TIME_IDLE);
         });
+    }
+
+    public trackByRow(index: number, row: TableRow): number {
+        const rowIndex: number | undefined = row['id'] || row[this.primaryKey];
+        return rowIndex !== undefined ? rowIndex : index;
     }
 
     private afterViewInitChecked(): void {

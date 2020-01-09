@@ -1,7 +1,0 @@
-<ng-container *ngFor="let itemSchema of columnSchema">
-    <div #parent class="table-grid__cell" [class.table-grid__cell--strip]="striped ? even : false">
-        <div class="table-grid__cell--content">
-            <table-cell [item]="item" [index]="index" [parent]="parent" [column-schema]="itemSchema"></table-cell>
-        </div>
-    </div>
-</ng-container>

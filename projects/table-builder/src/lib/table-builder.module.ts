@@ -36,7 +36,7 @@ import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
 import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
 import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.directive';
-import { NgxTableBodyComponent } from './table/components/ngx-table-body/ngx-table-body.component';
+import { NgxTableRowComponent } from './table/components/ngx-table-row/ngx-table-row.component';
 import { NgxLoadingComponent } from './table/components/ngx-loading/ngx-loading.component';
 import { NgxTableHeadComponent } from './table/components/ngx-table-head/ngx-table-head.component';
 
@@ -67,7 +67,7 @@ import { NgxTableHeadComponent } from './table/components/ngx-table-head/ngx-tab
         NgxFilterComponent,
         NgxFilterDirective,
         NgxTableHeadComponent,
-        NgxTableBodyComponent,
+        NgxTableRowComponent,
         DragIconComponent,
         NgxSourceNullComponent,
         OverflowTooltipDirective,

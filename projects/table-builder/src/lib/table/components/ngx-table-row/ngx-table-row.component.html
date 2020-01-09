@@ -1,0 +1,37 @@
+<ng-container *ngFor="let itemSchema of columnSchema">
+    <div
+        #parent
+        class="table-grid__cell"
+        [style.max-width.px]="itemSchema?.width || clientColWidth"
+        [style.width.px]="itemSchema?.width || clientColWidth"
+        [style.min-width.px]="itemSchema?.width || clientColWidth"
+        [class.table-grid__cell--strip]="striped ? even : false"
+        (selectstart)="(canSelectTextInTable)"
+        (contextmenu)="openContextMenu($event, itemSchema.key, item)"
+        (click)="handleOnClick(item, itemSchema.key, $event, itemSchema?.td?.onClick)"
+        (dblclick)="handleDblClick(item, itemSchema.key, $event, itemSchema?.td?.dblClick)"
+        [style.min-height.px]="itemSchema?.td?.height || clientRowHeight"
+        [style.max-height.px]="itemSchema?.td?.height || clientRowHeight"
+        [class.table-grid__cell--resizable]="itemSchema?.resizable"
+        [class.table-grid__cell--custom-cell]="itemSchema?.customColumn"
+        [class.table-grid__cell--enable-selection]="enableSelection"
+        [class.table-grid__column--sticky-left]="itemSchema?.stickyLeft"
+        [class.table-grid__column--sticky-right]="itemSchema?.stickyRight"
+        [class.table-grid__cell--selected]="selectionEntries[item[primaryKey]]"
+        [class.table-grid__cell--text-bold]="itemSchema?.td?.textBold"
+        [ngClass]="itemSchema?.td?.class"
+        [ngStyle]="itemSchema?.td?.style"
+    >
+        <div class="table-grid__cell--content">
+            <table-cell
+                [item]="item"
+                [index]="index"
+                [parent]="parent"
+                [column-index]="index"
+                [column-schema]="itemSchema"
+                [enable-filtering]="enableFiltering"
+                [is-filterable]="itemSchema?.filterable"
+            ></table-cell>
+        </div>
+    </div>
+</ng-container>

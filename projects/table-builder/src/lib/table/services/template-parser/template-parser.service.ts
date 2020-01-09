@@ -147,8 +147,6 @@ export class TemplateParserService {
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
             customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
             width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
-            cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
-            cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
             resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
             stub: TemplateParserService.getValidPredicate(this.columnOptions.stub, column.stub),
             filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),

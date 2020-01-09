@@ -8,6 +8,7 @@ import {
     ContentChild,
     ContentChildren,
     EventEmitter,
+    HostListener,
     Input,
     NgZone,
     OnChanges,
@@ -15,6 +16,7 @@ import {
     OnInit,
     Output,
     SimpleChanges,
+    ViewChild,
     ViewRef
 } from '@angular/core';
 
@@ -38,8 +40,8 @@ import { ResizableService } from './services/resizer/resizable.service';
 import { SortableService } from './services/sortable/sortable.service';
 import { UtilsService } from './services/utils/utils.service';
 import { SelectionMap } from './services/selection/selection';
-import { isFirefox } from './operators/is-firefox';
 import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -83,6 +85,9 @@ export abstract class TableBuilderApiImpl
     @ContentChild(NgxHeaderComponent, { static: false })
     public headerTemplate: NgxHeaderComponent = null;
 
+    @ViewChild('virtualScroll', { static: false })
+    public virtualScroll: CdkVirtualScrollViewport = null;
+
     @ContentChild(NgxFooterComponent, { static: false })
     public footerTemplate: NgxFooterComponent = null;
 
@@ -92,7 +97,6 @@ export abstract class TableBuilderApiImpl
     public inViewport: boolean;
     public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;
-    public isFirefoxMode: boolean = isFirefox();
 
     /**
      * @description: the custom names of the column list to be displayed in the view.
@@ -269,6 +273,7 @@ export abstract class TableBuilderApiImpl
         this.ngZone.runOutsideAngular(() => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {
+                this.virtualScroll.scrollTo({ left: 0, top: 0 });
                 this.filterable.changeFilteringStatus();
                 this.sortAndFilter().then(() => this.reCheckDefinitions());
             }, MACRO_TIME);
@@ -309,6 +314,15 @@ export abstract class TableBuilderApiImpl
     public checkVisible(visible: boolean): void {
         this.inViewport = visible;
         this.detectChanges();
+
+        if (this.virtualScroll) {
+            this.virtualScroll.checkViewportSize();
+        }
+    }
+
+    @HostListener('window:focus', ['$event'])
+    public onWindowScroll(): void {
+        this.virtualScroll.checkViewportSize();
     }
 
     public detectChanges(): void {

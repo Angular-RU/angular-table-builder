@@ -103,7 +103,7 @@
     styles: [
       `
          // Use custom CSS for column and cell
-        .status-column .table-grid__cell &#123;
+        .status-column.table-grid__cell &#123;
           padding: 0;
           color: green;
         }
@@ -182,9 +182,9 @@
         <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
             <ngx-column key="name" [sticky]="true"></ngx-column>
 
-            <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
+            <ngx-column key="status" width="50" [sticky-end]="true">
                 <ng-template ngx-th></ng-template>
-                <ng-template ngx-td>
+                <ng-template ngx-td [ng-class]="['status-column']">
                     <button class="button__done" mat-button>
                         <mat-icon>done</mat-icon>
                     </button>
@@ -202,14 +202,10 @@
 
       &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
 
-      &lt;ngx-column
-          width="50"
-          key="status"
-          [sticky-end]="true"
-          [css-class]="['status-column']">
+      &lt;ngx-column width="50" key="status" [sticky-end]="true">
 
           &lt;ng-template ngx-th>&lt;/ng-template>
-          &lt;ng-template ngx-td>
+          &lt;ng-template ngx-td [ng-class]="['status-column']">
               &lt;button class="button__done" mat-button>
                   &lt;mat-icon>done&lt;/mat-icon>
               &lt;/button>

@@ -43,8 +43,6 @@ export interface ColumnsSchema<T = Any> {
     td: TableCellOptions<T>;
     th: TableCellOptions<T> & TableHeadCellOptions;
     width: number;
-    cssStyle: string[];
-    cssClass: string[];
     stickyLeft: boolean;
     stickyRight: boolean;
     resizable: boolean;

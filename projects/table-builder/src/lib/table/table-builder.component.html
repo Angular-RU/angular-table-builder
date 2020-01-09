@@ -27,6 +27,10 @@
     [headerHeight]="headerRef?.nativeElement.clientHeight"
     [footerHeight]="footerRef?.nativeElement.clientHeight"
 >
+    <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
+        <ng-content select="ngx-header"></ng-content>
+    </div>
+
     <div
         cdkDropList
         #tableViewport
@@ -50,41 +54,71 @@
                     : null
             "
         >
-            <ngx-loading></ngx-loading>
+            <ngx-loading *ngIf="!filterable.filtering"></ngx-loading>
             <div class="virtual-scroll-viewport">
                 <cdk-virtual-scroll-viewport
                     autosize
+                    #virtualScroll
                     [itemSize]="clientRowHeight"
                     [style.height.px]="root.offsetHeight"
-                    [minBufferPx]="autosize ? root.offsetHeight * 2 : 500"
-                    [maxBufferPx]="autosize ? root.offsetHeight * 2 : 500"
+                    [minBufferPx]="autosize ? root.offsetHeight * 2 : 400"
+                    [maxBufferPx]="autosize ? root.offsetHeight * 2 : 400"
                 >
-                    <ngx-table-body
-                        [item]="source[0]"
-                        [even]="false"
-                        [index]="0"
-                        [columnSchema]="columnSchema"
+                    <ngx-table-head
+                        [schema]="columnSchema"
+                        [head-height]="headHeight"
+                        [cell-height]="clientRowHeight"
+                        [cell-width]="clientColWidth"
                         [style.top]="inverseTranslation"
                         class="table-grid__row table-grid__row--head"
-                        [style.min-height.px]="autosize ? null : clientRowHeight"
-                        [style.max-height.px]="autosize ? null : clientRowHeight"
-                    >
-                    </ngx-table-body>
+                    ></ngx-table-head>
 
-                    <ng-container *cdkVirtualFor="let item of source; let index = index; let even = even">
-                        <ngx-table-body
+                    <ng-container
+                        *cdkVirtualFor="let item of source; let index = index; let even = even; templateCacheSize: 0; trackBy: trackByRow.bind(this)"
+                    >
+                        <ngx-table-row
                             [item]="item"
                             [even]="even"
                             [index]="index"
                             [striped]="striped"
+                            [source]="source"
                             class="table-grid__row"
+                            [primary-key]="primaryKey"
                             [columnSchema]="columnSchema"
+                            [cell-width]="clientColWidth"
+                            [cell-height]="clientRowHeight"
+                            [context-menu]="contextMenuTemplate"
+                            [enable-filtering]="enableFiltering"
+                            [enable-selection]="enableSelection"
+                            [selection-entries]="selectionEntries"
                             [style.min-height.px]="autosize ? null : clientRowHeight"
                             [style.max-height.px]="autosize ? null : clientRowHeight"
-                        ></ngx-table-body>
+                        ></ngx-table-row>
                     </ng-container>
                 </cdk-virtual-scroll-viewport>
             </div>
         </div>
     </div>
+
+    <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer [@fadeAnimation]>
+        <ng-content select="ngx-footer"></ng-content>
+    </div>
+
+    <div *ngIf="isFrozenView" class="freeze"></div>
 </div>
+
+<ng-template [ngIf]="contextMenuTemplate && contextMenu.state.opened">
+    <ng-content select="ngx-context-menu"></ng-content>
+</ng-template>
+
+<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
+    <ng-content select="ngx-empty"></ng-content>
+</div>
+
+<div *ngIf="sourceIsNull">
+    <ng-content select="ngx-source-null"></ng-content>
+</div>
+
+<ng-template [ngIf]="filterTemplate">
+    <ng-content select="ngx-filter"></ng-content>
+</ng-template>

@@ -2,9 +2,10 @@
 
 .table-grid__row {
     width: 100%;
-    background: #fff;
-    overflow: hidden;
     display: flex;
+    overflow: hidden;
+    background: #fff;
+    box-sizing: border-box;
     border-bottom: 1px solid $borderColor;
     transform: translate3d(0, 0, 0) scale(1) perspective(1px);
 
