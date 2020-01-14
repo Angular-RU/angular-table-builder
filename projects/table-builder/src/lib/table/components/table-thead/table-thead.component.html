@@ -1,5 +1,4 @@
 <div
-    #parent
     [style.top.px]="headerTop"
     class="table-grid__cell table-grid__header-cell"
     [class.table-grid__cell--empty-head]="columnSchema?.th?.emptyHead"
@@ -14,11 +13,6 @@
     [ngStyle]="columnSchema?.th?.style"
 >
     <div
-        #divElement
-        [parent]="parent"
-        [text-center]="true"
-        [overflowTooltip]="divElement"
-        [enable-overflow-tooltip]="columnSchema?.overflowTooltip"
         class="table-grid__cell--content table-grid__header-cell--content"
         [class.table-grid__cell--content-sortable-is-active]="sortableDefinition[columnSchema.key]"
         [class.table-grid__cell--content-sortable]="columnSchema?.sortable"

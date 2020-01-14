@@ -73,7 +73,7 @@ export type DeepPartial<T = Any> = {
         ? Array<DeepPartial<U>>
         : T[P] extends ReadonlyArray<infer R>
         ? ReadonlyArray<DeepPartial<R>>
-        : DeepPartial<T[P]>
+        : DeepPartial<T[P]>;
 };
 
 export interface BoxView {

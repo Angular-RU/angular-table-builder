@@ -28,7 +28,6 @@ import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.com
 import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
 import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
-import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.directive';
 
 @NgModule({
     imports: [CommonModule, DragDropModule],
@@ -56,8 +55,7 @@ import { OverflowTooltipDirective } from './table/directives/overflow-tooltip.di
         NgxFilterComponent,
         NgxFilterDirective,
         DragIconComponent,
-        NgxSourceNullComponent,
-        OverflowTooltipDirective
+        NgxSourceNullComponent
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
