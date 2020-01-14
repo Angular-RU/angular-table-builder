@@ -1,25 +1,20 @@
 <div
     #root
-    observerView
     [style.width]="width"
     class="table-grid__root"
     [style.height.px]="height"
     [class.table-grid__root--is-rendered]="isRendered"
-    [class.table-grid__root--is-scrolling]="isScrolling"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__no-display]="!(columnSchema.length > 0)"
-    [class.table-grid__root--content-is-init]="contentInit && inViewport"
     [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
     [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
     (contextmenu)="contextMenuTemplate ? contextMenu.openContextMenu($event) : null"
     (recalculatedHeight)="recalculateHeight()"
-    (observeVisible)="checkVisible($event)"
-    (transitionend)="transitionEnd()"
     [autoHeight]="{
         detect: autoHeightDetect,
         height: height,
-        inViewport: inViewport,
+        inViewport: true,
         columnHeight: columnHeight,
         statusRendered: isRendered,
         sourceLength: source?.length || 0
@@ -32,9 +27,7 @@
         cdkDropList
         #tableViewport
         class="table-grid"
-        [wheelThrottling]="tableViewport"
         [cdkDropListDisabled]="!accessDragging"
-        (scrollOffset)="updateScrollOffset($event)"
         [class.table-grid__scroll-offset]="scrollOffset.offset"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
         cdkDropListOrientation="horizontal"
@@ -46,6 +39,7 @@
 
         <div
             #area
+            [style.height.px]="columnHeight"
             class="table-grid__column-area-content"
             [style.width.px]="
                 tableViewportChecked && tableViewport.scrollWidth > tableViewport.clientWidth
@@ -59,11 +53,9 @@
                     cdkDrag
                     observerView
                     cdkDragHandle
-                    [rendered]="isRendered"
                     [cdkDragBoundary]="area"
                     class="table-grid__column"
                     *ngIf="columnSchema.isVisible"
-                    [style.height.px]="columnHeight"
                     [ngStyle]="columnSchema?.cssStyle"
                     [ngClass]="columnSchema?.cssClass"
                     [attr.column-id]="columnSchema.key"
@@ -85,16 +77,11 @@
                     [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <div
-                        #col
-                        [@fadeAnimation]
-                        class="table-grid__column-area"
-                        *ngIf="asyncColumns === false || column['visible']"
-                    >
+                    <ng-container *ngIf="column['visible']">
                         <table-thead
-                            [column-width]="col.offsetWidth"
                             [column-schema]="columnSchema"
                             (mouseleave)="disableDragging()"
+                            [column-width]="column.offsetWidth"
                             [header-top]="headerRef?.nativeElement.offsetHeight || 0"
                             [sortable-definition]="sortable.definition"
                             [filterable-definition]="filterable.definition"
@@ -114,16 +101,15 @@
                         </table-thead>
 
                         <table-tbody
-                            [source]="source"
                             [striped]="striped"
-                            [column-index]="index"
-                            [is-rendered]="isRendered"
+                            [source]="viewPortItems"
                             [primary-key]="primaryKey"
-                            [is-firefox]="isFirefoxMode"
                             [recalculated]="recalculated"
-                            [buffer-amount]="bufferAmount"
                             [column-schema]="columnSchema"
+                            [head-height]="headLineHeight"
+                            [viewport-info]="viewPortInfo"
                             [table-viewport]="tableViewport"
+                            [offset-top]="viewPortInfo.scrollTop"
                             [context-menu]="contextMenuTemplate"
                             [enable-selection]="enableSelection"
                             [enable-filtering]="enableFiltering"
@@ -133,12 +119,12 @@
                             [column-virtual-height]="columnVirtualHeight"
                         >
                         </table-tbody>
-                    </div>
+                    </ng-container>
                 </div>
             </ng-container>
         </div>
 
-        <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer [@fadeAnimation]>
+        <div class="table-grid__footer-sticky" *ngIf="footerTemplate && isRendered" #footer>
             <ng-content select="ngx-footer"></ng-content>
         </div>
     </div>

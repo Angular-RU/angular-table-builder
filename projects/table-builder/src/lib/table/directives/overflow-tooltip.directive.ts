@@ -39,21 +39,23 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
             return;
         }
 
-        fromEvent(this.element, 'mouseenter')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.detectCheckOverflow());
-        fromEvent(this.element, 'mouseleave')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                clearInterval(this.frameId);
-            });
+     /*   this.ngZone.runOutsideAngular(() => {
+            fromEvent(this.element, 'mouseenter')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => this.detectCheckOverflow());
+            fromEvent(this.element, 'mouseleave')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                    clearInterval(this.frameId);
+                });
+        });*/
     }
 
     /**
      * fix problem with memory leak
      */
     public ngOnDestroy(): void {
-        if (!this.enableOverflowTooltip) {
+       /* if (!this.enableOverflowTooltip) {
             return;
         }
 
@@ -64,7 +66,7 @@ export class OverflowTooltipDirective implements AfterViewInit, OnDestroy {
         this.ngZone = null;
         this.element = null;
         this.parent = null;
-        this.destroy$ = null;
+        this.destroy$ = null;*/
     }
 
     private detectCheckOverflow(): void {

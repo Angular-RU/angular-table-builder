@@ -13,7 +13,6 @@ import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
 import { FilterableService } from '../../../table/services/filterable/filterable.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
-import { OverloadScrollService } from '../../../table/services/overload-scroll/overload-scroll.service';
 
 // tslint:disable-next-line:no-big-function
 describe('[TEST]: Lifecycle table', () => {
@@ -59,7 +58,6 @@ describe('[TEST]: Lifecycle table', () => {
         const zone: NgZone = mockNgZone as NgZone;
         const view: NgxTableViewChangesService = new NgxTableViewChangesService();
         const app: ApplicationRef = appRef as ApplicationRef;
-        const scroll: OverloadScrollService = new OverloadScrollService();
         utils = new UtilsService(zone);
 
         const parser: TemplateParserService = new TemplateParserService();
@@ -80,9 +78,14 @@ describe('[TEST]: Lifecycle table', () => {
             app,
             new FilterableService(worker, utils, zone, app),
             draggable,
-            view,
-            scroll
+            view
         );
+
+        table.scrollContainer = {
+            nativeElement: {
+                offsetHeight: 900
+            } as any
+        };
 
         table.primaryKey = 'position';
         changes = {};
@@ -156,9 +159,9 @@ describe('[TEST]: Lifecycle table', () => {
 
         tick(TableBuilderOptionsImpl.TIME_IDLE);
 
-        expect(table.rendering).toEqual(true);
-        expect(table.isRendered).toEqual(false);
-        expect(table.positionColumns).toEqual([]);
+        expect(table.rendering).toEqual(false);
+        expect(table.isRendered).toEqual(true);
+        expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
 
         tick(TableBuilderOptionsImpl.TIME_IDLE + 100);
 
@@ -325,19 +328,4 @@ describe('[TEST]: Lifecycle table', () => {
 
         expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
     }));
-
-    it('should be correct async rendering', (done: Fn) => {
-        table.source = JSON.parse(JSON.stringify(data));
-        expect(table.lazy).toEqual(true);
-
-        table.ngOnChanges();
-        table.renderTable();
-
-        expect(table.positionColumns).toEqual([]);
-
-        table.afterRendered.subscribe(() => {
-            expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
-            done();
-        });
-    });
 });

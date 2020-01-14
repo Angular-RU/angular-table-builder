@@ -3,9 +3,14 @@
 
 .table-grid {
     &__column {
-        width: 100%;
+        height: 100%;
+        flex: 1 1 auto;
         box-sizing: border-box;
-        z-index: 1;
+
+        &--virtual {
+            position: relative;
+            box-sizing: border-box;
+        }
 
         // preserve cdk handle
         touch-action: initial !important;
@@ -18,7 +23,7 @@
             position: sticky;
             background: $backgroundColor;
             will-change: auto;
-            z-index: 100;
+            z-index: 100000;
         }
 
         &--sticky-left {
@@ -133,10 +138,13 @@
     opacity: 0.5;
 }
 
+// TODO: need fix it (resize issue problem)
+/*
 .table-grid__column:nth-last-child(2) {
     width: 100% !important;
     max-width: initial !important;
 }
+*/
 
 .table-grid__column:not(table-grid__column--vertical-line).table-grid__column--is-dragging {
     border-right: 1px solid $borderColor;
@@ -144,8 +152,4 @@
 
 .table-grid__column--vertical-line .table-grid__column--resize--line {
     display: none;
-}
-
-.cdk-drag-preview .scrollable-content {
-    margin-top: 0 !important;
 }
