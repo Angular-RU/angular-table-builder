@@ -8,18 +8,14 @@
 
 .table-grid__root--is-rendered .table-grid {
     overflow: auto;
-    //noinspection CssOverwrittenProperties
-    overflow-y: auto;
 }
 
 .table-grid {
-    position: relative;
     background: $backgroundColor;
-    will-change: auto;
-    scroll-behavior: smooth;
     height: 100%;
 
     &__column-area-content {
+        scroll-behavior: smooth;
         display: flex;
     }
 

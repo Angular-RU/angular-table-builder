@@ -22,7 +22,7 @@ export class FilterableService {
     public filterValue: string = null;
     public definition: KeyMap<string> = {};
     public state: FilterStateEvent = new FilterStateEvent();
-    public types: typeof TableFilterType = TableFilterType;
+    public types: KeyMap = TableFilterType;
     public readonly filterOpenEvents: Subject<void> = new Subject();
     public readonly events: Subject<FilterEvent> = new ReplaySubject();
     public filterType: TableFilterType;

@@ -1,23 +1,12 @@
-<virtual-scroller
-    #scroll
-    [items]="source"
-    [stripedTable]="true"
-    [checkResizeInterval]="0"
-    [parentScroll]="tableViewport"
-    [enableUnequalChildrenSizes]="true"
-    [bufferAmount]="clientBufferAmount"
-    [resizeBypassRefreshThreshold]="0"
-    [useMarginInsteadOfTranslate]="true"
-    [executeRefreshOutsideAngularZone]="true"
-    [modifyOverflowStyleOfParentScroll]="false"
-    [style.height.px]="columnVirtualHeight"
-    (vsChange)="vsChange()"
->
+<div class="total-padding" [style.height.px]="columnVirtualHeight"></div>
+<div class="scrollable-viewport-content" [style.transform]="'translateY(' + offsetTop + 'px)'">
     <div
         #parent
         class="table-grid__cell"
-        *ngFor="let item of scroll.viewPortItems; let index = index"
+        [ngClass]="columnSchema?.td?.class"
+        [ngStyle]="columnSchema?.td?.style"
         (selectstart)="(canSelectTextInTable)"
+        *ngFor="let item of source; let index = index"
         (contextmenu)="openContextMenu($event, columnSchema.key, item)"
         (click)="handleOnClick(item, columnSchema.key, $event, columnSchema?.td?.onClick)"
         (dblclick)="handleDblClick(item, columnSchema.key, $event, columnSchema?.td?.dblClick)"
@@ -29,8 +18,6 @@
         [class.table-grid__cell--enable-selection]="enableSelection"
         [class.table-grid__cell--selected]="selectionEntries[item[primaryKey]]"
         [class.table-grid__cell--text-bold]="columnSchema?.td?.textBold"
-        [ngClass]="columnSchema?.td?.class"
-        [ngStyle]="columnSchema?.td?.style"
     >
         <div
             class="table-grid__cell--content"
@@ -40,13 +27,11 @@
                 [item]="item"
                 [index]="index"
                 [parent]="parent"
-                [is-rendered]="isRendered"
-                *ngIf="showedCellByDefault"
-                [column-index]="columnIndex"
+                [viewport-info]="viewportInfo"
                 [column-schema]="columnSchema"
                 [enable-filtering]="enableFiltering"
                 [is-filterable]="columnSchema?.filterable"
             ></table-cell>
         </div>
     </div>
-</virtual-scroller>
+</div>

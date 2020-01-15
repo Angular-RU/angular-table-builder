@@ -53,20 +53,31 @@
     height: 0 !important;
 }
 
-.scrollable-content {
-    height: unset !important;
-    will-change: auto;
+.total-viewport-padding {
+    height: 100%;
+    width: 1px;
+    opacity: 0;
+}
+
+.cdk-drag-preview .scrollable-viewport-content {
+    top: 0 !important;
+}
+
+.scrollable-viewport-content {
     backface-visibility: hidden;
+    will-change: transform;
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    left: 0;
+    zoom: 1;
+    top: 0;
 }
 
 .vertical-align {
     vertical-align: middle;
     margin: auto 0;
     box-sizing: border-box;
-}
-
-table-tbody {
-    display: block;
 }
 
 .freeze {

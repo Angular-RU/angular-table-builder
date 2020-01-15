@@ -1,10 +1,8 @@
 <div
     #divElement
-    [parent]="parent"
-    [class.loaded]="loaded"
-    [overflowTooltip]="divElement"
-    class="table-grid__cell--inner-content"
-    [enable-overflow-tooltip]="columnSchema?.overflowTooltip"
+    class="table-grid__cell--inner-content loaded"
+    (mouseenter)="mouseEnterCell(divElement, $event)"
+    (mouseleave)="mouseLeaveCell()"
 >
     <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">
         <ng-template
@@ -31,10 +29,12 @@
                 "
             ></ngx-filter-viewer>
         </ng-template>
-        <ng-template #simple>{{
-            columnSchema?.td?.useDeepPath
-                ? (item | deepPath: columnSchema.key:columnSchema?.stub)
-                : (item | defaultValue: columnSchema.key:columnSchema?.stub)
-        }}</ng-template>
+        <ng-template #simple>
+            {{
+                columnSchema?.td?.useDeepPath
+                    ? (item | deepPath: columnSchema.key:columnSchema?.stub)
+                    : (item | defaultValue: columnSchema.key:columnSchema?.stub)
+            }}
+        </ng-template>
     </ng-template>
 </div>

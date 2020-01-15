@@ -107,10 +107,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
             fromEvent(window, 'resize', { passive: true })
-                .pipe(
-                    delay(200),
-                    takeUntil(this.destroy$)
-                )
+                .pipe(delay(200), takeUntil(this.destroy$))
                 .subscribe(() => this.recalculateTableSize());
         });
     }

@@ -12,7 +12,7 @@ interface LicenseSample {
     // tslint:disable-next-line:component-max-inline-declarations
     template: `
         <!-- app.component.html -->
-        <ngx-table-builder [source]="licenses" [buffer-amount]="5">
+        <ngx-table-builder [source]="licenses">
             <ngx-column key="name">
                 <ng-template ngx-th>License</ng-template>
                 <ng-template ngx-td let-name>{{ name | uppercase }}</ng-template>

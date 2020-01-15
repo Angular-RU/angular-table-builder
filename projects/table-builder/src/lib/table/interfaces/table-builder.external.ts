@@ -7,11 +7,6 @@ export type TableRow<T = Any> =
           [key: string]: T;
       };
 
-export interface TableBuilderOptions {
-    bufferAmount: number;
-    wheelMaxDelta: number;
-}
-
 export enum ImplicitContext {
     ROW = 'ROW',
     CELL = 'CELL'
@@ -77,3 +72,12 @@ export interface ContextItemEvent {
 }
 
 export type SimpleSchemaColumns = Array<DeepPartial<ColumnsSchema>>;
+
+export interface ViewPortInfo {
+    isScrolling?: boolean;
+    startIndex?: number;
+    endIndex?: number;
+    bufferOffset?: number;
+    scrollTop?: number;
+    prevScrollOffsetTop?: number;
+}

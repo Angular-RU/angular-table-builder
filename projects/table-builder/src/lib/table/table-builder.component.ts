@@ -1,6 +1,6 @@
 import { CdkDragStart } from '@angular/cdk/drag-drop';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
+import { EMPTY, fromEvent, Subject } from 'rxjs';
 import {
     AfterContentInit,
     AfterViewChecked,
@@ -31,7 +31,7 @@ import {
 } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
-import { ColumnsSchema } from './interfaces/table-builder.external';
+import { ColumnsSchema, TableRow, ViewPortInfo } from './interfaces/table-builder.external';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SortableService } from './services/sortable/sortable.service';
@@ -44,7 +44,7 @@ import { FilterableService } from './services/filterable/filterable.service';
 import { TableFilterType } from './services/filterable/filterable.interface';
 import { DraggableService } from './services/draggable/draggable.service';
 import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
-import { OverloadScrollService } from './services/overload-scroll/overload-scroll.service';
+import { detectChanges } from './operators/detect-changes';
 
 const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
@@ -60,8 +60,7 @@ const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TableBuilderOpt
         ResizableService,
         ContextMenuService,
         FilterableService,
-        DraggableService,
-        OverloadScrollService
+        DraggableService
     ],
     encapsulation: ViewEncapsulation.None,
     animations: [NGX_ANIMATION]
@@ -81,11 +80,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     @ViewChild('footer', { static: false })
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
-    public isScrolling: boolean;
     public afterViewInitDone: boolean = false;
+    public viewPortItems: TableRow[];
+    public viewPortInfo: ViewPortInfo = {};
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
+    private frameId: number;
+    private scrolledId: number;
 
     constructor(
         public readonly selection: SelectionService,
@@ -99,8 +101,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         protected readonly app: ApplicationRef,
         public readonly filterable: FilterableService,
         protected readonly draggable: DraggableService,
-        protected readonly viewChanges: NgxTableViewChangesService,
-        protected readonly overloadScroll: OverloadScrollService
+        protected readonly viewChanges: NgxTableViewChangesService
     ) {
         super();
     }
@@ -115,6 +116,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private get viewIsDirty(): boolean {
         return this.contentCheck && !this.forcedRefresh;
+    }
+
+    private get needUpdateViewport(): boolean {
+        return this.viewPortInfo.prevScrollOffsetTop !== this.scrollOffsetTop && !!this.source && !!this.viewportHeight;
+    }
+
+    private get viewportHeight(): number {
+        return this.scrollContainer.nativeElement.offsetHeight;
+    }
+
+    private get scrollOffsetTop(): number {
+        return this.scrollContainer.nativeElement.scrollTop;
     }
 
     private static checkCorrectInitialSchema(changes: SimpleChanges = {}): void {
@@ -134,7 +147,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public recalculateHeight(): void {
         this.recalculated = { recalculateHeight: true };
-        this.detectChanges();
+        detectChanges(this.cd);
     }
 
     public ngOnChanges(changes: SimpleChanges = {}): void {
@@ -169,7 +182,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
         column['visible'] = visible;
-        this.detectChanges();
+        detectChanges(this.cd);
     }
 
     public ngAfterContentInit(): void {
@@ -185,7 +198,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenTemplateChanges();
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
-        this.listenScrollEvents();
         this.afterViewInitChecked();
     }
 
@@ -236,15 +248,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.utils.macrotask(() => this.renderTable(), TIME_IDLE).then(() => this.idleDetectChanges());
     }
 
-    public renderTable({ async }: { async: boolean } = { async: true }): void {
+    public renderTable(): void {
         if (this.rendering) {
             return;
         }
 
         this.rendering = true;
         const columnList: string[] = this.generateDisplayedColumns();
-        const drawTask: Fn<string[], Promise<void>> =
-            this.asyncColumns && async ? this.asyncDrawColumns.bind(this) : this.syncDrawColumns.bind(this);
+        const drawTask: Fn<string[], Promise<void>> = this.syncDrawColumns.bind(this);
 
         if (!this.sortable.empty) {
             this.sortAndFilter().then(() => drawTask(columnList).then(() => this.emitRendered()));
@@ -267,29 +278,110 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public resetSchema(): void {
         this.tableViewportChecked = false;
         this.schemaColumns = null;
-        this.detectChanges();
+        detectChanges(this.cd);
 
-        this.renderTable({ async: false });
+        this.renderTable();
         this.changeSchema([]);
 
         this.ngZone.runOutsideAngular(() => {
             window.setTimeout(() => {
                 this.tableViewportChecked = true;
-                this.detectChanges();
+                detectChanges(this.cd);
             }, TableBuilderOptionsImpl.TIME_IDLE);
         });
+    }
+
+    protected calculateViewport(event?: Event): void {
+        const isDownMoved: boolean = this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
+
+        this.viewPortInfo.prevScrollOffsetTop = this.scrollOffsetTop;
+        let start: number = this.getOffsetVisibleStartIndex();
+        let end: number = start + this.getVisibleCountItems() + this.buffer;
+        end = end > this.sourceRef.length ? this.sourceRef.length : end;
+
+        let lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
+        const bufferOffset: number = isDownMoved
+            ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
+            : start - this.viewPortInfo.startIndex;
+
+        if (isNaN(this.viewPortInfo.startIndex)) {
+            this.setViewportInfo(start, end);
+            this.idleDetectChanges();
+        } else if (bufferOffset <= this.bufferMinOffset && bufferOffset >= 0) {
+            let newStart = start - this.buffer;
+            newStart = newStart >= 0 ? newStart : 0;
+            this.setViewportInfo(newStart, end);
+            this.idleDetectChanges();
+        } else if (bufferOffset < 0) {
+            this.setViewportInfo(start, end);
+            detectChanges(this.cd);
+        }
+
+        this.viewPortInfo.bufferOffset = bufferOffset;
+
+        if (event) {
+            event.preventDefault();
+        }
     }
 
     private afterViewInitChecked(): void {
         this.ngZone.runOutsideAngular(() =>
             window.setTimeout(() => {
                 this.afterViewInitDone = true;
+                this.listenScroll();
+                this.calculateViewport();
                 if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
                     this.emitRendered();
-                    this.detectChanges();
+                    detectChanges(this.cd);
                 }
             }, MACRO_TIME)
         );
+    }
+
+    private listenScroll(): void {
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(this.scrollContainer.nativeElement, 'scroll')
+                .pipe(
+                    catchError(() => {
+                        this.calculateViewport();
+                        return EMPTY;
+                    }),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe((event: Event) => {
+                    this.viewPortInfo.isScrolling = true;
+                    window.cancelAnimationFrame(this.frameId);
+                    clearTimeout(this.scrolledId);
+
+                    this.scrolledId = window.setTimeout(() => {
+                        this.viewPortInfo.isScrolling = false;
+                        detectChanges(this.cd);
+                    }, TIME_RELOAD);
+
+                    this.frameId = window.requestAnimationFrame(
+                        () => this.needUpdateViewport && this.calculateViewport(event)
+                    );
+                });
+        });
+    }
+
+    private setViewportInfo(start: number, end: number): void {
+        this.viewPortInfo.startIndex = start;
+        this.viewPortInfo.endIndex = end;
+        this.viewPortItems = this.sourceRef.slice(start, end);
+        this.viewPortInfo.scrollTop = start * this.clientRowHeight;
+    }
+
+    private getOffsetVisibleEndIndex(): number {
+        return Math.floor((this.scrollOffsetTop + this.viewportHeight) / this.clientRowHeight) - 1;
+    }
+
+    private getVisibleCountItems(): number {
+        return Math.ceil(this.viewportHeight / this.clientRowHeight - 1);
+    }
+
+    private getOffsetVisibleStartIndex(): number {
+        return Math.ceil(this.scrollOffsetTop / this.clientRowHeight);
     }
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
@@ -327,13 +419,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
     }
 
-    private listenScrollEvents(): void {
-        this.overloadScroll.scrollStatus.pipe(takeUntil(this.destroy$)).subscribe((scrolling: boolean) => {
-            this.isScrolling = scrolling;
-            this.detectChanges();
-        });
-    }
-
     private checkFilterValues(): void {
         if (this.enableFiltering) {
             this.filterable.filterType =
@@ -355,10 +440,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private listenSelectionChanges(): void {
         if (this.enableSelection) {
             this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-                this.detectChanges();
+                detectChanges(this.cd);
                 this.ngZone.runOutsideAngular(() =>
                     window.requestAnimationFrame(() => {
-                        this.detectChanges();
+                        detectChanges(this.cd);
                         this.app.tick();
                     })
                 );
@@ -386,25 +471,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
 
         if (this.contextMenuTemplate) {
-            this.contextMenu.events.pipe(takeUntil(this.destroy$)).subscribe(() => this.detectChanges());
-        }
-    }
-
-    /**
-     * @description: lazy rendering of columns
-     */
-    private async asyncDrawColumns(columnList: string[]): Promise<void> {
-        for (let index: number = 0; index < columnList.length; index++) {
-            const key: string = columnList[index];
-            const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
-
-            if (schema.isVisible) {
-                await this.utils.requestAnimationFrame(() => {
-                    this.processedColumnList && this.processedColumnList(schema, key, true);
-                });
-            } else {
-                this.processedColumnList(schema, key, true);
-            }
+            this.contextMenu.events.pipe(takeUntil(this.destroy$)).subscribe(() => detectChanges(this.cd));
         }
     }
 
@@ -471,6 +538,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
+        this.calculateViewport();
         this.onChanges.emit(this.source || null);
     }
 
