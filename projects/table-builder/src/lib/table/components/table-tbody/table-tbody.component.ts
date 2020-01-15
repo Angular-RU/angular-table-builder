@@ -21,7 +21,6 @@ import { getDeepValue } from '../../operators/deep-value';
             table-tbody {
                 display: block;
                 overflow: hidden;
-                overflow-y: auto;
                 position: relative;
             }
         `

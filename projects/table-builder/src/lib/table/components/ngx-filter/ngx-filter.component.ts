@@ -52,9 +52,14 @@ export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> impleme
         return this.filterable.state;
     }
 
-    public close(event: MouseEvent): void {
+    public closeFilter(): void {
         this.filterable.closeFilter();
-        event.preventDefault();
+    }
+
+    public close(event?: MouseEvent): void {
+        if (event) {
+            event.preventDefault();
+        }
     }
 
     public ngOnInit(): void {

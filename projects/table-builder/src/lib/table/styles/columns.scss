@@ -9,6 +9,7 @@
 
         &--virtual {
             position: relative;
+            overflow: hidden;
             box-sizing: border-box;
         }
 
@@ -23,7 +24,7 @@
             position: sticky;
             background: $backgroundColor;
             will-change: auto;
-            z-index: 100000;
+            z-index: 100;
         }
 
         &--sticky-left {

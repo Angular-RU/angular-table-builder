@@ -81,8 +81,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
     public afterViewInitDone: boolean = false;
-    public viewPortItems: TableRow[];
-    public viewPortInfo: ViewPortInfo = {};
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -173,11 +171,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.selection.primaryKey = this.primaryKey;
             this.selection.listenShiftKey();
         }
-    }
-
-    public updateScrollOffset(offset: boolean): void {
-        this.scrollOffset = { offset };
-        this.idleDetectChanges();
     }
 
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
@@ -386,6 +379,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
         this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
+        this.tableViewportChecked = false;
         this.sortAndFilter().then(() => {
             this.reCheckDefinitions();
             this.checkSelectionValue();
@@ -396,6 +390,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.renderedCountKeys = this.getCountKeys();
         this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
         this.modelColumnKeys = this.generateModelColumnKeys();
+        this.tableViewportChecked = false;
         this.originalSource = this.source;
         const unDirty: boolean = !this.dirty;
 
@@ -536,6 +531,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private emitRendered(): void {
         this.isRendered = true;
         this.rendering = false;
+        this.tableViewportChecked = true;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
         this.calculateViewport();
