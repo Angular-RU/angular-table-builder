@@ -4,17 +4,21 @@
 .table-grid {
     &__header-cell {
         top: 0;
-        z-index: 100;
+        z-index: 99;
         position: sticky;
         background: #fff;
         box-sizing: border-box;
         text-overflow: ellipsis;
         border-bottom: 1px solid $borderColor;
         transition: box-shadow 0.3s ease-in-out;
+        display: flex;
+        flex: 1 1 80px;
 
         &--content {
             overflow: hidden;
             min-width: 25px;
+            padding-top: 3px;
+            cursor: pointer;
         }
 
         &--min-width {
@@ -27,6 +31,10 @@
             .table-grid__column--filterable:not(.table-grid__column--filterable-active) {
                 display: none;
             }
+        }
+
+        &-head--settings {
+            display: flex;
         }
 
         &:hover .table-grid__column--draggable {
@@ -122,48 +130,6 @@
         font-weight: 400;
         font-size: 15px;
         padding: 10px 35px 10px 10px;
-
-        & .overflow-close {
-            border: 3px solid #e6e6e6;
-            float: right;
-            height: 18px;
-            width: 18px;
-            text-indent: -9999px;
-            text-decoration: none;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border-radius: 50%;
-            text-align: center;
-            position: absolute;
-            right: 5px;
-            top: 7px;
-
-            &:hover {
-                background: rgba(0, 0, 0, 1);
-            }
-
-            &::after {
-                content: '\2716';
-                text-indent: 0;
-                display: block;
-                position: absolute;
-                top: 0;
-                right: 5px;
-                font-size: 11px;
-            }
-
-            &:hover {
-                $color: darken(#fff, 30%);
-                color: darken(#fff, 10%);
-                cursor: pointer;
-            }
-
-            &:active {
-                $color: darken(#fff, 30%);
-
-                cursor: pointer;
-            }
-        }
     }
 
     &__cell-overflow-content.visible {

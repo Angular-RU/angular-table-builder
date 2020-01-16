@@ -1,9 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    NgZone,
+    OnDestroy,
+    ViewEncapsulation
+} from '@angular/core';
+import { fromEvent, Subscription } from 'rxjs';
 
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
 import { trim } from '../../operators/trim';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { fromEvent, Subscription } from 'rxjs';
 
 @Component({
     selector: 'table-cell',
@@ -11,7 +19,7 @@ import { fromEvent, Subscription } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent {
+export class TableCellComponent implements OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -20,11 +28,12 @@ export class TableCellComponent {
     @Input('enable-filtering') public enableFiltering: boolean;
     @Input('viewport-info') public viewportInfo: ViewPortInfo;
     public contextType: typeof ImplicitContext = ImplicitContext;
-    private readonly timeIdle: number = 500;
+    private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
-    private frameId: number = null;
+    private readonly timeIdle: number = 700;
     private nodeSubscription: Subscription;
     private closeElemSub: Subscription;
+    private frameId: number = null;
 
     constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {
         this.cd.reattach();
@@ -35,20 +44,23 @@ export class TableCellComponent {
     }
 
     private get overflowCloseElem(): HTMLDivElement {
-        return document.querySelector(`.overflow-close`);
+        return document.querySelector(`.${this.closeButtonSelector}`);
     }
 
-    private static checkOverflow(element: HTMLDivElement, parent: HTMLDivElement): boolean {
-        return (
-            element.offsetWidth > parent.offsetWidth ||
-            element.offsetHeight > parent.offsetHeight ||
-            element.scrollWidth > element.offsetWidth ||
-            element.scrollHeight > element.offsetHeight
-        );
+    private get disableTooltip(): boolean {
+        return this.viewportInfo.isScrolling || !this.columnSchema.overflowTooltip;
+    }
+
+    private static removeElementByRef(element: HTMLDivElement): void {
+        element && element.parentNode && element.parentNode.removeChild(element);
+    }
+
+    public ngOnDestroy(): void {
+        window.clearTimeout(this.frameId);
     }
 
     public mouseEnterCell(element: HTMLDivElement, event: MouseEvent): void {
-        if (!this.columnSchema.overflowTooltip || this.viewportInfo.isScrolling) {
+        if (this.disableTooltip) {
             return;
         }
 
@@ -56,19 +68,41 @@ export class TableCellComponent {
     }
 
     public mouseLeaveCell(): void {
-        if (!this.columnSchema.overflowTooltip || this.viewportInfo.isScrolling) {
+        if (this.disableTooltip) {
             return;
         }
 
-        clearInterval(this.frameId);
+        window.clearInterval(this.frameId);
+    }
+
+    private isEllipsisActive(element: HTMLElement): boolean {
+        const div = document.createElement('div');
+        div.innerHTML = element.textContent;
+        const fontSize: string = window.getComputedStyle(element).fontSize;
+        div.style.cssText = `transform: translateX(-999999px);position: fixed; font-size: ${fontSize};`;
+
+        document.body.appendChild(div);
+
+        const isEllipsis: boolean =
+            div.offsetWidth > this.parent.offsetWidth ||
+            div.offsetHeight > this.parent.offsetHeight ||
+            div.scrollWidth > element.offsetWidth ||
+            div.scrollHeight > element.offsetHeight;
+
+        TableCellComponent.removeElementByRef(div);
+
+        return isEllipsis;
     }
 
     private detectCheckOverflow(element: HTMLDivElement, event: MouseEvent): void {
-        clearInterval(this.frameId);
+        window.clearInterval(this.frameId);
         this.ngZone.runOutsideAngular(() => {
             this.frameId = window.setTimeout(() => {
-                const isOverflow: boolean = TableCellComponent.checkOverflow(element, this.parent);
-                if (isOverflow && !this.viewportInfo.isScrolling) {
+                const canEnableTooltip: boolean = this.viewportInfo.isScrolling
+                    ? false
+                    : this.isEllipsisActive(element);
+
+                if (canEnableTooltip) {
                     this.showTooltip(element, event);
                 }
             }, this.timeIdle);
@@ -92,7 +126,7 @@ export class TableCellComponent {
 
         document.body.appendChild(elem);
         const innerText = String(element.innerText || '').trim();
-        this.overflowContentElem.innerHTML = `<div class="overflow-close"></div>${innerText}`;
+        this.overflowContentElem.innerHTML = `<div class="${this.closeButtonSelector}"></div>${innerText}`;
 
         this.nodeSubscription = fromEvent(elem, 'mouseleave').subscribe(() => this.removeElement());
         this.closeElemSub = fromEvent(this.overflowCloseElem, 'click').subscribe(() => this.removeElement());

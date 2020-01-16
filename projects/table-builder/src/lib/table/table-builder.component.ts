@@ -81,8 +81,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
     public afterViewInitDone: boolean = false;
-    public viewPortItems: TableRow[];
-    public viewPortInfo: ViewPortInfo = {};
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private checkedTaskId: number = null;
@@ -175,11 +173,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
     }
 
-    public updateScrollOffset(offset: boolean): void {
-        this.scrollOffset = { offset };
-        this.idleDetectChanges();
-    }
-
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
         column['visible'] = visible;
         detectChanges(this.cd);
@@ -203,13 +196,15 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
         const preview: HTMLElement = event.source._dragRef['_preview'];
+        const head: HTMLElement = root.querySelector('table-thead');
+
         const transform: string = event.source._dragRef['_preview'].style.transform || '';
         const [x, , z]: [number, number, number] = transform
             .replace(/translate3d|\(|\)|px/g, '')
             .split(',')
             .map((val: string) => parseFloat(val)) as [number, number, number];
 
-        preview.style.transform = `translate3d(${x}px, ${root.getBoundingClientRect().top}px, ${z}px)`;
+        preview.style.transform = `translate3d(${x}px, ${head.getBoundingClientRect().top}px, ${z}px)`;
     }
 
     public ngAfterViewChecked(): void {
@@ -393,6 +388,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private preRenderTable(): void {
+        this.tableViewportChecked = false;
         this.renderedCountKeys = this.getCountKeys();
         this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
         this.modelColumnKeys = this.generateModelColumnKeys();

@@ -3,8 +3,8 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [enable-filtering]="true">
-    <ngx-options [sortable]="true" [filterable]="true"></ngx-options>
+<ngx-table-builder class="filter-example" #table [source]="data" [enable-filtering]="true" [row-height]="35">
+    <ngx-options [sortable]="true" [filterable]="true" [resizable]="true" [draggable]="true"></ngx-options>
     <ngx-source-null>Loading...</ngx-source-null>
     <ngx-empty>Not found</ngx-empty>
 

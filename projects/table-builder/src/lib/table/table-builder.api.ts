@@ -21,7 +21,7 @@ import {
 
 import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
 import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
-import { ColumnsSchema, SimpleSchemaColumns, TableRow } from './interfaces/table-builder.external';
+import { ColumnsSchema, SimpleSchemaColumns, TableRow, ViewPortInfo } from './interfaces/table-builder.external';
 import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
@@ -41,7 +41,7 @@ import { UtilsService } from './services/utils/utils.service';
 import { SelectionMap } from './services/selection/selection';
 import { detectChanges } from './operators/detect-changes';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -93,6 +93,8 @@ export abstract class TableBuilderApiImpl
     @ViewChild('tableViewport', { static: false })
     public scrollContainer: ElementRef<HTMLElement>;
 
+    public viewPortItems: TableRow[];
+    public viewPortInfo: ViewPortInfo = {};
     public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;
 
@@ -274,12 +276,7 @@ export abstract class TableBuilderApiImpl
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {
                 this.filterable.changeFilteringStatus();
-                this.scrollContainer.nativeElement.scrollTo({ left: 0, top: 0 });
-                this.sortAndFilter().then(() => {
-                    this.reCheckDefinitions();
-                    this.calculateViewport();
-                    detectChanges(this.cd);
-                });
+                this.sortAndFilter().then(() => this.reCheckDefinitions());
             }, MACRO_TIME);
         });
     }
@@ -305,11 +302,7 @@ export abstract class TableBuilderApiImpl
 
     public sortByKey(key: string): void {
         this.sortable.updateSortKey(key);
-        this.sortAndFilter().then(() => {
-            this.reCheckDefinitions();
-            this.calculateViewport();
-            detectChanges(this.cd);
-        });
+        this.sortAndFilter().then(() => this.reCheckDefinitions());
     }
 
     public drop({ previousIndex, currentIndex }: CdkDragSortEvent): void {
@@ -344,7 +337,18 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        detectChanges(this.cd);
+        this.forceCalculateViewport();
+    }
+
+    protected forceCalculateViewport(): void {
+        this.scrollContainer.nativeElement.scrollTop = 0;
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => {
+                this.viewPortInfo = {};
+                this.calculateViewport();
+                this.app.tick();
+            }, TIME_RELOAD);
+        });
     }
 
     /**
