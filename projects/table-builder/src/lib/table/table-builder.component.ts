@@ -531,7 +531,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     private emitRendered(): void {
         this.isRendered = true;
-        this.tableViewportChecked = true;
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
