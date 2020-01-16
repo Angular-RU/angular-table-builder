@@ -43,6 +43,13 @@
             min-width: $cellWidth;
         }
 
+        &--is-draggable {
+            table-thead,
+            .table-grid__cell--content {
+                cursor: move;
+            }
+        }
+
         &--resize {
             height: 100%;
             width: 10px;
@@ -97,6 +104,10 @@
             &-active {
                 opacity: 1;
             }
+
+            &:hover {
+                opacity: 0.5;
+            }
         }
 
         &--filter-enable &--filterable {
@@ -129,26 +140,12 @@
     }
 }
 
-.table-grid__cell--content-sortable {
-    cursor: pointer;
-}
-
+//noinspection ALL
 .table-grid__column--sortable:not(.table-grid__column--sortable-active):hover,
-.table-grid__cell--content-sortable:hover + .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
-    transition: opacity 0.2s ease-in-out;
+.table-grid__cell--content-sortable:hover
+    + .table-grid__header-cell-head--settings
+    .table-grid__column--sortable:not(.table-grid__column--sortable-active) {
     opacity: 0.5;
-}
-
-// TODO: need fix it (resize issue problem)
-/*
-.table-grid__column:nth-last-child(2) {
-    width: 100% !important;
-    max-width: initial !important;
-}
-*/
-
-.table-grid__column:not(table-grid__column--vertical-line).table-grid__column--is-dragging {
-    border-right: 1px solid $borderColor;
 }
 
 .table-grid__column--vertical-line .table-grid__column--resize--line {

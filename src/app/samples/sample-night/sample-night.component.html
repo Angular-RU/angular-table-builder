@@ -10,6 +10,7 @@
 <div id="main-column">
     <div id="widget1">
         <ngx-table-builder #table [source]="dataFirst" [native-scrollbar]="nativeScrollbar">
+            <ngx-options [draggable]="true"></ngx-options>
             <ngx-column *ngFor="let key of table.modelColumnKeys">
                 <ng-template ngx-th>{{ key }}</ng-template>
                 <ng-template ngx-td let-cell>{{ cell }}</ng-template>
@@ -18,6 +19,7 @@
     </div>
     <div id="widget2">
         <ngx-table-builder #table [source]="dataSecond" [native-scrollbar]="nativeScrollbar">
+            <ngx-options [draggable]="true"></ngx-options>
             <ngx-column *ngFor="let key of table.modelColumnKeys">
                 <ng-template ngx-th>{{ key }}</ng-template>
                 <ng-template ngx-td let-cell>{{ cell }}</ng-template>

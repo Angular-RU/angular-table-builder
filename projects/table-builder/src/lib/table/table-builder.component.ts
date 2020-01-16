@@ -196,13 +196,15 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
         const preview: HTMLElement = event.source._dragRef['_preview'];
+        const head: HTMLElement = root.querySelector('table-thead');
+
         const transform: string = event.source._dragRef['_preview'].style.transform || '';
         const [x, , z]: [number, number, number] = transform
             .replace(/translate3d|\(|\)|px/g, '')
             .split(',')
             .map((val: string) => parseFloat(val)) as [number, number, number];
 
-        preview.style.transform = `translate3d(${x}px, ${root.getBoundingClientRect().top}px, ${z}px)`;
+        preview.style.transform = `translate3d(${x}px, ${head.getBoundingClientRect().top}px, ${z}px)`;
     }
 
     public ngAfterViewChecked(): void {
@@ -379,7 +381,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
         this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
-        this.tableViewportChecked = false;
         this.sortAndFilter().then(() => {
             this.reCheckDefinitions();
             this.checkSelectionValue();
@@ -387,10 +388,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private preRenderTable(): void {
+        this.tableViewportChecked = false;
         this.renderedCountKeys = this.getCountKeys();
         this.customModelColumnsKeys = this.generateCustomModelColumnsKeys();
         this.modelColumnKeys = this.generateModelColumnKeys();
-        this.tableViewportChecked = false;
         this.originalSource = this.source;
         const unDirty: boolean = !this.dirty;
 
@@ -530,8 +531,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     private emitRendered(): void {
         this.isRendered = true;
-        this.rendering = false;
         this.tableViewportChecked = true;
+        this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
         this.calculateViewport();

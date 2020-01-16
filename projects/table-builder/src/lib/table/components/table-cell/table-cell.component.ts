@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    NgZone,
+    OnDestroy,
+    ViewEncapsulation
+} from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
@@ -11,7 +19,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent {
+export class TableCellComponent implements OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -47,6 +55,10 @@ export class TableCellComponent {
         element && element.parentNode && element.parentNode.removeChild(element);
     }
 
+    public ngOnDestroy(): void {
+        window.clearTimeout(this.frameId);
+    }
+
     public mouseEnterCell(element: HTMLDivElement, event: MouseEvent): void {
         if (this.disableTooltip) {
             return;
@@ -60,13 +72,15 @@ export class TableCellComponent {
             return;
         }
 
-        clearInterval(this.frameId);
+        window.clearInterval(this.frameId);
     }
 
     private isEllipsisActive(element: HTMLElement): boolean {
         const div = document.createElement('div');
         div.innerHTML = element.textContent;
-        div.style.cssText = `transform: translateX(-999999px);position: fixed;`;
+        const fontSize: string = window.getComputedStyle(element).fontSize;
+        div.style.cssText = `transform: translateX(-999999px);position: fixed; font-size: ${fontSize};`;
+
         document.body.appendChild(div);
 
         const isEllipsis: boolean =
@@ -81,7 +95,7 @@ export class TableCellComponent {
     }
 
     private detectCheckOverflow(element: HTMLDivElement, event: MouseEvent): void {
-        clearInterval(this.frameId);
+        window.clearInterval(this.frameId);
         this.ngZone.runOutsideAngular(() => {
             this.frameId = window.setTimeout(() => {
                 const canEnableTooltip: boolean = this.viewportInfo.isScrolling

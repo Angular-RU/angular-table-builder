@@ -52,7 +52,6 @@
                     #column
                     cdkDrag
                     observerView
-                    cdkDragHandle
                     [cdkDragBoundary]="area"
                     class="table-grid__column"
                     *ngIf="columnSchema.isVisible"
@@ -72,6 +71,7 @@
                     [class.table-grid__column--sticky-right]="columnSchema?.stickyRight"
                     [class.table-grid__column--is-visible]="column['visible']"
                     [class.table-grid__column--is-invisible]="!column['visible']"
+                    [class.table-grid__column--is-draggable]="columnSchema?.isModel && columnSchema?.draggable"
                     [class.table-grid__column--is-dragging]="isDragging[columnSchema.key]"
                     [class.table-grid__column--default-width]="!autoWidth"
                     [class.table-grid__column--filter-enable]="filterTemplate"
@@ -79,6 +79,7 @@
                 >
                     <ng-container *ngIf="column['visible']">
                         <table-thead
+                            cdkDragHandle
                             [column-schema]="columnSchema"
                             (mouseleave)="disableDragging()"
                             [column-width]="column.offsetWidth"
@@ -89,15 +90,8 @@
                             [head-height]="headHeight"
                             (resize)="resizeColumn($event, column)"
                             (sortByKey)="sortByKey($event)"
+                            (mouseenter)="enableDragging(columnSchema.key)"
                         >
-                            <div
-                                slot="draggable"
-                                *ngIf="columnSchema?.draggable"
-                                class="table-grid__column--draggable"
-                                (mouseenter)="enableDragging(columnSchema.key)"
-                            >
-                                <drag-icon></drag-icon>
-                            </div>
                         </table-thead>
 
                         <table-tbody

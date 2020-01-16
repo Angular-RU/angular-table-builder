@@ -45,6 +45,23 @@ declare const hljs: Any;
                 margin-bottom: 0;
                 padding: 2px 0;
             }
+
+            .filter-example .table-grid__cell > * {
+                font-size: 12px;
+            }
+
+            .filter-example .table-grid__cell:not(.table-grid__header-cell) {
+                padding: 8px;
+            }
+            .filter-example .table-grid__cell--content:not(.table-grid__header-cell) {
+                margin: 0;
+            }
+
+            .filter-example .table-grid__header-cell {
+                min-height: 50px;
+                max-height: 50px;
+                padding: 8px;
+            }
         `
     ],
     encapsulation: ViewEncapsulation.None,
