@@ -50,7 +50,6 @@ export abstract class TableBuilderApiImpl
     @Input() public source: TableRow[] = null;
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public lazy: boolean = true;
     @Input() public name: string = null;
     @Input() public buffer: number = 10;
     @Input('sort-types') public sortTypes: KeyMap = null;
@@ -63,7 +62,6 @@ export abstract class TableBuilderApiImpl
     @Input('column-width') public columnWidth: string | number = null;
     @Input('head-height') public headHeight: string | number = null;
     @Input('row-height') public rowHeight: string | number = null;
-    @Input('async-columns') public asyncColumns: boolean = true;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('enable-filtering') public enableFiltering: boolean = false;
