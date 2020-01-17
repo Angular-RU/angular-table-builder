@@ -179,13 +179,7 @@
     </div>
 
     <div class="column">
-        <ngx-table-builder
-            [source]="elements"
-            [striped]="false"
-            [keys]="columns"
-            [async-columns]="false"
-            [lazy]="false"
-        >
+        <ngx-table-builder [source]="elements" [striped]="false" [keys]="columns">
             <ngx-column key="name" [sticky]="true"></ngx-column>
 
             <ngx-column key="status" width="50" [sticky-end]="true" [css-class]="['status-column']">
