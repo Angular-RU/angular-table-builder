@@ -38,9 +38,8 @@
             <mat-form-field appearance="outline">
                 <mat-label>Find options</mat-label>
                 <mat-select
-                    (openedChange)="filter.preventClose()"
-                    [(value)]="table.filterable.filterTypeDefinition[filter.state.key]"
                     (valueChange)="table.filter()"
+                    [(value)]="table.filterable.filterTypeDefinition[filter.state.key]"
                 >
                     <mat-option *ngFor="let type of table.filterable.types | keyvalue" [value]="type.value">
                         {{ type.key }}

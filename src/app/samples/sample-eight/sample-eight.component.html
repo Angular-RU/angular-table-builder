@@ -8,7 +8,7 @@
     }
 </style>
 
-<ngx-table-builder #table [source]="data" [row-height]="60" [vertical-border]="false">
+<ngx-table-builder #table [source]="data" [row-height]="40" [column-width]="120" [vertical-border]="false">
     <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" important-template>
         <ng-template ngx-th></ng-template>
         <ng-template ngx-td [row]="true" let-row>

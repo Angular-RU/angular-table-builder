@@ -186,3 +186,7 @@ mat-form-field.mat-form-field.mat-form-field-appearance-outline
     overflow: auto;
     margin: 5px;
 }
+
+sample-eight ngx-table-builder * {
+    font-size: 12px !important;
+}

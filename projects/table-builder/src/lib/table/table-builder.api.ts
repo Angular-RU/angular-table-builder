@@ -41,7 +41,7 @@ import { UtilsService } from './services/utils/utils.service';
 import { SelectionMap } from './services/selection/selection';
 import { detectChanges } from './operators/detect-changes';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -51,9 +51,9 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = 10;
+    @Input() public buffer: number = 20;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('buffer-min-offset') public bufferMinOffset: number = 3;
+    @Input('buffer-min-offset') public bufferMinOffset: number = 4;
     @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -137,6 +137,7 @@ export abstract class TableBuilderApiImpl
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
     private filterIdTask: number = null;
+    private idleDetectChangesId: number;
 
     /**
      * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
@@ -270,10 +271,10 @@ export abstract class TableBuilderApiImpl
             throw new Error('You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />');
         }
 
+        this.filterable.changeFilteringStatus();
         this.ngZone.runOutsideAngular(() => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {
-                this.filterable.changeFilteringStatus();
                 this.sortAndFilter().then(() => this.reCheckDefinitions());
             }, MACRO_TIME);
         });
@@ -332,6 +333,8 @@ export abstract class TableBuilderApiImpl
 
     protected abstract calculateViewport(event?: Event): void;
 
+    protected abstract updateViewportInfo(start: number, end: number): void;
+
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
@@ -339,14 +342,8 @@ export abstract class TableBuilderApiImpl
     }
 
     protected forceCalculateViewport(): void {
-        this.scrollContainer.nativeElement.scrollTop = 0;
-        this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => {
-                this.viewPortInfo = {};
-                this.calculateViewport();
-                this.app.tick();
-            }, TIME_RELOAD);
-        });
+        this.updateViewportInfo(this.viewPortInfo.startIndex, this.viewPortInfo.endIndex);
+        detectChanges(this.cd);
     }
 
     /**
@@ -376,7 +373,10 @@ export abstract class TableBuilderApiImpl
     }
 
     protected idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => detectChanges(this.cd)));
+        this.ngZone.runOutsideAngular(() => {
+            window.cancelAnimationFrame(this.idleDetectChangesId);
+            this.idleDetectChangesId = window.requestAnimationFrame(() => detectChanges(this.cd));
+        });
     }
 
     private calculateWidth(key: string, width: number): void {
