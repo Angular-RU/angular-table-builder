@@ -443,7 +443,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.filterable.filterType =
                 this.filterable.filterType ||
                 (this.columnOptions && this.columnOptions.filterType) ||
-                TableFilterType.START_WITH;
+                TableFilterType.CONTAINS;
 
             this.modelColumnKeys.forEach((key: string) => {
                 this.filterable.filterTypeDefinition[key] =
