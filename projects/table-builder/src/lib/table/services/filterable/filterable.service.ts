@@ -49,6 +49,7 @@ export class FilterableService {
         }
 
         this.previousFiltering = this.filtering;
+        this.filterOpenEvents.next();
     }
 
     public get filterValueExist(): boolean {
@@ -75,34 +76,36 @@ export class FilterableService {
         const type: TableFilterType = this.filterType;
         const value: string = this.globalFilterValue ? String(this.globalFilterValue).trim() : null;
 
-        return new Promise((resolve: Resolver<FilterWorkerEvent>): void => {
-            const message: FilterableMessage = {
-                source,
-                types: TableFilterType,
-                global: { value, type },
-                columns: {
-                    values: this.definition,
-                    types: this.filterTypeDefinition,
-                    isEmpty: this.checkIsEmpty(this.definition)
-                }
-            };
+        return new Promise(
+            (resolve: Resolver<FilterWorkerEvent>): void => {
+                const message: FilterableMessage = {
+                    source,
+                    types: TableFilterType,
+                    global: { value, type },
+                    columns: {
+                        values: this.definition,
+                        types: this.filterTypeDefinition,
+                        isEmpty: this.checkIsEmpty(this.definition)
+                    }
+                };
 
-            this.thread.run<TableRow[], FilterableMessage>(filterAllWorker, message).then((sorted: TableRow[]) => {
-                this.ngZone.runOutsideAngular(() =>
-                    window.setTimeout(() => {
-                        resolve({
-                            source: sorted,
-                            fireSelection: (): void => {
-                                window.setTimeout(() => {
-                                    this.events.next({ value, type });
-                                    this.app.tick();
-                                }, TIME_IDLE);
-                            }
-                        });
-                    }, TIME_IDLE)
-                );
-            });
-        });
+                this.thread.run<TableRow[], FilterableMessage>(filterAllWorker, message).then((sorted: TableRow[]) => {
+                    this.ngZone.runOutsideAngular(() =>
+                        window.setTimeout(() => {
+                            resolve({
+                                source: sorted,
+                                fireSelection: (): void => {
+                                    window.setTimeout(() => {
+                                        this.events.next({ value, type });
+                                        this.app.tick();
+                                    }, TIME_IDLE);
+                                }
+                            });
+                        }, TIME_IDLE)
+                    );
+                });
+            }
+        );
     }
 
     private checkIsEmpty(definition: KeyMap<string>): boolean {

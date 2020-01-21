@@ -1,6 +1,12 @@
+<div
+    class="table-grid__background-flat"
+    *ngIf="state.opened"
+    (click)="close($event)"
+    (contextmenu)="close($event)"
+></div>
+
 <div class="table-grid__filter-menu" *ngIf="state.opened">
     <div
-        #targetElement
         class="filter-menu"
         (contextmenu)="close($event)"
         [ngStyle]="{

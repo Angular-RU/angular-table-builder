@@ -4,11 +4,9 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChild,
-    ElementRef,
     Input,
     NgZone,
     OnInit,
-    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { FilterableService } from '../../services/filterable/filterable.service';
@@ -28,15 +26,11 @@ export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> impleme
     @Input() public width: number = 300;
     @Input() public height: number = null;
     @Input('max-height') public maxHeight: number = null;
-    public closeTime: number = 150;
     public readonly leftX: number = 10;
     public readonly topY: number = 50;
 
     @ContentChild(NgxFilterDirective, { static: false })
     public filter: NgxFilterDirective;
-
-    @ViewChild('targetElement', { static: false })
-    protected targetElement: ElementRef<HTMLDivElement>;
 
     constructor(
         private readonly filterable: FilterableService,
@@ -56,10 +50,8 @@ export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> impleme
         this.filterable.closeFilter();
     }
 
-    public close(event?: MouseEvent): void {
-        if (event) {
-            event.preventDefault();
-        }
+    public close(event: MouseEvent): void {
+        this.closeFilter();
     }
 
     public ngOnInit(): void {

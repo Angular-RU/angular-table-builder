@@ -3,11 +3,9 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
     Input,
     NgZone,
     OnInit,
-    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -28,10 +26,6 @@ export class NgxContextMenuComponent extends ModalViewLayer<ContextMenuState> im
     @Input() public width: number = 300;
     @Input() public height: number = 300;
     @Input('max-height') public maxHeight: number = 400;
-    public closeTime: number = 0;
-
-    @ViewChild('targetElement', { static: false })
-    protected targetElement: ElementRef<HTMLDivElement>;
 
     constructor(
         private readonly contextMenu: ContextMenuService,

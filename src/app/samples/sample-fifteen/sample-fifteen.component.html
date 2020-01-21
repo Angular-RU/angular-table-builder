@@ -3,6 +3,6 @@
     <button class="show-simple" mat-raised-button>show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder [source]="data" (schemaChanges)="updatedSchema($event)">
+<ngx-table-builder [source]="data" (schemaChanges)="updatedSchema($event)" [row-height]="40" [column-width]="100">
     <ngx-options [draggable]="true"></ngx-options>
 </ngx-table-builder>

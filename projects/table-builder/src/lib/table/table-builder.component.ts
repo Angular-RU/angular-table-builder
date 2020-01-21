@@ -31,7 +31,7 @@ import {
 } from './interfaces/table-builder.internal';
 import { TableBuilderApiImpl } from './table-builder.api';
 import { NGX_ANIMATION } from './animations/fade.animation';
-import { ColumnsSchema, TableRow, ViewPortInfo } from './interfaces/table-builder.external';
+import { ColumnsSchema } from './interfaces/table-builder.external';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { SortableService } from './services/sortable/sortable.service';
@@ -83,9 +83,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public afterViewInitDone: boolean = false;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-    private checkedTaskId: number = null;
-    private frameId: number;
-    private scrolledId: number;
+    private timeoutCheckedTaskId: number = null;
+    private frameViewportSliceId: number;
+    private timeoutScrolledId: number;
+    private timeoutViewCheckedId: number;
+    private frameCalculateViewportId: number;
 
     constructor(
         public readonly selection: SelectionService,
@@ -117,7 +119,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private get needUpdateViewport(): boolean {
-        return this.viewPortInfo.prevScrollOffsetTop !== this.scrollOffsetTop && !!this.source && !!this.viewportHeight;
+        return this.viewPortInfo.prevScrollOffsetTop !== this.scrollOffsetTop;
     }
 
     private get viewportHeight(): number {
@@ -214,6 +216,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnDestroy(): void {
+        window.clearTimeout(this.timeoutScrolledId);
+        window.clearTimeout(this.timeoutViewCheckedId);
+        window.clearTimeout(this.timeoutCheckedTaskId);
+        window.cancelAnimationFrame(this.frameViewportSliceId);
+        window.cancelAnimationFrame(this.frameCalculateViewportId);
         this.templateParser.schema = null;
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
@@ -286,7 +293,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         });
     }
 
-    protected calculateViewport(event?: Event): void {
+    protected calculateViewport(): void {
+        if (!this.source || !this.viewportHeight) {
+            return;
+        }
+
         const isDownMoved: boolean = this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
 
         this.viewPortInfo.prevScrollOffsetTop = this.scrollOffsetTop;
@@ -299,43 +310,56 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
             : start - this.viewPortInfo.startIndex;
 
-        if (isNaN(this.viewPortInfo.startIndex)) {
-            this.setViewportInfo(start, end);
+        if (typeof this.viewPortInfo.startIndex !== 'number') {
+            this.updateViewportInfo(start, end);
             this.idleDetectChanges();
         } else if (bufferOffset <= this.bufferMinOffset && bufferOffset >= 0) {
             let newStart = start - this.buffer;
             newStart = newStart >= 0 ? newStart : 0;
-            this.setViewportInfo(newStart, end);
+            this.updateViewportInfo(newStart, end);
             this.idleDetectChanges();
         } else if (bufferOffset < 0) {
-            this.setViewportInfo(start, end);
+            this.updateViewportInfo(start, end);
             detectChanges(this.cd);
         }
 
         this.viewPortInfo.bufferOffset = bufferOffset;
+    }
 
-        if (event) {
-            event.preventDefault();
-        }
+    protected updateViewportInfo(start: number, end: number): void {
+        this.viewPortInfo.startIndex = start;
+        this.viewPortInfo.endIndex = end;
+
+        // lazy slicing
+        this.ngZone.runOutsideAngular(() => {
+            window.cancelAnimationFrame(this.frameViewportSliceId);
+            this.frameViewportSliceId = window.requestAnimationFrame(() => {
+                this.viewPortItems = this.source.slice(start, end);
+                detectChanges(this.cd);
+            });
+        });
+
+        this.viewPortInfo.scrollTop = start * this.clientRowHeight;
     }
 
     private afterViewInitChecked(): void {
-        this.ngZone.runOutsideAngular(() =>
-            window.setTimeout(() => {
-                this.afterViewInitDone = true;
-                this.listenScroll();
-                this.calculateViewport();
-                if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
-                    this.emitRendered();
-                    detectChanges(this.cd);
-                }
-            }, MACRO_TIME)
+        this.ngZone.runOutsideAngular(
+            () =>
+                (this.timeoutViewCheckedId = window.setTimeout(() => {
+                    this.afterViewInitDone = true;
+                    this.listenScroll();
+                    this.calculateViewport();
+                    if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
+                        this.emitRendered();
+                        detectChanges(this.cd);
+                    }
+                }, MACRO_TIME))
         );
     }
 
     private listenScroll(): void {
         this.ngZone.runOutsideAngular(() => {
-            fromEvent(this.scrollContainer.nativeElement, 'scroll')
+            fromEvent(this.scrollContainer.nativeElement, 'scroll', { passive: true })
                 .pipe(
                     catchError(() => {
                         this.calculateViewport();
@@ -343,28 +367,27 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                     }),
                     takeUntil(this.destroy$)
                 )
-                .subscribe((event: Event) => {
-                    this.viewPortInfo.isScrolling = true;
-                    window.cancelAnimationFrame(this.frameId);
-                    clearTimeout(this.scrolledId);
-
-                    this.scrolledId = window.setTimeout(() => {
-                        this.viewPortInfo.isScrolling = false;
-                        detectChanges(this.cd);
-                    }, TIME_RELOAD);
-
-                    this.frameId = window.requestAnimationFrame(
-                        () => this.needUpdateViewport && this.calculateViewport(event)
-                    );
-                });
+                .subscribe(() => this.scrollHandler());
         });
     }
 
-    private setViewportInfo(start: number, end: number): void {
-        this.viewPortInfo.startIndex = start;
-        this.viewPortInfo.endIndex = end;
-        this.viewPortItems = this.sourceRef.slice(start, end);
-        this.viewPortInfo.scrollTop = start * this.clientRowHeight;
+    private scrollHandler(): void {
+        this.viewPortInfo.isScrolling = true;
+
+        this.ngZone.runOutsideAngular(() => {
+            window.cancelAnimationFrame(this.frameCalculateViewportId);
+            window.clearTimeout(this.timeoutScrolledId);
+            this.timeoutScrolledId = window.setTimeout(() => {
+                this.viewPortInfo.isScrolling = false;
+                this.idleDetectChanges();
+            }, TIME_RELOAD);
+        });
+
+        if (this.needUpdateViewport) {
+            this.ngZone.runOutsideAngular(() => {
+                this.frameCalculateViewportId = window.requestAnimationFrame(() => this.calculateViewport());
+            });
+        }
     }
 
     private getOffsetVisibleEndIndex(): number {
@@ -449,8 +472,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private viewForceRefresh(): void {
         this.ngZone.runOutsideAngular(() => {
-            window.clearTimeout(this.checkedTaskId);
-            this.checkedTaskId = window.setTimeout(() => {
+            window.clearTimeout(this.timeoutCheckedTaskId);
+            this.timeoutCheckedTaskId = window.setTimeout(() => {
                 this.forcedRefresh = true;
                 this.markTemplateContentCheck();
                 this.render();
@@ -530,6 +553,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @see TableBuilderComponent#isRendered
      */
     private emitRendered(): void {
+        this.tableViewportChecked = true;
         this.isRendered = true;
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);

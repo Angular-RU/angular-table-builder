@@ -1,10 +1,12 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     Input,
     NgZone,
     OnDestroy,
+    OnInit,
     ViewEncapsulation
 } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
@@ -12,6 +14,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
 import { trim } from '../../operators/trim';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+import { detectChanges } from '../../operators/detect-changes';
 
 @Component({
     selector: 'table-cell',
@@ -19,7 +22,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent implements OnDestroy {
+export class TableCellComponent implements AfterViewInit, OnInit, OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -27,13 +30,15 @@ export class TableCellComponent implements OnDestroy {
     @Input('column-schema') public columnSchema: ColumnsSchema;
     @Input('enable-filtering') public enableFiltering: boolean;
     @Input('viewport-info') public viewportInfo: ViewPortInfo;
+    public loaded: boolean = null;
     public contextType: typeof ImplicitContext = ImplicitContext;
     private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
-    private readonly timeIdle: number = 700;
+    private readonly timeIdle: number = 1000;
     private nodeSubscription: Subscription;
     private closeElemSub: Subscription;
     private frameId: number = null;
+    private loadedId: number = null;
 
     constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {
         this.cd.reattach();
@@ -55,7 +60,24 @@ export class TableCellComponent implements OnDestroy {
         element && element.parentNode && element.parentNode.removeChild(element);
     }
 
+    public ngOnInit() {
+        if (this.viewportInfo.bufferOffset < 0) {
+            this.loaded = true;
+            this.cd.markForCheck();
+        }
+    }
+
+    public ngAfterViewInit(): void {
+        if (!this.loaded) {
+            this.loadedId = window.requestAnimationFrame(() => {
+                this.loaded = true;
+                detectChanges(this.cd);
+            });
+        }
+    }
+
     public ngOnDestroy(): void {
+        window.cancelAnimationFrame(this.loadedId);
         window.clearTimeout(this.frameId);
     }
 
