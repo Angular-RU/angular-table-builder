@@ -1,10 +1,10 @@
-<ng-container *ngIf="loaded">
-    <div
-        #divElement
-        class="table-grid__cell--inner-content loaded"
-        (mouseenter)="mouseEnterCell(divElement, $event)"
-        (mouseleave)="mouseLeaveCell()"
-    >
+<div
+    #divElement
+    class="table-grid__cell--inner-content"
+    (mouseenter)="mouseEnterCell(divElement, $event)"
+    (mouseleave)="mouseLeaveCell()"
+>
+    <ng-template [ngIf]="loaded">
         <ng-template [ngIf]="columnSchema?.td?.template" [ngIfElse]="defaultTd">
             <ng-template
                 [ngTemplateOutlet]="columnSchema?.td?.template"
@@ -38,5 +38,5 @@
                 }}
             </ng-template>
         </ng-template>
-    </div>
-</ng-container>
+    </ng-template>
+</div>
