@@ -1,5 +1,5 @@
 import {
-    AfterContentInit,
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -21,7 +21,7 @@ import { detectChanges } from '../../operators/detect-changes';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent implements AfterContentInit, OnDestroy {
+export class TableCellComponent implements AfterViewInit, OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -57,13 +57,11 @@ export class TableCellComponent implements AfterContentInit, OnDestroy {
         return this.viewportInfo.isScrolling || !this.columnSchema.overflowTooltip;
     }
 
-    public ngAfterContentInit(): void {
-        if (!this.loaded) {
-            this.frameLoadedId = window.requestAnimationFrame(() => {
-                this.loaded = true;
-                detectChanges(this.cd);
-            });
-        }
+    public ngAfterViewInit(): void {
+        this.frameLoadedId = window.requestAnimationFrame(() => {
+            this.loaded = true;
+            detectChanges(this.cd);
+        });
     }
 
     public ngOnDestroy(): void {
@@ -118,6 +116,7 @@ export class TableCellComponent implements AfterContentInit, OnDestroy {
 
         if (empty) {
             this.removeElement();
+            return;
         }
 
         const elem: HTMLDivElement = document.createElement('div');
@@ -151,7 +150,10 @@ export class TableCellComponent implements AfterContentInit, OnDestroy {
             this.overflowContentElem.classList.remove('visible');
             this.ngZone.runOutsideAngular(() => {
                 window.setTimeout(() => {
-                    this.overflowContentElem.parentNode.removeChild(this.overflowContentElem);
+                    if (this.overflowContentElem) {
+                        this.overflowContentElem.parentNode.removeChild(this.overflowContentElem);
+                    }
+
                     this.nodeSubscription && this.nodeSubscription.unsubscribe();
                     this.closeElemSub && this.closeElemSub.unsubscribe();
                 }, TableBuilderOptionsImpl.TIME_IDLE);
