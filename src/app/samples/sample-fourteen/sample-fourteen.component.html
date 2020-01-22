@@ -3,7 +3,7 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder class="filter-example" #table [source]="data" [enable-filtering]="true" [row-height]="35">
+<ngx-table-builder class="filter-example" #table [source]="data" [enable-filtering]="true" [row-height]="40">
     <ngx-options [sortable]="true" [filterable]="true" [resizable]="true" [draggable]="true"></ngx-options>
     <ngx-source-null>Loading...</ngx-source-null>
     <ngx-empty>Not found</ngx-empty>
@@ -32,6 +32,20 @@
             </mat-form-field>
         </div>
     </ngx-header>
+
+    <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key">
+        <ng-template ngx-td [nowrap]="false" let-cell>
+            <a onclick="javascript:void(0)">
+                <ngx-filter-viewer [key]="key" [text]="cell"></ngx-filter-viewer>
+            </a>
+        </ng-template>
+    </ngx-column>
+
+    <ngx-column custom-key key="action" sticky-end width="50" [overflow-tooltip]="false" empty-head>
+        <ng-template ngx-td>
+            <mat-icon>all_inbox</mat-icon>
+        </ng-template>
+    </ngx-column>
 
     <ngx-filter #filter>
         <div class="my-filter">

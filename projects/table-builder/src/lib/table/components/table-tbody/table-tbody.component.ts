@@ -31,6 +31,7 @@ import { getDeepValue } from '../../operators/deep-value';
 export class TableTbodyComponent {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
+    @Input() public isRendered: boolean;
     @Input('offset-top') public offsetTop: number;
     @Input('primary-key') public primaryKey: string;
     @Input() public recalculated: RecalculatedStatus;

@@ -80,9 +80,17 @@
 }
 
 .table-grid__cell--inner-content {
-    opacity: 0;
-    visibility: hidden;
     will-change: opacity;
+    animation: contentVisible 1s ease-in-out;
+}
+
+@keyframes contentVisible {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .table-grid__scroll-offset {
@@ -92,8 +100,7 @@
     }
 }
 
-.table-grid__scroll-offset .table-grid__cell--inner-content,
-.loaded {
+.table-grid__scroll-offset .table-grid__cell--inner-content {
     visibility: visible;
     opacity: 1;
 }

@@ -21,6 +21,10 @@ declare const hljs: Any;
     styles: [
         // tslint:disable-next-line:component-max-inline-declarations
         `
+            .filter-example .table-grid__column {
+                text-transform: uppercase;
+            }
+
             .my-filter {
                 padding: 10px 5px 10px 5px;
             }
@@ -50,17 +54,9 @@ declare const hljs: Any;
                 font-size: 12px;
             }
 
-            .filter-example .table-grid__cell:not(.table-grid__header-cell) {
-                padding: 8px;
-            }
-            .filter-example .table-grid__cell--content:not(.table-grid__header-cell) {
-                margin: 0;
-            }
-
             .filter-example .table-grid__header-cell {
                 min-height: 50px;
                 max-height: 50px;
-                padding: 8px;
             }
         `
     ],

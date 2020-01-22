@@ -51,9 +51,9 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = 20;
+    @Input() public buffer: number = 25;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('buffer-min-offset') public bufferMinOffset: number = 4;
+    @Input('buffer-min-offset') public bufferMinOffset: number = 5;
     @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
