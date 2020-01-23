@@ -343,7 +343,7 @@ export abstract class TableBuilderApiImpl
 
     protected forceCalculateViewport(): void {
         this.updateViewportInfo(this.viewPortInfo.startIndex, this.viewPortInfo.endIndex);
-        detectChanges(this.cd);
+        window.setTimeout(() => this.app.tick(), MACRO_TIME)
     }
 
     /**

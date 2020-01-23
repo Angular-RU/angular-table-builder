@@ -81,16 +81,6 @@
 
 .table-grid__cell--inner-content {
     will-change: opacity;
-    animation: contentVisible 1s ease-in-out;
-}
-
-@keyframes contentVisible {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
 }
 
 .table-grid__scroll-offset {
