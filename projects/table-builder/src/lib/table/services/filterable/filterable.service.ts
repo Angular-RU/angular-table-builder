@@ -17,8 +17,12 @@ import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
 
 const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
+interface FilterableInterface {
+    reset(): void;
+}
+
 @Injectable()
-export class FilterableService {
+export class FilterableService implements FilterableInterface {
     public filterValue: string = null;
     public definition: KeyMap<string> = {};
     public state: FilterStateEvent = new FilterStateEvent();
@@ -36,6 +40,17 @@ export class FilterableService {
         private readonly ngZone: NgZone,
         private readonly app: ApplicationRef
     ) {}
+
+    public reset(): void {
+        this.definition = {};
+        this.filterValue = null;
+        this.state = new FilterStateEvent();
+        this.filterTypeDefinition = {};
+        this.filtering = false;
+        this.previousFiltering = false;
+        this.events.next({ value: null, type: null });
+        window.setTimeout(() => this.app.tick());
+    }
 
     public get globalFilterValue(): string {
         return this.filterValue ? String(this.filterValue).trim() : null;
