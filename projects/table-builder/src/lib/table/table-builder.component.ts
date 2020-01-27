@@ -147,7 +147,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public recalculateHeight(): void {
         this.recalculated = { recalculateHeight: true };
-        detectChanges(this.cd);
+        this.forceCalculateViewport();
     }
 
     public ngOnChanges(changes: SimpleChanges = {}): void {
@@ -191,9 +191,17 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public ngAfterViewInit(): void {
         this.listenTemplateChanges();
+        this.listenFilterResetChanges();
         this.listenSelectionChanges();
         this.recheckTemplateChanges();
         this.afterViewInitChecked();
+    }
+
+    private listenFilterResetChanges(): void {
+        this.filterable.resetEvents.pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.source = this.originalSource;
+            this.calculateViewport(true);
+        });
     }
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
@@ -293,7 +301,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         });
     }
 
-    protected calculateViewport(): void {
+    protected calculateViewport(force?: boolean): void {
         if (!this.source || !this.viewportHeight) {
             return;
         }
@@ -318,7 +326,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             newStart = newStart >= 0 ? newStart : 0;
             this.updateViewportInfo(newStart, end);
             this.idleDetectChanges();
-        } else if (bufferOffset < 0) {
+        } else if (bufferOffset < 0 || force) {
             this.updateViewportInfo(start, end);
             detectChanges(this.cd);
         }
@@ -334,7 +342,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.ngZone.runOutsideAngular(() => {
             window.cancelAnimationFrame(this.frameViewportSliceId);
             this.frameViewportSliceId = window.requestAnimationFrame(() => {
-                this.viewPortItems = this.source.slice(start, end);
+                this.viewPortItems = this.sourceRef.slice(start, end);
                 detectChanges(this.cd);
             });
         });
@@ -348,7 +356,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 (this.timeoutViewCheckedId = window.setTimeout(() => {
                     this.afterViewInitDone = true;
                     this.listenScroll();
-                    this.calculateViewport();
                     if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
                         this.emitRendered();
                         detectChanges(this.cd);

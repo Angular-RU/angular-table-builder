@@ -61,6 +61,8 @@
 
 .cdk-drag-preview .scrollable-viewport-content {
     top: 0 !important;
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .scrollable-viewport-content {

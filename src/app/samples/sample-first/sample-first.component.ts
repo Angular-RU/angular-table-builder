@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/ng-table-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
@@ -9,7 +9,7 @@ import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
     templateUrl: './sample-first.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SampleFirstComponent implements OnInit {
+export class SampleFirstComponent implements OnInit, OnDestroy {
     public width: string = '100%';
     public height: number;
     public rowHeight: string;
@@ -17,11 +17,29 @@ export class SampleFirstComponent implements OnInit {
     public dataSize: string = '10x5';
     public loading: boolean = false;
     public simple: TableRow[] = [];
+    public regenerate: boolean = true;
+    private idInterval: number = null;
 
-    constructor(private readonly cd: ChangeDetectorRef, public readonly dialog: MatDialog) {}
+    constructor(
+        private readonly cd: ChangeDetectorRef,
+        public readonly dialog: MatDialog,
+        private readonly ngZone: NgZone
+    ) {}
 
     public ngOnInit(): void {
         this.updateTable();
+
+        this.ngZone.runOutsideAngular(() => {
+            this.idInterval = window.setInterval(() => {
+                if (this.regenerate) {
+                    this.updateTable();
+                }
+            }, 14500);
+        });
+    }
+
+    public ngOnDestroy(): void {
+        window.clearInterval(this.idInterval);
     }
 
     public showSample(): void {

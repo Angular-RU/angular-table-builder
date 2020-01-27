@@ -19,17 +19,17 @@ export class MocksGenerator {
         return column;
     }
 
-    public static generator(rowsNumber: number, colsNumber: number): Promise<TableRow[]> {
+    public static generator(rowsNumber: number, colsNumber: number, startIndex: number = 0): Promise<TableRow[]> {
         return new WebWorkerThreadService().run<TableRow[], Any>(
             (data: Any): TableRow[] => {
                 class FakeGenerator {
-                    public static generateTable(rows: number, cols: number): TableRow[] {
+                    public static generateTable(rows: number, cols: number, start: number): TableRow[] {
                         return new Array(rows).fill(0).map((_: unknown, index: number) => {
-                            const idx: number = index + 1;
+                            const idx: number = start + index + 1;
 
                             const baseRow: TableRow = {
                                 id: idx,
-                                reverseId: Math.round(Math.random() * rows),
+                                reverseId: Math.round(Math.random() + rows * 512 + cols + start * 10) * 1024,
                                 name: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
                                 description: 'Random - ' + ((Math.random() + 1) * 100).toFixed(0) + '__' + idx,
                                 guid: '5cdae5b2ba0a57f709b72142' + '__' + idx
@@ -54,9 +54,9 @@ export class MocksGenerator {
                     }
                 }
 
-                return FakeGenerator.generateTable(data.rows, data.cols);
+                return FakeGenerator.generateTable(data.rows, data.cols, data.start);
             },
-            { rows: rowsNumber, cols: colsNumber }
+            { rows: rowsNumber, cols: colsNumber, start: startIndex }
         );
     }
 

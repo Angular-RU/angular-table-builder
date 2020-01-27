@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -13,7 +12,6 @@ import { fromEvent, Subscription } from 'rxjs';
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
 import { trim } from '../../operators/trim';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { detectChanges } from '../../operators/detect-changes';
 
 @Component({
     selector: 'table-cell',
@@ -21,7 +19,7 @@ import { detectChanges } from '../../operators/detect-changes';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent implements AfterViewInit, OnDestroy {
+export class TableCellComponent implements OnDestroy {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -30,7 +28,6 @@ export class TableCellComponent implements AfterViewInit, OnDestroy {
     @Input('column-schema') public columnSchema: ColumnsSchema;
     @Input('enable-filtering') public enableFiltering: boolean;
     @Input('viewport-info') public viewportInfo: ViewPortInfo;
-    public loaded: boolean = null;
     public contextType: typeof ImplicitContext = ImplicitContext;
     private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
@@ -55,13 +52,6 @@ export class TableCellComponent implements AfterViewInit, OnDestroy {
 
     private get disableTooltip(): boolean {
         return this.viewportInfo.isScrolling || !this.columnSchema.overflowTooltip;
-    }
-
-    public ngAfterViewInit(): void {
-        this.frameLoadedId = window.requestAnimationFrame(() => {
-            this.loaded = true;
-            detectChanges(this.cd);
-        });
     }
 
     public ngOnDestroy(): void {

@@ -51,9 +51,9 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = 25;
+    @Input() public buffer: number = 10;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('buffer-min-offset') public bufferMinOffset: number = 5;
+    @Input('buffer-min-offset') public bufferMinOffset: number = 2;
     @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -271,7 +271,6 @@ export abstract class TableBuilderApiImpl
             throw new Error('You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />');
         }
 
-        this.filterable.changeFilteringStatus();
         this.ngZone.runOutsideAngular(() => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {
@@ -331,19 +330,18 @@ export abstract class TableBuilderApiImpl
         this.idleDetectChanges();
     }
 
-    protected abstract calculateViewport(event?: Event): void;
+    protected abstract calculateViewport(force?: boolean): void;
 
     protected abstract updateViewportInfo(start: number, end: number): void;
 
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.forceCalculateViewport();
+        this.calculateViewport(true);
     }
 
     protected forceCalculateViewport(): void {
         this.updateViewportInfo(this.viewPortInfo.startIndex, this.viewPortInfo.endIndex);
-        window.setTimeout(() => this.app.tick(), MACRO_TIME)
     }
 
     /**

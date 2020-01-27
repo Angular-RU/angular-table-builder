@@ -124,6 +124,11 @@ pre {
 .show-simple {
     position: absolute !important;
     right: 0;
+    display: flex;
+}
+
+.show-simple button {
+    margin-left: 10px;
 }
 
 .mat-checkbox-flat {
@@ -170,6 +175,11 @@ mat-form-field.mat-form-field.mat-form-field-appearance-outline
 
 .content-visible {
     min-height: 700px;
+}
+
+.regenerate {
+    margin-left: 10px;
+    margin-right: 20px;
 }
 
 #main-column {

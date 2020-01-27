@@ -1,6 +1,9 @@
 <mat-toolbar class="simple-toolbar">
     <span>Example filters</span>
-    <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
+    <div class="show-simple">
+        <button mat-raised-button (click)="clearFilter()">clear filter</button>
+        <button mat-raised-button (click)="showSample()">show code sample</button>
+    </div>
 </mat-toolbar>
 
 <ngx-table-builder class="filter-example" #table [source]="data" [enable-filtering]="true" [row-height]="40">

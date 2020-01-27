@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    NgZone,
+    OnDestroy,
+    OnInit
+} from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { shallowUpdateRow, TableRow } from '@angular-ru/ng-table-builder';
 
@@ -59,12 +67,31 @@ const COLORS: string[] = [
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SampleEightComponent implements OnInit, AfterViewInit {
+export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
     public data: TableRow[];
+    public regenerate: boolean = true;
+    private idInterval: number = null;
 
-    constructor(private readonly cd: ChangeDetectorRef) {}
+    constructor(private readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {}
 
     public ngOnInit(): void {
+        this.updateTable();
+
+        this.ngZone.runOutsideAngular(() => {
+            this.idInterval = window.setInterval(() => {
+                if (this.regenerate) {
+                    this.updateTable();
+                    this.cd.detectChanges();
+                }
+            }, 14500);
+        });
+    }
+
+    public ngOnDestroy(): void {
+        window.clearInterval(this.idInterval);
+    }
+
+    private updateTable(): void {
         this.data = new Array(1000).fill(0).map((_: TableRow, index: number) => ({
             id: index,
             symbol: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
@@ -93,9 +120,9 @@ export class SampleEightComponent implements OnInit, AfterViewInit {
             lastName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
             dateOfBirth: 1985,
             spokenLanguages: {
-                native: 'English',
-                fluent: 'Spanish',
-                intermediate: 'Chinese'
+                native: 'English' + Math.round(Math.random() * 100).toString(),
+                fluent: 'Spanish' + Math.round(Math.random() * 100).toString(),
+                intermediate: 'Chinese' + Math.round(Math.random() * 100).toString()
             }
         }));
     }
