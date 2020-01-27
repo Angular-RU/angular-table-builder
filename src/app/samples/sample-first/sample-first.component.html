@@ -46,6 +46,10 @@
             </label>
         </mat-form-field>
 
+        <mat-checkbox class="regenerate" [(ngModel)]="regenerate" [ngModelOptions]="{ standalone: true }">
+            Auto regenerate (15sec)
+        </mat-checkbox>
+
         <button mat-raised-button (click)="showSample()">show code sample</button>
     </form>
 </div>

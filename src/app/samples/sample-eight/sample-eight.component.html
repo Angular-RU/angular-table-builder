@@ -1,5 +1,9 @@
 <mat-toolbar class="simple-toolbar">
     <span>Example dynamic changes</span>
+
+    <mat-checkbox class="regenerate" [(ngModel)]="regenerate" [ngModelOptions]="{ standalone: true }">
+        Auto regenerate (15sec)
+    </mat-checkbox>
 </mat-toolbar>
 
 <style>

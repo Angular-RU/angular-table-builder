@@ -4,10 +4,11 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/ng-table-builder';
+import { TableBuilderComponent, TableRow } from '@angular-ru/ng-table-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
@@ -64,6 +65,9 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFourteenComponent implements OnInit, AfterViewInit {
+    @ViewChild('table', { static: false })
+    public table: TableBuilderComponent;
+
     public data: TableRow[];
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
@@ -78,6 +82,10 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
+    }
+
+    public clearFilter(): void {
+        this.table.filterable.reset();
     }
 
     public showSample(): void {

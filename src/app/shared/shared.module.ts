@@ -14,17 +14,18 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableBuilderModule } from '@angular-ru/ng-table-builder';
 import { CodeDialogComponent } from './dialog/code-dialog.component';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material';
+import { DialogTemplateComponent } from './dialog-template/dialog-template.component';
 
 @NgModule({
-    imports: [TableBuilderModule.forRoot(), CommonModule, MatButtonModule],
-    entryComponents: [CodeDialogComponent],
-    declarations: [CodeDialogComponent],
+  imports: [TableBuilderModule.forRoot(), CommonModule, MatButtonModule, FormsModule, MatInputModule, ReactiveFormsModule],
+    entryComponents: [CodeDialogComponent, DialogTemplateComponent],
+    declarations: [CodeDialogComponent, DialogTemplateComponent],
     exports: [
         FormsModule,
         MatButtonModule,

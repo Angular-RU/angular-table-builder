@@ -29,6 +29,7 @@ export class FilterableService implements FilterableInterface {
     public types: KeyMap = TableFilterType;
     public readonly filterOpenEvents: Subject<void> = new Subject();
     public readonly events: Subject<FilterEvent> = new ReplaySubject();
+    public readonly resetEvents: Subject<void> = new Subject<void>();
     public filterType: TableFilterType;
     public filterTypeDefinition: KeyMap<TableFilterType> = {};
     public filtering: boolean = false;
@@ -49,7 +50,7 @@ export class FilterableService implements FilterableInterface {
         this.filtering = false;
         this.previousFiltering = false;
         this.events.next({ value: null, type: null });
-        window.setTimeout(() => this.app.tick());
+        this.resetEvents.next();
     }
 
     public get globalFilterValue(): string {
@@ -64,7 +65,6 @@ export class FilterableService implements FilterableInterface {
         }
 
         this.previousFiltering = this.filtering;
-        this.filterOpenEvents.next();
     }
 
     public get filterValueExist(): boolean {

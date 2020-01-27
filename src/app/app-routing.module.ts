@@ -30,6 +30,13 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                                 import('./samples/sample-first/sample-first.module').then((m) => m.SampleFirstModule)
                         },
                         {
+                            path: 'first-second',
+                            loadChildren: () =>
+                                import('./samples/sample-first-second/sample-first-second.module').then(
+                                    (m) => m.SampleFirstSecondModule
+                                )
+                        },
+                        {
                             path: 'second',
                             loadChildren: () =>
                                 import('./samples/sample-second/sample-second.module').then(
