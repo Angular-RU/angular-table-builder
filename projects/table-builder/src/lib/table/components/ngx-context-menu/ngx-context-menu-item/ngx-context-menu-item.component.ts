@@ -48,7 +48,7 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
         private readonly ngZone: NgZone
     ) {}
 
-    public get state(): ContextMenuState | null {
+    public get state(): ContextMenuState {
         return this.contextMenu.state;
     }
 
