@@ -127,7 +127,7 @@
     <div *ngIf="isFrozenView" class="freeze"></div>
 </div>
 
-<ng-template [ngIf]="contextMenuTemplate && contextMenu.state.opened">
+<ng-template [ngIf]="contextMenuTemplate && contextMenu.state?.opened">
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
 

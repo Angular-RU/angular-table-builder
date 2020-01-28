@@ -48,10 +48,10 @@ export class SampleThirteenComponent implements AfterViewInit {
     }
 
     public rowOnClick(event: TableEvent): void {
-        this.toast.success(JSON.stringify(event, null, 4), 'OnClick', { timeOut: 2000, onActivateTick: true });
+        this.toast.success(JSON.stringify(event, null, 4), 'OnClick', { timeOut: 2000 });
     }
 
     public rowDblClick(event: TableEvent): void {
-        this.toast.success(JSON.stringify(event, null, 4), 'DblClick', { timeOut: 2000, onActivateTick: true });
+        this.toast.success(JSON.stringify(event, null, 4), 'DblClick', { timeOut: 2000 });
     }
 }

@@ -13,6 +13,8 @@ import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-c
 import { detectChanges } from '../../operators/detect-changes';
 import { getDeepValue } from '../../operators/deep-value';
 
+const SELECTION_DELAY: number = 100;
+
 @Component({
     selector: 'table-tbody',
     templateUrl: './table-tbody.component.html',
@@ -88,7 +90,7 @@ export class TableTbodyComponent {
                     this.selection.selectRow(row, event, this.source);
                     event.preventDefault();
                     detectChanges(this.cd);
-                });
+                }, SELECTION_DELAY);
             }
         });
 

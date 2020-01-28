@@ -37,7 +37,7 @@ export class NgxContextMenuComponent extends ModalViewLayer<ContextMenuState> im
         super(cd, app, utils, ngZone);
     }
 
-    public get state(): Partial<ContextMenuState> {
+    public get state(): ContextMenuState {
         return this.contextMenu.state;
     }
 

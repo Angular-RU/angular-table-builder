@@ -7,7 +7,7 @@ export class ContextMenuState {
     public item: Any = null;
     public value: Any = null;
 
-    constructor(state: Partial<ContextMenuState> = null) {
+    constructor(state: ContextMenuState | null = null) {
         if (state) {
             this.opened = state.opened;
             this.position = state.position;
