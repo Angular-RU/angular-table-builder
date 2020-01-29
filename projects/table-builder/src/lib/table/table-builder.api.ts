@@ -267,13 +267,15 @@ export abstract class TableBuilderApiImpl
     }
 
     public filter(): void {
-        if (!this.enableFiltering) {
-            throw new Error('You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />');
-        }
-
         this.ngZone.runOutsideAngular(() => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout(() => {
+                if (!this.enableFiltering) {
+                    throw new Error(
+                        'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
+                    );
+                }
+
                 this.sortAndFilter().then(() => this.reCheckDefinitions());
             }, MACRO_TIME);
         });
@@ -337,7 +339,7 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.calculateViewport(true);
+        this.calculateViewport();
     }
 
     protected forceCalculateViewport(): void {

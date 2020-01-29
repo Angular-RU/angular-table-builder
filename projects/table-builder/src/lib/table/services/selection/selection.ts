@@ -10,10 +10,14 @@ export class SelectionMap {
     }
 
     public generateImmutableEntries(): void {
-        this.entries = Array.from(this.map.entries()).reduce(
-            (main: KeyMap<boolean>, [key, value]: [RowId, boolean]) => ({ ...main, [key]: value }),
-            {}
-        );
+        const arrayBuffer: [RowId, boolean][] = Array.from(this.map.entries());
+        const newEntries: KeyMap<boolean> = {};
+
+        arrayBuffer.forEach(([key, value]: [RowId, boolean]) => {
+            newEntries[key] = value;
+        });
+
+        this.entries = newEntries;
     }
 
     public hasValue(): boolean {

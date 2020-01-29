@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -12,6 +13,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
 import { trim } from '../../operators/trim';
 import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+import { detectChanges } from '../../operators/detect-changes';
 
 @Component({
     selector: 'table-cell',
@@ -19,7 +21,7 @@ import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class TableCellComponent implements OnDestroy {
+export class TableCellComponent implements OnDestroy, AfterViewInit {
     @Input() public item: TableRow;
     @Input() public index: number;
     @Input() public parent: HTMLDivElement;
@@ -29,6 +31,7 @@ export class TableCellComponent implements OnDestroy {
     @Input('enable-filtering') public enableFiltering: boolean;
     @Input('viewport-info') public viewportInfo: ViewPortInfo;
     public contextType: typeof ImplicitContext = ImplicitContext;
+    public loaded: boolean;
     private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
     private readonly timeIdle: number = 1500;
@@ -40,6 +43,15 @@ export class TableCellComponent implements OnDestroy {
 
     constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {
         this.cd.reattach();
+    }
+
+    public ngAfterViewInit(): void {
+        this.ngZone.runOutsideAngular(() => {
+            this.frameLoadedId = window.requestAnimationFrame(() => {
+                this.loaded = true;
+                detectChanges(this.cd);
+            });
+        });
     }
 
     private get overflowContentElem(): HTMLDivElement {

@@ -197,13 +197,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.afterViewInitChecked();
     }
 
-    private listenFilterResetChanges(): void {
-        this.filterable.resetEvents.pipe(takeUntil(this.destroy$)).subscribe(() => {
-            this.source = this.originalSource;
-            this.calculateViewport(true);
-        });
-    }
-
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
         const preview: HTMLElement = event.source._dragRef['_preview'];
         const head: HTMLElement = root.querySelector('table-thead');
@@ -306,6 +299,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             return;
         }
 
+        window.cancelAnimationFrame(this.frameViewportSliceId);
         const isDownMoved: boolean = this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
 
         this.viewPortInfo.prevScrollOffsetTop = this.scrollOffsetTop;
@@ -350,6 +344,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.viewPortInfo.scrollTop = start * this.clientRowHeight;
     }
 
+    private listenFilterResetChanges(): void {
+        this.filterable.resetEvents.pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.source = this.originalSource;
+            this.calculateViewport(true);
+        });
+    }
+
     private afterViewInitChecked(): void {
         this.ngZone.runOutsideAngular(
             () =>
@@ -386,7 +387,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             window.clearTimeout(this.timeoutScrolledId);
             this.timeoutScrolledId = window.setTimeout(() => {
                 this.viewPortInfo.isScrolling = false;
-                this.idleDetectChanges();
+                detectChanges(this.cd);
+                window.requestAnimationFrame(() => this.app.tick());
             }, TIME_RELOAD);
         });
 
@@ -467,12 +469,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         if (this.enableSelection) {
             this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
                 detectChanges(this.cd);
-                this.ngZone.runOutsideAngular(() =>
-                    window.requestAnimationFrame(() => {
-                        detectChanges(this.cd);
-                        this.app.tick();
-                    })
-                );
+                this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.app.tick()));
             });
         }
     }

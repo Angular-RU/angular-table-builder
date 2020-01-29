@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, ViewEncapsulation } from '@angular/core';
+import {
+    ApplicationRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    NgZone,
+    ViewEncapsulation
+} from '@angular/core';
 import {
     ColumnsSchema,
     TableClickEventEmitter,
@@ -53,6 +61,7 @@ export class TableTbodyComponent {
         public selection: SelectionService,
         public cd: ChangeDetectorRef,
         public contextMenu: ContextMenuService,
+        private readonly app: ApplicationRef,
         private readonly ngZone: NgZone
     ) {
         this.cd.reattach();
@@ -90,6 +99,7 @@ export class TableTbodyComponent {
                     this.selection.selectRow(row, event, this.source);
                     event.preventDefault();
                     detectChanges(this.cd);
+                    window.requestAnimationFrame(() => this.app.tick());
                 }, SELECTION_DELAY);
             }
         });

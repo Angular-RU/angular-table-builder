@@ -54,7 +54,7 @@ export class SelectionService implements OnDestroy {
     }
 
     public toggle(row: TableRow): void {
-        clearInterval(this.selectionTaskIdle);
+        this.ngZone.runOutsideAngular(() => window.clearInterval(this.selectionTaskIdle));
         this.selectionModel.toggle(this.getIdByRow(row), true);
         this.onChanges.next();
     }
