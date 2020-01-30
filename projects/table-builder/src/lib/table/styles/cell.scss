@@ -88,9 +88,11 @@
 
         &--disable {
             pointer-events: none;
-            * {
-                opacity: 0.5;
-            }
+        }
+
+        &--disable,
+        &--disable.table-grid__cell--strip {
+            background: #fbe4e3;
         }
 
         &--nowrap,
