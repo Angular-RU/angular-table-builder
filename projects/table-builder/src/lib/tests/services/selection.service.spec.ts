@@ -180,7 +180,7 @@ describe('[TEST]: Selection service', () => {
         expect(selection.selectionModel.entries).toEqual({ 1: true });
         expect(selection.selectionModel.isAll).toEqual(false);
 
-        selection.selectionModel.clear();
+        selection.reset();
         expect(selection.selectionModel.entries).toEqual({});
         expect(selection.selectionModel.isAll).toEqual(false);
 

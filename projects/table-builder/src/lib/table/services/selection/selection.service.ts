@@ -58,6 +58,12 @@ export class SelectionService implements OnDestroy {
         this.checkIsAllSelected(rows);
     }
 
+    public reset(): void {
+        this.selectionModel.clear();
+        this.range.clear();
+        this.onChanges.next();
+    }
+
     public toggle(row: TableRow): void {
         this.ngZone.runOutsideAngular(() => window.clearInterval(this.selectionTaskIdle));
         this.selectionModel.toggle(this.getIdByRow(row), row, true);
