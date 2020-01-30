@@ -47,11 +47,12 @@ export class SelectionService implements OnDestroy {
     public toggleAll(rows: TableRow[]): void {
         clearInterval(this.selectionTaskIdle);
 
-        const selectIsAll: boolean = rows.length === this.selectionModel.size;
-        if (!selectIsAll) {
-            rows.forEach((row: TableRow) => this.selectionModel.select(this.getIdByRow(row), row, false));
-        } else {
+        if (this.selectionModel.toggledAll) {
+            this.selectionModel.toggledAll = false;
             this.selectionModel.clear();
+        } else {
+            this.selectionModel.toggledAll = true;
+            rows.forEach((row: TableRow) => this.selectionModel.select(this.getIdByRow(row), row, false));
         }
 
         this.checkIsAllSelected(rows);
@@ -136,7 +137,7 @@ export class SelectionService implements OnDestroy {
 
     private singleSelect(row: TableRow, index: number): void {
         this.selectionModel.clear();
-        this.selectionModel.select(this.getIdByRow(row), row,true);
+        this.selectionModel.select(this.getIdByRow(row), row, true);
         this.range.clear();
         this.range.start = index;
     }

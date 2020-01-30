@@ -3,6 +3,7 @@ import { ProduceDisableFn, TableRow } from '../../interfaces/table-builder.exter
 
 export class SelectionMap {
     public isAll: boolean = false;
+    public toggledAll: boolean = false;
     public entries: KeyMap<boolean> = {};
     public produceDisableFn: ProduceDisableFn = null;
     private readonly map: Map<RowId, boolean> = new Map<RowId, boolean>();
