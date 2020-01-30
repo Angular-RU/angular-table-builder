@@ -45,7 +45,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     private static wrapSelectedHtml(finder: string): string {
-        return `<span style="background-color: #FFFF00; color: #000">${finder}</span>`;
+        return `<span style="background-color: #ffdd2d; color: #000">${finder}</span>`;
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
