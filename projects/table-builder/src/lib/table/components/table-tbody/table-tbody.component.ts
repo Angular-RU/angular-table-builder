@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {
     ColumnsSchema,
+    ProduceDisableFn,
     TableClickEventEmitter,
     TableEvent,
     TableRow,
@@ -54,6 +55,7 @@ export class TableTbodyComponent {
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
     @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
+    @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
 

@@ -23,6 +23,10 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
         });
     }
 
+    public disableFn(item: TableRow): boolean {
+        return item.id % 5 === 0;
+    }
+
     public ngAfterViewInit(): void {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);

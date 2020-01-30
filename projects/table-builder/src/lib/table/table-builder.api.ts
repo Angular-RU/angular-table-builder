@@ -21,7 +21,13 @@ import {
 
 import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
 import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
-import { ColumnsSchema, SimpleSchemaColumns, TableRow, ViewPortInfo } from './interfaces/table-builder.external';
+import {
+    ColumnsSchema,
+    ProduceDisableFn,
+    SimpleSchemaColumns,
+    TableRow,
+    ViewPortInfo
+} from './interfaces/table-builder.external';
 import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
@@ -65,6 +71,7 @@ export abstract class TableBuilderApiImpl
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('enable-filtering') public enableFiltering: boolean = false;
+    @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('schema-columns') public schemaColumns: SimpleSchemaColumns = [];
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();

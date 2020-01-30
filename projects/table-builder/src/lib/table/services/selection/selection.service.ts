@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 
 import { SelectionMap } from './selection';
 import { SelectionRange } from './selection-range';
-import { TableRow } from '../../interfaces/table-builder.external';
+import { ProduceDisableFn, TableRow } from '../../interfaces/table-builder.external';
 import { Fn, KeyMap, KeyType, PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
 import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
 
@@ -29,6 +29,10 @@ export class SelectionService implements OnDestroy {
         this.removeListenerByType(KeyType.KEYUP);
     }
 
+    public setProducerDisableFn(producer: ProduceDisableFn): void {
+        this.selectionModel.produceDisableFn = producer;
+    }
+
     public ngOnDestroy(): void {
         this.unListenShiftKey();
     }
@@ -45,7 +49,7 @@ export class SelectionService implements OnDestroy {
 
         const selectIsAll: boolean = rows.length === this.selectionModel.size;
         if (!selectIsAll) {
-            rows.forEach((row: TableRow) => this.selectionModel.select(this.getIdByRow(row), false));
+            rows.forEach((row: TableRow) => this.selectionModel.select(this.getIdByRow(row), row, false));
         } else {
             this.selectionModel.clear();
         }
@@ -55,7 +59,7 @@ export class SelectionService implements OnDestroy {
 
     public toggle(row: TableRow): void {
         this.ngZone.runOutsideAngular(() => window.clearInterval(this.selectionTaskIdle));
-        this.selectionModel.toggle(this.getIdByRow(row), true);
+        this.selectionModel.toggle(this.getIdByRow(row), row, true);
         this.onChanges.next();
     }
 
@@ -119,7 +123,7 @@ export class SelectionService implements OnDestroy {
         if (selectedRange) {
             const { start, end }: SelectionRange = this.range.sortKeys();
             for (let i: number = start; i <= end; ++i) {
-                this.selectionModel.select(this.getIdByRow(rows[i]), false);
+                this.selectionModel.select(this.getIdByRow(rows[i]), rows[i], false);
             }
         }
     }
@@ -127,12 +131,12 @@ export class SelectionService implements OnDestroy {
     private multipleSelectByCtrlKeydown(row: TableRow, index: number): void {
         this.range.clear();
         this.range.start = index;
-        this.selectionModel.toggle(this.getIdByRow(row), true);
+        this.selectionModel.toggle(this.getIdByRow(row), row, true);
     }
 
     private singleSelect(row: TableRow, index: number): void {
         this.selectionModel.clear();
-        this.selectionModel.select(this.getIdByRow(row), true);
+        this.selectionModel.select(this.getIdByRow(row), row,true);
         this.range.clear();
         this.range.start = index;
     }

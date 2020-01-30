@@ -27,21 +27,25 @@ describe('[TEST]: Selection service', () => {
         { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
     ];
 
-    (window as Any).addEventListener = jest.fn((type: string): void => {
-        if (type === 'keydown') {
-            listenKeydown = true;
-        } else if (type === 'keyup') {
-            listenKeyup = true;
+    (window as Any).addEventListener = jest.fn(
+        (type: string): void => {
+            if (type === 'keydown') {
+                listenKeydown = true;
+            } else if (type === 'keyup') {
+                listenKeyup = true;
+            }
         }
-    });
+    );
 
-    (window as Any).removeEventListener = jest.fn((type: string): void => {
-        if (type === 'keydown') {
-            listenKeydown = false;
-        } else if (type === 'keyup') {
-            listenKeyup = false;
+    (window as Any).removeEventListener = jest.fn(
+        (type: string): void => {
+            if (type === 'keydown') {
+                listenKeydown = false;
+            } else if (type === 'keyup') {
+                listenKeyup = false;
+            }
         }
-    });
+    );
 
     let selection: SelectionService;
     let utils: UtilsService;
@@ -194,14 +198,14 @@ describe('[TEST]: Selection service', () => {
         const id: RowId = 5;
 
         expect(selectionMap.hasValue()).toEqual(false);
-        selectionMap.select(id, true);
+        selectionMap.select(id, {}, true);
 
         expect(selectionMap.hasValue()).toEqual(true);
 
-        selectionMap.toggle(id, true);
+        selectionMap.toggle(id, {}, true);
         expect(selectionMap.entries).toEqual({});
 
-        selectionMap.toggle(id, true);
+        selectionMap.toggle(id, {}, true);
         expect(selectionMap.get(5)).toEqual(true);
         expect(selectionMap.entries).toEqual({ 5: true });
     });

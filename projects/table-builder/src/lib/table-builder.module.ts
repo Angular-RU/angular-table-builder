@@ -28,6 +28,7 @@ import { NgxFilterComponent } from './table/components/ngx-filter/ngx-filter.com
 import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { DragIconComponent } from './table/components/drag-icon/drag-icon.component';
 import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-source-null.component';
+import { DisableRowPipe } from './table/pipes/disable-row.pipe';
 
 @NgModule({
     imports: [CommonModule, DragDropModule],
@@ -55,7 +56,8 @@ import { NgxSourceNullComponent } from './table/components/ngx-source-null/ngx-s
         NgxFilterComponent,
         NgxFilterDirective,
         DragIconComponent,
-        NgxSourceNullComponent
+        NgxSourceNullComponent,
+        DisableRowPipe
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [

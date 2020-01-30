@@ -81,3 +81,5 @@ export interface ViewPortInfo {
     scrollTop?: number;
     prevScrollOffsetTop?: number;
 }
+
+export type ProduceDisableFn = ((item: TableRow) => boolean) | null;

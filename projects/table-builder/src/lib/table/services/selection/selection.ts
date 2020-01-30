@@ -1,8 +1,10 @@
 import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
+import { ProduceDisableFn, TableRow } from '../../interfaces/table-builder.external';
 
 export class SelectionMap {
     public isAll: boolean = false;
     public entries: KeyMap<boolean> = {};
+    public produceDisableFn: ProduceDisableFn = null;
     private readonly map: Map<RowId, boolean> = new Map<RowId, boolean>();
 
     public get size(): number {
@@ -32,7 +34,11 @@ export class SelectionMap {
         return this.map.get(key) || false;
     }
 
-    public select(key: RowId, emit: boolean): void {
+    public select(key: RowId, row: TableRow, emit: boolean): void {
+        if (this.produceDisableFn && this.produceDisableFn(row)) {
+            return;
+        }
+
         this.map.set(key, true);
 
         if (emit) {
@@ -40,11 +46,11 @@ export class SelectionMap {
         }
     }
 
-    public toggle(key: string | number, emit: boolean): void {
+    public toggle(key: string | number, row: TableRow, emit: boolean): void {
         if (this.has(key)) {
             this.delete(key, emit);
         } else {
-            this.select(key, emit);
+            this.select(key, row, emit);
         }
     }
 

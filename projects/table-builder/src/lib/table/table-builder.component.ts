@@ -170,8 +170,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public ngOnInit(): void {
         if (this.enableSelection) {
-            this.selection.primaryKey = this.primaryKey;
             this.selection.listenShiftKey();
+            this.selection.primaryKey = this.primaryKey;
+            this.selection.setProducerDisableFn(this.produceDisableFn);
         }
     }
 

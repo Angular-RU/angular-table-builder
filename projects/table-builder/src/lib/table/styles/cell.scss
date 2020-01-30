@@ -86,6 +86,13 @@
             font-weight: bold;
         }
 
+        &--disable {
+            pointer-events: none;
+            * {
+                opacity: 0.5;
+            }
+        }
+
         &--nowrap,
         &--nowrap .table-grid__cell--inner-content {
             white-space: nowrap;
