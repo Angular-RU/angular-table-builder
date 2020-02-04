@@ -303,6 +303,7 @@ export abstract class TableBuilderApiImpl
             this.source = this.originalSource;
         }
 
+        this.calculateViewport(true);
         this.toggleFreeze(TIME_IDLE);
         this.onChanges.emit(this.sourceRef);
     }

@@ -4,8 +4,6 @@
     "lib": {
         "entryFile": "./src/public-api",
         "flatModuleFile": "table-builder",
-        "umdModuleIds": {
-            "ngx-virtual-scroller": "ngxVirtualScroller"
-        }
+        "umdModuleIds": {}
     }
 }
