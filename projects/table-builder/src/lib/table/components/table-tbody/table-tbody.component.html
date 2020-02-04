@@ -6,7 +6,7 @@
         [ngClass]="columnSchema?.td?.class"
         [ngStyle]="columnSchema?.td?.style"
         (selectstart)="(canSelectTextInTable)"
-        *ngFor="let item of source; let index = index; trackBy: trackBy.bind(this)"
+        *ngFor="let item of source; let index = index"
         (contextmenu)="openContextMenu($event, columnSchema.key, item)"
         (click)="handleOnClick(item, columnSchema.key, $event, columnSchema?.td?.onClick)"
         (dblclick)="handleDblClick(item, columnSchema.key, $event, columnSchema?.td?.dblClick)"

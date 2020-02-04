@@ -85,10 +85,6 @@ export class TableTbodyComponent {
         }
     }
 
-    public trackBy(index: number, row: TableRow): number {
-        return row[this.primaryKey] || index;
-    }
-
     public handleDblClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         window.clearInterval(this.selection.selectionTaskIdle);
         this.handleEventEmitter(row, key, event, emitter);

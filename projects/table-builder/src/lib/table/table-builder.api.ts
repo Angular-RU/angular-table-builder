@@ -57,9 +57,9 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = 10;
+    @Input() public buffer: number = 5;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('buffer-min-offset') public bufferMinOffset: number = 2;
+    @Input('buffer-min-offset') public bufferMinOffset: number = 1;
     @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -218,7 +218,7 @@ export abstract class TableBuilderApiImpl
         return this.sourceRef.length;
     }
 
-    protected get sourceRef(): TableRow[] {
+    public get sourceRef(): TableRow[] {
         return this.source && this.source.length ? this.source : [];
     }
 

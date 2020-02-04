@@ -11,8 +11,9 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
+import { TableRow } from '../interfaces/table-builder.external';
 import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { HEAD_TOP } from '../symbols';
+import { HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
 import { fromEvent, Subject } from 'rxjs';
 import { delay, takeUntil } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     @Input() public footerHeight: number = 0;
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
     @Input() public tableViewport: Partial<HTMLDivElement> = {};
+    @Input() public sourceRef: TableRow[] = [];
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
     private destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly minHeight: number = 0;
@@ -37,7 +39,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private get canCalculated(): boolean {
-        return this.autoHeight.inViewport && this.autoHeight.sourceLength > 0;
+        return this.autoHeight.inViewport && this.autoHeight.sourceLength > 0 && this.sourceRef.length > 0;
     }
 
     private get style(): string {
@@ -107,7 +109,10 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     public ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
             fromEvent(window, 'resize', { passive: true })
-                .pipe(delay(200), takeUntil(this.destroy$))
+                .pipe(
+                    delay(200),
+                    takeUntil(this.destroy$)
+                )
                 .subscribe(() => this.recalculateTableSize());
         });
     }
@@ -153,7 +158,11 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private getDefaultHeight(): string {
-        const scrollbarHeight: number = this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+        const scrollbarHeight: number =
+            this.sourceRef.length === 1
+                ? SCROLLBAR_WIDTH
+                : this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+
         return `calc(${this.columnHeight + scrollbarHeight + this.headerHeight + this.footerHeight}px)`;
     }
 
@@ -164,6 +173,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     private getHeightByViewPort({ paddingTop, paddingBottom }: BoxView): string {
         const viewportHeight: number = this.autoViewHeight - parseInt(HEAD_TOP);
+
         return this.columnHeight > viewportHeight
             ? `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom})`
             : this.getDefaultHeight();

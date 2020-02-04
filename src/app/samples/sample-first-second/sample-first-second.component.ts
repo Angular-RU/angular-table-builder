@@ -21,8 +21,6 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     ) {}
 
     public ngOnInit(): void {
-        this.updateTable();
-
         this.ngZone.runOutsideAngular(() => {
             this.idInterval = window.setInterval(() => {
                 this.updateTable();
@@ -44,8 +42,10 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
                 .open(DialogTemplateComponent, { data: row, width: '1024px' })
                 .afterClosed()
                 .subscribe((data: TableRow) => {
-                    this.data = this.data.map((val: TableRow) => (val.id === data.id ? data : val));
-                    detectChanges(this.cd);
+                    if (data) {
+                        this.data = this.data.map((val: TableRow) => (val.id === data.id ? data : val));
+                        detectChanges(this.cd);
+                    }
                 });
         });
     }

@@ -315,15 +315,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         if (typeof this.viewPortInfo.startIndex !== 'number') {
             this.updateViewportInfo(start, end);
-            this.idleDetectChanges();
         } else if (bufferOffset <= this.bufferMinOffset && bufferOffset >= 0) {
             let newStart = start - this.buffer;
             newStart = newStart >= 0 ? newStart : 0;
             this.updateViewportInfo(newStart, end);
-            this.idleDetectChanges();
         } else if (bufferOffset < 0 || force) {
             this.updateViewportInfo(start, end);
-            detectChanges(this.cd);
+        }
+
+        if (force) {
+            this.idleDetectChanges();
+        } else {
+            this.cd.markForCheck();
         }
 
         this.viewPortInfo.bufferOffset = bufferOffset;
@@ -371,7 +374,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             fromEvent(this.scrollContainer.nativeElement, 'scroll', { passive: true })
                 .pipe(
                     catchError(() => {
-                        this.calculateViewport();
+                        this.calculateViewport(true);
                         return EMPTY;
                     }),
                     takeUntil(this.destroy$)
@@ -382,9 +385,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private scrollHandler(): void {
         this.viewPortInfo.isScrolling = true;
+        window.cancelAnimationFrame(this.frameCalculateViewportId);
 
         this.ngZone.runOutsideAngular(() => {
-            window.cancelAnimationFrame(this.frameCalculateViewportId);
             window.clearTimeout(this.timeoutScrolledId);
             this.timeoutScrolledId = window.setTimeout(() => {
                 this.viewPortInfo.isScrolling = false;
@@ -563,7 +566,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);
         this.recalculateHeight();
-        this.calculateViewport();
+        this.calculateViewport(true);
         this.onChanges.emit(this.source || null);
     }
 
