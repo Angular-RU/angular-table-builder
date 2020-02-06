@@ -280,7 +280,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public resetSchema(): void {
-        this.tableViewportChecked = false;
         this.schemaColumns = null;
         detectChanges(this.cd);
 
@@ -561,7 +560,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @see TableBuilderComponent#isRendered
      */
     private emitRendered(): void {
-        this.tableViewportChecked = true;
+        this.recheckViewportChecked();
         this.isRendered = true;
         this.rendering = false;
         this.afterRendered.emit(this.isRendered);

@@ -58,6 +58,7 @@ describe('[TEST]: auto height', () => {
 
     beforeEach(() => {
         directive = new AutoHeightDirective(mockElementRef, mockNgZone as NgZone);
+        directive.sourceRef = [{ a: 1 }];
         style = '';
         ticked = 0;
     });
@@ -78,7 +79,7 @@ describe('[TEST]: auto height', () => {
         directive.recalculateTableSize();
         tick(100);
 
-        expect(style).toEqual(`display: block; height: calc(45px)`);
+        expect(style).toEqual(`display: block; height: calc(57px)`); // 45px + 12px (scrollbar height)
     }));
 
     it('should be correct calculate auto height when columnHeight = 2000px', fakeAsync(() => {
