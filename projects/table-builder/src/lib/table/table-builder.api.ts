@@ -47,7 +47,7 @@ import { UtilsService } from './services/utils/utils.service';
 import { SelectionMap } from './services/selection/selection';
 import { detectChanges } from './operators/detect-changes';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -347,7 +347,9 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.calculateViewport();
+        this.ngZone.runOutsideAngular(() => {
+            window.setTimeout(() => this.calculateViewport(true), TIME_RELOAD);
+        });
     }
 
     protected forceCalculateViewport(): void {
