@@ -1,3 +1,11 @@
+<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
+    <ng-content select="ngx-empty"></ng-content>
+</div>
+
+<div *ngIf="sourceIsNull">
+    <ng-content select="ngx-source-null"></ng-content>
+</div>
+
 <div
     #root
     [style.width]="width"
@@ -132,14 +140,6 @@
 <ng-template [ngIf]="contextMenuTemplate && contextMenu.state?.opened">
     <ng-content select="ngx-context-menu"></ng-content>
 </ng-template>
-
-<div *ngIf="(source && source.length) === 0 && !filterable.filtering">
-    <ng-content select="ngx-empty"></ng-content>
-</div>
-
-<div *ngIf="sourceIsNull">
-    <ng-content select="ngx-source-null"></ng-content>
-</div>
 
 <ng-template [ngIf]="filterTemplate">
     <ng-content select="ngx-filter"></ng-content>
