@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+
 import { ColumnOptions } from '../common/column-options';
 
 @Component({

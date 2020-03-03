@@ -10,12 +10,16 @@ import {
     Output,
     SimpleChanges
 } from '@angular/core';
-import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
-import { TableRow } from '../interfaces/table-builder.external';
-import { TableBuilderOptionsImpl } from '../config/table-builder-options';
-import { HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
 import { fromEvent, Subject } from 'rxjs';
 import { delay, takeUntil } from 'rxjs/operators';
+
+import { TABLE_GLOBAL_OPTIONS } from '../config/table-global-options';
+import { TableRow } from '../interfaces/table-builder.external';
+import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
+import { HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
+
+const DELAY: number = 100;
+const MIN_RESIZE_DELAY: number = 200;
 
 @Directive({ selector: '[autoHeight]' })
 export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
@@ -27,7 +31,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
     private destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly minHeight: number = 0;
-    private readonly delay: number = 100;
+    private readonly delay: number = DELAY;
     private useOnlyAutoViewPort: boolean = false;
     private isDirtyCheck: boolean;
     private taskId: number;
@@ -42,6 +46,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
         return this.autoHeight.inViewport && this.autoHeight.sourceLength > 0 && this.sourceRef.length > 0;
     }
 
+    // eslint-disable-next-line complexity
     private get style(): string {
         let height: string;
 
@@ -55,7 +60,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
                 height = this.getHeightByViewPort({ paddingTop, paddingBottom });
             } else if (this.parentOffsetHeight > this.columnHeight) {
                 height = this.getDefaultHeight();
-            } else if (!this.isEmptyParentHeight) {
+            } else if (this.isNotEmptyParentHeight) {
                 height = this.getHeightByParent({ paddingTop, paddingBottom });
             } else {
                 height = this.getHeightByViewPort({ paddingTop, paddingBottom });
@@ -65,8 +70,8 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
         return height ? `display: block; height: ${height}` : '';
     }
 
-    private get isEmptyParentHeight(): boolean {
-        return this.parentOffsetHeight < parseInt(HEAD_TOP);
+    private get isNotEmptyParentHeight(): boolean {
+        return !(this.parentOffsetHeight < parseInt(HEAD_TOP));
     }
 
     private get parentOffsetHeight(): number {
@@ -110,7 +115,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
         this.ngZone.runOutsideAngular(() => {
             fromEvent(window, 'resize', { passive: true })
                 .pipe(
-                    delay(200),
+                    delay(MIN_RESIZE_DELAY),
                     takeUntil(this.destroy$)
                 )
                 .subscribe(() => this.recalculateTableSize());
@@ -152,7 +157,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     public markForCheck(): void {
         this.isDirtyCheck = true;
-        if (this.parentOffsetHeight <= TableBuilderOptionsImpl.ROW_HEIGHT) {
+        if (this.parentOffsetHeight <= TABLE_GLOBAL_OPTIONS.ROW_HEIGHT) {
             this.useOnlyAutoViewPort = true;
         }
     }

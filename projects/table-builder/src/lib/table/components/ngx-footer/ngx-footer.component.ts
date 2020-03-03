@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+
 import { TableContent } from '../common/table-content';
 
 @Component({

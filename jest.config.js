@@ -11,7 +11,7 @@ module.exports = {
     maxConcurrency: 10,
     rootDir: path.resolve('.'),
     preset: 'jest-preset-angular',
-    cacheDirectory: '<rootDir>/cache',
+    cacheDirectory: '<rootDir>/.cache',
     testMatch: ['<rootDir>/projects/table-builder/**/*.spec.ts'],
     collectCoverageFrom: ['<rootDir>/projects/table-builder/src/lib/**/*.ts'],
     setupFilesAfterEnv: ['<rootDir>/setupJest.ts'],

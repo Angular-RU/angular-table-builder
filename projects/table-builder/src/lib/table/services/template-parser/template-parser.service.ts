@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { ColumnsSchema, ImplicitContext, TableCellOptions } from '../../interfaces/table-builder.external';
-import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
-import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
-import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
-import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
-import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { ColumnOptions } from '../../components/common/column-options';
+import { NgxColumnComponent } from '../../components/ngx-column/ngx-column.component';
+import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
+import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
+import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
+import { ColumnsSchema, ImplicitContext, TableCellOptions } from '../../interfaces/table-builder.external';
+import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
 import { SchemaBuilder } from './schema-builder.class';
 
 @Injectable()
@@ -79,12 +79,6 @@ export class TemplateParserService {
         this.synchronizedReference();
     }
 
-    private synchronizedReference(): void {
-        this.schema.columns.forEach((column: ColumnsSchema) => {
-            this.compiledTemplates[column.key] = column;
-        });
-    }
-
     public initialSchema(columnOptions: ColumnOptions): void {
         this.schema = this.schema || new SchemaBuilder();
         this.schema.columns = [];
@@ -125,6 +119,7 @@ export class TemplateParserService {
         }
     }
 
+    // eslint-disable-next-line complexity,max-lines-per-function
     public compileColumnMetadata(column: NgxColumnComponent): void {
         const { key, th, td, emptyHead, headTitle }: NgxColumnComponent = column;
         const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
@@ -169,5 +164,11 @@ export class TemplateParserService {
                 template: isEmptyHead ? null : thOptions.template
             }
         };
+    }
+
+    private synchronizedReference(): void {
+        this.schema.columns.forEach((column: ColumnsSchema) => {
+            this.compiledTemplates[column.key] = column;
+        });
     }
 }

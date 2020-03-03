@@ -1,6 +1,7 @@
 import { Directive, Input, TemplateRef } from '@angular/core';
-import { TemplateCellCommon } from './template-cell.common';
+
 import { Any } from '../../interfaces/table-builder.internal';
+import { TemplateCellCommon } from './template-cell.common';
 
 @Directive({ selector: 'ng-template[ngx-td]' })
 export class TemplateBodyTdDirective extends TemplateCellCommon {

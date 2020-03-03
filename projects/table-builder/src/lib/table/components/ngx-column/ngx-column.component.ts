@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Input, ViewEncapsulation } from '@angular/core';
-import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
+
 import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.directive';
+import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { ColumnOptions } from '../common/column-options';
 
 @Component({

@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { ProduceDisableFn, TableRow } from '../interfaces/table-builder.external';
 
 @Pipe({ name: 'disableRow', pure: true })

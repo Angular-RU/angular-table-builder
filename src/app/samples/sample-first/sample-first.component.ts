@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/ng-table-builder';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 
 @Component({
     selector: 'sample-first',
@@ -29,12 +30,13 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.updateTable();
 
+        const DEFAULT_TIMEOUT: number = 14500;
         this.ngZone.runOutsideAngular(() => {
             this.idInterval = window.setInterval(() => {
                 if (this.regenerate) {
                     this.updateTable();
                 }
-            }, 14500);
+            }, DEFAULT_TIMEOUT);
         });
     }
 
@@ -42,6 +44,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
         window.clearInterval(this.idInterval);
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public showSample(): void {
         this.dialog.open(CodeDialogComponent, {
             data: {
@@ -64,27 +67,48 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
         });
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public updateTable(): void {
         this.loading = true;
         switch (this.dataSize) {
             case '10x5':
-                MocksGenerator.generator(10, 5).then((data: TableRow[]) => this.setData(data));
+                {
+                    const rows: number = 10;
+                    const cols: number = 5;
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                }
                 break;
 
             case '100x20':
-                MocksGenerator.generator(100, 20).then((data: TableRow[]) => this.setData(data));
+                {
+                    const rows: number = 100;
+                    const cols: number = 20;
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                }
                 break;
 
             case '1000x30':
-                MocksGenerator.generator(1000, 30).then((data: TableRow[]) => this.setData(data));
+                {
+                    const rows: number = 1000;
+                    const cols: number = 30;
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                }
                 break;
 
             case '10000x50':
-                MocksGenerator.generator(10000, 50).then((data: TableRow[]) => this.setData(data));
+                {
+                    const rows: number = 10000;
+                    const cols: number = 50;
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                }
                 break;
 
             case '100000x100':
-                MocksGenerator.generator(100000, 100).then((data: TableRow[]) => this.setData(data));
+                {
+                    const rows: number = 100000;
+                    const cols: number = 100;
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                }
                 break;
         }
         this.cd.detectChanges();
@@ -92,9 +116,10 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
 
     private setData(data: TableRow[]): void {
         this.simple = data;
+        const timeout: number = 500;
         window.setTimeout(() => {
             this.loading = false;
             this.cd.detectChanges();
-        }, 500);
+        }, timeout);
     }
 }

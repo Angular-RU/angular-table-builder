@@ -1,21 +1,21 @@
-import { ApplicationRef, Injectable, NgZone } from '@angular/core';
+import { ApplicationRef, Injectable, Injector, NgZone } from '@angular/core';
 import { ReplaySubject, Subject } from 'rxjs';
 
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
+import { TableRow } from '../../interfaces/table-builder.external';
+import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
 import { WebWorkerThreadService } from '../../worker/worker-thread.service';
 import { UtilsService } from '../utils/utils.service';
-import { TableRow } from '../../interfaces/table-builder.external';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+import { filterAllWorker } from './filter.worker';
 import {
     FilterableMessage,
     FilterEvent,
     FilterStateEvent,
-    TableFilterType,
-    FilterWorkerEvent
+    FilterWorkerEvent,
+    TableFilterType
 } from './filterable.interface';
-import { filterAllWorker } from './filter.worker';
-import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
 
-const { TIME_IDLE }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 interface FilterableInterface {
     reset(): void;
@@ -34,13 +34,29 @@ export class FilterableService implements FilterableInterface {
     public filterTypeDefinition: KeyMap<TableFilterType> = {};
     public filtering: boolean = false;
     private previousFiltering: boolean = false;
+    private readonly thread: WebWorkerThreadService;
+    private readonly utils: UtilsService;
+    private readonly ngZone: NgZone;
+    private readonly app: ApplicationRef;
 
-    constructor(
-        private readonly thread: WebWorkerThreadService,
-        private readonly utils: UtilsService,
-        private readonly ngZone: NgZone,
-        private readonly app: ApplicationRef
-    ) {}
+    constructor(injector: Injector) {
+        this.app = injector.get<ApplicationRef>(ApplicationRef);
+        this.ngZone = injector.get<NgZone>(NgZone);
+        this.utils = injector.get<UtilsService>(UtilsService);
+        this.thread = injector.get<WebWorkerThreadService>(WebWorkerThreadService);
+    }
+
+    public get globalFilterValue(): string {
+        return this.filterValue ? String(this.filterValue).trim() : null;
+    }
+
+    public get filterValueExist(): boolean {
+        const keyFilterValues: string = Object.values(this.definition).reduce(
+            (acc: string, next: string) => acc + next,
+            ''
+        );
+        return (this.globalFilterValue && this.globalFilterValue.length > 0) || keyFilterValues.length > 0;
+    }
 
     public reset(): void {
         this.definition = {};
@@ -53,10 +69,6 @@ export class FilterableService implements FilterableInterface {
         this.resetEvents.next();
     }
 
-    public get globalFilterValue(): string {
-        return this.filterValue ? String(this.filterValue).trim() : null;
-    }
-
     public changeFilteringStatus(): void {
         this.filtering = this.filterValueExist;
 
@@ -65,14 +77,6 @@ export class FilterableService implements FilterableInterface {
         }
 
         this.previousFiltering = this.filtering;
-    }
-
-    public get filterValueExist(): boolean {
-        const keyFilterValues: string = Object.values(this.definition).reduce(
-            (acc: string, next: string) => acc + next,
-            ''
-        );
-        return (this.globalFilterValue && this.globalFilterValue.length > 0) || keyFilterValues.length > 0;
     }
 
     public openFilter(key: string, event: MouseEvent): void {
@@ -87,11 +91,13 @@ export class FilterableService implements FilterableInterface {
         this.filterOpenEvents.next();
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public filter(source: TableRow[]): Promise<FilterWorkerEvent> {
         const type: TableFilterType = this.filterType;
         const value: string = this.globalFilterValue ? String(this.globalFilterValue).trim() : null;
 
         return new Promise(
+            // eslint-disable-next-line max-lines-per-function
             (resolve: Resolver<FilterWorkerEvent>): void => {
                 const message: FilterableMessage = {
                     source,
@@ -110,7 +116,8 @@ export class FilterableService implements FilterableInterface {
                             resolve({
                                 source: sorted,
                                 fireSelection: (): void => {
-                                    window.setTimeout(() => {
+                                    // eslint-disable-next-line max-nested-callbacks
+                                    window.setTimeout((): void => {
                                         this.events.next({ value, type });
                                         this.app.tick();
                                     }, TIME_IDLE);

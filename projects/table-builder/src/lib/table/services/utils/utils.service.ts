@@ -2,8 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 
 import { TableRow } from '../../interfaces/table-builder.external';
 import { Any, Fn, KeyMap } from '../../interfaces/table-builder.internal';
-import { UtilsInterface } from './utils.interface';
 import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
+import { UtilsInterface } from './utils.interface';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
@@ -30,7 +30,8 @@ export class UtilsService implements UtilsInterface {
         if (this.isObject(target) && this.isObject(source)) {
             Object.keys(source).forEach((key: string) => {
                 if (this.isObject(source[key])) {
-                    if (!(key in target)) {
+                    const empty: boolean = !(key in target);
+                    if (empty) {
                         Object.assign(output, { [key]: source[key] });
                     } else {
                         output[key] = this.mergeDeep(target[key], source[key]);
@@ -44,6 +45,7 @@ export class UtilsService implements UtilsInterface {
         return output;
     }
 
+    // eslint-disable-next-line complexity
     public flattenKeysByRow(row: TableRow, parentKey: string = null, keys: string[] = []): string[] {
         for (const key in row) {
             if (!row.hasOwnProperty(key)) {
@@ -69,31 +71,37 @@ export class UtilsService implements UtilsInterface {
     }
 
     public requestAnimationFrame(callback: Fn): Promise<void> {
-        return new Promise((resolve: Fn): void => {
-            this.zone.runOutsideAngular(() => {
-                window.requestAnimationFrame(() => {
-                    callback();
-                    resolve();
+        return new Promise(
+            (resolve: Fn): void => {
+                this.zone.runOutsideAngular(() => {
+                    window.requestAnimationFrame(() => {
+                        callback();
+                        resolve();
+                    });
                 });
-            });
-        });
+            }
+        );
     }
 
     public microtask(callback: Fn): Promise<void> {
-        return new Promise((resolve: Fn): void => {
-            callback();
-            resolve();
-        });
+        return new Promise(
+            (resolve: Fn): void => {
+                callback();
+                resolve();
+            }
+        );
     }
 
     public macrotask(callback: Fn, time: number = 0): Promise<void> {
-        return new Promise((resolve: Fn): void => {
-            this.zone.runOutsideAngular(() => {
-                window.setTimeout(() => {
-                    callback();
-                    resolve();
-                }, time);
-            });
-        });
+        return new Promise(
+            (resolve: Fn): void => {
+                this.zone.runOutsideAngular(() => {
+                    window.setTimeout(() => {
+                        callback();
+                        resolve();
+                    }, time);
+                });
+            }
+        );
     }
 }

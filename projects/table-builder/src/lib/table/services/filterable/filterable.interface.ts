@@ -12,13 +12,6 @@ export interface FilterColumnsOpts {
     types: KeyMap<TableFilterType>;
 }
 
-export interface FilterableMessage {
-    source: TableRow[];
-    types: typeof TableFilterType;
-    global: FilterGlobalOpts;
-    columns: FilterColumnsOpts;
-}
-
 export enum TableFilterType {
     START_WITH = 'START_WITH',
     END_WITH = 'END_WITH',
@@ -26,6 +19,13 @@ export enum TableFilterType {
     DOES_NOT_CONTAIN = 'DOES_NOT_CONTAIN',
     EQUALS = 'EQUALS',
     DOES_NOT_EQUAL = 'DOES_NOT_EQUAL'
+}
+
+export interface FilterableMessage {
+    source: TableRow[];
+    types: typeof TableFilterType;
+    global: FilterGlobalOpts;
+    columns: FilterColumnsOpts;
 }
 
 export interface FilterEvent {

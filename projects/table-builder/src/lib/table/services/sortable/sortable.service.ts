@@ -1,12 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
 
-import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { WebWorkerThreadService } from '../../worker/worker-thread.service';
-import { SortableMessage, SortOrderType } from './sortable.interfaces';
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { TableRow } from '../../interfaces/table-builder.external';
+import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
+import { WebWorkerThreadService } from '../../worker/worker-thread.service';
 import { UtilsService } from '../utils/utils.service';
 import { sortWorker } from './sort.worker';
+import { SortableMessage, SortOrderType } from './sortable.interfaces';
 
 @Injectable()
 export class SortableService {
@@ -22,16 +22,22 @@ export class SortableService {
         return Object.keys(this.definition).length === 0;
     }
 
+    public get notEmpty(): boolean {
+        return !this.empty;
+    }
+
     public sort(data: TableRow[]): Promise<TableRow[]> {
-        return new Promise((resolve: Resolver<TableRow[]>): void => {
-            this.thread
-                .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
-                .then((sorted: TableRow[]) => {
-                    this.zone.runOutsideAngular(() =>
-                        window.setTimeout(() => resolve(sorted), TableBuilderOptionsImpl.TIME_IDLE)
-                    );
-                });
-        });
+        return new Promise(
+            (resolve: Resolver<TableRow[]>): void => {
+                this.thread
+                    .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
+                    .then((sorted: TableRow[]) => {
+                        this.zone.runOutsideAngular(() =>
+                            window.setTimeout(() => resolve(sorted), TABLE_GLOBAL_OPTIONS.TIME_IDLE)
+                        );
+                    });
+            }
+        );
     }
 
     public setDefinition(definition: KeyMap<string>): void {

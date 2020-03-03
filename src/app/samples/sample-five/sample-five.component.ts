@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 
 declare const hljs: Any;
 
@@ -17,7 +18,9 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(1000, 40).then((data: TableRow[]) => {
+        const rows: number = 1000;
+        const cols: number = 40;
+        MocksGenerator.generator(rows, cols).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -53,7 +56,7 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
     }
 
     public updatedSchema(event: SimpleSchemaColumns): void {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.log(event);
     }
 }

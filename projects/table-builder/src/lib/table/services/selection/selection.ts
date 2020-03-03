@@ -1,5 +1,5 @@
-import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
 import { ProduceDisableFn, TableRow } from '../../interfaces/table-builder.external';
+import { KeyMap, RowId } from '../../interfaces/table-builder.internal';
 
 export class SelectionMap {
     public isAll: boolean = false;

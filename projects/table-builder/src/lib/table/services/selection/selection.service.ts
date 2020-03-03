@@ -1,11 +1,11 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { SelectionMap } from './selection';
-import { SelectionRange } from './selection-range';
 import { ProduceDisableFn, TableRow } from '../../interfaces/table-builder.external';
 import { Fn, KeyMap, KeyType, PrimaryKey, RowId, SelectionStatus } from '../../interfaces/table-builder.internal';
 import { checkValueIsEmpty } from '../../operators/check-value-is-empty';
+import { SelectionMap } from './selection';
+import { SelectionRange } from './selection-range';
 
 @Injectable()
 export class SelectionService implements OnDestroy {

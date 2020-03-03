@@ -1,5 +1,6 @@
-import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
+/* eslint-disable */
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
+import { DeepPathPipe } from '../../table/pipes/deep-path.pipe';
 
 describe('[TEST]: Deep path pipe', () => {
     let pipe: DeepPathPipe;

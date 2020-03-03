@@ -1,9 +1,9 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
-
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -17,7 +17,9 @@ export class SampleFifteenComponent implements OnInit, AfterViewInit {
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(10000, 59).then((data: TableRow[]) => {
+        const rows: number = 10000;
+        const cols: number = 59;
+        MocksGenerator.generator(rows, cols).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -30,7 +32,7 @@ export class SampleFifteenComponent implements OnInit, AfterViewInit {
     }
 
     public updatedSchema(event: SimpleSchemaColumns): void {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.log(event);
     }
 }

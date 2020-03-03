@@ -3,10 +3,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Injector,
     Input,
     NgZone,
     ViewEncapsulation
 } from '@angular/core';
+
+import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
 import {
     ColumnsSchema,
     ProduceDisableFn,
@@ -15,27 +18,18 @@ import {
     TableRow,
     ViewPortInfo
 } from '../../interfaces/table-builder.external';
-import { SelectionService } from '../../services/selection/selection.service';
 import { KeyMap, RecalculatedStatus, TableBrowserEvent } from '../../interfaces/table-builder.internal';
-import { ContextMenuService } from '../../services/context-menu/context-menu.service';
-import { NgxContextMenuComponent } from '../../components/ngx-context-menu/ngx-context-menu.component';
-import { detectChanges } from '../../operators/detect-changes';
 import { getDeepValue } from '../../operators/deep-value';
+import { detectChanges } from '../../operators/detect-changes';
+import { ContextMenuService } from '../../services/context-menu/context-menu.service';
+import { SelectionService } from '../../services/selection/selection.service';
 
 const SELECTION_DELAY: number = 100;
 
 @Component({
     selector: 'table-tbody',
     templateUrl: './table-tbody.component.html',
-    styles: [
-        `
-            table-tbody {
-                display: block;
-                overflow: hidden;
-                position: relative;
-            }
-        `
-    ],
+    styleUrls: ['./table-tbody.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
@@ -59,14 +53,17 @@ export class TableTbodyComponent {
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
 
-    constructor(
-        public selection: SelectionService,
-        public cd: ChangeDetectorRef,
-        public contextMenu: ContextMenuService,
-        private readonly app: ApplicationRef,
-        private readonly ngZone: NgZone
-    ) {
+    public selection: SelectionService;
+    public contextMenu: ContextMenuService;
+    private readonly app: ApplicationRef;
+    private readonly ngZone: NgZone;
+
+    constructor(public cd: ChangeDetectorRef, injector: Injector) {
         this.cd.reattach();
+        this.selection = injector.get<SelectionService>(SelectionService);
+        this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
+        this.app = injector.get<ApplicationRef>(ApplicationRef);
+        this.ngZone = injector.get<NgZone>(NgZone);
     }
 
     public get canSelectTextInTable(): boolean {
@@ -85,11 +82,13 @@ export class TableTbodyComponent {
         }
     }
 
+    // eslint-disable-next-line max-params
     public handleDblClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         window.clearInterval(this.selection.selectionTaskIdle);
         this.handleEventEmitter(row, key, event, emitter);
     }
 
+    // eslint-disable-next-line max-params
     public handleOnClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         this.ngZone.runOutsideAngular(() => {
             if (this.enableSelection) {
@@ -116,6 +115,7 @@ export class TableTbodyComponent {
         };
     }
 
+    // eslint-disable-next-line max-params
     private handleEventEmitter(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         if (emitter) {
             this.ngZone.runOutsideAngular(() => {

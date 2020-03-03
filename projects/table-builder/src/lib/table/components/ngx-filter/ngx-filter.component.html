@@ -1,14 +1,9 @@
-<div
-    class="table-grid__background-flat"
-    *ngIf="state?.opened"
-    (click)="close($event)"
-    (contextmenu)="close($event)"
-></div>
+<div class="table-grid__background-flat" *ngIf="state?.opened" (click)="close()" (contextmenu)="close()"></div>
 
 <div class="table-grid__filter-menu" *ngIf="state?.opened">
     <div
         class="filter-menu"
-        (contextmenu)="close($event)"
+        (contextmenu)="close()"
         [ngStyle]="{
             'width.px': width,
             'min-height.px': height,

@@ -1,8 +1,9 @@
 import { Input } from '@angular/core';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 
 export class TableContent {
-    @Input() public height: number = TableBuilderOptionsImpl.ROW_HEIGHT;
+    @Input() public height: number = TABLE_GLOBAL_OPTIONS.ROW_HEIGHT;
     @Input('content-cell') public contentCell: boolean = null;
     @Input('align-center') public alignCenter: boolean = null;
     @Input('css-class') public cssClasses: string[] = null;

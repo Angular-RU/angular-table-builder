@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { ContextMenuState } from './context-menu.interface';
 import { TableRow } from '../../interfaces/table-builder.external';
-import { getDeepValue } from '../../operators/deep-value';
 import { Any } from '../../interfaces/table-builder.internal';
+import { getDeepValue } from '../../operators/deep-value';
+import { ContextMenuState } from './context-menu.interface';
 
 @Injectable()
 export class ContextMenuService {

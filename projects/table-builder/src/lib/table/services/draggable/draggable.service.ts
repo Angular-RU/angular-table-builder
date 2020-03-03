@@ -1,8 +1,8 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 
-import { TemplateParserService } from '../template-parser/template-parser.service';
 import { ColumnsSchema } from '../../interfaces/table-builder.external';
+import { TemplateParserService } from '../template-parser/template-parser.service';
 
 @Injectable()
 export class DraggableService {
@@ -33,7 +33,6 @@ export class DraggableService {
         const currentIsDraggable: boolean = current.draggable;
         const isSticky: boolean =
             previous.stickyLeft || current.stickyLeft || previous.stickyRight || current.stickyRight;
-
         return previousIsDraggable && currentIsDraggable && !isSticky;
     }
 }

@@ -1,17 +1,19 @@
+import { TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
     ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Injector,
     NgZone,
     OnInit
 } from '@angular/core';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableRow } from '@angular-ru/ng-table-builder';
-import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 import { MatDialog } from '@angular/material';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 
 declare const hljs: Any;
 
@@ -24,16 +26,24 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     public dataFirst: TableRow[];
     public dataSecond: TableRow[];
     public nativeScrollbar: boolean = false;
+    public readonly dialog: MatDialog;
+    private readonly app: ApplicationRef;
+    private readonly ngZone: NgZone;
 
-    constructor(
-        public readonly dialog: MatDialog,
-        private readonly cd: ChangeDetectorRef,
-        private readonly app: ApplicationRef,
-        private readonly ngZone: NgZone
-    ) {}
+    constructor(private readonly cd: ChangeDetectorRef, injector: Injector) {
+        this.dialog = injector.get<MatDialog>(MatDialog);
+        this.app = injector.get<ApplicationRef>(ApplicationRef);
+        this.ngZone = injector.get<NgZone>(NgZone);
+    }
 
     public ngOnInit(): void {
-        Promise.all([MocksGenerator.generator(11, 30), MocksGenerator.generator(10000, 30)]).then(
+        const rows1: number = 11;
+        const cols1: number = 30;
+
+        const rows2: number = 10000;
+        const cols2: number = 30;
+
+        Promise.all([MocksGenerator.generator(rows1, cols1), MocksGenerator.generator(rows2, cols2)]).then(
             ([first, second]: [TableRow[], TableRow[]]) => {
                 this.dataFirst = first;
                 this.dataSecond = second;
@@ -57,6 +67,7 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
         });
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public showSample(): void {
         this.dialog.open(CodeDialogComponent, {
             data: {

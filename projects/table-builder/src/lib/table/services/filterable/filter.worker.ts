@@ -1,7 +1,8 @@
-import { FilterableMessage, FilterGlobalOpts, TableFilterType } from './filterable.interface';
 import { TableRow } from '../../interfaces/table-builder.external';
 import { KeyMap } from '../../interfaces/table-builder.internal';
+import { FilterableMessage, FilterGlobalOpts, TableFilterType } from './filterable.interface';
 
+// eslint-disable-next-line max-lines-per-function
 export function filterAllWorker({ source, global, types, columns }: FilterableMessage): TableRow[] {
     enum Terminate {
         CONTINUE = -1,
@@ -13,9 +14,9 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     let result: TableRow[] = source;
 
     if (value) {
-        result = source.filter((item: TableRow) => {
-            return type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item);
-        });
+        result = source.filter((item: TableRow) =>
+            type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item)
+        );
     }
 
     if (!columns.isEmpty) {
@@ -66,6 +67,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
 
     type Satisfies = [Terminate, boolean];
 
+    // eslint-disable-next-line complexity,max-lines-per-function
     function getSatisfies(field: string, substring: string, fieldType: TableFilterType): Satisfies {
         let satisfies: boolean = false;
         let terminate: Terminate = Terminate.NEXT;
@@ -80,12 +82,12 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
         } else if (fieldType === types.EQUALS) {
             satisfies = field === substring;
         } else if (fieldType === types.DOES_NOT_EQUAL) {
-            if (field !== substring) {
-                satisfies = true;
-                terminate = Terminate.CONTINUE;
-            } else {
+            if (field === substring) {
                 satisfies = false;
                 terminate = Terminate.BREAK;
+            } else {
+                satisfies = true;
+                terminate = Terminate.CONTINUE;
             }
         }
 

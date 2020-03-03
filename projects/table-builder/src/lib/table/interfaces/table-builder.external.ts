@@ -1,4 +1,5 @@
 import { EventEmitter, TemplateRef } from '@angular/core';
+
 import { Any, DeepPartial, KeyMap, TableBrowserEvent } from './table-builder.internal';
 
 export type TableRow<T = Any> =
@@ -71,7 +72,7 @@ export interface ContextItemEvent {
     preventDefault(): void;
 }
 
-export type SimpleSchemaColumns = Array<DeepPartial<ColumnsSchema>>;
+export type SimpleSchemaColumns = DeepPartial<ColumnsSchema>[];
 
 export interface ViewPortInfo {
     isScrolling?: boolean;

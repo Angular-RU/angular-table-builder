@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { Any, KeyMap } from '../interfaces/table-builder.internal';
 import { checkValueIsEmpty } from '../operators/check-value-is-empty';
 

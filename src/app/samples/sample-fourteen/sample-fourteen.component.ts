@@ -1,3 +1,4 @@
+import { TableBuilderComponent, TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -7,11 +8,11 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { TableBuilderComponent, TableRow } from '@angular-ru/ng-table-builder';
 import { MatDialog } from '@angular/material/dialog';
-import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 
 declare const hljs: Any;
 
@@ -72,7 +73,9 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(10000, 59).then((data: TableRow[]) => {
+        const rows: number = 10000;
+        const cols: number = 59;
+        MocksGenerator.generator(rows, cols).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -88,6 +91,7 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
         this.table.filterable.reset();
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public showSample(): void {
         this.dialog.open(CodeDialogComponent, {
             data: {

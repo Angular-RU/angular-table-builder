@@ -1,11 +1,11 @@
+/* eslint-disable */
 import { NgZone } from '@angular/core';
-import { Any, RowId } from '../../table/interfaces/table-builder.internal';
-import { SelectionService } from '../../table/services/selection/selection.service';
-import { TableRow } from '../../table/interfaces/table-builder.external';
-import { SelectionMap } from '../../table/services/selection/selection';
-import { UtilsService } from '../../table/services/utils/utils.service';
 
-// tslint:disable-next-line
+import { TableRow } from '../../table/interfaces/table-builder.external';
+import { Any, RowId } from '../../table/interfaces/table-builder.internal';
+import { SelectionMap } from '../../table/services/selection/selection';
+import { SelectionService } from '../../table/services/selection/selection.service';
+
 describe('[TEST]: Selection service', () => {
     let preventDefaultInvoked: number = 0;
     let listenKeydown: boolean = false;
@@ -48,10 +48,8 @@ describe('[TEST]: Selection service', () => {
     );
 
     let selection: SelectionService;
-    let utils: UtilsService;
 
     beforeEach(() => {
-        utils = new UtilsService(null);
         selection = new SelectionService(mockNgZone as NgZone);
     });
 
@@ -63,7 +61,7 @@ describe('[TEST]: Selection service', () => {
         }
     });
 
-    it('should be correct selection with shift key', () => {
+    it('should be correct selection with shift key', (): void => {
         const lastIndex: number = 2;
         const firstIndex: number = 0;
 
@@ -97,7 +95,7 @@ describe('[TEST]: Selection service', () => {
         expect(selection.range.selectedRange()).toEqual(true);
     });
 
-    it('should be correct selection with ctrl key', () => {
+    it('should be correct selection with ctrl key', (): void => {
         const lastIndex: number = 2;
         const firstIndex: number = 0;
 

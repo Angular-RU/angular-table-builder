@@ -1,10 +1,12 @@
-import { ApplicationRef, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Injector, NgZone, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UtilsService } from '../../services/utils/utils.service';
 import { MousePosition } from '../../interfaces/table-builder.internal';
-import { SCROLLBAR_WIDTH } from '../../symbols';
 import { detectChanges } from '../../operators/detect-changes';
+import { ContextMenuService } from '../../services/context-menu/context-menu.service';
+import { FilterableService } from '../../services/filterable/filterable.service';
+import { UtilsService } from '../../services/utils/utils.service';
+import { SCROLLBAR_WIDTH } from '../../symbols';
 
 export interface PositionState {
     key: string;
@@ -17,13 +19,19 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public height: number = null;
     public isViewed: boolean = false;
     protected subscription: Subscription = null;
+    protected readonly app: ApplicationRef;
+    protected readonly utils: UtilsService;
+    protected readonly filterable: FilterableService;
+    protected readonly ngZone: NgZone;
+    protected readonly contextMenu: ContextMenuService;
 
-    protected constructor(
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly app: ApplicationRef,
-        protected readonly utils: UtilsService,
-        protected readonly ngZone: NgZone
-    ) {}
+    protected constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
+        this.app = injector.get<ApplicationRef>(ApplicationRef);
+        this.utils = injector.get<UtilsService>(UtilsService);
+        this.filterable = injector.get<FilterableService>(FilterableService);
+        this.ngZone = injector.get<NgZone>(NgZone);
+        this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
+    }
 
     public get left(): number {
         return (this.state.position && this.state.position.left) || 0;
@@ -45,6 +53,17 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
 
     public abstract get state(): Partial<T>;
 
+    public updateView(): void {
+        detectChanges(this.cd);
+        this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.app.tick()));
+    }
+
+    public ngOnDestroy(): void {
+        if (!this.subscription.closed) {
+            this.subscription.unsubscribe();
+        }
+    }
+
     public abstract close(event: MouseEvent): void;
 
     protected update(): void {
@@ -55,15 +74,5 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
                 window.setTimeout(() => this.updateView());
             });
         });
-    }
-    public updateView(): void {
-        detectChanges(this.cd);
-        this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.app.tick()));
-    }
-
-    public ngOnDestroy(): void {
-        if (!this.subscription.closed) {
-            this.subscription.unsubscribe();
-        }
     }
 }

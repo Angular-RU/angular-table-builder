@@ -34,6 +34,7 @@ export type RowId = string | number;
 
 export type Fn<T = Any, U = Any> = (...args: T[]) => U;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Any = any; // NOSONAR
 
 export interface SelectionStatus {
@@ -69,11 +70,11 @@ export interface MousePosition {
 }
 
 export type DeepPartial<T = Any> = {
-    [P in keyof T]?: T[P] extends Array<infer U>
-        ? Array<DeepPartial<U>>
-        : T[P] extends ReadonlyArray<infer R>
-        ? ReadonlyArray<DeepPartial<R>>
-        : DeepPartial<T[P]>;
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? DeepPartial<U>[]
+        : T[P] extends readonly (infer R)[]
+        ? readonly DeepPartial<R>[]
+        : DeepPartial<T[P]>
 };
 
 export interface BoxView {

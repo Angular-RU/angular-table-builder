@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    Injector,
     Input,
     NgZone,
     OnDestroy,
@@ -14,12 +15,14 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { ContextMenuService } from '../../../services/context-menu/context-menu.service';
-import { ContextMenuState } from '../../../services/context-menu/context-menu.interface';
 import { ContextItemEvent } from '../../../interfaces/table-builder.external';
-import { UtilsService } from '../../../services/utils/utils.service';
 import { detectChanges } from '../../../operators/detect-changes';
+import { ContextMenuState } from '../../../services/context-menu/context-menu.interface';
+import { ContextMenuService } from '../../../services/context-menu/context-menu.service';
+import { UtilsService } from '../../../services/utils/utils.service';
 import { MIN_PADDING_CONTEXT_ITEM, SCROLLBAR_WIDTH } from '../../../symbols';
+
+const MENU_WIDTH: number = 300;
 
 @Component({
     selector: 'ngx-context-menu-item',
@@ -33,20 +36,23 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     @Input() public disable: boolean = false;
     @Input() public divider: boolean = false;
     @Input('disable-sub-menu') public disableSubMenu: boolean = false;
-    @Input('sub-menu-width') public subMenuWidth: number = 300;
+    @Input('sub-menu-width') public subMenuWidth: number = MENU_WIDTH;
     @Output() public onClick: EventEmitter<ContextItemEvent> = new EventEmitter();
     @ViewChild('item', { static: false }) public itemRef: ElementRef<HTMLDivElement>;
     public offsetX: number = null;
     public offsetY: number = null;
     private subscription: Subscription;
     private taskId: number;
+    private readonly contextMenu: ContextMenuService;
 
-    constructor(
-        private readonly contextMenu: ContextMenuService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly utils: UtilsService,
-        private readonly ngZone: NgZone
-    ) {}
+    private readonly utils: UtilsService;
+    private readonly ngZone: NgZone;
+
+    constructor(private readonly cd: ChangeDetectorRef, injector: Injector) {
+        this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
+        this.utils = injector.get<UtilsService>(UtilsService);
+        this.ngZone = injector.get<NgZone>(NgZone);
+    }
 
     public get state(): ContextMenuState {
         return this.contextMenu.state;
