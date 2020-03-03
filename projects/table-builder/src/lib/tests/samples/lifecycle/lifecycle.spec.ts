@@ -1,20 +1,20 @@
+/* eslint-disable */
 import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/ng-table-builder';
-import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { ApplicationRef, ChangeDetectorRef, Injector, NgZone, QueryList, SimpleChanges } from '@angular/core';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { SelectionService } from '../../../table/services/selection/selection.service';
-import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
-import { SortableService } from '../../../table/services/sortable/sortable.service';
-import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
-import { UtilsService } from '../../../table/services/utils/utils.service';
-import { ResizableService } from '../../../table/services/resizer/resizable.service';
-import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
+import { TABLE_GLOBAL_OPTIONS } from '../../../table/config/table-global-options';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../../table/config/table-builder-options';
-import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
+import { FilterableService } from '../../../table/services/filterable/filterable.service';
+import { ResizableService } from '../../../table/services/resizer/resizable.service';
+import { SelectionService } from '../../../table/services/selection/selection.service';
+import { SortableService } from '../../../table/services/sortable/sortable.service';
+import { TemplateParserService } from '../../../table/services/template-parser/template-parser.service';
+import { UtilsService } from '../../../table/services/utils/utils.service';
+import { WebWorkerThreadService } from '../../../table/worker/worker-thread.service';
 
-// tslint:disable-next-line:no-big-function
 describe('[TEST]: Lifecycle table', () => {
     let table: TableBuilderComponent;
     let sortable: SortableService;
@@ -56,8 +56,8 @@ describe('[TEST]: Lifecycle table', () => {
     beforeEach(() => {
         const worker: WebWorkerThreadService = new WebWorkerThreadService();
         const zone: NgZone = mockNgZone as NgZone;
-        const view: NgxTableViewChangesService = new NgxTableViewChangesService();
         const app: ApplicationRef = appRef as ApplicationRef;
+        const view: NgxTableViewChangesService = new NgxTableViewChangesService();
         utils = new UtilsService(zone);
 
         const parser: TemplateParserService = new TemplateParserService();
@@ -66,20 +66,47 @@ describe('[TEST]: Lifecycle table', () => {
         resizeService = new ResizableService();
         sortable = new SortableService(worker, utils, zone);
 
-        table = new TableBuilderComponent(
-            new SelectionService(zone),
-            parser,
-            mockChangeDetector as ChangeDetectorRef,
-            zone,
-            utils,
-            resizeService,
-            sortable,
-            new ContextMenuService(),
-            app,
-            new FilterableService(worker, utils, zone, app),
-            draggable,
-            view
-        );
+        table = new TableBuilderComponent(mockChangeDetector as ChangeDetectorRef, {
+            get<T>(token: Any) {
+                switch (token) {
+                    case SelectionService:
+                        return new SelectionService(zone);
+                    case TemplateParserService:
+                        return parser;
+                    case NgZone:
+                        return zone;
+                    case UtilsService:
+                        return utils;
+                    case ResizableService:
+                        return resizeService;
+                    case SortableService:
+                        return sortable;
+                    case ContextMenuService:
+                        return new ContextMenuService();
+                    case ApplicationRef:
+                        return app;
+                    case FilterableService:
+                        return new FilterableService({
+                            get<T>(token: Any) {
+                                switch (token) {
+                                    case ApplicationRef:
+                                        return app;
+                                    case WebWorkerThreadService:
+                                        return worker;
+                                    case UtilsService:
+                                        return utils;
+                                    case NgZone:
+                                        return zone;
+                                }
+                            }
+                        });
+                    case DraggableService:
+                        return draggable;
+                    case NgxTableViewChangesService:
+                        return view;
+                }
+            }
+        });
 
         table.scrollContainer = {
             nativeElement: {
@@ -157,13 +184,13 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
 
-        tick(TableBuilderOptionsImpl.TIME_IDLE);
+        tick(TABLE_GLOBAL_OPTIONS.TIME_IDLE);
 
         expect(table.rendering).toEqual(false);
         expect(table.isRendered).toEqual(true);
         expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
 
-        tick(TableBuilderOptionsImpl.TIME_IDLE + 100);
+        tick(TABLE_GLOBAL_OPTIONS.TIME_IDLE + 100);
 
         expect(table.rendering).toEqual(false);
         expect(table.isRendered).toEqual(true);

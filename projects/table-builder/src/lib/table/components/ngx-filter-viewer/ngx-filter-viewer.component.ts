@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Injector,
     Input,
     NgZone,
     OnChanges,
@@ -10,15 +11,15 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
-import { FilterableService } from '../../services/filterable/filterable.service';
-import { FilterEvent, TableFilterType } from '../../services/filterable/filterable.interface';
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { detectChanges } from '../../operators/detect-changes';
+import { FilterEvent, TableFilterType } from '../../services/filterable/filterable.interface';
+import { FilterableService } from '../../services/filterable/filterable.service';
 
-const { TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_RELOAD }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 @Component({
     selector: 'ngx-filter-viewer',
@@ -34,14 +35,13 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     public founded: boolean = false;
     private subscription: Subscription;
     private taskId: number;
+    private readonly ngZone: NgZone;
+    private readonly filterable: FilterableService;
 
-    constructor(
-        private readonly ngZone: NgZone,
-        private readonly cd: ChangeDetectorRef,
-        private readonly sanitizer: DomSanitizer,
-        private readonly filterable: FilterableService
-    ) {
+    constructor(private readonly cd: ChangeDetectorRef, private readonly sanitizer: DomSanitizer, injector: Injector) {
         this.cd.reattach();
+        this.ngZone = injector.get<NgZone>(NgZone);
+        this.filterable = injector.get<FilterableService>(FilterableService);
     }
 
     private static wrapSelectedHtml(finder: string): string {
@@ -85,6 +85,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
         });
     }
 
+    // eslint-disable-next-line max-lines-per-function,complexity
     private selected(event: FilterEvent): void {
         const value: string = this.filterable.definition[this.key] || event.value;
         const type: TableFilterType = this.filterable.definition[this.key]

@@ -1,0 +1,7 @@
+**/*.lint.ts
+**/*.d.ts
+**/dist/**
+**/.cache/**
+**/node_modules/**
+**/coverage/**
+**/docs/**

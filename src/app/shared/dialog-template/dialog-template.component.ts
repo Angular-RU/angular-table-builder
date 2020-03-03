@@ -1,12 +1,12 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'dialog-template',
     templateUrl: './dialog-template.template.html'
 })
-export class DialogTemplateComponent {
+export class DialogTemplateComponent implements OnInit {
     public form: FormGroup;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: object,

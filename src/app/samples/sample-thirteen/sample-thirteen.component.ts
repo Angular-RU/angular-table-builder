@@ -1,7 +1,8 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { TableEvent, TableRow } from '@angular-ru/ng-table-builder';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -35,7 +36,7 @@ export class SampleThirteenComponent implements AfterViewInit {
         }
     ];
 
-    constructor(private toast: ToastrService) {}
+    constructor(private readonly toast: ToastrService) {}
 
     public ngAfterViewInit(): void {
         this.update();
@@ -48,10 +49,12 @@ export class SampleThirteenComponent implements AfterViewInit {
     }
 
     public rowOnClick(event: TableEvent): void {
-        this.toast.success(JSON.stringify(event, null, 4), 'OnClick', { timeOut: 2000 });
+        const space: number = 4;
+        this.toast.success(JSON.stringify(event, null, space), 'OnClick', { timeOut: 2000 });
     }
 
     public rowDblClick(event: TableEvent): void {
-        this.toast.success(JSON.stringify(event, null, 4), 'DblClick', { timeOut: 2000 });
+        const space: number = 4;
+        this.toast.success(JSON.stringify(event, null, space), 'DblClick', { timeOut: 2000 });
     }
 }

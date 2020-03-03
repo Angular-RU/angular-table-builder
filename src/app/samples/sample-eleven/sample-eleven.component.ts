@@ -1,3 +1,4 @@
+import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -6,10 +7,10 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { SimpleSchemaColumns, TableRow } from '@angular-ru/ng-table-builder';
-import { NGX_ANIMATION } from '../../../../projects/table-builder/src/lib/table/animations/fade.animation';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { NGX_ANIMATION } from '../../../../projects/table-builder/src/lib/table/animations/fade.animation';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -71,7 +72,9 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
     constructor(private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(50, 15).then((data: TableRow[]) => {
+        const rows: number = 50;
+        const cols: number = 15;
+        MocksGenerator.generator(rows, cols).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -100,7 +103,7 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
     }
 
     public updatedSchema(event: SimpleSchemaColumns): void {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.log('Update schema', event); // NOSONAR
     }
 }

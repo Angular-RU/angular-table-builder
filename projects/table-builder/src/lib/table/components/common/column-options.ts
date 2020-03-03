@@ -1,4 +1,5 @@
 import { Input } from '@angular/core';
+
 import { TableFilterType } from '../../services/filterable/filterable.interface';
 
 /**

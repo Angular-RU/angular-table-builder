@@ -1,19 +1,21 @@
 import {
-    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     ContentChild,
+    Injector,
     Input,
-    NgZone,
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FilterableService } from '../../services/filterable/filterable.service';
+
+import { NgxFilterDirective } from '../../directives/ngx-filter.directive';
 import { FilterStateEvent } from '../../services/filterable/filterable.interface';
 import { ModalViewLayer } from '../common/modal-view-layer';
-import { UtilsService } from '../../services/utils/utils.service';
-import { NgxFilterDirective } from '../../directives/ngx-filter.directive';
+
+const FILTER_WIDTH: number = 300;
+const FILTER_MIN_LEFT_X: number = 10;
+const FILTER_MIN_TOP_Y: number = 50;
 
 @Component({
     selector: 'ngx-filter',
@@ -23,23 +25,17 @@ import { NgxFilterDirective } from '../../directives/ngx-filter.directive';
     encapsulation: ViewEncapsulation.None
 })
 export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> implements OnInit {
-    @Input() public width: number = 300;
+    @Input() public width: number = FILTER_WIDTH;
     @Input() public height: number = null;
     @Input('max-height') public maxHeight: number = null;
-    public readonly leftX: number = 10;
-    public readonly topY: number = 50;
+    public readonly leftX: number = FILTER_MIN_LEFT_X;
+    public readonly topY: number = FILTER_MIN_TOP_Y;
 
     @ContentChild(NgxFilterDirective, { static: false })
     public filter: NgxFilterDirective;
 
-    constructor(
-        private readonly filterable: FilterableService,
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly app: ApplicationRef,
-        protected readonly utils: UtilsService,
-        protected readonly ngZone: NgZone
-    ) {
-        super(cd, app, utils, ngZone);
+    constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
+        super(cd, injector);
     }
 
     public get state(): Partial<FilterStateEvent> {
@@ -50,7 +46,7 @@ export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> impleme
         this.filterable.closeFilter();
     }
 
-    public close(event: MouseEvent): void {
+    public close(): void {
         this.closeFilter();
     }
 

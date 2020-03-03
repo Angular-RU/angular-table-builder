@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/ng-table-builder';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -17,7 +17,9 @@ export class SampleSevenComponent implements OnInit, AfterViewInit {
     constructor(private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        MocksGenerator.generator(10000, 30).then((data: TableRow[]) => {
+        const rowsNumber: number = 10000;
+        const cols: number = 30;
+        MocksGenerator.generator(rowsNumber, cols).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -30,6 +32,7 @@ export class SampleSevenComponent implements OnInit, AfterViewInit {
     }
 
     public alert(row: TableRow): void {
-        window.alert(JSON.stringify(row, null, 4));
+        const space: number = 4;
+        window.alert(JSON.stringify(row, null, space));
     }
 }

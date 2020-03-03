@@ -20,7 +20,13 @@ import {
 } from '@angular/core';
 
 import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
-import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
+import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
+import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
+import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
+import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component';
+import { NgxHeaderComponent } from './components/ngx-header/ngx-header.component';
+import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
+import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
 import {
     ColumnsSchema,
     ProduceDisableFn,
@@ -28,26 +34,21 @@ import {
     TableRow,
     ViewPortInfo
 } from './interfaces/table-builder.external';
-import { NgxContextMenuComponent } from './components/ngx-context-menu/ngx-context-menu.component';
-import { TemplateParserService } from './services/template-parser/template-parser.service';
-import { NgxOptionsComponent } from './components/ngx-options/ngx-options.component';
-import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
-import { ContextMenuService } from './services/context-menu/context-menu.service';
-import { NgxHeaderComponent } from './components/ngx-header/ngx-header.component';
-import { NgxFooterComponent } from './components/ngx-footer/ngx-footer.component';
-import { NgxFilterComponent } from './components/ngx-filter/ngx-filter.component';
-import { FilterWorkerEvent } from './services/filterable/filterable.interface';
-import { DraggableService } from './services/draggable/draggable.service';
-import { FilterableService } from './services/filterable/filterable.service';
-import { SelectionService } from './services/selection/selection.service';
-import { TableBuilderOptionsImpl } from './config/table-builder-options';
-import { ResizableService } from './services/resizer/resizable.service';
-import { SortableService } from './services/sortable/sortable.service';
-import { UtilsService } from './services/utils/utils.service';
-import { SelectionMap } from './services/selection/selection';
+import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
+import { ContextMenuService } from './services/context-menu/context-menu.service';
+import { DraggableService } from './services/draggable/draggable.service';
+import { FilterWorkerEvent } from './services/filterable/filterable.interface';
+import { FilterableService } from './services/filterable/filterable.service';
+import { ResizableService } from './services/resizer/resizable.service';
+import { SelectionMap } from './services/selection/selection';
+import { SelectionService } from './services/selection/selection.service';
+import { SortableService } from './services/sortable/sortable.service';
+import { TemplateParserService } from './services/template-parser/template-parser.service';
+import { UtilsService } from './services/utils/utils.service';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
+const MIN_BUFFER: number = 5;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -57,10 +58,10 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = 5;
+    @Input() public buffer: number = MIN_BUFFER;
     @Input('sort-types') public sortTypes: KeyMap = null;
     @Input('buffer-min-offset') public bufferMinOffset: number = 1;
-    @Input('exclude-keys') public excludeKeys: Array<string | RegExp> = [];
+    @Input('exclude-keys') public excludeKeys: (string | RegExp)[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
@@ -128,6 +129,7 @@ export abstract class TableBuilderApiImpl
     public customModelColumnsKeys: string[] = [];
 
     public isDragging: KeyMap<boolean> = {};
+    public accessDragging: boolean = false;
     public abstract readonly templateParser: TemplateParserService;
     public abstract readonly selection: SelectionService;
     public abstract readonly utils: UtilsService;
@@ -137,12 +139,11 @@ export abstract class TableBuilderApiImpl
     public abstract readonly contextMenu: ContextMenuService;
     public abstract readonly filterable: FilterableService;
     public abstract readonly ngZone: NgZone;
-    public accessDragging: boolean = false;
+    protected originalSource: TableRow[];
+    protected renderedCountKeys: number;
     protected abstract readonly app: ApplicationRef;
     protected abstract readonly viewChanges: NgxTableViewChangesService;
     protected abstract readonly draggable: DraggableService;
-    protected originalSource: TableRow[];
-    protected renderedCountKeys: number;
     private filterIdTask: number = null;
     private idleDetectChangesId: number;
 
@@ -222,24 +223,6 @@ export abstract class TableBuilderApiImpl
         return this.source && this.source.length ? this.source : [];
     }
 
-    public abstract markDirtyCheck(): void;
-
-    public abstract markForCheck(): void;
-
-    public abstract markTemplateContentCheck(): void;
-
-    public abstract ngOnChanges(changes: SimpleChanges): void;
-
-    public abstract ngOnInit(): void;
-
-    public abstract ngAfterContentInit(): void;
-
-    public abstract ngAfterViewInit(): void;
-
-    public abstract ngAfterViewChecked(): void;
-
-    public abstract ngOnDestroy(): void;
-
     public recheckViewportChecked(): void {
         this.tableViewportChecked = !this.tableViewportChecked;
         this.idleDetectChanges();
@@ -288,6 +271,7 @@ export abstract class TableBuilderApiImpl
         });
     }
 
+    // eslint-disable-next-line complexity
     public async sortAndFilter(): Promise<void> {
         this.toggleFreeze();
 
@@ -340,9 +324,23 @@ export abstract class TableBuilderApiImpl
         this.idleDetectChanges();
     }
 
-    protected abstract calculateViewport(force?: boolean): void;
+    public abstract markDirtyCheck(): void;
 
-    protected abstract updateViewportInfo(start: number, end: number): void;
+    public abstract markForCheck(): void;
+
+    public abstract markTemplateContentCheck(): void;
+
+    public abstract ngOnChanges(changes: SimpleChanges): void;
+
+    public abstract ngOnInit(): void;
+
+    public abstract ngAfterContentInit(): void;
+
+    public abstract ngAfterViewInit(): void;
+
+    public abstract ngAfterViewChecked(): void;
+
+    public abstract ngOnDestroy(): void;
 
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
@@ -389,6 +387,10 @@ export abstract class TableBuilderApiImpl
         });
     }
 
+    protected abstract calculateViewport(force: boolean): void;
+
+    protected abstract updateViewportInfo(start: number, end: number): void;
+
     private calculateWidth(key: string, width: number): void {
         this.isDragging[key] = true;
         this.onMouseResizeColumn(key, width);
@@ -407,11 +409,12 @@ export abstract class TableBuilderApiImpl
 
     private excluding(keys: string[]): string[] {
         return this.excludeKeys.length
-            ? keys.filter((key: string) => {
-                  return !this.excludeKeys.some((excludeKey: string | RegExp) => {
-                      return excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey;
-                  });
-              })
+            ? keys.filter(
+                  (key: string) =>
+                      !this.excludeKeys.some((excludeKey: string | RegExp) =>
+                          excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey
+                      )
+              )
             : keys;
     }
 }

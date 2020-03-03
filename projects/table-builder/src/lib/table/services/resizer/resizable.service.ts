@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { fromEvent, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { Fn } from '../../interfaces/table-builder.internal';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
 
-const { COLUMN_RESIZE_MIN_WIDTH }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { COLUMN_RESIZE_MIN_WIDTH }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 @Injectable()
 export class ResizableService {
@@ -21,6 +21,7 @@ export class ResizableService {
         }
     }
 
+    // eslint-disable-next-line max-params
     public resize(event: MouseEvent, column: HTMLElement, mousemove: Fn, mouseup: Fn): void {
         this.destroyed$ = new ReplaySubject(1);
         this.startX = event.pageX;

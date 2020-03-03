@@ -1,7 +1,6 @@
-/* tslint:disable */
+/* eslint-disable */
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 @NgModule({
     imports: [
@@ -39,9 +38,7 @@ import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table
                         {
                             path: 'second',
                             loadChildren: () =>
-                                import('./samples/sample-second/sample-second.module').then(
-                                    (m: Any) => m.SampleSecondModule
-                                )
+                                import('./samples/sample-second/sample-second.module').then((m) => m.SampleSecondModule)
                         },
                         {
                             path: 'third',

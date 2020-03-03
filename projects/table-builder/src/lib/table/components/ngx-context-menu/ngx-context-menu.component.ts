@@ -1,20 +1,19 @@
 import {
-    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Injector,
     Input,
-    NgZone,
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
 
-import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { ContextMenuState } from '../../services/context-menu/context-menu.interface';
-import { UtilsService } from '../../services/utils/utils.service';
 import { ModalViewLayer } from '../common/modal-view-layer';
 
-// @dynamic
+const SIZE: number = 300;
+const MAX_HEIGHT: number = 400;
+
 @Component({
     selector: 'ngx-context-menu',
     templateUrl: './ngx-context-menu.component.html',
@@ -23,18 +22,12 @@ import { ModalViewLayer } from '../common/modal-view-layer';
     encapsulation: ViewEncapsulation.None
 })
 export class NgxContextMenuComponent extends ModalViewLayer<ContextMenuState> implements OnInit {
-    @Input() public width: number = 300;
-    @Input() public height: number = 300;
-    @Input('max-height') public maxHeight: number = 400;
+    @Input() public width: number = SIZE;
+    @Input() public height: number = SIZE;
+    @Input('max-height') public maxHeight: number = MAX_HEIGHT;
 
-    constructor(
-        private readonly contextMenu: ContextMenuService,
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly app: ApplicationRef,
-        protected readonly utils: UtilsService,
-        protected readonly ngZone: NgZone
-    ) {
-        super(cd, app, utils, ngZone);
+    constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
+        super(cd, injector);
     }
 
     public get state(): ContextMenuState {

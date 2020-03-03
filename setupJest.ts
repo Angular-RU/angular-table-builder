@@ -1,5 +1,6 @@
 import 'jest-preset-angular';
 import 'intersection-observer';
+
 import { Any } from './projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 const jsdom: Any = require('jsdom');

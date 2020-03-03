@@ -1,15 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import {
     NgxTableViewChangesService,
     SimpleSchemaColumns,
     TableRow,
     TableUpdateSchema
 } from '@angular-ru/ng-table-builder';
-
-import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Subscription } from 'rxjs';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
+import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 declare const hljs: Any;
 
@@ -35,7 +35,10 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
             (JSON.parse(window.localStorage.getItem(this.testName)) as TableUpdateSchema) || null;
         this.schema = (schema && schema.columns) || [];
 
-        MocksGenerator.generator(1000, 59).then((data: TableRow[]) => {
+        const rowNumber: number = 1000;
+        const colsNumber: number = 59;
+
+        MocksGenerator.generator(rowNumber, colsNumber).then((data: TableRow[]) => {
             this.data = data;
             this.cd.detectChanges();
         });
@@ -54,7 +57,7 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private save(event: TableUpdateSchema): void {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.log(event); // NOSONAR
         window.localStorage.setItem(this.testName, JSON.stringify(event));
         this.schema = [...event.columns];

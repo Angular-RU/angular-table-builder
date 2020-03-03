@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { SampleFirstSecondComponent } from './sample-first-second.component';
 import { SharedModule } from '../../shared/shared.module';
+import { SampleFirstSecondComponent } from './sample-first-second.component';
 
 @NgModule({
     declarations: [SampleFirstSecondComponent],

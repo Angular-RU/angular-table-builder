@@ -1,6 +1,7 @@
-import { UtilsService } from '../../table/services/utils/utils.service';
+/* eslint-disable */
 import { KeyMap } from '../../table/interfaces/table-builder.internal';
 import { checkValueIsEmpty } from '../../table/operators/check-value-is-empty';
+import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('UtilsService', () => {
     let utils: UtilsService;

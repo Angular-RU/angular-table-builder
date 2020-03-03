@@ -1,5 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/ng-table-builder';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
@@ -14,6 +14,7 @@ export class SampleFourthComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
     public elements: TableRow[];
 
+    // eslint-disable-next-line max-lines-per-function
     public ngOnInit(): void {
         this.data = [
             {

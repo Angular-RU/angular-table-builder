@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { TableRow } from '@angular-ru/ng-table-builder';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+
 import { MocksGenerator } from '../../../../helpers/utils/mocks-generator';
-import { DialogTemplateComponent } from '../../shared/dialog-template/dialog-template.component';
 import { detectChanges } from '../../../../projects/table-builder/src/lib/table/operators/detect-changes';
+import { DialogTemplateComponent } from '../../shared/dialog-template/dialog-template.component';
 
 @Component({
     selector: 'sample-first-second',
@@ -21,10 +22,11 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     ) {}
 
     public ngOnInit(): void {
+        const DEFAULT_TIMEOUT: number = 14500;
         this.ngZone.runOutsideAngular(() => {
             this.idInterval = window.setInterval(() => {
                 this.updateTable();
-            }, 14500);
+            }, DEFAULT_TIMEOUT);
         });
     }
 
@@ -51,7 +53,9 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     }
 
     public updateTable(): void {
-        MocksGenerator.generator(1, 10, this.data.length).then((row: TableRow[]) => {
+        const rows: number = 1;
+        const cols: number = 10;
+        MocksGenerator.generator(rows, cols, this.data.length).then((row: TableRow[]) => {
             this.data = this.data.concat(row);
             this.cd.detectChanges();
         });

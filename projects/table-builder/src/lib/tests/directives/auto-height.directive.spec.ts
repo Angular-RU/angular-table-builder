@@ -1,8 +1,9 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+/* eslint-disable */
 import { ElementRef, NgZone } from '@angular/core';
+import { fakeAsync, tick } from '@angular/core/testing';
 
-import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 import { AutoHeightDirective } from '../../table/directives/auto-height.directive';
+import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: auto height', () => {
     let directive: AutoHeightDirective;
@@ -23,9 +24,7 @@ describe('[TEST]: auto height', () => {
             setAttribute: (_: string, styleResult: string): void => {
                 style = styleResult;
             },
-            getBoundingClientRect: (): Partial<ClientRect> => {
-                return { top: 10 };
-            }
+            getBoundingClientRect: (): Partial<ClientRect> => ({ top: 10 })
         }
     };
 

@@ -1,6 +1,4 @@
 import { CdkDragStart } from '@angular/cdk/drag-drop';
-import { catchError, takeUntil } from 'rxjs/operators';
-import { EMPTY, fromEvent, Subject } from 'rxjs';
 import {
     AfterContentInit,
     AfterViewChecked,
@@ -10,6 +8,7 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    Injector,
     NgZone,
     OnChanges,
     OnDestroy,
@@ -19,7 +18,13 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { EMPTY, fromEvent, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 
+import { NGX_ANIMATION } from './animations/fade.animation';
+import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
+import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
+import { ColumnsSchema } from './interfaces/table-builder.external';
 import {
     Any,
     Fn,
@@ -29,24 +34,20 @@ import {
     TableSimpleChanges,
     TemplateKeys
 } from './interfaces/table-builder.internal';
-import { TableBuilderApiImpl } from './table-builder.api';
-import { NGX_ANIMATION } from './animations/fade.animation';
-import { ColumnsSchema } from './interfaces/table-builder.external';
-import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
-import { TemplateParserService } from './services/template-parser/template-parser.service';
-import { SortableService } from './services/sortable/sortable.service';
-import { SelectionService } from './services/selection/selection.service';
-import { UtilsService } from './services/utils/utils.service';
-import { ResizableService } from './services/resizer/resizable.service';
-import { TableBuilderOptionsImpl } from './config/table-builder-options';
-import { ContextMenuService } from './services/context-menu/context-menu.service';
-import { FilterableService } from './services/filterable/filterable.service';
-import { TableFilterType } from './services/filterable/filterable.interface';
-import { DraggableService } from './services/draggable/draggable.service';
-import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
 import { detectChanges } from './operators/detect-changes';
+import { ContextMenuService } from './services/context-menu/context-menu.service';
+import { DraggableService } from './services/draggable/draggable.service';
+import { TableFilterType } from './services/filterable/filterable.interface';
+import { FilterableService } from './services/filterable/filterable.service';
+import { ResizableService } from './services/resizer/resizable.service';
+import { SelectionService } from './services/selection/selection.service';
+import { SortableService } from './services/sortable/sortable.service';
+import { NgxTableViewChangesService } from './services/table-view-changes/ngx-table-view-changes.service';
+import { TemplateParserService } from './services/template-parser/template-parser.service';
+import { UtilsService } from './services/utils/utils.service';
+import { TableBuilderApiImpl } from './table-builder.api';
 
-const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TableBuilderOptionsImpl = TableBuilderOptionsImpl;
+const { TIME_IDLE, TIME_RELOAD, FRAME_TIME, MACRO_TIME }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 @Component({
     selector: 'ngx-table-builder',
@@ -81,6 +82,17 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public footerRef: ElementRef<HTMLDivElement>;
     public sourceIsNull: boolean;
     public afterViewInitDone: boolean = false;
+    public readonly selection: SelectionService;
+    public readonly templateParser: TemplateParserService;
+    public readonly ngZone: NgZone;
+    public readonly utils: UtilsService;
+    public readonly resize: ResizableService;
+    public readonly sortable: SortableService;
+    public readonly contextMenu: ContextMenuService;
+    public readonly filterable: FilterableService;
+    protected readonly app: ApplicationRef;
+    protected readonly draggable: DraggableService;
+    protected readonly viewChanges: NgxTableViewChangesService;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private timeoutCheckedTaskId: number = null;
@@ -89,21 +101,19 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private timeoutViewCheckedId: number;
     private frameCalculateViewportId: number;
 
-    constructor(
-        public readonly selection: SelectionService,
-        public readonly templateParser: TemplateParserService,
-        public readonly cd: ChangeDetectorRef,
-        public readonly ngZone: NgZone,
-        public readonly utils: UtilsService,
-        public readonly resize: ResizableService,
-        public readonly sortable: SortableService,
-        public readonly contextMenu: ContextMenuService,
-        protected readonly app: ApplicationRef,
-        public readonly filterable: FilterableService,
-        protected readonly draggable: DraggableService,
-        protected readonly viewChanges: NgxTableViewChangesService
-    ) {
+    constructor(public readonly cd: ChangeDetectorRef, injector: Injector) {
         super();
+        this.selection = injector.get<SelectionService>(SelectionService);
+        this.templateParser = injector.get<TemplateParserService>(TemplateParserService);
+        this.ngZone = injector.get<NgZone>(NgZone);
+        this.utils = injector.get<UtilsService>(UtilsService);
+        this.resize = injector.get<ResizableService>(ResizableService);
+        this.sortable = injector.get<SortableService>(SortableService);
+        this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
+        this.app = injector.get<ApplicationRef>(ApplicationRef);
+        this.filterable = injector.get<FilterableService>(FilterableService);
+        this.draggable = injector.get<DraggableService>(DraggableService);
+        this.viewChanges = injector.get<NgxTableViewChangesService>(NgxTableViewChangesService);
     }
 
     public get selectionEntries(): KeyMap<boolean> {
@@ -243,7 +253,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     public generateColumnsKeyMap(keys: string[]): KeyMap<boolean> {
         const map: KeyMap<boolean> = {};
-        keys.forEach((key: string) => (map[key] = true));
+        keys.forEach(
+            (key: string): void => {
+                map[key] = true;
+            }
+        );
+
         return map;
     }
 
@@ -261,7 +276,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const columnList: string[] = this.generateDisplayedColumns();
         const drawTask: Fn<string[], Promise<void>> = this.syncDrawColumns.bind(this);
 
-        if (!this.sortable.empty) {
+        if (this.sortable.notEmpty) {
             this.sortAndFilter().then(() => drawTask(columnList).then(() => this.emitRendered()));
         } else {
             drawTask(columnList).then(() => this.emitRendered());
@@ -290,11 +305,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             window.setTimeout(() => {
                 this.tableViewportChecked = true;
                 detectChanges(this.cd);
-            }, TableBuilderOptionsImpl.TIME_IDLE);
+            }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
         });
     }
 
-    protected calculateViewport(force?: boolean): void {
+    // TODO: NEED REFACTOR
+    // eslint-disable-next-line max-lines-per-function,complexity
+    protected calculateViewport(force: boolean = false): void {
         if (!this.source || !this.viewportHeight) {
             return;
         }
@@ -303,11 +320,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const isDownMoved: boolean = this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
 
         this.viewPortInfo.prevScrollOffsetTop = this.scrollOffsetTop;
-        let start: number = this.getOffsetVisibleStartIndex();
+        const start: number = this.getOffsetVisibleStartIndex();
         let end: number = start + this.getVisibleCountItems() + this.buffer;
         end = end > this.sourceRef.length ? this.sourceRef.length : end;
 
-        let lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
+        const lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
         const bufferOffset: number = isDownMoved
             ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
             : start - this.viewPortInfo.startIndex;
@@ -315,7 +332,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         if (typeof this.viewPortInfo.startIndex !== 'number') {
             this.updateViewportInfo(start, end);
         } else if (bufferOffset <= this.bufferMinOffset && bufferOffset >= 0) {
-            let newStart = start - this.buffer;
+            let newStart: number = start - this.buffer;
             newStart = newStart >= 0 ? newStart : 0;
             this.updateViewportInfo(newStart, end);
         } else if (bufferOffset < 0 || force) {
@@ -356,15 +373,16 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private afterViewInitChecked(): void {
         this.ngZone.runOutsideAngular(
-            () =>
-                (this.timeoutViewCheckedId = window.setTimeout(() => {
+            (): void => {
+                this.timeoutViewCheckedId = window.setTimeout(() => {
                     this.afterViewInitDone = true;
                     this.listenScroll();
                     if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
                         this.emitRendered();
                         detectChanges(this.cd);
                     }
-                }, MACRO_TIME))
+                }, MACRO_TIME);
+            }
         );
     }
 

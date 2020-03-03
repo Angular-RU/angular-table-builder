@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
+
 import { ColumnsSchema } from '../../interfaces/table-builder.external';
-import { SortOrderType } from '../../services/sortable/sortable.interfaces';
+import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { FilterableService } from '../../services/filterable/filterable.service';
+import { SortOrderType } from '../../services/sortable/sortable.interfaces';
 import { OVERLOAD_WIDTH_TABLE_HEAD_CELL } from '../../symbols';
 
 @Component({

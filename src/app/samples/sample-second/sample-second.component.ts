@@ -1,5 +1,6 @@
 /* tslint:disable:no-unused-css */
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
+
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 
 interface LicenseSample {
@@ -44,9 +45,7 @@ export class SampleSecondComponent implements AfterViewInit {
     public licenses: LicenseSample[] = [];
 
     public columns: string[] = ['name', 'position', 'weight', 'symbol', 'position', 'weight', 'symbol', 'status'];
-
-    constructor(private readonly cd: ChangeDetectorRef) {}
-
+    // noinspection DuplicatedCode
     public elements: PeriodicElement[] = [
         { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
         { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
@@ -60,36 +59,42 @@ export class SampleSecondComponent implements AfterViewInit {
         { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' }
     ];
 
+    constructor(private readonly cd: ChangeDetectorRef) {}
+
+    // eslint-disable-next-line max-lines-per-function
     public ngAfterViewInit(): void {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
 
-        setTimeout(() => {
-            this.licenses = [
-                {
-                    id: 1,
-                    name: 'single',
-                    price: 29.3
-                },
-                {
-                    id: 2,
-                    name: 'developer',
-                    price: 49.8
-                },
-                {
-                    id: 3,
-                    name: 'premium',
-                    price: 99.5
-                },
-                {
-                    id: 4,
-                    name: 'enterprise',
-                    price: 199
-                }
-            ];
+        setTimeout(
+            // eslint-disable-next-line max-lines-per-function
+            (): void => {
+                this.licenses = [
+                    {
+                        id: 1,
+                        name: 'single',
+                        price: 29.3
+                    },
+                    {
+                        id: 2,
+                        name: 'developer',
+                        price: 49.8
+                    },
+                    {
+                        id: 3,
+                        name: 'premium',
+                        price: 99.5
+                    },
+                    {
+                        id: 4,
+                        name: 'enterprise',
+                        price: 199
+                    }
+                ];
 
-            this.cd.detectChanges();
-        });
+                this.cd.detectChanges();
+            }
+        );
     }
 }

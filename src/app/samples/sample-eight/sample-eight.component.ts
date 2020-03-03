@@ -1,3 +1,4 @@
+import { shallowUpdateRow, TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -7,8 +8,8 @@ import {
     OnDestroy,
     OnInit
 } from '@angular/core';
+
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
-import { shallowUpdateRow, TableRow } from '@angular-ru/ng-table-builder';
 
 declare const hljs: Any;
 
@@ -76,6 +77,7 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public ngOnInit(): void {
         this.updateTable();
+        const DEFAULT_TIMEOUT: number = 14500;
 
         this.ngZone.runOutsideAngular(() => {
             this.idInterval = window.setInterval(() => {
@@ -83,48 +85,12 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.updateTable();
                     this.cd.detectChanges();
                 }
-            }, 14500);
+            }, DEFAULT_TIMEOUT);
         });
     }
 
     public ngOnDestroy(): void {
         window.clearInterval(this.idInterval);
-    }
-
-    private updateTable(): void {
-        this.data = new Array(1000).fill(0).map((_: TableRow, index: number) => ({
-            id: index,
-            symbol: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
-            item:
-                'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of' +
-                ' classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin' +
-                ' professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, ' +
-                'consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical ' +
-                'literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 ' +
-                'of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC.' +
-                ' This book is a treatise on the theory of ethics, very popular during the Renaissance. The first' +
-                ' line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n' +
-                '\n' +
-                'The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. ' +
-                'Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in' +
-                ' their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
-            cost: Math.floor(Math.random() * 100) + 1,
-            active: true,
-            name:
-                NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-                ' ' +
-                NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-                '.',
-            weight: Math.round(Math.random() * 100).toString(),
-            firstName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
-            lastName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
-            dateOfBirth: 1985,
-            spokenLanguages: {
-                native: 'English' + Math.round(Math.random() * 100).toString(),
-                fluent: 'Spanish' + Math.round(Math.random() * 100).toString(),
-                intermediate: 'Chinese' + Math.round(Math.random() * 100).toString()
-            }
-        }));
     }
 
     public updateRow(row: TableRow, key: string, value: Any): void {
@@ -136,5 +102,51 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
         document.querySelectorAll('pre code').forEach((block: Any) => {
             hljs.highlightBlock(block);
         });
+    }
+
+    // eslint-disable-next-line max-lines-per-function
+    private updateTable(): void {
+        const length: number = 1000;
+        this.data = new Array(length).fill(0).map(
+            // eslint-disable-next-line max-lines-per-function
+            (_: TableRow, index: number): Any => ({
+                id: index,
+                symbol: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
+                item:
+                    'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of' +
+                    ' classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin' +
+                    ' professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, ' +
+                    'consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical ' +
+                    'literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 ' +
+                    'of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC.' +
+                    ' This book is a treatise on the theory of ethics, very popular during the Renaissance. The first' +
+                    ' line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n' +
+                    '\n' +
+                    'The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. ' +
+                    'Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in' +
+                    ' their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                // eslint-disable-next-line no-magic-numbers
+                cost: Math.floor(Math.random() * 100) + 1,
+                active: true,
+                name:
+                    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
+                    ' ' +
+                    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
+                    '.',
+                // eslint-disable-next-line no-magic-numbers
+                weight: Math.round(Math.random() * 100).toString(),
+                firstName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
+                lastName: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
+                dateOfBirth: 1985,
+                spokenLanguages: {
+                    // eslint-disable-next-line no-magic-numbers
+                    native: 'English' + Math.round(Math.random() * 100).toString(),
+                    // eslint-disable-next-line no-magic-numbers
+                    fluent: 'Spanish' + Math.round(Math.random() * 100).toString(),
+                    // eslint-disable-next-line no-magic-numbers
+                    intermediate: 'Chinese' + Math.round(Math.random() * 100).toString()
+                }
+            })
+        );
     }
 }

@@ -9,9 +9,11 @@ import {
 } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { ColumnsSchema, ImplicitContext, TableRow, ViewPortInfo } from '../../interfaces/table-builder.external';
 import { trim } from '../../operators/trim';
-import { TableBuilderOptionsImpl } from '../../config/table-builder-options';
+
+const TIME_IDLE: number = 1500;
 
 @Component({
     selector: 'table-cell',
@@ -31,7 +33,7 @@ export class TableCellComponent implements OnDestroy {
     public contextType: typeof ImplicitContext = ImplicitContext;
     private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
-    private readonly timeIdle: number = 1500;
+    private readonly timeIdle: number = TIME_IDLE;
     private nodeSubscription: Subscription;
     private closeElemSub: Subscription;
     private timeoutShowedFrameId: number = null;
@@ -99,6 +101,7 @@ export class TableCellComponent implements OnDestroy {
         });
     }
 
+    // eslint-disable-next-line max-lines-per-function
     private showTooltip(element: HTMLDivElement, event: MouseEvent): void {
         const empty: boolean = trim(element.innerText).length === 0;
 
@@ -109,14 +112,14 @@ export class TableCellComponent implements OnDestroy {
 
         const elem: HTMLDivElement = document.createElement('div');
         elem.classList.add(this.overflowSelector);
-
-        const left: number = event.clientX - 15;
-        const top: number = event.clientY - 15;
+        const minOffset: number = 15;
+        const left: number = event.clientX - minOffset;
+        const top: number = event.clientY - minOffset;
 
         elem.style.cssText = `left: ${left}px; top: ${top}px`;
 
         document.body.appendChild(elem);
-        const innerText = String(element.innerText || '').trim();
+        const innerText: string = String(element.innerText || '').trim();
         this.overflowContentElem.innerHTML = `<div class="${this.closeButtonSelector}"></div>${innerText}`;
 
         this.nodeSubscription = fromEvent(elem, 'mouseleave').subscribe(() => this.removeElement());
@@ -129,7 +132,7 @@ export class TableCellComponent implements OnDestroy {
                 } else {
                     this.overflowContentElem.classList.add('visible');
                 }
-            }, TableBuilderOptionsImpl.TIME_IDLE);
+            }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
         });
     }
 
@@ -144,7 +147,7 @@ export class TableCellComponent implements OnDestroy {
 
                     this.nodeSubscription && this.nodeSubscription.unsubscribe();
                     this.closeElemSub && this.closeElemSub.unsubscribe();
-                }, TableBuilderOptionsImpl.TIME_IDLE);
+                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
             });
         }
     }

@@ -4,7 +4,7 @@ import { DeepPartial } from '../../interfaces/table-builder.internal';
 export class SchemaBuilder {
     constructor(public columns: ColumnsSchema[] = []) {}
 
-    public exportColumns(): Array<DeepPartial<ColumnsSchema>> {
+    public exportColumns(): DeepPartial<ColumnsSchema>[] {
         return this.columns.map((column: ColumnsSchema) => ({
             key: column.key,
             width: column.width,

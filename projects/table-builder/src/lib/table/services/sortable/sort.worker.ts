@@ -1,7 +1,8 @@
 import { TableRow } from '../../interfaces/table-builder.external';
-import { SortableMessage } from './sortable.interfaces';
 import { Any, KeyMap } from '../../interfaces/table-builder.internal';
+import { SortableMessage } from './sortable.interfaces';
 
+// eslint-disable-next-line max-lines-per-function
 export function sortWorker(message: SortableMessage): TableRow[] {
     enum OrderType {
         DESC = 'desc',
@@ -46,12 +47,14 @@ export function sortWorker(message: SortableMessage): TableRow[] {
             return sorted;
         }
 
+        // eslint-disable-next-line complexity
         private static getMatchesKeys(keys: KeyMap<OrderType | number>): KeyMap<number> {
             const matches: KeyMap<number> = {};
 
             for (const key in keys) {
                 if (keys.hasOwnProperty(key)) {
                     matches[key] =
+                        // eslint-disable-next-line no-nested-ternary
                         keys[key] === OrderType.DESC || keys[key] === -1
                             ? -1
                             : keys[key] === OrderType.SKIP || keys[key] === 0
@@ -63,6 +66,7 @@ export function sortWorker(message: SortableMessage): TableRow[] {
             return matches;
         }
 
+        // eslint-disable-next-line max-params
         private static deepSort(key: string, leftHand: Any, rightHand: Any, depth: number): number {
             const a: Any = getValueByPath(leftHand, key);
             const b: Any = getValueByPath(rightHand, key);
@@ -70,6 +74,7 @@ export function sortWorker(message: SortableMessage): TableRow[] {
         }
 
         private static shallowSort(a: Any, b: Any, depth?: number): number {
+            // eslint-disable-next-line no-negated-condition
             const currentDepth: number = depth !== null ? depth : 1;
             b = checkValueIsEmpty(b) ? '' : b;
 
