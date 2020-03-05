@@ -31,11 +31,15 @@ export class SortableService {
             (resolve: Resolver<TableRow[]>): void => {
                 this.thread
                     .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
-                    .then((sorted: TableRow[]) => {
-                        this.zone.runOutsideAngular(() =>
-                            window.setTimeout(() => resolve(sorted), TABLE_GLOBAL_OPTIONS.TIME_IDLE)
-                        );
-                    });
+                    .then(
+                        (sorted: TableRow[]): void => {
+                            this.zone.runOutsideAngular(
+                                (): void => {
+                                    window.setTimeout((): void => resolve(sorted), TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+                                }
+                            );
+                        }
+                    );
             }
         );
     }

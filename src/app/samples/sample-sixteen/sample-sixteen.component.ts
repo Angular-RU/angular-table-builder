@@ -38,18 +38,22 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
         const rowNumber: number = 1000;
         const colsNumber: number = 59;
 
-        MocksGenerator.generator(rowNumber, colsNumber).then((data: TableRow[]) => {
-            this.data = data;
-            this.cd.detectChanges();
-        });
+        MocksGenerator.generator(rowNumber, colsNumber).then(
+            (data: TableRow[]): void => {
+                this.data = data;
+                this.cd.detectChanges();
+            }
+        );
 
-        this.sub = this.tableChanges.events.subscribe((event: TableUpdateSchema) => this.save(event));
+        this.sub = this.tableChanges.events.subscribe((event: TableUpdateSchema): void => this.save(event));
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
     }
 
     public ngOnDestroy(): void {

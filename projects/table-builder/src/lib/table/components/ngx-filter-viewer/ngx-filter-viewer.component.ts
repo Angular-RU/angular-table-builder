@@ -55,15 +55,17 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.subscription = this.filterable.events.subscribe((event: FilterEvent) => {
-            if (this.filterable.definition[this.key] || this.filterable.globalFilterValue) {
-                this.changeSelection(event);
-            } else {
-                this.defaultHtmlValue();
-            }
+        this.subscription = this.filterable.events.subscribe(
+            (event: FilterEvent): void => {
+                if (this.filterable.definition[this.key] || this.filterable.globalFilterValue) {
+                    this.changeSelection(event);
+                } else {
+                    this.defaultHtmlValue();
+                }
 
-            detectChanges(this.cd);
-        });
+                detectChanges(this.cd);
+            }
+        );
     }
 
     public ngOnDestroy(): void {
@@ -71,18 +73,20 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     private changeSelection(event: FilterEvent): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.clearInterval(this.taskId);
-            this.taskId = window.setTimeout(() => {
-                if (event.value || this.filterable.definition[this.key]) {
-                    this.selected(event);
-                } else {
-                    this.defaultHtmlValue();
-                }
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.clearInterval(this.taskId);
+                this.taskId = window.setTimeout((): void => {
+                    if (event.value || this.filterable.definition[this.key]) {
+                        this.selected(event);
+                    } else {
+                        this.defaultHtmlValue();
+                    }
 
-                detectChanges(this.cd);
-            }, TIME_RELOAD + this.index);
-        });
+                    detectChanges(this.cd);
+                }, TIME_RELOAD + this.index);
+            }
+        );
     }
 
     // eslint-disable-next-line max-lines-per-function,complexity
@@ -109,8 +113,9 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
             regexp = new RegExp(`${escapedValue}`, 'ig');
         }
 
-        const trustedHtml: string = String(this.text).replace(regexp, (finder: string) =>
-            NgxFilterViewerComponent.wrapSelectedHtml(finder)
+        const trustedHtml: string = String(this.text).replace(
+            regexp,
+            (finder: string): string => NgxFilterViewerComponent.wrapSelectedHtml(finder)
         );
 
         this.html = this.sanitizer.bypassSecurityTrustHtml(trustedHtml);

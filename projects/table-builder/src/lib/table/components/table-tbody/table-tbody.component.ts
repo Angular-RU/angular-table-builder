@@ -90,16 +90,18 @@ export class TableTbodyComponent {
 
     // eslint-disable-next-line max-params
     public handleOnClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
-        this.ngZone.runOutsideAngular(() => {
-            if (this.enableSelection) {
-                this.selection.selectionTaskIdle = window.setTimeout(() => {
-                    this.selection.selectRow(row, event, this.source);
-                    event.preventDefault();
-                    detectChanges(this.cd);
-                    window.requestAnimationFrame(() => this.app.tick());
-                }, SELECTION_DELAY);
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                if (this.enableSelection) {
+                    this.selection.selectionTaskIdle = window.setTimeout((): void => {
+                        this.selection.selectRow(row, event, this.source);
+                        event.preventDefault();
+                        detectChanges(this.cd);
+                        window.requestAnimationFrame((): void => this.app.tick());
+                    }, SELECTION_DELAY);
+                }
             }
-        });
+        );
 
         this.handleEventEmitter(row, key, event, emitter);
     }
@@ -118,11 +120,15 @@ export class TableTbodyComponent {
     // eslint-disable-next-line max-params
     private handleEventEmitter(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         if (emitter) {
-            this.ngZone.runOutsideAngular(() => {
-                window.setTimeout(() => {
-                    emitter.emit(this.generateTableCellInfo(row, key, event));
-                });
-            });
+            this.ngZone.runOutsideAngular(
+                (): void => {
+                    window.setTimeout(
+                        (): void => {
+                            emitter.emit(this.generateTableCellInfo(row, key, event));
+                        }
+                    );
+                }
+            );
         }
     }
 

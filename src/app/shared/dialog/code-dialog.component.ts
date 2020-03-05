@@ -13,9 +13,11 @@ export class CodeDialogComponent implements AfterViewInit {
     constructor(@Inject(MAT_DIALOG_DATA) public data: Any, public dialogRef: MatDialogRef<unknown>) {}
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
     }
 
     public close(): void {

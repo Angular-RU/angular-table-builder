@@ -13,8 +13,13 @@ export class DraggableService {
     }
 
     public drop(previousKey: string, currentKey: string): void {
-        const previousIndex: number = this.columns.findIndex((column: ColumnsSchema) => column.key === previousKey);
-        const currentIndex: number = this.columns.findIndex((column: ColumnsSchema) => column.key === currentKey);
+        const previousIndex: number = this.columns.findIndex(
+            (column: ColumnsSchema): boolean => column.key === previousKey
+        );
+
+        const currentIndex: number = this.columns.findIndex(
+            (column: ColumnsSchema): boolean => column.key === currentKey
+        );
 
         if (this.canDropped(previousIndex, currentIndex)) {
             if (currentIndex === this.columns.length - 1) {

@@ -55,7 +55,11 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
 
     public updateView(): void {
         detectChanges(this.cd);
-        this.ngZone.runOutsideAngular(() => window.requestAnimationFrame(() => this.app.tick()));
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.requestAnimationFrame((): void => this.app.tick());
+            }
+        );
     }
 
     public ngOnDestroy(): void {
@@ -67,12 +71,16 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public abstract close(event: MouseEvent): void;
 
     protected update(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => {
-                this.isViewed = this.state.opened;
-                this.updateView();
-                window.setTimeout(() => this.updateView());
-            });
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout(
+                    (): void => {
+                        this.isViewed = this.state.opened;
+                        this.updateView();
+                        window.setTimeout((): void => this.updateView());
+                    }
+                );
+            }
+        );
     }
 }

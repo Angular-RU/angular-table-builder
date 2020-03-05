@@ -79,14 +79,16 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
         this.updateTable();
         const DEFAULT_TIMEOUT: number = 14500;
 
-        this.ngZone.runOutsideAngular(() => {
-            this.idInterval = window.setInterval(() => {
-                if (this.regenerate) {
-                    this.updateTable();
-                    this.cd.detectChanges();
-                }
-            }, DEFAULT_TIMEOUT);
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                this.idInterval = window.setInterval((): void => {
+                    if (this.regenerate) {
+                        this.updateTable();
+                        this.cd.detectChanges();
+                    }
+                }, DEFAULT_TIMEOUT);
+            }
+        );
     }
 
     public ngOnDestroy(): void {
@@ -99,9 +101,11 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
     }
 
     // eslint-disable-next-line max-lines-per-function

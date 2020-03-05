@@ -52,7 +52,7 @@ export class SelectionService implements OnDestroy {
             this.selectionModel.clear();
         } else {
             this.selectionModel.toggledAll = true;
-            rows.forEach((row: TableRow) => this.selectionModel.select(this.getIdByRow(row), row, false));
+            rows.forEach((row: TableRow): void => this.selectionModel.select(this.getIdByRow(row), row, false));
         }
 
         this.checkIsAllSelected(rows);
@@ -65,14 +65,16 @@ export class SelectionService implements OnDestroy {
     }
 
     public toggle(row: TableRow): void {
-        this.ngZone.runOutsideAngular(() => window.clearInterval(this.selectionTaskIdle));
+        this.ngZone.runOutsideAngular((): void => window.clearInterval(this.selectionTaskIdle));
         this.selectionModel.toggle(this.getIdByRow(row), row, true);
         this.onChanges.next();
     }
 
     public selectRow(row: TableRow, event: MouseEvent, rows: TableRow[]): void {
         const { shiftKey, ctrlKey }: MouseEvent = event;
-        const index: number = rows.findIndex((item: TableRow) => item[this.primaryKey] === row[this.primaryKey]);
+        const index: number = rows.findIndex(
+            (item: TableRow): boolean => item[this.primaryKey] === row[this.primaryKey]
+        );
 
         if (shiftKey) {
             this.multipleSelectByShiftKeydown(index, rows);
@@ -104,12 +106,14 @@ export class SelectionService implements OnDestroy {
     }
 
     private listenShiftKeyByType(type: KeyType): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.handler[type] = ({ shiftKey }: KeyboardEvent): void => {
-                this.selectionStart = { status: shiftKey };
-            };
-            window.addEventListener(type, this.handler[type], true);
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                this.handler[type] = ({ shiftKey }: KeyboardEvent): void => {
+                    this.selectionStart = { status: shiftKey };
+                };
+                window.addEventListener(type, this.handler[type], true);
+            }
+        );
     }
 
     private removeListenerByType(type: string): void {

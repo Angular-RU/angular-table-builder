@@ -28,18 +28,20 @@ export class UtilsService implements UtilsInterface {
     public mergeDeep<T>(target: T, source: T): T {
         const output: T = { ...target };
         if (this.isObject(target) && this.isObject(source)) {
-            Object.keys(source).forEach((key: string) => {
-                if (this.isObject(source[key])) {
-                    const empty: boolean = !(key in target);
-                    if (empty) {
-                        Object.assign(output, { [key]: source[key] });
+            Object.keys(source).forEach(
+                (key: string): void => {
+                    if (this.isObject(source[key])) {
+                        const empty: boolean = !(key in target);
+                        if (empty) {
+                            Object.assign(output, { [key]: source[key] });
+                        } else {
+                            output[key] = this.mergeDeep(target[key], source[key]);
+                        }
                     } else {
-                        output[key] = this.mergeDeep(target[key], source[key]);
+                        Object.assign(output, { [key]: source[key] });
                     }
-                } else {
-                    Object.assign(output, { [key]: source[key] });
                 }
-            });
+            );
         }
 
         return output;
@@ -73,12 +75,16 @@ export class UtilsService implements UtilsInterface {
     public requestAnimationFrame(callback: Fn): Promise<void> {
         return new Promise(
             (resolve: Fn): void => {
-                this.zone.runOutsideAngular(() => {
-                    window.requestAnimationFrame(() => {
-                        callback();
-                        resolve();
-                    });
-                });
+                this.zone.runOutsideAngular(
+                    (): void => {
+                        window.requestAnimationFrame(
+                            (): void => {
+                                callback();
+                                resolve();
+                            }
+                        );
+                    }
+                );
             }
         );
     }
@@ -95,12 +101,14 @@ export class UtilsService implements UtilsInterface {
     public macrotask(callback: Fn, time: number = 0): Promise<void> {
         return new Promise(
             (resolve: Fn): void => {
-                this.zone.runOutsideAngular(() => {
-                    window.setTimeout(() => {
-                        callback();
-                        resolve();
-                    }, time);
-                });
+                this.zone.runOutsideAngular(
+                    (): void => {
+                        window.setTimeout((): void => {
+                            callback();
+                            resolve();
+                        }, time);
+                    }
+                );
             }
         );
     }

@@ -31,13 +31,15 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
         this.updateTable();
 
         const DEFAULT_TIMEOUT: number = 14500;
-        this.ngZone.runOutsideAngular(() => {
-            this.idInterval = window.setInterval(() => {
-                if (this.regenerate) {
-                    this.updateTable();
-                }
-            }, DEFAULT_TIMEOUT);
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                this.idInterval = window.setInterval((): void => {
+                    if (this.regenerate) {
+                        this.updateTable();
+                    }
+                }, DEFAULT_TIMEOUT);
+            }
+        );
     }
 
     public ngOnDestroy(): void {
@@ -75,7 +77,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                 {
                     const rows: number = 10;
                     const cols: number = 5;
-                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => this.setData(data));
                 }
                 break;
 
@@ -83,7 +85,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                 {
                     const rows: number = 100;
                     const cols: number = 20;
-                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => this.setData(data));
                 }
                 break;
 
@@ -91,7 +93,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                 {
                     const rows: number = 1000;
                     const cols: number = 30;
-                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => this.setData(data));
                 }
                 break;
 
@@ -99,7 +101,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                 {
                     const rows: number = 10000;
                     const cols: number = 50;
-                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => this.setData(data));
                 }
                 break;
 
@@ -107,7 +109,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                 {
                     const rows: number = 100000;
                     const cols: number = 100;
-                    MocksGenerator.generator(rows, cols).then((data: TableRow[]) => this.setData(data));
+                    MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => this.setData(data));
                 }
                 break;
         }
@@ -117,7 +119,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
     private setData(data: TableRow[]): void {
         this.simple = data;
         const timeout: number = 500;
-        window.setTimeout(() => {
+        window.setTimeout((): void => {
             this.loading = false;
             this.cd.detectChanges();
         }, timeout);

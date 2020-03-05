@@ -67,13 +67,14 @@ export class TemplateParserService {
     }
 
     public toggleColumnVisibility(key: string): void {
-        this.schema.columns = this.schema.columns.map((column: ColumnsSchema) =>
-            key === column.key
-                ? {
-                      ...column,
-                      isVisible: !column.isVisible
-                  }
-                : column
+        this.schema.columns = this.schema.columns.map(
+            (column: ColumnsSchema): ColumnsSchema =>
+                key === column.key
+                    ? {
+                          ...column,
+                          isVisible: !column.isVisible
+                      }
+                    : column
         );
 
         this.synchronizedReference();
@@ -89,28 +90,31 @@ export class TemplateParserService {
         this.columnOptions = columnOptions || new ColumnOptions();
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public parse(templates: QueryListRef<NgxColumnComponent>): void {
         if (!templates) {
             return;
         }
 
-        templates.forEach((column: NgxColumnComponent) => {
-            const { key, customKey, importantTemplate }: NgxColumnComponent = column;
-            const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
+        templates.forEach(
+            (column: NgxColumnComponent): void => {
+                const { key, customKey, importantTemplate }: NgxColumnComponent = column;
+                const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
 
-            if (needTemplateCheck) {
-                if (importantTemplate !== false) {
-                    this.templateKeys.delete(key);
-                    this.compileColumnMetadata(column);
-                    this.overrideTemplateKeys.add(key);
-                } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
-                    this.compileColumnMetadata(column);
-                    this.templateKeys.add(key);
+                if (needTemplateCheck) {
+                    if (importantTemplate !== false) {
+                        this.templateKeys.delete(key);
+                        this.compileColumnMetadata(column);
+                        this.overrideTemplateKeys.add(key);
+                    } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
+                        this.compileColumnMetadata(column);
+                        this.templateKeys.add(key);
+                    }
+
+                    this.fullTemplateKeys.add(key);
                 }
-
-                this.fullTemplateKeys.add(key);
             }
-        });
+        );
     }
 
     public mutateColumnSchema(key: string, partialSchema: Partial<ColumnsSchema>): void {
@@ -167,8 +171,10 @@ export class TemplateParserService {
     }
 
     private synchronizedReference(): void {
-        this.schema.columns.forEach((column: ColumnsSchema) => {
-            this.compiledTemplates[column.key] = column;
-        });
+        this.schema.columns.forEach(
+            (column: ColumnsSchema): void => {
+                this.compiledTemplates[column.key] = column;
+            }
+        );
     }
 }

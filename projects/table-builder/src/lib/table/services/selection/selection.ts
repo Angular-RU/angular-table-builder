@@ -16,9 +16,11 @@ export class SelectionMap {
         const arrayBuffer: [RowId, boolean][] = Array.from(this.map.entries());
         const newEntries: KeyMap<boolean> = {};
 
-        arrayBuffer.forEach(([key, value]: [RowId, boolean]) => {
-            newEntries[key] = value;
-        });
+        arrayBuffer.forEach(
+            ([key, value]: [RowId, boolean]): void => {
+                newEntries[key] = value;
+            }
+        );
 
         this.entries = newEntries;
     }

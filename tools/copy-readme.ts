@@ -14,10 +14,13 @@ function copyReadmeAfterSuccessfulBuild(): void {
 
     createReadStream(path)
         .pipe(createWriteStream(join(__dirname, `../dist/${name}/README.md`)))
-        .on('finish', () => {
-            // eslint-disable-next-line no-console
-            console.log(`Successfully copied README.md into dist/${name} folder!`);
-        });
+        .on(
+            'finish',
+            (): void => {
+                // eslint-disable-next-line no-console
+                console.log(`Successfully copied README.md into dist/${name} folder!`);
+            }
+        );
 }
 
 copyReadmeAfterSuccessfulBuild();

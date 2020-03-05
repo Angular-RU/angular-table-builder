@@ -44,7 +44,7 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
         const cols2: number = 30;
 
         Promise.all([MocksGenerator.generator(rows1, cols1), MocksGenerator.generator(rows2, cols2)]).then(
-            ([first, second]: [TableRow[], TableRow[]]) => {
+            ([first, second]: [TableRow[], TableRow[]]): void => {
                 this.dataFirst = first;
                 this.dataSecond = second;
                 this.cd.detectChanges();
@@ -53,18 +53,24 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
     }
 
     public update(): void {
-        this.ngZone.runOutsideAngular(() => {
-            setTimeout(() => {
-                this.cd.detectChanges();
-                this.app.tick();
-            });
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                setTimeout(
+                    (): void => {
+                        this.cd.detectChanges();
+                        this.app.tick();
+                    }
+                );
+            }
+        );
     }
 
     // eslint-disable-next-line max-lines-per-function

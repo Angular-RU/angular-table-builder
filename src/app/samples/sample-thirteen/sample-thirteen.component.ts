@@ -43,9 +43,11 @@ export class SampleThirteenComponent implements AfterViewInit {
     }
 
     public update(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
     }
 
     public rowOnClick(event: TableEvent): void {
