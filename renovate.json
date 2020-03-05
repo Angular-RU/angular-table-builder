@@ -1,0 +1,20 @@
+{
+    "automerge": false,
+    "rangeStrategy": "bump",
+    "packageFiles": ["package.json"],
+    "groupName": "all dependencies",
+    "separateMajorMinor": false,
+    "groupSlug": "all",
+    "major": {
+        "dependencies": { "enabled": false },
+        "devDependencies": { "enabled": false }
+    },
+    "packageRules": [
+        {
+            "packagePatterns": ["*"],
+            "excludePackagePatterns": ["^@angular/", "^@angular-devkit/"],
+            "groupName": "all dependencies",
+            "groupSlug": "all-dependencies"
+        }
+    ]
+}
