@@ -1,5 +1,5 @@
 import { TableRow } from '../../interfaces/table-builder.external';
-import { KeyMap } from '../../interfaces/table-builder.internal';
+import { Any, KeyMap } from '../../interfaces/table-builder.internal';
 import { FilterableMessage, FilterGlobalOpts, TableFilterType } from './filterable.interface';
 
 // eslint-disable-next-line max-lines-per-function
@@ -14,13 +14,14 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     let result: TableRow[] = source;
 
     if (value) {
-        result = source.filter((item: TableRow) =>
-            type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item)
+        result = source.filter(
+            (item: TableRow): boolean =>
+                type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item)
         );
     }
 
     if (!columns.isEmpty) {
-        result = result.filter((item: TableRow) => multipleFilter(item));
+        result = result.filter((item: TableRow): boolean => multipleFilter(item));
     }
 
     function globalFilter(item: TableRow): boolean {
@@ -115,7 +116,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     }
 
     function getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
-        return path ? path.split('.').reduce((str: string, key: string) => str && str[key], object) : object;
+        return path ? path.split('.').reduce((str: string, key: string): Any => str && str[key], object) : object;
     }
 
     function mutate<T>(object: KeyMap, depthGraph: KeyMap<T>, key: string): void {

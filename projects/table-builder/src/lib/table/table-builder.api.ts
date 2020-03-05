@@ -157,8 +157,8 @@ export abstract class TableBuilderApiImpl
 
     public get visibleColumns(): string[] {
         return this.columnSchema
-            .filter((column: ColumnsSchema) => column.isVisible)
-            .map((column: ColumnsSchema) => column.key);
+            .filter((column: ColumnsSchema): boolean => column.isVisible)
+            .map((column: ColumnsSchema): string => column.key);
     }
 
     /**
@@ -166,7 +166,7 @@ export abstract class TableBuilderApiImpl
      * returned ordered displayed columns [ 'id', 'value', 'id', 'position', 'value' ]
      */
     public get positionColumns(): string[] {
-        return this.columnSchema.map((column: ColumnsSchema) => column.key);
+        return this.columnSchema.map((column: ColumnsSchema): string => column.key);
     }
 
     public get columnSchema(): ColumnsSchema[] {
@@ -180,7 +180,9 @@ export abstract class TableBuilderApiImpl
      * recommendation: {{ table.selectionModel.size  }}
      */
     public get selectedItems(): TableRow[] {
-        return this.sourceRef.filter((item: TableRow[]) => this.selectionModel.entries[item[this.primaryKey]]);
+        return this.sourceRef.filter(
+            (item: TableRow[]): TableRow => this.selectionModel.entries[item[this.primaryKey]]
+        );
     }
 
     public get firstItem(): TableRow {
@@ -249,26 +251,28 @@ export abstract class TableBuilderApiImpl
         this.resize.resize(
             event as MouseEvent,
             column,
-            (width: number) => this.calculateWidth(key, width),
-            () => this.afterCalculateWidth()
+            (width: number): void => this.calculateWidth(key, width),
+            (): void => this.afterCalculateWidth()
         );
 
         event.preventDefault();
     }
 
     public filter(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.clearInterval(this.filterIdTask);
-            this.filterIdTask = window.setTimeout(() => {
-                if (!this.enableFiltering) {
-                    throw new Error(
-                        'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
-                    );
-                }
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.clearInterval(this.filterIdTask);
+                this.filterIdTask = window.setTimeout((): void => {
+                    if (!this.enableFiltering) {
+                        throw new Error(
+                            'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
+                        );
+                    }
 
-                this.sortAndFilter().then(() => this.reCheckDefinitions());
-            }, MACRO_TIME);
-        });
+                    this.sortAndFilter().then((): void => this.reCheckDefinitions());
+                }, MACRO_TIME);
+            }
+        );
     }
 
     // eslint-disable-next-line complexity
@@ -294,7 +298,7 @@ export abstract class TableBuilderApiImpl
 
     public sortByKey(key: string): void {
         this.sortable.updateSortKey(key);
-        this.sortAndFilter().then(() => this.reCheckDefinitions());
+        this.sortAndFilter().then((): void => this.reCheckDefinitions());
     }
 
     public drop({ previousIndex, currentIndex }: CdkDragSortEvent): void {
@@ -307,7 +311,7 @@ export abstract class TableBuilderApiImpl
     public toggleFreeze(time: number = null, callback: Fn = null): void {
         this.isFrozenView = !this.isFrozenView;
         if (time) {
-            window.setTimeout(() => {
+            window.setTimeout((): void => {
                 detectChanges(this.cd);
                 callback && callback();
             }, time);
@@ -345,9 +349,11 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.ngZone.runOutsideAngular(() => {
-            window.setTimeout(() => this.calculateViewport(true), TIME_RELOAD);
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout((): void => this.calculateViewport(true), TIME_RELOAD);
+            }
+        );
     }
 
     protected forceCalculateViewport(): void {
@@ -381,10 +387,12 @@ export abstract class TableBuilderApiImpl
     }
 
     protected idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.cancelAnimationFrame(this.idleDetectChangesId);
-            this.idleDetectChangesId = window.requestAnimationFrame(() => detectChanges(this.cd));
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.cancelAnimationFrame(this.idleDetectChangesId);
+                this.idleDetectChangesId = window.requestAnimationFrame((): void => detectChanges(this.cd));
+            }
+        );
     }
 
     protected abstract calculateViewport(force: boolean): void;
@@ -410,9 +418,10 @@ export abstract class TableBuilderApiImpl
     private excluding(keys: string[]): string[] {
         return this.excludeKeys.length
             ? keys.filter(
-                  (key: string) =>
-                      !this.excludeKeys.some((excludeKey: string | RegExp) =>
-                          excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey
+                  (key: string): boolean =>
+                      !this.excludeKeys.some(
+                          (excludeKey: string | RegExp): boolean =>
+                              excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey
                       )
               )
             : keys;

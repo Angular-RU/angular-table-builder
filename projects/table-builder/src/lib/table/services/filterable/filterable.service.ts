@@ -52,9 +52,10 @@ export class FilterableService implements FilterableInterface {
 
     public get filterValueExist(): boolean {
         const keyFilterValues: string = Object.values(this.definition).reduce(
-            (acc: string, next: string) => acc + next,
+            (acc: string, next: string): string => acc + next,
             ''
         );
+
         return (this.globalFilterValue && this.globalFilterValue.length > 0) || keyFilterValues.length > 0;
     }
 
@@ -110,22 +111,26 @@ export class FilterableService implements FilterableInterface {
                     }
                 };
 
-                this.thread.run<TableRow[], FilterableMessage>(filterAllWorker, message).then((sorted: TableRow[]) => {
-                    this.ngZone.runOutsideAngular(() =>
-                        window.setTimeout(() => {
-                            resolve({
-                                source: sorted,
-                                fireSelection: (): void => {
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    window.setTimeout((): void => {
-                                        this.events.next({ value, type });
-                                        this.app.tick();
-                                    }, TIME_IDLE);
-                                }
-                            });
-                        }, TIME_IDLE)
-                    );
-                });
+                this.thread.run<TableRow[], FilterableMessage>(filterAllWorker, message).then(
+                    (sorted: TableRow[]): void => {
+                        this.ngZone.runOutsideAngular(
+                            (): void => {
+                                window.setTimeout((): void => {
+                                    resolve({
+                                        source: sorted,
+                                        fireSelection: (): void => {
+                                            // eslint-disable-next-line max-nested-callbacks
+                                            window.setTimeout((): void => {
+                                                this.events.next({ value, type });
+                                                this.app.tick();
+                                            }, TIME_IDLE);
+                                        }
+                                    });
+                                }, TIME_IDLE);
+                            }
+                        );
+                    }
+                );
             }
         );
     }

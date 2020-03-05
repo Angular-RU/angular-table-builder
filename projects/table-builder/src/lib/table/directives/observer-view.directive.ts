@@ -12,10 +12,12 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     public ngAfterViewInit(): void {
         this.observer = new IntersectionObserver(
             (entries: IntersectionObserverEntry[]): void => {
-                entries.forEach((entry: IntersectionObserverEntry) => {
-                    this.ngZone.runOutsideAngular(() => this.observeChange(entry));
-                    this.previousRation = entry.intersectionRatio;
-                });
+                entries.forEach(
+                    (entry: IntersectionObserverEntry): void => {
+                        this.ngZone.runOutsideAngular((): void => this.observeChange(entry));
+                        this.previousRation = entry.intersectionRatio;
+                    }
+                );
             },
             {
                 root: null,
@@ -36,6 +38,6 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     private observeChange(entry: IntersectionObserverEntry): void {
         const isVisible: boolean = entry.intersectionRatio > this.previousRation || entry.isIntersecting;
         cancelAnimationFrame(this.frameId);
-        this.frameId = window.requestAnimationFrame(() => this.observeVisible.emit(isVisible));
+        this.frameId = window.requestAnimationFrame((): void => this.observeVisible.emit(isVisible));
     }
 }

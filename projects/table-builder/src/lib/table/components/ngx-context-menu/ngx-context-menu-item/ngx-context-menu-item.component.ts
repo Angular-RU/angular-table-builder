@@ -67,7 +67,7 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.subscription = this.contextMenu.events.subscribe(() => detectChanges(this.cd));
+        this.subscription = this.contextMenu.events.subscribe((): void => detectChanges(this.cd));
     }
 
     public ngOnDestroy(): void {
@@ -113,15 +113,19 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     }
 
     private deferCloseMenu(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.taskId = window.setTimeout(() => this.contextMenu.close());
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                this.taskId = window.setTimeout((): void => this.contextMenu.close());
+            }
+        );
     }
 
     private deferUpdateView(): void {
-        this.ngZone.runOutsideAngular(() => {
-            window.clearInterval(this.taskId);
-            this.taskId = window.setTimeout(() => detectChanges(this.cd));
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.clearInterval(this.taskId);
+                this.taskId = window.setTimeout((): void => detectChanges(this.cd));
+            }
+        );
     }
 }

@@ -63,9 +63,11 @@ export class SampleSecondComponent implements AfterViewInit {
 
     // eslint-disable-next-line max-lines-per-function
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach((block: Any) => {
-            hljs.highlightBlock(block);
-        });
+        document.querySelectorAll('pre code').forEach(
+            (block: Any): void => {
+                hljs.highlightBlock(block);
+            }
+        );
 
         setTimeout(
             // eslint-disable-next-line max-lines-per-function

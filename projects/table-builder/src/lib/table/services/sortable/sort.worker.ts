@@ -10,7 +10,7 @@ export function sortWorker(message: SortableMessage): TableRow[] {
     }
 
     function getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
-        return path ? path.split('.').reduce((value: string, key: string) => value && value[key], object) : object;
+        return path ? path.split('.').reduce((value: string, key: string): Any => value && value[key], object) : object;
     }
 
     function checkValueIsEmpty(value: Any): boolean {
@@ -27,7 +27,7 @@ export function sortWorker(message: SortableMessage): TableRow[] {
             }
 
             const matches: KeyMap<number> = Sortable.getMatchesKeys(keys);
-            return data.sort((a: unknown, b: unknown) => Sortable.multiSort(a, b, matches));
+            return data.sort((a: unknown, b: unknown): Any => Sortable.multiSort(a, b, matches));
         }
 
         private static multiSort(a: unknown, b: unknown, matches: KeyMap<number>): Any {

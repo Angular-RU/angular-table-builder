@@ -29,11 +29,11 @@ export class ResizableService {
 
         fromEvent(document, 'mousemove')
             .pipe(takeUntil(this.destroyed$))
-            .subscribe((e: MouseEvent) => this.computeEvent(e, mousemove));
+            .subscribe((e: MouseEvent): void => this.computeEvent(e, mousemove));
 
         fromEvent(document, 'mouseup')
             .pipe(takeUntil(this.destroyed$))
-            .subscribe((e: MouseEvent) => this.unsubscribe(e, mouseup));
+            .subscribe((e: MouseEvent): void => this.unsubscribe(e, mouseup));
     }
 
     private computeEvent(event: MouseEvent, mousemove: Fn): void {

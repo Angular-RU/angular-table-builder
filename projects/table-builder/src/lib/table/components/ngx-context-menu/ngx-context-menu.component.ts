@@ -35,7 +35,7 @@ export class NgxContextMenuComponent extends ModalViewLayer<ContextMenuState> im
     }
 
     public ngOnInit(): void {
-        this.subscription = this.contextMenu.events.subscribe(() => this.update());
+        this.subscription = this.contextMenu.events.subscribe((): void => this.update());
     }
 
     public close(event: MouseEvent): void {

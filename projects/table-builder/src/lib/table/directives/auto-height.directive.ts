@@ -112,14 +112,16 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            fromEvent(window, 'resize', { passive: true })
-                .pipe(
-                    delay(MIN_RESIZE_DELAY),
-                    takeUntil(this.destroy$)
-                )
-                .subscribe(() => this.recalculateTableSize());
-        });
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                fromEvent(window, 'resize', { passive: true })
+                    .pipe(
+                        delay(MIN_RESIZE_DELAY),
+                        takeUntil(this.destroy$)
+                    )
+                    .subscribe((): void => this.recalculateTableSize());
+            }
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -134,19 +136,21 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     public recalculateTableSize(): void {
-        this.ngZone.runOutsideAngular(() => {
-            clearTimeout(this.taskId);
-            this.taskId = window.setTimeout(() => {
-                if (this.canCalculated && !this.isDirtyCheck) {
-                    this.markForCheck();
-                }
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                clearTimeout(this.taskId);
+                this.taskId = window.setTimeout((): void => {
+                    if (this.canCalculated && !this.isDirtyCheck) {
+                        this.markForCheck();
+                    }
 
-                if (this.isDirtyCheck && this.autoHeight.inViewport) {
-                    this.calculateHeight();
-                    this.recalculatedHeight.emit();
-                }
-            }, this.delay);
-        });
+                    if (this.isDirtyCheck && this.autoHeight.inViewport) {
+                        this.calculateHeight();
+                        this.recalculatedHeight.emit();
+                    }
+                }, this.delay);
+            }
+        );
     }
 
     public calculateHeight(): void {

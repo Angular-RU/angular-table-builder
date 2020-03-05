@@ -51,6 +51,6 @@ export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> impleme
     }
 
     public ngOnInit(): void {
-        this.subscription = this.filterable.filterOpenEvents.subscribe(() => this.update());
+        this.subscription = this.filterable.filterOpenEvents.subscribe((): void => this.update());
     }
 }
