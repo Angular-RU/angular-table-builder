@@ -141,7 +141,27 @@
 
                         <ngx-context-menu>
                             <ngx-context-menu-item contextTitle divider>
-                                <ngx-menu-content>Menu</ngx-menu-content>
+                                <ngx-menu-content>Menu {{ table.selection.selectionModel.size }}</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item1</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item2</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item3</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item divider>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item4</ngx-menu-content>
                             </ngx-context-menu-item>
 
                             <ngx-context-menu-item>

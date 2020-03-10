@@ -20,7 +20,6 @@ import {
 } from '../../interfaces/table-builder.external';
 import { KeyMap, RecalculatedStatus, TableBrowserEvent } from '../../interfaces/table-builder.internal';
 import { getDeepValue } from '../../operators/deep-value';
-import { detectChanges } from '../../operators/detect-changes';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { SelectionService } from '../../services/selection/selection.service';
 
@@ -34,9 +33,12 @@ const SELECTION_DELAY: number = 100;
     encapsulation: ViewEncapsulation.None
 })
 export class TableTbodyComponent {
+    public selection: SelectionService;
+    public contextMenu: ContextMenuService;
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
     @Input() public isRendered: boolean;
+    @Input() public viewPortItems: TableRow[];
     @Input('offset-top') public offsetTop: number;
     @Input('primary-key') public primaryKey: string;
     @Input() public recalculated: RecalculatedStatus;
@@ -52,9 +54,6 @@ export class TableTbodyComponent {
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
-
-    public selection: SelectionService;
-    public contextMenu: ContextMenuService;
     private readonly app: ApplicationRef;
     private readonly ngZone: NgZone;
 
@@ -68,6 +67,11 @@ export class TableTbodyComponent {
 
     public get canSelectTextInTable(): boolean {
         return !this.selection.selectionStart.status;
+    }
+
+    public trackBy(index: number, position: number): number {
+        const row: TableRow = this.source[position];
+        return row ? row[this.primaryKey] : index;
     }
 
     public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
@@ -96,7 +100,6 @@ export class TableTbodyComponent {
                     this.selection.selectionTaskIdle = window.setTimeout((): void => {
                         this.selection.selectRow(row, event, this.source);
                         event.preventDefault();
-                        detectChanges(this.cd);
                         window.requestAnimationFrame((): void => this.app.tick());
                     }, SELECTION_DELAY);
                 }

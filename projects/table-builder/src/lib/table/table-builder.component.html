@@ -86,7 +86,7 @@
                     [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <ng-container *ngIf="column['visible']">
+                    <div *ngIf="column['visible']" [@fadeAnimation]>
                         <table-thead
                             cdkDragHandle
                             [column-schema]="columnSchema"
@@ -105,10 +105,11 @@
 
                         <table-tbody
                             [striped]="striped"
-                            [source]="viewPortItems"
+                            [source]="source"
                             [primary-key]="primaryKey"
                             [isRendered]="isRendered"
                             [recalculated]="recalculated"
+                            [viewPortItems]="viewPortItems"
                             [column-schema]="columnSchema"
                             [head-height]="headLineHeight"
                             [viewport-info]="viewPortInfo"
@@ -124,7 +125,7 @@
                             [column-virtual-height]="columnVirtualHeight"
                         >
                         </table-tbody>
-                    </ng-container>
+                    </div>
                 </div>
             </ng-container>
         </div>

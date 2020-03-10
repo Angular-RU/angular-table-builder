@@ -58,6 +58,10 @@
         justify-content: center;
         padding: 5px 20px;
 
+        &--body {
+            position: absolute;
+        }
+
         &--custom-cell:not(&--is-model-cell) {
             padding: 0;
         }

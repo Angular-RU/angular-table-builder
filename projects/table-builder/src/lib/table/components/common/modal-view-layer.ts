@@ -1,4 +1,4 @@
-import { ApplicationRef, ChangeDetectorRef, Injector, NgZone, OnDestroy } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, ElementRef, Injector, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { MousePosition } from '../../interfaces/table-builder.internal';
@@ -25,6 +25,9 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     protected readonly ngZone: NgZone;
     protected readonly contextMenu: ContextMenuService;
 
+    @ViewChild('menu', { static: false })
+    protected menu: ElementRef<HTMLDivElement>;
+
     protected constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
         this.app = injector.get<ApplicationRef>(ApplicationRef);
         this.utils = injector.get<UtilsService>(UtilsService);
@@ -47,7 +50,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     }
 
     public get overflowY(): number {
-        const overflowY: number = this.height + this.top - this.utils.bodyRect.height;
+        const overflowY: number = this.getHeight() + this.top - this.utils.bodyRect.height;
         return overflowY > 0 ? overflowY + SCROLLBAR_WIDTH : 0;
     }
 
@@ -82,5 +85,18 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
                 );
             }
         );
+    }
+
+    private getHeight(): number {
+        let height: number;
+
+        try {
+            height =
+                this.menu.nativeElement.scrollHeight > this.height ? this.menu.nativeElement.offsetHeight : this.height;
+        } catch (e) {
+            height = this.height;
+        }
+
+        return height;
     }
 }

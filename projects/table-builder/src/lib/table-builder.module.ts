@@ -23,6 +23,7 @@ import { NgxFilterDirective } from './table/directives/ngx-filter.directive';
 import { ObserverViewDirective } from './table/directives/observer-view.directive';
 import { TemplateBodyTdDirective } from './table/directives/rows/template-body-td.directive';
 import { TemplateHeadThDirective } from './table/directives/rows/template-head-th.directive';
+import { VirtualForDirective } from './table/directives/virtual-for.directive';
 import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { DisableRowPipe } from './table/pipes/disable-row.pipe';
@@ -57,7 +58,8 @@ import { WebWorkerThreadService } from './table/worker/worker-thread.service';
         NgxFilterDirective,
         DragIconComponent,
         NgxSourceNullComponent,
-        DisableRowPipe
+        DisableRowPipe,
+        VirtualForDirective
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [

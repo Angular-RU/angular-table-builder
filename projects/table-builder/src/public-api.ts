@@ -1,7 +1,6 @@
 /*
  * Public API Surface of table-builder
  */
-export * from './lib/table/operators';
 export * from './lib/table/interfaces/table-builder.external';
 export { TableBuilderModule } from './lib/table-builder.module';
 export { TableFilterType } from './lib/table/services/filterable/filterable.interface';

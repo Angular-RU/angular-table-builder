@@ -1,4 +1,4 @@
-import { shallowUpdateRow, TableRow } from '@angular-ru/ng-table-builder';
+import { TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 
 import { Any } from '../../../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
+import { detectChanges } from '../../../../projects/table-builder/src/lib/table/operators/detect-changes';
 
 declare const hljs: Any;
 
@@ -53,6 +54,12 @@ const COLORS: string[] = [
     'gray'
 ];
 
+function replaceAt(array: Any[], index: number, value: Any): Any[] {
+    const ret: Any[] = array.slice(0);
+    ret[index] = value;
+    return ret;
+}
+
 @Component({
     selector: 'sample-eight',
     templateUrl: './sample-eight.component.html',
@@ -70,8 +77,9 @@ const COLORS: string[] = [
 })
 export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
     public data: TableRow[];
-    public regenerate: boolean = true;
+    public regenerate: boolean = false;
     private idInterval: number = null;
+    private timeout: number;
 
     constructor(private readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {}
 
@@ -96,8 +104,15 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public updateRow(row: TableRow, key: string, value: Any): void {
-        this.data = shallowUpdateRow(this.data, row, key, value);
-        this.cd.detectChanges();
+        const newRow: TableRow = { ...row, [key]: value };
+        this.data = replaceAt(this.data, this.data.indexOf(row), newRow);
+        detectChanges(this.cd);
+    }
+
+    public asyncRow(row: TableRow, key: string, value: Any): void {
+        const time: number = 500;
+        window.clearTimeout(this.timeout);
+        this.timeout = setTimeout((): void => this.updateRow(row, key, value), time);
     }
 
     public ngAfterViewInit(): void {
