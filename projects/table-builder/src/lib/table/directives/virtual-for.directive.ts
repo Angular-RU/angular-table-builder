@@ -1,4 +1,4 @@
-import { Directive, EmbeddedViewRef, Input, OnDestroy, TemplateRef, ViewContainerRef, ViewRef } from '@angular/core';
+import { Directive, EmbeddedViewRef, Input, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
 
 import { InternalVirtualRef, TableRow, VirtualContext, VirtualIndex } from '../interfaces/table-builder.external';
 import { detectChanges } from '../operators/detect-changes';
@@ -87,7 +87,6 @@ export class VirtualForDirective implements OnDestroy {
 
     private removeOldNodes(): void {
         if (this.dirty) {
-            // this.view.clear();
             this.dirty = false;
             return;
         }

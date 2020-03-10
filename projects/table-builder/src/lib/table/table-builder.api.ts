@@ -325,6 +325,19 @@ export abstract class TableBuilderApiImpl
         this.idleDetectChanges();
     }
 
+    public idleDetectChanges(): void {
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.cancelAnimationFrame(this.idleDetectChangesId);
+                this.idleDetectChangesId = window.requestAnimationFrame(
+                    (): void => {
+                        detectChanges(this.cd);
+                    }
+                );
+            }
+        );
+    }
+
     public abstract markDirtyCheck(): void;
 
     public abstract markForCheck(): void;
@@ -381,19 +394,6 @@ export abstract class TableBuilderApiImpl
 
     protected getModelKeys(): string[] {
         return this.utils.flattenKeysByRow(this.firstItem);
-    }
-
-    protected idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.cancelAnimationFrame(this.idleDetectChangesId);
-                this.idleDetectChangesId = window.requestAnimationFrame(
-                    (): void => {
-                        detectChanges(this.cd);
-                    }
-                );
-            }
-        );
     }
 
     protected abstract calculateViewport(force: boolean): void;
