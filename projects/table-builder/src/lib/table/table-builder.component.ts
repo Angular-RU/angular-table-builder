@@ -72,7 +72,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public isRendered: boolean = false;
     public contentInit: boolean = false;
     public contentCheck: boolean = false;
-    public showedCellByDefault: boolean = true;
     public recalculated: RecalculatedStatus = { recalculateHeight: false };
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;

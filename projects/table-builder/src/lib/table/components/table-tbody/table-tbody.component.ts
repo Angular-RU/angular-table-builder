@@ -48,7 +48,6 @@ export class TableTbodyComponent {
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
-    @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('client-row-height') public clientRowHeight: number;
