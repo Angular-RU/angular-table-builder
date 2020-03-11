@@ -27,6 +27,7 @@ import { VirtualForDirective } from './table/directives/virtual-for.directive';
 import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { DisableRowPipe } from './table/pipes/disable-row.pipe';
+import { SelectedItemsPipe } from './table/pipes/selected-items.pipe';
 import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
@@ -59,7 +60,8 @@ import { WebWorkerThreadService } from './table/worker/worker-thread.service';
         DragIconComponent,
         NgxSourceNullComponent,
         DisableRowPipe,
-        VirtualForDirective
+        VirtualForDirective,
+        SelectedItemsPipe
     ],
     providers: [UtilsService, WebWorkerThreadService],
     exports: [
@@ -78,7 +80,8 @@ import { WebWorkerThreadService } from './table/worker/worker-thread.service';
         NgxFilterViewerComponent,
         NgxFilterComponent,
         NgxFilterDirective,
-        NgxSourceNullComponent
+        NgxSourceNullComponent,
+        SelectedItemsPipe
     ]
 })
 export class TableBuilderModule {

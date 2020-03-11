@@ -20,3 +20,4 @@ export { NgxSourceNullComponent } from './lib/table/components/ngx-source-null/n
 export { NgxEmptyComponent } from './lib/table/components/ngx-empty/ngx-empty.component';
 export { NgxHeaderComponent } from './lib/table/components/ngx-header/ngx-header.component';
 export { NgxFooterComponent } from './lib/table/components/ngx-footer/ngx-footer.component';
+export { SelectedItemsPipe } from './lib/table/pipes/selected-items.pipe';
