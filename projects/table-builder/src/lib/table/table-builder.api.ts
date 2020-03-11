@@ -96,7 +96,6 @@ export abstract class TableBuilderApiImpl
     @ViewChild('tableViewport', { static: true })
     public scrollContainer: ElementRef<HTMLElement>;
 
-    public viewPortItems: TableRow[];
     public viewPortInfo: ViewPortInfo = {};
     public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;

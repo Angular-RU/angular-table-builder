@@ -38,7 +38,6 @@ export class TableTbodyComponent {
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
     @Input() public isRendered: boolean;
-    @Input() public viewPortItems: TableRow[];
     @Input('offset-top') public offsetTop: number;
     @Input('primary-key') public primaryKey: string;
     @Input() public recalculated: RecalculatedStatus;
@@ -67,11 +66,6 @@ export class TableTbodyComponent {
 
     public get canSelectTextInTable(): boolean {
         return !this.selection.selectionStart.status;
-    }
-
-    public trackBy(index: number, position: number): number {
-        const row: TableRow = this.source[position];
-        return row ? row[this.primaryKey] : index;
     }
 
     public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {

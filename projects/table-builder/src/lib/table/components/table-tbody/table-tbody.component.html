@@ -11,7 +11,6 @@
         <div
             #parent
             *ngIf="item"
-            style="position: absolute"
             [ngClass]="columnSchema?.td?.class"
             [ngStyle]="columnSchema?.td?.style"
             (selectstart)="(canSelectTextInTable)"

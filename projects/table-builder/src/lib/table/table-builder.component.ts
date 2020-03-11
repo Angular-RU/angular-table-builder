@@ -30,7 +30,6 @@ import {
     Fn,
     KeyMap,
     RecalculatedStatus,
-    ScrollOffsetStatus,
     TableSimpleChanges,
     TemplateKeys
 } from './interfaces/table-builder.internal';
@@ -74,7 +73,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public contentInit: boolean = false;
     public contentCheck: boolean = false;
     public showedCellByDefault: boolean = true;
-    public scrollOffset: ScrollOffsetStatus = { offset: false };
     public recalculated: RecalculatedStatus = { recalculateHeight: false };
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;
@@ -651,13 +649,20 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @see TableBuilderComponent#isRendered
      */
     private emitRendered(): void {
-        this.recheckViewportChecked();
-        this.isRendered = true;
         this.rendering = false;
-        this.afterRendered.emit(this.isRendered);
-        this.recalculateHeight();
         this.calculateViewport(true);
-        this.onChanges.emit(this.source || null);
+        this.recheckViewportChecked();
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout((): void => {
+                    this.isRendered = true;
+                    detectChanges(this.cd);
+                    this.recalculateHeight();
+                    this.afterRendered.emit(this.isRendered);
+                    this.onChanges.emit(this.source || null);
+                }, TIME_RELOAD);
+            }
+        );
     }
 
     /**

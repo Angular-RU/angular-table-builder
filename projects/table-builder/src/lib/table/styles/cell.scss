@@ -60,6 +60,7 @@
 
         &--body {
             position: absolute;
+            will-change: transform;
         }
 
         &--custom-cell:not(&--is-model-cell) {

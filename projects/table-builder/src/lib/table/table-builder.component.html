@@ -15,6 +15,7 @@
     [class.table-grid__root--is-rendered]="isRendered"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__no-display]="!(columnSchema.length > 0)"
+    [class.table-grid__root--is-scrolling]="viewPortInfo.isScrolling"
     [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
     [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
@@ -36,11 +37,11 @@
         cdkDropList
         #tableViewport
         class="table-grid"
-        [cdkDropListDisabled]="!accessDragging"
-        [class.table-grid__scroll-offset]="scrollOffset.offset"
-        [class.table-grid__native-scrollbar]="nativeScrollbar"
         cdkDropListOrientation="horizontal"
         (cdkDropListDropped)="drop($event)"
+        [cdkDropListDisabled]="!accessDragging"
+        [class.table-grid__native-scrollbar]="nativeScrollbar"
+        [class.table-grid__scroll-offset]="viewPortInfo.scrollTop > 0"
     >
         <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
             <ng-content select="ngx-header"></ng-content>
@@ -86,7 +87,7 @@
                     [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <div *ngIf="column['visible']" [@fadeAnimation]>
+                    <div *ngIf="column['visible']">
                         <table-thead
                             cdkDragHandle
                             [column-schema]="columnSchema"
@@ -109,7 +110,6 @@
                             [primary-key]="primaryKey"
                             [isRendered]="isRendered"
                             [recalculated]="recalculated"
-                            [viewPortItems]="viewPortItems"
                             [column-schema]="columnSchema"
                             [head-height]="headLineHeight"
                             [viewport-info]="viewPortInfo"

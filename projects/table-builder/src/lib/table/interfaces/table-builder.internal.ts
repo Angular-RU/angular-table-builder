@@ -18,10 +18,6 @@ export interface DynamicHeightOptions {
     sourceLength: number;
 }
 
-export interface ScrollOffsetStatus {
-    offset: boolean;
-}
-
 export interface RecalculatedStatus {
     recalculateHeight: boolean;
 }
