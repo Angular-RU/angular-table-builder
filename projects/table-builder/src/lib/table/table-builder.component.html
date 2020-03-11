@@ -41,7 +41,7 @@
         (cdkDropListDropped)="drop($event)"
         [cdkDropListDisabled]="!accessDragging"
         [class.table-grid__native-scrollbar]="nativeScrollbar"
-        [class.table-grid__scroll-offset]="viewPortInfo.scrollTop > 0"
+        [class.table-grid__scroll-offset]="viewPortInfo?.scrollTop > 0"
     >
         <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
             <ng-content select="ngx-header"></ng-content>
