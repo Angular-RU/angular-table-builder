@@ -1,5 +1,5 @@
-import 'jest-preset-angular';
 import 'intersection-observer';
+import 'jest-preset-angular';
 
 import { Any } from './projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 

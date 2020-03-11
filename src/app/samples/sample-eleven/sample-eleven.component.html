@@ -46,7 +46,7 @@
                     <div class="column">
                         <br />
 
-                        <ngx-table-builder [source]="licences">
+                        <ngx-table-builder #table1 [source]="licences" [enable-selection]="true">
                             <ngx-context-menu>
                                 <ngx-context-menu-item contextTitle divider>
                                     <ngx-menu-content icon="https://angular.io/assets/images/logos/angular/angular.svg">
@@ -79,6 +79,13 @@
                                 >
                                     <ngx-menu-content icon></ngx-menu-content>
                                     <ngx-menu-content>Copy in buffer ID</ngx-menu-content>
+                                </ngx-context-menu-item>
+
+                                <ngx-context-menu-item>
+                                    <ngx-menu-content icon></ngx-menu-content>
+                                    <ngx-menu-content>
+                                        Selected items ({{ table1 | countSelectedItems }})
+                                    </ngx-menu-content>
                                 </ngx-context-menu-item>
                             </ngx-context-menu>
                         </ngx-table-builder>
@@ -122,7 +129,7 @@
                 <br />
                 <div>
                     <ngx-table-builder
-                        #table
+                        #table2
                         height="500"
                         [source]="data"
                         [enable-selection]="true"
@@ -133,23 +140,43 @@
                         <ngx-column key="action" custom-key [sticky]="true" [resizable]="false" [width]="50">
                             <ng-template ngx-th></ng-template>
                             <ng-template ngx-td [row]="true" let-row>
-                                {{ table.selectionModel.get($any(row).id) ? 'x' : '-' }}
+                                {{ table2.selectionModel.get($any(row).id) ? 'x' : '-' }}
                             </ng-template>
                         </ngx-column>
 
-                        <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
+                        <ngx-column *ngFor="let key of table2.modelColumnKeys" [key]="key"></ngx-column>
 
                         <ngx-context-menu>
                             <ngx-context-menu-item contextTitle divider>
-                                <ngx-menu-content>Menu</ngx-menu-content>
+                                <ngx-menu-content>Menu {{ table2.selection.selectionModel.size }}</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item1</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item2</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item3</ngx-menu-content>
+                            </ngx-context-menu-item>
+
+                            <ngx-context-menu-item divider>
+                                <ngx-menu-content icon></ngx-menu-content>
+                                <ngx-menu-content>Item4</ngx-menu-content>
                             </ngx-context-menu-item>
 
                             <ngx-context-menu-item>
                                 <ngx-menu-content>Column list</ngx-menu-content>
 
                                 <ngx-context-menu-item
-                                    *ngFor="let column of table.columnSchema"
-                                    (onClick)="table.toggleColumnVisibility(column.key); $event.preventDefault()"
+                                    *ngFor="let column of table2.columnSchema"
+                                    (onClick)="table2.toggleColumnVisibility(column.key); $event.preventDefault()"
                                     [visible]="column.isModel"
                                 >
                                     <ngx-menu-content no-margin>{{ column.key }}</ngx-menu-content>
@@ -159,7 +186,7 @@
                                 </ngx-context-menu-item>
                             </ngx-context-menu-item>
 
-                            <ngx-context-menu-item (onClick)="table.resetSchema()" divider>
+                            <ngx-context-menu-item (onClick)="table2.resetSchema()" divider>
                                 <ngx-menu-content>Reset table settings</ngx-menu-content>
                             </ngx-context-menu-item>
 

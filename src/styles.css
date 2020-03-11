@@ -200,3 +200,7 @@ mat-form-field.mat-form-field.mat-form-field-appearance-outline
 sample-eight ngx-table-builder * {
     font-size: 12px !important;
 }
+
+.my-action {
+    padding: 0 !important;
+}

@@ -5,6 +5,8 @@ interface TableGlobalOptions {
     FRAME_TIME: number;
     ROW_HEIGHT: number;
     TIME_IDLE: number;
+    MIN_BUFFER: number;
+    BUFFER_OFFSET: number;
 }
 
 export const TABLE_GLOBAL_OPTIONS: TableGlobalOptions = {
@@ -13,5 +15,7 @@ export const TABLE_GLOBAL_OPTIONS: TableGlobalOptions = {
     COLUMN_RESIZE_MIN_WIDTH: 50,
     FRAME_TIME: 66,
     ROW_HEIGHT: 45,
-    TIME_IDLE: 200
+    TIME_IDLE: 200,
+    MIN_BUFFER: 20,
+    BUFFER_OFFSET: 5
 };

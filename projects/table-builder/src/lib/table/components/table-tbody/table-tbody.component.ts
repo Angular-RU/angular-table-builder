@@ -20,7 +20,6 @@ import {
 } from '../../interfaces/table-builder.external';
 import { KeyMap, RecalculatedStatus, TableBrowserEvent } from '../../interfaces/table-builder.internal';
 import { getDeepValue } from '../../operators/deep-value';
-import { detectChanges } from '../../operators/detect-changes';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
 import { SelectionService } from '../../services/selection/selection.service';
 
@@ -34,6 +33,8 @@ const SELECTION_DELAY: number = 100;
     encapsulation: ViewEncapsulation.None
 })
 export class TableTbodyComponent {
+    public selection: SelectionService;
+    public contextMenu: ContextMenuService;
     @Input() public source: TableRow[];
     @Input() public striped: boolean;
     @Input() public isRendered: boolean;
@@ -47,14 +48,10 @@ export class TableTbodyComponent {
     @Input('table-viewport') public tableViewport: HTMLElement;
     @Input('column-virtual-height') public columnVirtualHeight: number;
     @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
-    @Input('showed-cell-by-default') public showedCellByDefault: boolean;
     @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
-
-    public selection: SelectionService;
-    public contextMenu: ContextMenuService;
     private readonly app: ApplicationRef;
     private readonly ngZone: NgZone;
 
@@ -96,7 +93,6 @@ export class TableTbodyComponent {
                     this.selection.selectionTaskIdle = window.setTimeout((): void => {
                         this.selection.selectRow(row, event, this.source);
                         event.preventDefault();
-                        detectChanges(this.cd);
                         window.requestAnimationFrame((): void => this.app.tick());
                     }, SELECTION_DELAY);
                 }

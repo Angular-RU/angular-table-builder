@@ -40,6 +40,7 @@ describe('[TEST]: Lifecycle table', () => {
         symbol: string;
     }
 
+    // noinspection DuplicatedCode
     const data: PeriodicElement[] = [
         { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
         { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
@@ -127,7 +128,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(false);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
     });
@@ -144,7 +144,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(false);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
         expect(table.selection.primaryKey).toEqual('position');
@@ -163,7 +162,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(false);
     });
@@ -180,17 +178,16 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
 
-        tick(TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+        tick(600);
 
         expect(table.rendering).toEqual(false);
         expect(table.isRendered).toEqual(true);
         expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
 
-        tick(TABLE_GLOBAL_OPTIONS.TIME_IDLE + 100);
+        tick(400);
 
         expect(table.rendering).toEqual(false);
         expect(table.isRendered).toEqual(true);
@@ -213,7 +210,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(false);
 
@@ -229,7 +225,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
         expect(table.sourceExists).toEqual(true);
 
@@ -250,21 +245,21 @@ describe('[TEST]: Lifecycle table', () => {
         table.ngAfterViewInit();
         table.ngAfterViewChecked();
 
+        tick(600);
+
         expect(table.afterViewInitDone).toEqual(false);
-        expect(table.isRendered).toEqual(false);
+        expect(table.isRendered).toEqual(true);
         expect(table.modelColumnKeys).toEqual(['position', 'name', 'weight', 'symbol']);
         expect(table.dirty).toEqual(false);
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
-        expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
+        expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
 
-        tick(500);
-
         table.source = JSON.parse(JSON.stringify(data));
         templates.reset([new NgxColumnComponent()]);
+
         templates.notifyOnChanges();
 
         expect(table.isRendered).toEqual(true);
@@ -273,7 +268,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
         expect(table.sourceExists).toEqual(true);
 
@@ -281,7 +275,9 @@ describe('[TEST]: Lifecycle table', () => {
         templates.notifyOnChanges();
         table.ngAfterViewChecked();
 
-        tick(500);
+        expect(table.afterViewInitDone).toEqual(false);
+
+        tick(1000);
 
         expect(table.afterViewInitDone).toEqual(true);
     }));
@@ -311,7 +307,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual([]);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(true);
         expect(table.sourceExists).toEqual(true);
 
@@ -325,7 +320,6 @@ describe('[TEST]: Lifecycle table', () => {
         expect(table.rendering).toEqual(false);
         expect(table.contentInit).toEqual(true);
         expect(table.displayedColumns).toEqual(['position', 'name', 'weight', 'symbol']);
-        expect(table.showedCellByDefault).toEqual(true);
         expect(table.contentCheck).toEqual(false);
         expect(table.sourceExists).toEqual(true);
     }));
@@ -349,7 +343,7 @@ describe('[TEST]: Lifecycle table', () => {
         table.ngOnChanges(changes);
         table.renderTable();
 
-        tick(100);
+        tick(1000);
 
         expect(table.positionColumns).toEqual(['position', 'name', 'weight', 'symbol']);
     }));

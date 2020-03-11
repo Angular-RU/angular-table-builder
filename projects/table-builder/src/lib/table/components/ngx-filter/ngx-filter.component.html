@@ -2,6 +2,7 @@
 
 <div class="table-grid__filter-menu" *ngIf="state?.opened">
     <div
+        #menu
         class="filter-menu"
         (contextmenu)="close()"
         [ngStyle]="{

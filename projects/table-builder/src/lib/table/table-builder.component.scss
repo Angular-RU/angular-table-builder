@@ -7,7 +7,7 @@
 @import './styles/draggable';
 
 .table-grid__root--is-rendered .table-grid {
-    overflow: auto;
+    overflow: scroll;
 }
 
 .table-grid {

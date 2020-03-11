@@ -40,6 +40,11 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
         this.updateTable();
     }
 
+    public delete(row: TableRow): void {
+        this.data = this.data.filter((item: TableRow): boolean => item !== row);
+        detectChanges(this.cd);
+    }
+
     public edit(row: TableRow): void {
         this.ngZone.run(
             (): void => {
@@ -50,7 +55,7 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
                         (data: TableRow): void => {
                             if (data) {
                                 this.data = this.data.map(
-                                    (val: TableRow): TableRow => (val.id === data.id ? data : val)
+                                    (val: TableRow): TableRow => (val.id === data.id ? { ...data } : val)
                                 );
                                 detectChanges(this.cd);
                             }
@@ -63,7 +68,12 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     public updateTable(): void {
         const rows: number = 1;
         const cols: number = 10;
-        MocksGenerator.generator(rows, cols, this.data.length).then(
+
+        const startIndex: number = this.data.length
+            ? Math.max(...this.data.map((item: TableRow): number => item.id))
+            : 0;
+
+        MocksGenerator.generator(rows, cols, startIndex).then(
             (row: TableRow[]): void => {
                 this.data = this.data.concat(row);
                 this.cd.detectChanges();

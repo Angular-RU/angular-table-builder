@@ -15,6 +15,7 @@
     [class.table-grid__root--is-rendered]="isRendered"
     [class.table-grid__root-auto-height]="autoHeightDetect"
     [class.table-grid__no-display]="!(columnSchema.length > 0)"
+    [class.table-grid__root--is-scrolling]="viewPortInfo.isScrolling"
     [class.table-grid__root--is-scroll-overload]="tableViewport.scrollWidth > tableViewport.clientWidth"
     [class.table-grid__root--empty-list]="!source?.length && !filterable.filtering && !isFrozenView"
     [class.table-grid__root--visible]="contentInit && root.offsetHeight > clientRowHeight && columnHeight"
@@ -36,11 +37,11 @@
         cdkDropList
         #tableViewport
         class="table-grid"
-        [cdkDropListDisabled]="!accessDragging"
-        [class.table-grid__scroll-offset]="scrollOffset.offset"
-        [class.table-grid__native-scrollbar]="nativeScrollbar"
         cdkDropListOrientation="horizontal"
         (cdkDropListDropped)="drop($event)"
+        [cdkDropListDisabled]="!accessDragging"
+        [class.table-grid__native-scrollbar]="nativeScrollbar"
+        [class.table-grid__scroll-offset]="viewPortInfo.scrollTop > 0"
     >
         <div class="table-grid__header-sticky" *ngIf="headerTemplate" #header>
             <ng-content select="ngx-header"></ng-content>
@@ -86,7 +87,7 @@
                     [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <ng-container *ngIf="column['visible']">
+                    <div *ngIf="column['visible']">
                         <table-thead
                             cdkDragHandle
                             [column-schema]="columnSchema"
@@ -105,7 +106,7 @@
 
                         <table-tbody
                             [striped]="striped"
-                            [source]="viewPortItems"
+                            [source]="source"
                             [primary-key]="primaryKey"
                             [isRendered]="isRendered"
                             [recalculated]="recalculated"
@@ -120,11 +121,10 @@
                             [client-row-height]="clientRowHeight"
                             [selection-entries]="selectionEntries"
                             [produce-disable-fn]="produceDisableFn"
-                            [showed-cell-by-default]="showedCellByDefault"
                             [column-virtual-height]="columnVirtualHeight"
                         >
                         </table-tbody>
-                    </ng-container>
+                    </div>
                 </div>
             </ng-container>
         </div>

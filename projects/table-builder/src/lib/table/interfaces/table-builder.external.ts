@@ -1,4 +1,4 @@
-import { EventEmitter, TemplateRef } from '@angular/core';
+import { EmbeddedViewRef, EventEmitter, TemplateRef } from '@angular/core';
 
 import { Any, DeepPartial, KeyMap, TableBrowserEvent } from './table-builder.internal';
 
@@ -80,7 +80,33 @@ export interface ViewPortInfo {
     endIndex?: number;
     bufferOffset?: number;
     scrollTop?: number;
+    virtualIndexes?: VirtualIndex[];
+    indexes?: number[];
+    oldIndexes?: number[];
+    diffIndexes?: number[];
     prevScrollOffsetTop?: number;
+}
+
+export interface VirtualIndex {
+    position: number;
+    stripped: boolean;
+    offsetTop: number;
+}
+
+export interface VirtualContext {
+    $implicit: TableRow;
+    virtualIndex: VirtualIndex;
+    index: number;
+}
+
+export type InternalVirtualRef = [TableRow, EmbeddedViewRef<VirtualContext>];
+
+export interface CalculateRange {
+    start: number;
+    end: number;
+    bufferOffset: number;
+    force: boolean;
+    isDownMoved: boolean;
 }
 
 export type ProduceDisableFn = ((item: TableRow) => boolean) | null;

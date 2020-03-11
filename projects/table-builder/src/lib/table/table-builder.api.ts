@@ -48,7 +48,6 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { UtilsService } from './services/utils/utils.service';
 
 const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
-const MIN_BUFFER: number = 5;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -58,9 +57,7 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
-    @Input() public buffer: number = MIN_BUFFER;
     @Input('sort-types') public sortTypes: KeyMap = null;
-    @Input('buffer-min-offset') public bufferMinOffset: number = 1;
     @Input('exclude-keys') public excludeKeys: (string | RegExp)[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
@@ -96,10 +93,9 @@ export abstract class TableBuilderApiImpl
     @ContentChild(NgxFilterComponent, { static: false })
     public filterTemplate: NgxFilterComponent = null;
 
-    @ViewChild('tableViewport', { static: false })
+    @ViewChild('tableViewport', { static: true })
     public scrollContainer: ElementRef<HTMLElement>;
 
-    public viewPortItems: TableRow[];
     public viewPortInfo: ViewPortInfo = {};
     public tableViewportChecked: boolean = true;
     public isFrozenView: boolean = false;
@@ -328,6 +324,19 @@ export abstract class TableBuilderApiImpl
         this.idleDetectChanges();
     }
 
+    public idleDetectChanges(): void {
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.cancelAnimationFrame(this.idleDetectChangesId);
+                this.idleDetectChangesId = window.requestAnimationFrame(
+                    (): void => {
+                        detectChanges(this.cd);
+                    }
+                );
+            }
+        );
+    }
+
     public abstract markDirtyCheck(): void;
 
     public abstract markForCheck(): void;
@@ -384,15 +393,6 @@ export abstract class TableBuilderApiImpl
 
     protected getModelKeys(): string[] {
         return this.utils.flattenKeysByRow(this.firstItem);
-    }
-
-    protected idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.cancelAnimationFrame(this.idleDetectChangesId);
-                this.idleDetectChangesId = window.requestAnimationFrame((): void => detectChanges(this.cd));
-            }
-        );
     }
 
     protected abstract calculateViewport(force: boolean): void;

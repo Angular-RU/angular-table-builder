@@ -24,13 +24,12 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
-import { ColumnsSchema } from './interfaces/table-builder.external';
+import { CalculateRange, ColumnsSchema } from './interfaces/table-builder.external';
 import {
     Any,
     Fn,
     KeyMap,
     RecalculatedStatus,
-    ScrollOffsetStatus,
     TableSimpleChanges,
     TemplateKeys
 } from './interfaces/table-builder.internal';
@@ -73,8 +72,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public isRendered: boolean = false;
     public contentInit: boolean = false;
     public contentCheck: boolean = false;
-    public showedCellByDefault: boolean = true;
-    public scrollOffset: ScrollOffsetStatus = { offset: false };
     public recalculated: RecalculatedStatus = { recalculateHeight: false };
     @ViewChild('header', { static: false })
     public headerRef: ElementRef<HTMLDivElement>;
@@ -96,7 +93,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
     private timeoutCheckedTaskId: number = null;
-    private frameViewportSliceId: number;
     private timeoutScrolledId: number;
     private timeoutViewCheckedId: number;
     private frameCalculateViewportId: number;
@@ -231,7 +227,6 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         window.clearTimeout(this.timeoutScrolledId);
         window.clearTimeout(this.timeoutViewCheckedId);
         window.clearTimeout(this.timeoutCheckedTaskId);
-        window.cancelAnimationFrame(this.frameViewportSliceId);
         window.cancelAnimationFrame(this.frameCalculateViewportId);
         this.templateParser.schema = null;
         this.destroy$.next(true);
@@ -317,63 +312,99 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         );
     }
 
-    // TODO: NEED REFACTOR
-    // eslint-disable-next-line max-lines-per-function,complexity
     protected calculateViewport(force: boolean = false): void {
-        if (!this.source || !this.viewportHeight) {
+        if (this.ignoreCalculate()) {
             return;
         }
 
-        window.cancelAnimationFrame(this.frameViewportSliceId);
-        const isDownMoved: boolean = this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
-
+        const isDownMoved: boolean = this.isDownMoved();
         this.viewPortInfo.prevScrollOffsetTop = this.scrollOffsetTop;
         const start: number = this.getOffsetVisibleStartIndex();
-        let end: number = start + this.getVisibleCountItems() + this.buffer;
-        end = end > this.sourceRef.length ? this.sourceRef.length : end;
+        const end: number = this.calculateEndIndex(start);
+        const bufferOffset: number = this.calculateBuffer(isDownMoved, start, end);
+        this.calculateViewPortByRange({ start, end, bufferOffset, force, isDownMoved });
+        this.viewPortInfo.bufferOffset = bufferOffset;
+    }
 
-        const lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
-        const bufferOffset: number = isDownMoved
-            ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
-            : start - this.viewPortInfo.startIndex;
-
-        if (typeof this.viewPortInfo.startIndex !== 'number') {
+    protected calculateViewPortByRange({ start, end, bufferOffset, force, isDownMoved }: CalculateRange): void {
+        if (this.startIndexIsNull()) {
             this.updateViewportInfo(start, end);
-        } else if (bufferOffset <= this.bufferMinOffset && bufferOffset >= 0) {
-            let newStart: number = start - this.buffer;
-            newStart = newStart >= 0 ? newStart : 0;
-            this.updateViewportInfo(newStart, end);
+        } else if (this.needRecalculateBuffer(bufferOffset)) {
+            start = this.recalculateStartIndex(start, isDownMoved);
+            this.updateViewportInfo(start, end);
+            detectChanges(this.cd);
         } else if (bufferOffset < 0 || force) {
+            start = this.recalculateStartIndex(start, isDownMoved);
             this.updateViewportInfo(start, end);
+            detectChanges(this.cd);
+            return;
         }
 
         if (force) {
             this.idleDetectChanges();
-        } else {
-            this.cd.markForCheck();
         }
+    }
 
-        this.viewPortInfo.bufferOffset = bufferOffset;
+    protected startIndexIsNull(): boolean {
+        return typeof this.viewPortInfo.startIndex !== 'number';
+    }
+
+    protected needRecalculateBuffer(bufferOffset: number): boolean {
+        return bufferOffset <= TABLE_GLOBAL_OPTIONS.BUFFER_OFFSET && bufferOffset >= 0;
+    }
+
+    protected recalculateStartIndex(start: number, isDownMoved: boolean): number {
+        const newStart: number = start - (isDownMoved ? 1 : TABLE_GLOBAL_OPTIONS.MIN_BUFFER);
+        return newStart >= 0 ? newStart : 0;
+    }
+
+    protected calculateBuffer(isDownMoved: boolean, start: number, end: number): number {
+        const lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
+        return isDownMoved
+            ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
+            : start - this.viewPortInfo.startIndex;
+    }
+
+    protected calculateEndIndex(start: number): number {
+        const end: number = start + this.getVisibleCountItems() + TABLE_GLOBAL_OPTIONS.MIN_BUFFER;
+        return end > this.sourceRef.length ? this.sourceRef.length : end;
+    }
+
+    protected ignoreCalculate(): boolean {
+        return !this.source || !this.viewportHeight;
+    }
+
+    protected isDownMoved(): boolean {
+        return this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
     }
 
     protected updateViewportInfo(start: number, end: number): void {
         this.viewPortInfo.startIndex = start;
         this.viewPortInfo.endIndex = end;
+        this.viewPortInfo.indexes = [];
+        this.viewPortInfo.virtualIndexes = [];
 
-        // lazy slicing
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.cancelAnimationFrame(this.frameViewportSliceId);
-                this.frameViewportSliceId = window.requestAnimationFrame(
-                    (): void => {
-                        this.viewPortItems = this.sourceRef.slice(start, end);
-                        detectChanges(this.cd);
-                    }
-                );
-            }
-        );
+        for (let i: number = start, even: number = 2; i < end; i++) {
+            this.viewPortInfo.indexes.push(i);
+            this.viewPortInfo.virtualIndexes.push({
+                position: i,
+                stripped: this.striped ? i % even === 0 : false,
+                offsetTop: i * this.clientRowHeight
+            });
+        }
 
+        this.createDiffIndexes();
         this.viewPortInfo.scrollTop = start * this.clientRowHeight;
+    }
+
+    private createDiffIndexes(): void {
+        this.viewPortInfo.diffIndexes = this.viewPortInfo.oldIndexes
+            ? this.viewPortInfo.oldIndexes.filter(
+                  (index: number): boolean => !this.viewPortInfo.indexes.includes(index)
+              )
+            : [];
+
+        this.viewPortInfo.oldIndexes = this.viewPortInfo.indexes;
     }
 
     private listenFilterResetChanges(): void {
@@ -418,29 +449,29 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         );
     }
 
-    // eslint-disable-next-line max-lines-per-function
     private scrollHandler(): void {
-        this.viewPortInfo.isScrolling = true;
-        window.cancelAnimationFrame(this.frameCalculateViewportId);
+        if (!this.needUpdateViewport) {
+            return;
+        }
 
         this.ngZone.runOutsideAngular(
             (): void => {
-                window.clearTimeout(this.timeoutScrolledId);
-                this.timeoutScrolledId = window.setTimeout((): void => {
-                    this.viewPortInfo.isScrolling = false;
-                    detectChanges(this.cd);
-                    window.requestAnimationFrame((): void => this.app.tick());
-                }, TIME_RELOAD);
+                this.cancelScrolling();
+                this.frameCalculateViewportId = window.requestAnimationFrame((): void => this.calculateViewport());
             }
         );
+    }
 
-        if (this.needUpdateViewport) {
-            this.ngZone.runOutsideAngular(
-                (): void => {
-                    this.frameCalculateViewportId = window.requestAnimationFrame((): void => this.calculateViewport());
-                }
-            );
-        }
+    private cancelScrolling(): void {
+        this.viewPortInfo.isScrolling = true;
+        window.cancelAnimationFrame(this.frameCalculateViewportId);
+
+        window.clearTimeout(this.timeoutScrolledId);
+        this.timeoutScrolledId = window.setTimeout((): void => {
+            this.viewPortInfo.isScrolling = false;
+            detectChanges(this.cd);
+            window.requestAnimationFrame((): void => this.app.tick());
+        }, TIME_RELOAD);
     }
 
     private getOffsetVisibleEndIndex(): number {
@@ -569,7 +600,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 for (let index: number = 0; index < columnList.length; index++) {
                     const key: string = columnList[index];
                     const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
-                    this.processedColumnList(schema, columnList[index], false);
+                    this.processedColumnList(schema, columnList[index]);
                 }
             }
         );
@@ -605,14 +636,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @description: column meta information processing
      * @param schema - column schema
      * @param key - column name
-     * @param async - whether to draw a column asynchronously
      */
-    private processedColumnList(schema: ColumnsSchema, key: string, async: boolean): void {
-        if (this.templateParser.schema) {
+    private processedColumnList(schema: ColumnsSchema, key: string): void {
+        if (this.templateParser.schema || schema) {
             this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
-            if (async) {
-                this.idleDetectChanges();
-            }
         }
     }
 
@@ -621,13 +648,20 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      * @see TableBuilderComponent#isRendered
      */
     private emitRendered(): void {
-        this.recheckViewportChecked();
-        this.isRendered = true;
         this.rendering = false;
-        this.afterRendered.emit(this.isRendered);
-        this.recalculateHeight();
         this.calculateViewport(true);
-        this.onChanges.emit(this.source || null);
+        this.recheckViewportChecked();
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout((): void => {
+                    this.isRendered = true;
+                    detectChanges(this.cd);
+                    this.recalculateHeight();
+                    this.afterRendered.emit(this.isRendered);
+                    this.onChanges.emit(this.source || null);
+                }, TIME_RELOAD);
+            }
+        );
     }
 
     /**

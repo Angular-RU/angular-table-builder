@@ -39,9 +39,7 @@ export class TableCellComponent implements OnDestroy {
     private timeoutShowedFrameId: number = null;
     private timeoutOverflowId: number = null;
 
-    constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {
-        this.cd.reattach();
-    }
+    constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {}
 
     private get overflowContentElem(): HTMLDivElement {
         return document.querySelector(`.${this.overflowSelector}`);
