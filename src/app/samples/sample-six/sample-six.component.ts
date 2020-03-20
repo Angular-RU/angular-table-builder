@@ -1,4 +1,4 @@
-import { TableRow } from '@angular-ru/ng-table-builder';
+import { OrderedField, TableRow } from '@angular-ru/ng-table-builder';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -15,6 +15,7 @@ declare const hljs: Any;
 })
 export class SampleSixComponent implements OnInit, AfterViewInit {
     public data: TableRow[];
+    public skipSort: boolean = false;
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
@@ -34,6 +35,11 @@ export class SampleSixComponent implements OnInit, AfterViewInit {
                 hljs.highlightBlock(block);
             }
         );
+    }
+
+    public sortChanges(event: OrderedField[]): void {
+        // eslint-disable-next-line no-console
+        console.log('orderedField', event);
     }
 
     public showSample(): void {

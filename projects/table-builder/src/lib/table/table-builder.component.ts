@@ -162,6 +162,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
         this.sourceIsNull = this.checkSourceIsNull();
         this.sortable.setDefinition(this.sortTypes);
+        this.sortable.setSkipSort(this.skipSort);
+        this.sortable.setSortChanges(this.sortChanges);
 
         if (nonIdenticalStructure) {
             this.preRenderTable();
@@ -206,15 +208,14 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
         const preview: HTMLElement = event.source._dragRef['_preview'];
-        const head: HTMLElement = root.querySelector('table-thead');
-
+        const top: number = root.getBoundingClientRect().top;
         const transform: string = event.source._dragRef['_preview'].style.transform || '';
         const [x, , z]: [number, number, number] = transform
             .replace(/translate3d|\(|\)|px/g, '')
             .split(',')
             .map((val: string): number => parseFloat(val)) as [number, number, number];
 
-        preview.style.transform = `translate3d(${x}px, ${head.getBoundingClientRect().top}px, ${z}px)`;
+        preview.style.transform = `translate3d(${x}px, ${top}px, ${z}px)`;
     }
 
     public ngAfterViewChecked(): void {

@@ -97,9 +97,23 @@
             height: 20px;
             opacity: 0.2;
             font-size: 12px;
-            transition: all 0.2s ease-in-out;
-            transform: rotate(180deg);
             cursor: pointer;
+
+            .table-grid-icon--sortable {
+                transition: transform 0.4s;
+
+                &-number {
+                    position: absolute;
+                    font-family: Lucida Grande, sans-serif;
+                    font-size: 10px;
+                    font-weight: bold;
+                }
+            }
+
+            .table-grid-icon--sortable,
+            .table-grid-icon--sortable-asc {
+                transform: rotate(180deg);
+            }
 
             &-active {
                 opacity: 1;
@@ -133,7 +147,7 @@
         }
 
         &--sortable {
-            &-desc {
+            .table-grid-icon--sortable-desc {
                 transform: rotate(0deg);
             }
         }

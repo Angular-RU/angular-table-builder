@@ -105,8 +105,9 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     private removeEmbeddedViewByIndex(index: number): void {
-        const [, viewRefItem]: InternalVirtualRef = this.cache.get(index);
-        if (viewRefItem) {
+        const ref: InternalVirtualRef | undefined = this.cache.get(index);
+        if (ref) {
+            const [, viewRefItem]: InternalVirtualRef = ref;
             const stackId: number = this.view.indexOf(viewRefItem);
             this.cache.delete(index);
 

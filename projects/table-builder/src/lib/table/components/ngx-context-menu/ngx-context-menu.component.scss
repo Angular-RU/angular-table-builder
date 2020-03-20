@@ -8,11 +8,18 @@
     .context-menu {
         display: flex;
         position: fixed;
-        background: #fff;
         z-index: 10;
         border: 1px solid #dcdcdc;
-        box-shadow: 1px 1px 2px #9c9c9c;
         flex-direction: column;
+        transition: max-height, height, min-height 0.3s;
+        min-height: 0;
+        max-height: 0;
+        height: 0;
+        overflow: hidden;
+        background: rgb(255, 255, 255);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.35);
+        border-radius: 4px;
+        font-family: Lucida Grande, sans-serif;
 
         &__item {
             margin-top: 0;

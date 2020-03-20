@@ -16,6 +16,6 @@ export const TABLE_GLOBAL_OPTIONS: TableGlobalOptions = {
     FRAME_TIME: 66,
     ROW_HEIGHT: 45,
     TIME_IDLE: 200,
-    MIN_BUFFER: 20,
-    BUFFER_OFFSET: 5
+    MIN_BUFFER: 10,
+    BUFFER_OFFSET: 3
 };

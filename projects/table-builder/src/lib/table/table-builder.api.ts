@@ -29,6 +29,7 @@ import { NgxOptionsComponent } from './components/ngx-options/ngx-options.compon
 import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
 import {
     ColumnsSchema,
+    OrderedField,
     ProduceDisableFn,
     SimpleSchemaColumns,
     TableRow,
@@ -57,6 +58,7 @@ export abstract class TableBuilderApiImpl
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
     @Input() public name: string = null;
+    @Input('skip-sort') public skipSort: boolean = false;
     @Input('sort-types') public sortTypes: KeyMap = null;
     @Input('exclude-keys') public excludeKeys: (string | RegExp)[] = [];
     @Input('auto-width') public autoWidth: boolean = false;
@@ -74,6 +76,7 @@ export abstract class TableBuilderApiImpl
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
     @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();
     @Output() public onChanges: EventEmitter<TableRow[] | null> = new EventEmitter();
+    @Output() public sortChanges: EventEmitter<OrderedField[]> = new EventEmitter();
 
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;

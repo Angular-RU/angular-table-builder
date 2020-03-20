@@ -27,31 +27,6 @@ declare const hljs: Any;
                 text-transform: uppercase;
             }
 
-            .my-filter {
-                padding: 10px 5px 10px 5px;
-            }
-
-            .my-filter .mat-form-field {
-                width: 100%;
-            }
-
-            .my-filter .filter-form {
-                display: flex;
-            }
-
-            .my-filter .filter-options.mat-form-field {
-                margin-right: 0;
-            }
-
-            .my-filter .filter-options {
-                width: 40%;
-            }
-
-            .my-filter .mat-form-field-appearance-outline .mat-form-field-wrapper {
-                margin-bottom: 0;
-                padding: 2px 0;
-            }
-
             .filter-example .table-grid__cell > * {
                 font-size: 12px;
             }

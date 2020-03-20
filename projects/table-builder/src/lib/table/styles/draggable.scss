@@ -7,5 +7,19 @@
 }
 
 .table-grid__column.cdk-drag-placeholder {
-    opacity: 0;
+    opacity: 0.3;
+}
+
+.cdk-drag-preview {
+    .table-grid__header-cell {
+        top: 0 !important;
+    }
+
+    &.table-grid__column {
+        background: none;
+
+        .table-grid__cell:not(.table-grid__header-cell) {
+            display: none;
+        }
+    }
 }

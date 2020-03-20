@@ -1,12 +1,16 @@
 <mat-toolbar class="simple-toolbar">
     <span>
         Example sorting
+
+        <mat-checkbox class="regenerate" [(ngModel)]="skipSort" [ngModelOptions]="{ standalone: true }">
+            Skip internal sort
+        </mat-checkbox>
     </span>
 
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder [source]="data" [sort-types]="{ id: 'desc' }">
+<ngx-table-builder [source]="data" [sort-types]="{ id: 'desc' }" [skip-sort]="skipSort" (sortChanges)="sortChanges($event)">
     <ngx-empty>No data</ngx-empty>
     <ngx-source-null>Loading</ngx-source-null>
 

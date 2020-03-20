@@ -1,9 +1,7 @@
 /* eslint-disable */
 import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/ng-table-builder';
-import { ApplicationRef, ChangeDetectorRef, Injector, NgZone, QueryList, SimpleChanges } from '@angular/core';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-
-import { TABLE_GLOBAL_OPTIONS } from '../../../table/config/table-global-options';
+import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
 import { DraggableService } from '../../../table/services/draggable/draggable.service';
@@ -65,7 +63,7 @@ describe('[TEST]: Lifecycle table', () => {
         draggable = new DraggableService(parser);
 
         resizeService = new ResizableService();
-        sortable = new SortableService(worker, utils, zone);
+        sortable = new SortableService(worker, zone);
 
         table = new TableBuilderComponent(mockChangeDetector as ChangeDetectorRef, {
             get<T>(token: Any) {

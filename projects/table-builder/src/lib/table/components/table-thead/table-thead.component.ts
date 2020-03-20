@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 
+import { NGX_ANIMATION } from '../../animations/fade.animation';
 import { ColumnsSchema } from '../../interfaces/table-builder.external';
 import { KeyMap, ResizeEvent } from '../../interfaces/table-builder.internal';
 import { FilterableService } from '../../services/filterable/filterable.service';
@@ -10,13 +11,16 @@ import { OVERLOAD_WIDTH_TABLE_HEAD_CELL } from '../../symbols';
     selector: 'table-thead',
     templateUrl: './table-thead.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    animations: [NGX_ANIMATION]
 })
 export class TableTheadComponent {
     @Input('header-top') public headerTop: number;
     @Input('column-width') public columnWidth: number;
     @Input('head-height') public headHeight: string | number;
     @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
+    @Input('sortable-position') public positionMap: KeyMap<number>;
+    @Input('sortable-count') public sortableCount: number;
     @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
