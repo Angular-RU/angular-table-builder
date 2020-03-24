@@ -35,7 +35,7 @@ import {
     TableRow,
     ViewPortInfo
 } from './interfaces/table-builder.external';
-import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
+import { KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { DraggableService } from './services/draggable/draggable.service';
@@ -224,6 +224,18 @@ export abstract class TableBuilderApiImpl
         return this.source && this.source.length ? this.source : [];
     }
 
+    private get filterValueExist(): boolean {
+        return this.filterable.filterValueExist && this.enableFiltering;
+    }
+
+    private get notEmpty(): boolean {
+        return !this.sortable.empty && !!this.source;
+    }
+
+    private get notChanges(): boolean {
+        return this.sortable.empty && !this.filterable.filterValueExist;
+    }
+
     public recheckViewportChecked(): void {
         this.tableViewportChecked = !this.tableViewportChecked;
         this.idleDetectChanges();
@@ -274,25 +286,19 @@ export abstract class TableBuilderApiImpl
         );
     }
 
-    // eslint-disable-next-line complexity
     public async sortAndFilter(): Promise<void> {
-        this.toggleFreeze();
-
-        if (this.filterable.filterValueExist && this.enableFiltering) {
-            const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource);
-            this.source = await this.sortable.sort(filter.source);
-            filter.fireSelection();
-        } else if (!this.sortable.empty && this.source) {
-            this.source = await this.sortable.sort(this.originalSource);
-        }
-
-        if (this.sortable.empty && !this.filterable.filterValueExist) {
-            this.source = this.originalSource;
-        }
-
+        this.toggleFreeze(true);
+        await this.recalculationSource();
         this.calculateViewport(true);
-        this.toggleFreeze(TIME_IDLE);
         this.onChanges.emit(this.sourceRef);
+
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout((): void => {
+                    this.toggleFreeze(false);
+                }, TIME_IDLE);
+            }
+        );
     }
 
     public sortByKey(key: string): void {
@@ -307,16 +313,9 @@ export abstract class TableBuilderApiImpl
         this.changeSchema();
     }
 
-    public toggleFreeze(time: number = null, callback: Fn = null): void {
-        this.isFrozenView = !this.isFrozenView;
-        if (time) {
-            window.setTimeout((): void => {
-                detectChanges(this.cd);
-                callback && callback();
-            }, time);
-        } else {
-            detectChanges(this.cd);
-        }
+    public toggleFreeze(state: boolean): void {
+        this.isFrozenView = state;
+        detectChanges(this.cd);
     }
 
     public changeSchema(defaultColumns: SimpleSchemaColumns = null): void {
@@ -401,6 +400,20 @@ export abstract class TableBuilderApiImpl
     protected abstract calculateViewport(force: boolean): void;
 
     protected abstract updateViewportInfo(start: number, end: number): void;
+
+    private async recalculationSource(): Promise<void> {
+        if (this.filterValueExist) {
+            const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource);
+            this.source = await this.sortable.sort(filter.source);
+            filter.fireSelection();
+        } else if (this.notEmpty) {
+            this.source = await this.sortable.sort(this.originalSource);
+        }
+
+        if (this.notChanges) {
+            this.source = this.originalSource;
+        }
+    }
 
     private calculateWidth(key: string, width: number): void {
         this.isDragging[key] = true;

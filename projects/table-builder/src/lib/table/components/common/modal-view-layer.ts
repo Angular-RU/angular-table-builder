@@ -1,6 +1,7 @@
 import { ApplicationRef, ChangeDetectorRef, ElementRef, Injector, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { MousePosition } from '../../interfaces/table-builder.internal';
 import { detectChanges } from '../../operators/detect-changes';
 import { ContextMenuService } from '../../services/context-menu/context-menu.service';
@@ -18,6 +19,8 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public width: number = null;
     public height: number = null;
     public isViewed: boolean = false;
+    public isRendered: boolean = false;
+    public minHeight: number;
     protected subscription: Subscription = null;
     protected readonly app: ApplicationRef;
     protected readonly utils: UtilsService;
@@ -50,17 +53,43 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     }
 
     public get overflowY(): number {
-        const overflowY: number = this.getHeight() + this.top - this.utils.bodyRect.height;
+        const overflowY: number = this.calculatedHeight + this.top - this.utils.bodyRect.height;
         return overflowY > 0 ? overflowY + SCROLLBAR_WIDTH : 0;
     }
 
     public abstract get state(): Partial<T>;
 
+    public get calculatedHeight(): number {
+        let height: number;
+
+        try {
+            if (this.height) {
+                height =
+                    this.menu.nativeElement.scrollHeight > this.height
+                        ? this.menu.nativeElement.offsetHeight
+                        : this.height;
+            } else {
+                height = this.menu.nativeElement.scrollHeight;
+            }
+        } catch (e) {
+            height = this.height;
+        }
+
+        return height;
+    }
+
     public updateView(): void {
         detectChanges(this.cd);
+
         this.ngZone.runOutsideAngular(
             (): void => {
-                window.requestAnimationFrame((): void => this.app.tick());
+                window.requestAnimationFrame(
+                    (): void => {
+                        detectChanges(this.cd);
+                        this.app.tick();
+                        this.refresh();
+                    }
+                );
             }
         );
     }
@@ -87,16 +116,15 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
         );
     }
 
-    private getHeight(): number {
-        let height: number;
-
-        try {
-            height =
-                this.menu.nativeElement.scrollHeight > this.height ? this.menu.nativeElement.offsetHeight : this.height;
-        } catch (e) {
-            height = this.height;
-        }
-
-        return height;
+    private refresh(): void {
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                window.setTimeout((): void => {
+                    this.isRendered = true;
+                    this.minHeight = this.calculatedHeight;
+                    detectChanges(this.cd);
+                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+            }
+        );
     }
 }

@@ -11,14 +11,15 @@
         z-index: 10;
         border: 1px solid #dcdcdc;
         flex-direction: column;
-        transition: max-height, height, min-height 0.3s;
+        visibility: hidden;
+        transition: opacity 0.3s;
         min-height: 0;
         max-height: 0;
-        height: 0;
         overflow: hidden;
         background: rgb(255, 255, 255);
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.35);
         border-radius: 4px;
+        opacity: 0;
         font-family: Lucida Grande, sans-serif;
 
         &__item {

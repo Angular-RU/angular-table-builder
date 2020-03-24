@@ -12,11 +12,12 @@
         (contextmenu)="close($event)"
         [ngStyle]="{
             'width.px': width,
-            'min-height.px': height,
-            'max-height.px': maxHeight,
+            opacity: isRendered ? 1 : 0,
+            'max-height.px': isRendered ? maxHeight : 0,
+            'min-height.px': isRendered ? minHeight : 0,
             'top.px': state?.position?.top - overflowY,
             'left.px': state?.position?.left - overflowX,
-            visibility: state?.position ? 'visible' : 'hidden'
+            visibility: isRendered ? 'visible' : 'hidden'
         }"
     >
         <ng-content></ng-content>

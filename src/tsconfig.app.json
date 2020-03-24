@@ -4,5 +4,5 @@
         "outDir": "../out-tsc/app",
         "types": []
     },
-    "exclude": ["test.ts", "**/*.spec.ts", "**/*.worker.ts"]
+    "include": ["main.ts", "polyfills.ts", "zone-flags.ts", "src/**/*.ts"]
 }

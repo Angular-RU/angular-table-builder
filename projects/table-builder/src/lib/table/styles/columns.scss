@@ -98,15 +98,16 @@
             opacity: 0.2;
             font-size: 12px;
             cursor: pointer;
+            position: relative;
 
             .table-grid-icon--sortable {
                 transition: transform 0.4s;
 
                 &-number {
                     position: absolute;
-                    font-family: Lucida Grande, sans-serif;
-                    font-size: 10px;
-                    font-weight: bold;
+                    font-size: 8px;
+                    font-weight: normal;
+                    right: 0;
                 }
             }
 
