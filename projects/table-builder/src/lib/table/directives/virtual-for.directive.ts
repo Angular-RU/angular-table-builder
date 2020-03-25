@@ -38,6 +38,10 @@ export class VirtualForDirective implements OnDestroy {
         this.createNewNodes(indexes);
     }
 
+    private get sourceRef(): TableRow[] {
+        return this._source || [];
+    }
+
     public ngOnDestroy(): void {
         this.view.clear();
         window.cancelAnimationFrame(this.createFrameId);
@@ -70,7 +74,7 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     private createEmbeddedViewByIndex(index: VirtualIndex): void {
-        const row: TableRow = this._source[index.position];
+        const row: TableRow = this.sourceRef[index.position];
         const virtualRef: InternalVirtualRef = this.cache.get(index.position);
 
         if (virtualRef) {
