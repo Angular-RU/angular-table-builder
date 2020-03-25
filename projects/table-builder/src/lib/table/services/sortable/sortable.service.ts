@@ -2,7 +2,7 @@ import { EventEmitter, Injectable, NgZone } from '@angular/core';
 
 import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
 import { OrderedField, TableRow } from '../../interfaces/table-builder.external';
-import { KeyMap, Resolver } from '../../interfaces/table-builder.internal';
+import { Any, KeyMap, Resolver } from '../../interfaces/table-builder.internal';
 import { WebWorkerThreadService } from '../../worker/worker-thread.service';
 import { sortWorker } from './sort.worker';
 import { SortableMessage, SortOrderType } from './sortable.interfaces';
@@ -66,7 +66,7 @@ export class SortableService {
             Object.entries(this.definition).forEach(
                 ([key, ordered]: [string, SortOrderType], index: number): void => {
                     this.positionMap[key] = index + 1;
-                    orderedFields.push({ field: key, order: ordered.toLocaleUpperCase() });
+                    orderedFields.push({ field: key, order: ordered.toLocaleUpperCase() as Any });
                 }
             );
 

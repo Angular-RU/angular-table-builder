@@ -113,5 +113,5 @@ export type ProduceDisableFn = ((item: TableRow) => boolean) | null;
 
 export interface OrderedField {
     field: string;
-    order: string;
+    order: 'ASC' | 'DESC';
 }
