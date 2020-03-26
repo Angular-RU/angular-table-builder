@@ -42,7 +42,6 @@ export class SortableService {
 
     public setDefinition(definition: KeyMap<string>): void {
         this.definition = this.empty ? (definition as KeyMap<SortOrderType>) || {} : this.definition;
-        this.triggerOnChanges();
     }
 
     public setSkipSort(skipInternalSort: boolean): void {
