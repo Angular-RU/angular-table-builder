@@ -13,7 +13,7 @@
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "0.803.25",
-        "@angular-ru/eslint-config": "10.6.0",
+        "@angular-ru/eslint-config": "10.22.0",
         "@angular/animations": "8.2.14",
         "@angular/cdk": "8.2.3",
         "@angular/cli": "8.3.25",
@@ -30,8 +30,8 @@
         "@types/jest": "24.0.13",
         "@types/node": "12.7.5",
         "acorn": "6.1.1",
-        "codelyzer": "5.0.1",
-        "colors": "1.3.3",
+        "codelyzer": "5.2.2",
+        "colors": "1.4.0",
         "core-js": "2.6.9",
         "eslint": "6.8.0",
         "hammerjs": "2.0.8",
@@ -40,16 +40,16 @@
         "jest": "24.8.0",
         "jest-cli": "24.8.0",
         "jest-preset-angular": "7.1.0",
-        "ng-packagr": "9.0.3",
+        "ng-packagr": "9.1.0",
         "ngx-toastr": "10.0.4",
         "prettier": "1.17.1",
         "pretty": "2.0.0",
-        "rxjs": "6.5.2",
+        "rxjs": "6.5.4",
         "sort-package-json": "1.40.0",
         "ts-node": "7.0.0",
-        "tsickle": "0.37.0",
-        "tslib": "1.9.0",
+        "tsickle": "0.38.1",
+        "tslib": "1.11.1",
         "typescript": "3.5.1",
-        "zone.js": "0.10.2"
+        "zone.js": "0.10.3"
     }
 }
