@@ -87,7 +87,7 @@
                     [class.table-grid__column--filter-enable]="filterTemplate"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
-                    <div *ngIf="column['visible']">
+                    <div *ngIf="column['visible']" [@fadeAnimation]>
                         <table-thead
                             cdkDragHandle
                             [column-schema]="columnSchema"

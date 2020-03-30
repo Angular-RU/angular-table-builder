@@ -11,7 +11,6 @@ export class VirtualForDirective implements OnDestroy {
     @Input() public virtualForBufferOffset: number | null = null;
     private cache: Map<number, InternalVirtualRef> = new Map();
     private _source: TableRow[] = [];
-    // noinspection JSMismatchedCollectionQueryUpdate
     private _indexes: VirtualIndex[] = [];
     private createFrameId: number;
     private removeFrameId: number;
@@ -35,19 +34,23 @@ export class VirtualForDirective implements OnDestroy {
 
         this._indexes = indexes;
         this.removeOldNodes();
-        this.createNewNodes(indexes);
+        this.createNewNodes(this._indexes);
+    }
+
+    private get sourceRef(): TableRow[] {
+        return this._source || [];
     }
 
     public ngOnDestroy(): void {
-        this.view.clear();
         window.cancelAnimationFrame(this.createFrameId);
         window.cancelAnimationFrame(this.removeFrameId);
+        this.view.clear();
     }
 
     private createNewNodes(indexes: VirtualIndex[]): void {
         indexes.forEach(
             (index: VirtualIndex): void => {
-                if (this.virtualForBufferOffset < 0) {
+                if (this.virtualBufferIsOverloadOrNull) {
                     this.createEmbeddedViewByIndex(index);
                 } else {
                     this.createFrameId = window.requestAnimationFrame(
@@ -70,7 +73,7 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     private createEmbeddedViewByIndex(index: VirtualIndex): void {
-        const row: TableRow = this._source[index.position];
+        const row: TableRow = this.sourceRef[index.position];
         const virtualRef: InternalVirtualRef = this.cache.get(index.position);
 
         if (virtualRef) {
@@ -93,7 +96,7 @@ export class VirtualForDirective implements OnDestroy {
 
         this.virtualForDiffIndexes.forEach(
             (index: number): void => {
-                if (this.virtualForBufferOffset < 0) {
+                if (this.virtualBufferIsOverloadOrNull) {
                     this.removeEmbeddedViewByIndex(index);
                 } else {
                     this.removeFrameId = window.requestAnimationFrame(
@@ -102,6 +105,10 @@ export class VirtualForDirective implements OnDestroy {
                 }
             }
         );
+    }
+
+    private get virtualBufferIsOverloadOrNull(): boolean {
+        return this.virtualForBufferOffset < 0 || !Number.isInteger(this.virtualForBufferOffset);
     }
 
     private removeEmbeddedViewByIndex(index: number): void {
