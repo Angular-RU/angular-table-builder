@@ -472,7 +472,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.viewPortInfo.isScrolling = false;
             detectChanges(this.cd);
             window.requestAnimationFrame((): void => this.app.tick());
-        }, TIME_RELOAD);
+        }, MACRO_TIME);
     }
 
     private getOffsetVisibleEndIndex(): number {
