@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    HostListener,
     Injector,
     Input,
     NgZone,
@@ -64,6 +65,13 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
 
     private get itemElement(): Partial<HTMLDivElement> {
         return (this.itemRef && this.itemRef.nativeElement) || {};
+    }
+
+    @HostListener('mouseenter')
+    public mouseover(): void {
+        if (this.state.opened) {
+            detectChanges(this.cd);
+        }
     }
 
     public ngOnInit(): void {
