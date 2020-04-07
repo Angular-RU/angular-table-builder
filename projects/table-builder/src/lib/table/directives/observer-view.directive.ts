@@ -2,7 +2,7 @@ import { AfterViewInit, Directive, ElementRef, EventEmitter, NgZone, OnDestroy, 
 
 @Directive({ selector: '[observerView]' })
 export class ObserverViewDirective implements AfterViewInit, OnDestroy {
-    @Output() public observeVisible: EventEmitter<boolean> = new EventEmitter();
+    @Output() public observeVisible: EventEmitter<boolean> = new EventEmitter(true);
     private observer: IntersectionObserver = null;
     private previousRation: number = 0.0;
     private frameId: number;
@@ -10,23 +10,25 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     constructor(private element: ElementRef, private readonly ngZone: NgZone) {}
 
     public ngAfterViewInit(): void {
-        this.observer = new IntersectionObserver(
-            (entries: IntersectionObserverEntry[]): void => {
-                entries.forEach(
-                    (entry: IntersectionObserverEntry): void => {
-                        this.ngZone.runOutsideAngular((): void => this.observeChange(entry));
-                        this.previousRation = entry.intersectionRatio;
-                    }
-                );
-            },
-            {
-                root: null,
-                rootMargin: '0px 0px 0px 0px',
-                threshold: [0]
-            }
-        );
+        this.ngZone.runOutsideAngular(() => {
+            this.observer = new IntersectionObserver(
+                (entries: IntersectionObserverEntry[]): void => {
+                    entries.forEach(
+                        (entry: IntersectionObserverEntry): void => {
+                            this.ngZone.runOutsideAngular((): void => this.observeChange(entry));
+                            this.previousRation = entry.intersectionRatio;
+                        }
+                    );
+                },
+                {
+                    root: null,
+                    rootMargin: '0px 0px 0px 0px',
+                    threshold: [0]
+                }
+            );
 
-        this.observer.observe(this.element.nativeElement);
+            this.observer.observe(this.element.nativeElement);
+        });
     }
 
     public ngOnDestroy(): void {

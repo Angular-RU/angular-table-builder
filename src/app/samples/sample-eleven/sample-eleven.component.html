@@ -64,17 +64,26 @@
 
                                 <ngx-context-menu-item>
                                     <ngx-menu-content icon></ngx-menu-content>
-                                    <ngx-menu-content>Column list</ngx-menu-content>
+                                    <ngx-menu-content>Column settings</ngx-menu-content>
 
-                                    <ngx-context-menu-item
-                                        *ngFor="let column of table1.columnSchema"
-                                        (onClick)="table1.toggleColumnVisibility(column.key); $event.preventDefault()"
-                                        [visible]="column.isModel"
-                                    >
-                                        <ngx-menu-content no-margin>{{ column.key }}</ngx-menu-content>
-                                        <ngx-menu-content no-margin align-center>
-                                            <mat-checkbox color="primary" [checked]="column.isVisible"></mat-checkbox>
-                                        </ngx-menu-content>
+                                    <ngx-context-menu-item>
+                                        <ngx-menu-content>List</ngx-menu-content>
+
+                                        <ngx-context-menu-item
+                                            *ngFor="let column of table1.columnSchema"
+                                            (onClick)="
+                                                table1.toggleColumnVisibility(column.key); $event.preventDefault()
+                                            "
+                                            [visible]="column.isModel"
+                                        >
+                                            <ngx-menu-content no-margin>{{ column.key }}</ngx-menu-content>
+                                            <ngx-menu-content no-margin align-center>
+                                                <mat-checkbox
+                                                    color="primary"
+                                                    [checked]="column.isVisible"
+                                                ></mat-checkbox>
+                                            </ngx-menu-content>
+                                        </ngx-context-menu-item>
                                     </ngx-context-menu-item>
                                 </ngx-context-menu-item>
 
