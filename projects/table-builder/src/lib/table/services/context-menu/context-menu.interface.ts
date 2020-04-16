@@ -6,6 +6,7 @@ export class ContextMenuState {
     public key: string = null;
     public item: Any = null;
     public value: Any = null;
+    public textContent: string = null;
 
     constructor(state: ContextMenuState | null = null) {
         if (state) {
@@ -14,6 +15,7 @@ export class ContextMenuState {
             this.key = state.key;
             this.item = state.item;
             this.value = state.value;
+            this.textContent = state.textContent;
         }
     }
 }

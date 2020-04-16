@@ -17,6 +17,7 @@ export class ContextMenuService {
             item: row,
             opened: true,
             value: getDeepValue(row, key) || null,
+            textContent: ((event.target || {}) as Node).textContent,
             position: { left: event.clientX, top: event.clientY }
         });
 
