@@ -1,6 +1,11 @@
 <mat-toolbar class="simple-toolbar">
     <span>Example table in columns</span>
-    <mat-checkbox style="margin-left: 10px" [(ngModel)]="nativeScrollbar" class="mat-checkbox-flat" (change)="update()">
+    <mat-checkbox
+        style="margin-left: 10px;"
+        [(ngModel)]="nativeScrollbar"
+        class="mat-checkbox-flat"
+        (change)="update()"
+    >
         Enable native scrollbar
     </mat-checkbox>
 
@@ -9,7 +14,7 @@
 
 <div id="main-column">
     <div id="widget1">
-        <ngx-table-builder #table1 [source]="dataFirst" [native-scrollbar]="nativeScrollbar" [enable-filtering]="true">
+        <ngx-table-builder #table1 [source]="dataFirst" [native-scrollbar]="nativeScrollbar" enable-filtering>
             <ngx-header [css-class]="['my-filter']" height="65">
                 <div class="filter-form">
                     <mat-form-field appearance="outline">
@@ -44,7 +49,7 @@
     </div>
 
     <div id="widget2">
-        <ngx-table-builder #table2 [source]="dataSecond" [native-scrollbar]="nativeScrollbar" [enable-filtering]="true">
+        <ngx-table-builder #table2 [source]="dataSecond" [native-scrollbar]="nativeScrollbar" enable-filtering>
             <ngx-header [css-class]="['my-filter']" height="65">
                 <div class="filter-form">
                     <mat-form-field appearance="outline">

@@ -1,16 +1,16 @@
 /*! highlight.js v9.15.10 | BSD3 License | git.io/hljslicense */
-!(function(e) {
+!(function (e) {
     var t = ('object' == typeof window && window) || ('object' == typeof self && self);
     'undefined' == typeof exports || exports.nodeType
         ? t &&
           ((t.hljs = e({})),
           'function' == typeof define &&
               define.amd &&
-              define([], function() {
+              define([], function () {
                   return t.hljs;
               }))
         : e(exports);
-})(function(n) {
+})(function (n) {
     var d = [],
         o = Object.keys,
         h = {},
@@ -67,10 +67,7 @@
         N = '</span>',
         v = { classPrefix: 'hljs-', tabReplace: null, useBR: !1, languages: void 0 };
     function y(e) {
-        return e
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+        return e.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
     function b(e) {
         return e.nodeName.toLowerCase();
@@ -88,7 +85,7 @@
             a = Array.prototype.slice.call(arguments, 1);
         for (t in e) r[t] = e[t];
         return (
-            a.forEach(function(e) {
+            a.forEach(function (e) {
                 for (t in e) r[t] = e[t];
             }),
             r
@@ -128,7 +125,7 @@
                 if (((r.compiled = !0), (r.k = r.k || r.bK), r.k)) {
                     function a(r, e) {
                         s.cI && (e = e.toLowerCase()),
-                            e.split(' ').forEach(function(e) {
+                            e.split(' ').forEach(function (e) {
                                 var t = e.split('|');
                                 n[t[0]] = [r, t[1] ? Number(t[1]) : 1];
                             });
@@ -136,7 +133,7 @@
                     var n = {};
                     'string' == typeof r.k
                         ? a('keyword', r.k)
-                        : o(r.k).forEach(function(e) {
+                        : o(r.k).forEach(function (e) {
                               a(e, r.k[e]);
                           }),
                         (r.k = n);
@@ -156,12 +153,12 @@
                     r.c || (r.c = []),
                     (r.c = Array.prototype.concat.apply(
                         [],
-                        r.c.map(function(e) {
-                            return (function(t) {
+                        r.c.map(function (e) {
+                            return (function (t) {
                                 return (
                                     t.v &&
                                         !t.cached_variants &&
-                                        (t.cached_variants = t.v.map(function(e) {
+                                        (t.cached_variants = t.v.map(function (e) {
                                             return p(t, { v: null }, e);
                                         })),
                                     t.cached_variants || (t.eW && [p(t)]) || [t]
@@ -169,12 +166,12 @@
                             })('self' === e ? r : e);
                         })
                     )),
-                    r.c.forEach(function(e) {
+                    r.c.forEach(function (e) {
                         t(e, r);
                     }),
                     r.starts && t(r.starts, e);
                 var i = r.c
-                    .map(function(e) {
+                    .map(function (e) {
                         return e.bK ? '\\.?(?:' + e.b + ')\\.?' : e.b;
                     })
                     .concat([r.tE, r.i])
@@ -182,7 +179,7 @@
                     .filter(Boolean);
                 r.t = i.length
                     ? c(
-                          (function(e, t) {
+                          (function (e, t) {
                               for (
                                   var r = /\[(?:[^\\\]]|\\.)*\]|\(\??|\\([1-9][0-9]*)|\\./, a = 0, n = '', i = 0;
                                   i < e.length;
@@ -208,7 +205,7 @@
                           !0
                       )
                     : {
-                          exec: function() {
+                          exec: function () {
                               return null;
                           }
                       };
@@ -223,13 +220,13 @@
         function s() {
             (b +=
                 null != u.sL
-                    ? (function() {
+                    ? (function () {
                           var e = 'string' == typeof u.sL;
                           if (e && !h[u.sL]) return y(p);
                           var t = e ? k(u.sL, p, !0, d[u.sL]) : x(p, u.sL.length ? u.sL : void 0);
                           return 0 < u.r && (m += t.r), e && (d[u.sL] = t.top), c(t.language, t.value, !1, !0);
                       })()
-                    : (function() {
+                    : (function () {
                           var e, t, r, a, n, i, s;
                           if (!u.k) return y(p);
                           for (a = '', t = 0, u.lR.lastIndex = 0, r = u.lR.exec(p); r; )
@@ -252,14 +249,15 @@
         }
         function a(e, t) {
             if (((p += e), null == t)) return s(), 0;
-            var r = (function(e, t) {
+            var r = (function (e, t) {
                 var r, a, n;
                 for (r = 0, a = t.c.length; r < a; r++)
                     if (w(t.c[r].bR, e))
                         return (
                             t.c[r].endSameAsBegin &&
-                                (t.c[r].eR = ((n = t.c[r].bR.exec(e)[0]),
-                                new RegExp(n.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'm'))),
+                                (t.c[r].eR =
+                                    ((n = t.c[r].bR.exec(e)[0]),
+                                    new RegExp(n.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'm'))),
                             t.c[r]
                         );
             })(t, u);
@@ -282,7 +280,7 @@
                 return a.starts && (a.endSameAsBegin && (a.starts.eR = a.eR), o(a.starts)), n.rE ? 0 : t.length;
             }
             if (
-                (function(e, t) {
+                (function (e, t) {
                     return !i && w(t.iR, e);
                 })(t, u)
             )
@@ -317,7 +315,7 @@
             e
                 .filter(M)
                 .filter(_)
-                .forEach(function(e) {
+                .forEach(function (e) {
                     var t = k(e, r, !1);
                     (t.language = e), t.r > n.r && (n = t), t.r > a.r && ((n = a), (a = t));
                 }),
@@ -327,7 +325,7 @@
     }
     function f(e) {
         return v.tabReplace || v.useBR
-            ? e.replace(r, function(e, t) {
+            ? e.replace(r, function (e, t) {
                   return v.useBR && '\n' === e ? '<br>' : v.tabReplace ? t.replace(/\t/g, v.tabReplace) : '';
               })
             : e;
@@ -338,7 +336,7 @@
             a,
             n,
             i,
-            s = (function(e) {
+            s = (function (e) {
                 var t,
                     r,
                     a,
@@ -359,7 +357,7 @@
             (a = s ? k(s, i, !0) : x(i)),
             (r = m(t)).length &&
                 (((n = document.createElementNS('http://www.w3.org/1999/xhtml', 'div')).innerHTML = a.value),
-                (a.value = (function(e, t, r) {
+                (a.value = (function (e, t, r) {
                     var a = 0,
                         n = '',
                         i = [];
@@ -381,7 +379,7 @@
                             '<' +
                             b(e) +
                             d.map
-                                .call(e.attributes, function(e) {
+                                .call(e.attributes, function (e) {
                                     return ' ' + e.nodeName + '="' + y(e.value).replace('"', '&quot;') + '"';
                                 })
                                 .join('') +
@@ -408,7 +406,7 @@
                 })(r, m(n), i))),
             (a.value = f(a.value)),
             (e.innerHTML = a.value),
-            (e.className = (function(e, t, r) {
+            (e.className = (function (e, t, r) {
                 var a = t ? c[t] : r,
                     n = [e.trim()];
                 return e.match(/\bhljs\b/) || n.push('hljs'), -1 === e.indexOf(a) && n.push(a), n.join(' ').trim();
@@ -435,22 +433,22 @@
         (n.highlightAuto = x),
         (n.fixMarkup = f),
         (n.highlightBlock = s),
-        (n.configure = function(e) {
+        (n.configure = function (e) {
             v = p(v, e);
         }),
         (n.initHighlighting = g),
-        (n.initHighlightingOnLoad = function() {
+        (n.initHighlightingOnLoad = function () {
             addEventListener('DOMContentLoaded', g, !1), addEventListener('load', g, !1);
         }),
-        (n.registerLanguage = function(t, e) {
+        (n.registerLanguage = function (t, e) {
             var r = (h[t] = e(n));
             i(r),
                 r.aliases &&
-                    r.aliases.forEach(function(e) {
+                    r.aliases.forEach(function (e) {
                         c[e] = t;
                     });
         }),
-        (n.listLanguages = function() {
+        (n.listLanguages = function () {
             return o(h);
         }),
         (n.getLanguage = M),
@@ -469,7 +467,7 @@
         (n.PWM = n.PHRASAL_WORDS_MODE = {
             b: /\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\b/
         }),
-        (n.C = n.COMMENT = function(e, t, r) {
+        (n.C = n.COMMENT = function (e, t, r) {
             var a = n.inherit({ cN: 'comment', b: e, e: t, c: [] }, r || {});
             return a.c.push(n.PWM), a.c.push({ cN: 'doctag', b: '(?:TODO|FIXME|NOTE|BUG|XXX):', r: 0 }), a;
         }),
@@ -494,7 +492,7 @@
         (n.TM = n.TITLE_MODE = { cN: 'title', b: n.IR, r: 0 }),
         (n.UTM = n.UNDERSCORE_TITLE_MODE = { cN: 'title', b: n.UIR, r: 0 }),
         (n.METHOD_GUARD = { b: '\\.\\s*' + n.UIR, r: 0 }),
-        n.registerLanguage('apache', function(e) {
+        n.registerLanguage('apache', function (e) {
             var t = { cN: 'number', b: '[\\$%]\\d+' };
             return {
                 aliases: ['apacheconf'],
@@ -526,7 +524,7 @@
                 i: /\S/
             };
         }),
-        n.registerLanguage('bash', function(e) {
+        n.registerLanguage('bash', function (e) {
             var t = { cN: 'variable', v: [{ b: /\$[\w\d#@][\w\d_]*/ }, { b: /\$\{(.*?)}/ }] },
                 r = { cN: 'string', b: /"/, e: /"/, c: [e.BE, t, { cN: 'variable', b: /\$\(/, e: /\)/, c: [e.BE] }] };
             return {
@@ -556,7 +554,7 @@
                 ]
             };
         }),
-        n.registerLanguage('coffeescript', function(e) {
+        n.registerLanguage('coffeescript', function (e) {
             var t = {
                     keyword:
                         'in if for while finally new do return else break catch instanceof throw try this switch continue typeof delete debugger super yield import export from as default await then unless until loop of by when and or is isnt not',
@@ -586,7 +584,15 @@
                         ]
                     },
                     { b: '@' + r },
-                    { sL: 'javascript', eB: !0, eE: !0, v: [{ b: '```', e: '```' }, { b: '`', e: '`' }] }
+                    {
+                        sL: 'javascript',
+                        eB: !0,
+                        eE: !0,
+                        v: [
+                            { b: '```', e: '```' },
+                            { b: '`', e: '`' }
+                        ]
+                    }
                 ];
             a.c = n;
             var i = e.inherit(e.TM, { b: r }),
@@ -612,7 +618,7 @@
                 ])
             };
         }),
-        n.registerLanguage('cpp', function(e) {
+        n.registerLanguage('cpp', function (e) {
             var t = { cN: 'keyword', b: '\\b[a-z\\d_]*_t\\b' },
                 r = {
                     cN: 'string',
@@ -670,7 +676,11 @@
                     },
                     { b: e.IR + '::', k: s },
                     {
-                        v: [{ b: /=/, e: /;/ }, { b: /\(/, e: /\)/ }, { bK: 'new throw return else', e: /;/ }],
+                        v: [
+                            { b: /=/, e: /;/ },
+                            { b: /\(/, e: /\)/ },
+                            { bK: 'new throw return else', e: /;/ }
+                        ],
                         k: s,
                         c: c.concat([{ b: /\(/, e: /\)/, k: s, c: c.concat(['self']), r: 0 }]),
                         r: 0
@@ -710,7 +720,7 @@
                 exports: { preprocessor: n, strings: r, k: s }
             };
         }),
-        n.registerLanguage('cs', function(e) {
+        n.registerLanguage('cs', function (e) {
             var t = {
                     keyword:
                         'abstract as base bool break byte case catch char checked const continue decimal default delegate do double enum event explicit extern finally fixed float for foreach goto if implicit in int interface internal is lock long nameof object operator out override params private protected public readonly ref sbyte sealed short sizeof stackalloc static string struct switch this try typeof uint ulong unchecked unsafe ushort using virtual void volatile while add alias ascending async await by descending dynamic equals from get global group into join let on orderby partial remove select set value var where yield',
@@ -784,7 +794,7 @@
                 ]
             };
         }),
-        n.registerLanguage('css', function(e) {
+        n.registerLanguage('css', function (e) {
             var t = {
                 b: /(?:[A-Z\_\.\-]+|--[a-zA-Z0-9_-]+)\s*:/,
                 rB: !0,
@@ -803,7 +813,10 @@
                                 {
                                     b: /[\w-]+\(/,
                                     rB: !0,
-                                    c: [{ cN: 'built_in', b: /[\w-]+/ }, { b: /\(/, e: /\)/, c: [e.ASM, e.QSM] }]
+                                    c: [
+                                        { cN: 'built_in', b: /[\w-]+/ },
+                                        { b: /\(/, e: /\)/, c: [e.ASM, e.QSM] }
+                                    ]
                                 },
                                 e.CSSNM,
                                 e.QSM,
@@ -830,14 +843,17 @@
                         b: '@',
                         e: '[{;]',
                         i: /:/,
-                        c: [{ cN: 'keyword', b: /\w+/ }, { b: /\s/, eW: !0, eE: !0, r: 0, c: [e.ASM, e.QSM, e.CSSNM] }]
+                        c: [
+                            { cN: 'keyword', b: /\w+/ },
+                            { b: /\s/, eW: !0, eE: !0, r: 0, c: [e.ASM, e.QSM, e.CSSNM] }
+                        ]
                     },
                     { cN: 'selector-tag', b: '[a-zA-Z-][a-zA-Z0-9_-]*', r: 0 },
                     { b: '{', e: '}', i: /\S/, c: [e.CBCM, t] }
                 ]
             };
         }),
-        n.registerLanguage('diff', function(e) {
+        n.registerLanguage('diff', function (e) {
             return {
                 aliases: ['patch'],
                 c: [
@@ -867,7 +883,7 @@
                 ]
             };
         }),
-        n.registerLanguage('http', function(e) {
+        n.registerLanguage('http', function (e) {
             var t = 'HTTP/[0-9\\.]+';
             return {
                 aliases: ['https'],
@@ -885,7 +901,7 @@
                 ]
             };
         }),
-        n.registerLanguage('ini', function(e) {
+        n.registerLanguage('ini', function (e) {
             var t = {
                 cN: 'string',
                 c: [e.BE],
@@ -929,7 +945,7 @@
                 ]
             };
         }),
-        n.registerLanguage('java', function(e) {
+        n.registerLanguage('java', function (e) {
             var t =
                     'false synchronized int abstract float private char boolean var static null if const for true while long strictfp finally protected import native final void enum else break transient catch instanceof byte super volatile case assert short package default double public try this switch continue throws protected public private module requires exports do',
                 r = {
@@ -943,7 +959,13 @@
                 k: t,
                 i: /<\/|#/,
                 c: [
-                    e.C('/\\*\\*', '\\*/', { r: 0, c: [{ b: /\w+@/, r: 0 }, { cN: 'doctag', b: '@[A-Za-z]+' }] }),
+                    e.C('/\\*\\*', '\\*/', {
+                        r: 0,
+                        c: [
+                            { b: /\w+@/, r: 0 },
+                            { cN: 'doctag', b: '@[A-Za-z]+' }
+                        ]
+                    }),
                     e.CLCM,
                     e.CBCM,
                     e.ASM,
@@ -980,7 +1002,7 @@
                 ]
             };
         }),
-        n.registerLanguage('javascript', function(e) {
+        n.registerLanguage('javascript', function (e) {
             var t = '[A-Za-z$_][0-9A-Za-z$_]*',
                 r = {
                     keyword:
@@ -1068,7 +1090,7 @@
                 i: /#(?!!)/
             };
         }),
-        n.registerLanguage('json', function(e) {
+        n.registerLanguage('json', function (e) {
             var t = { literal: 'true false null' },
                 r = [e.QSM, e.CNM],
                 a = { e: ',', eW: !0, eE: !0, c: r, k: t },
@@ -1081,7 +1103,7 @@
                 i = { b: '\\[', e: '\\]', c: [e.inherit(a)], i: '\\S' };
             return r.splice(r.length, 0, n, i), { c: r, k: t, i: '\\S' };
         }),
-        n.registerLanguage('makefile', function(e) {
+        n.registerLanguage('makefile', function (e) {
             var t = { cN: 'variable', v: [{ b: '\\$\\(' + e.UIR + '\\)', c: [e.BE] }, { b: /\$[@%<?\^\+\*]/ }] },
                 r = { cN: 'string', b: /"/, e: /"/, c: [e.BE, t] },
                 a = {
@@ -1112,7 +1134,7 @@
                 ]
             };
         }),
-        n.registerLanguage('xml', function(e) {
+        n.registerLanguage('xml', function (e) {
             var t = {
                 eW: !0,
                 i: /</,
@@ -1176,7 +1198,7 @@
                 ]
             };
         }),
-        n.registerLanguage('markdown', function(e) {
+        n.registerLanguage('markdown', function (e) {
             return {
                 aliases: ['md', 'mkdown', 'mkd'],
                 c: [
@@ -1212,7 +1234,7 @@
                 ]
             };
         }),
-        n.registerLanguage('nginx', function(e) {
+        n.registerLanguage('nginx', function (e) {
             var t = { cN: 'variable', v: [{ b: /\$\d+/ }, { b: /\$\{/, e: /}/ }, { b: '[\\$\\@]' + e.UIR }] },
                 r = {
                     eW: !0,
@@ -1225,7 +1247,14 @@
                     i: '=>',
                     c: [
                         e.HCM,
-                        { cN: 'string', c: [e.BE, t], v: [{ b: /"/, e: /"/ }, { b: /'/, e: /'/ }] },
+                        {
+                            cN: 'string',
+                            c: [e.BE, t],
+                            v: [
+                                { b: /"/, e: /"/ },
+                                { b: /'/, e: /'/ }
+                            ]
+                        },
                         { b: '([a-z]+):/', e: '\\s', eW: !0, eE: !0, c: [t] },
                         {
                             cN: 'regexp',
@@ -1252,7 +1281,7 @@
                 i: '[^\\s\\}]'
             };
         }),
-        n.registerLanguage('objectivec', function(e) {
+        n.registerLanguage('objectivec', function (e) {
             var t = /[a-zA-Z@][a-zA-Z0-9_]*/,
                 r = '@interface @class @protocol @implementation';
             return {
@@ -1273,13 +1302,24 @@
                     e.QSM,
                     {
                         cN: 'string',
-                        v: [{ b: '@"', e: '"', i: '\\n', c: [e.BE] }, { b: "'", e: "[^\\\\]'", i: "[^\\\\][^']" }]
+                        v: [
+                            { b: '@"', e: '"', i: '\\n', c: [e.BE] },
+                            { b: "'", e: "[^\\\\]'", i: "[^\\\\][^']" }
+                        ]
                     },
                     {
                         cN: 'meta',
                         b: '#',
                         e: '$',
-                        c: [{ cN: 'meta-string', v: [{ b: '"', e: '"' }, { b: '<', e: '>' }] }]
+                        c: [
+                            {
+                                cN: 'meta-string',
+                                v: [
+                                    { b: '"', e: '"' },
+                                    { b: '<', e: '>' }
+                                ]
+                            }
+                        ]
                     },
                     {
                         cN: 'class',
@@ -1294,7 +1334,7 @@
                 ]
             };
         }),
-        n.registerLanguage('perl', function(e) {
+        n.registerLanguage('perl', function (e) {
             var t =
                     'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime readpipe do return format read sprintf dbmopen pop getpgrp not getpwnam rewinddir qqfileno qw endprotoent wait sethostent bless s|0 opendir continue each sleep endgrent shutdown dump chomp connect getsockname die socketpair close flock exists index shmgetsub for endpwent redo lstat msgctl setpgrp abs exit select print ref gethostbyaddr unshift fcntl syscall goto getnetbyaddr join gmtime symlink semget splice x|0 getpeername recv log setsockopt cos last reverse gethostbyname getgrnam study formline endhostent times chop length gethostent getnetent pack getprotoent getservbyname rand mkdir pos chmod y|0 substr endnetent printf next open msgsnd readdir use unlink getsockopt getpriority rindex wantarray hex system getservbyport endservent int chr untie rmdir prototype tell listen fork shmread ucfirst setprotoent else sysseek link getgrgid shmctl waitpid unpack getnetbyname reset chdir grep split require caller lcfirst until warn while values shift telldir getpwuid my getprotobynumber delete and sort uc defined srand accept package seekdir getprotobyname semop our rename seek if q|0 chroot sysread setpwent no crypt getc chown sqrt write setnetent setpriority foreach tie sin msgget map stat getlogin unless elsif truncate exec keys glob tied closedirioctl socket readlink eval xor readline binmode setservent eof ord bind alarm pipe atan2 getgrent exp time push setgrent gt lt or ne m|0 break given say state when',
                 r = { cN: 'subst', b: '[$@]\\{', e: '\\}', k: t },
@@ -1350,7 +1390,7 @@
                 ];
             return (r.c = s), { aliases: ['pl', 'pm'], l: /[\w\.]+/, k: t, c: (a.c = s) };
         }),
-        n.registerLanguage('php', function(e) {
+        n.registerLanguage('php', function (e) {
             var t = { b: '\\$+[a-zA-Z_-ÿ][a-zA-Z0-9_-ÿ]*' },
                 r = { cN: 'meta', b: /<\?(php)?|\?>/ },
                 a = {
@@ -1408,7 +1448,7 @@
                 ]
             };
         }),
-        n.registerLanguage('properties', function(e) {
+        n.registerLanguage('properties', function (e) {
             var t = '[ \\t\\f]*',
                 r = '(' + t + '[:=]' + t + '|[ \\t\\f]+)',
                 a = '([^\\\\\\W:= \\t\\f\\n]|\\\\.)+',
@@ -1425,7 +1465,7 @@
                 ]
             };
         }),
-        n.registerLanguage('python', function(e) {
+        n.registerLanguage('python', function (e) {
             var t = {
                     keyword:
                         'and elif is global as in if from raise for except finally print import pass return exec else break not with class assert yield try while continue del or def lambda async await nonlocal|10',
@@ -1470,7 +1510,10 @@
                         n,
                         e.HCM,
                         {
-                            v: [{ cN: 'function', bK: 'def' }, { cN: 'class', bK: 'class' }],
+                            v: [
+                                { cN: 'function', bK: 'def' },
+                                { cN: 'class', bK: 'class' }
+                            ],
                             e: /:/,
                             i: /[${=;\n,]/,
                             c: [e.UTM, s, { b: /->/, eW: !0, k: 'None' }]
@@ -1481,7 +1524,7 @@
                 }
             );
         }),
-        n.registerLanguage('ruby', function(e) {
+        n.registerLanguage('ruby', function (e) {
             var t = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?',
                 r = {
                     keyword:
@@ -1576,13 +1619,13 @@
             ];
             return { aliases: ['rb', 'gemspec', 'podspec', 'thor', 'irb'], k: r, i: /\/\*/, c: i.concat(u).concat(l) };
         }),
-        n.registerLanguage('shell', function(e) {
+        n.registerLanguage('shell', function (e) {
             return {
                 aliases: ['console'],
                 c: [{ cN: 'meta', b: '^\\s{0,3}[\\w\\d\\[\\]()@-]*[>%$#]', starts: { e: '$', sL: 'bash' } }]
             };
         }),
-        n.registerLanguage('sql', function(e) {
+        n.registerLanguage('sql', function (e) {
             var t = e.C('--', '$');
             return {
                 cI: !0,
@@ -1617,7 +1660,7 @@
                 ]
             };
         }),
-        n.registerLanguage('yaml', function(e) {
+        n.registerLanguage('yaml', function (e) {
             var t = 'true false yes no null',
                 r = '^[ \\-]*',
                 a = '[a-zA-Z_][\\w\\-]*',
@@ -1626,7 +1669,16 @@
                     cN: 'string',
                     r: 0,
                     v: [{ b: /'/, e: /'/ }, { b: /"/, e: /"/ }, { b: /\S+/ }],
-                    c: [e.BE, { cN: 'template-variable', v: [{ b: '{{', e: '}}' }, { b: '%{', e: '}' }] }]
+                    c: [
+                        e.BE,
+                        {
+                            cN: 'template-variable',
+                            v: [
+                                { b: '{{', e: '}}' },
+                                { b: '%{', e: '}' }
+                            ]
+                        }
+                    ]
                 };
             return {
                 cI: !0,

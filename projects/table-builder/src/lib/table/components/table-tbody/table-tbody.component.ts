@@ -3,9 +3,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    EventEmitter,
     Injector,
     Input,
     NgZone,
+    Output,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -52,11 +54,11 @@ export class TableTbodyComponent {
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('client-row-height') public clientRowHeight: number;
     @Input('column-schema') public columnSchema: ColumnsSchema;
+    @Output() public changed: EventEmitter<void> = new EventEmitter(true);
     private readonly app: ApplicationRef;
     private readonly ngZone: NgZone;
 
     constructor(public cd: ChangeDetectorRef, injector: Injector) {
-        this.cd.reattach();
         this.selection = injector.get<SelectionService>(SelectionService);
         this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
         this.app = injector.get<ApplicationRef>(ApplicationRef);
@@ -87,17 +89,14 @@ export class TableTbodyComponent {
 
     // eslint-disable-next-line max-params
     public handleOnClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                if (this.enableSelection) {
-                    this.selection.selectionTaskIdle = window.setTimeout((): void => {
-                        this.selection.selectRow(row, event, this.source);
-                        event.preventDefault();
-                        window.requestAnimationFrame((): void => this.app.tick());
-                    }, SELECTION_DELAY);
-                }
+        this.ngZone.run((): void => {
+            if (this.enableSelection) {
+                this.selection.selectionTaskIdle = window.setTimeout((): void => {
+                    this.selection.selectRow(row, event, this.source);
+                    this.changed.emit();
+                }, SELECTION_DELAY);
             }
-        );
+        });
 
         this.handleEventEmitter(row, key, event, emitter);
     }
@@ -116,15 +115,11 @@ export class TableTbodyComponent {
     // eslint-disable-next-line max-params
     private handleEventEmitter(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
         if (emitter) {
-            this.ngZone.runOutsideAngular(
-                (): void => {
-                    window.setTimeout(
-                        (): void => {
-                            emitter.emit(this.generateTableCellInfo(row, key, event));
-                        }
-                    );
-                }
-            );
+            this.ngZone.runOutsideAngular((): void => {
+                window.setTimeout((): void => {
+                    emitter.emit(this.generateTableCellInfo(row, key, event));
+                });
+            });
         }
     }
 

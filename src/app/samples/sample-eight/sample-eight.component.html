@@ -12,10 +12,10 @@
     }
 </style>
 
-<ngx-table-builder #table [source]="data" [row-height]="40" [column-width]="120" [vertical-border]="false">
-    <ngx-column key="active" width="60" [sticky]="true" [vertical-line]="true" important-template>
+<ngx-table-builder #table [source]="data" [row-height]="40" [vertical-border]="false">
+    <ngx-column key="active" width="60" sticky vertical-line important-template>
         <ng-template ngx-th></ng-template>
-        <ng-template ngx-td [row]="true" let-row>
+        <ng-template ngx-td row let-row>
             <div [@.disabled]="true">
                 <mat-checkbox
                     [checked]="$any(row)?.active"
@@ -26,7 +26,7 @@
     </ngx-column>
 
     <ngx-column key="cost" important-template>
-        <ng-template ngx-td [row]="true" let-row>
+        <ng-template ngx-td row let-row>
             <span [class.cost-disable]="!$any(row)?.active">{{ $any(row)?.cost | currency }}</span>
         </ng-template>
     </ngx-column>
@@ -39,8 +39,8 @@
         <ng-template #other ngx-td [nowrap]="false" let-cell>{{ cell }}</ng-template>
     </ngx-column>
 
-    <ngx-column key="symbol-edit" [sticky-end]="true" [vertical-line]="true" custom-key important-template>
-        <ng-template ngx-td [row]="true" let-row>
+    <ngx-column key="symbol-edit" sticky-end vertical-line custom-key important-template>
+        <ng-template ngx-td row let-row>
             <mat-form-field class="example-full-width">
                 <div [@.disabled]="true">
                     <input

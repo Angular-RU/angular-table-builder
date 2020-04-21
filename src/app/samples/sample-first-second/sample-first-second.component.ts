@@ -23,13 +23,11 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         const DEFAULT_TIMEOUT: number = 14500;
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.idInterval = window.setInterval((): void => {
-                    this.updateTable();
-                }, DEFAULT_TIMEOUT);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.idInterval = window.setInterval((): void => {
+                this.updateTable();
+            }, DEFAULT_TIMEOUT);
+        });
     }
 
     public ngOnDestroy(): void {
@@ -46,23 +44,19 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     }
 
     public edit(row: TableRow): void {
-        this.ngZone.run(
-            (): void => {
-                this.dialog
-                    .open(DialogTemplateComponent, { data: row, width: '1024px' })
-                    .afterClosed()
-                    .subscribe(
-                        (data: TableRow): void => {
-                            if (data) {
-                                this.data = this.data.map(
-                                    (val: TableRow): TableRow => (val.id === data.id ? { ...data } : val)
-                                );
-                                detectChanges(this.cd);
-                            }
-                        }
-                    );
-            }
-        );
+        this.ngZone.run((): void => {
+            this.dialog
+                .open(DialogTemplateComponent, { data: row, width: '1024px' })
+                .afterClosed()
+                .subscribe((data: TableRow): void => {
+                    if (data) {
+                        this.data = this.data.map(
+                            (val: TableRow): TableRow => (val.id === data.id ? { ...data } : val)
+                        );
+                        detectChanges(this.cd);
+                    }
+                });
+        });
     }
 
     public updateTable(): void {
@@ -73,11 +67,9 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
             ? Math.max(...this.data.map((item: TableRow): number => item.id))
             : 0;
 
-        MocksGenerator.generator(rows, cols, startIndex).then(
-            (row: TableRow[]): void => {
-                this.data = this.data.concat(row);
-                this.cd.detectChanges();
-            }
-        );
+        MocksGenerator.generator(rows, cols, startIndex).then((row: TableRow[]): void => {
+            this.data = this.data.concat(row);
+            this.cd.detectChanges();
+        });
     }
 }

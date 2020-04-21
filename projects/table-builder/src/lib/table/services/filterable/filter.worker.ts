@@ -14,9 +14,8 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     let result: TableRow[] = source;
 
     if (value) {
-        result = source.filter(
-            (item: TableRow): boolean =>
-                type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item)
+        result = source.filter((item: TableRow): boolean =>
+            type === types.DOES_NOT_CONTAIN ? !includes(JSON.stringify(item), value) : globalFilter(item)
         );
     }
 

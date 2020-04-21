@@ -53,24 +53,17 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 
     public update(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                setTimeout(
-                    (): void => {
-                        this.cd.detectChanges();
-                        this.app.tick();
-                    }
-                );
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            setTimeout((): void => {
+                this.cd.detectChanges();
+            });
+        });
     }
 
     // eslint-disable-next-line max-lines-per-function

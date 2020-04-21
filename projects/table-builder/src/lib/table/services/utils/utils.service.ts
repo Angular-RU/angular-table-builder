@@ -28,20 +28,18 @@ export class UtilsService implements UtilsInterface {
     public mergeDeep<T>(target: T, source: T): T {
         const output: T = { ...target };
         if (this.isObject(target) && this.isObject(source)) {
-            Object.keys(source).forEach(
-                (key: string): void => {
-                    if (this.isObject(source[key])) {
-                        const empty: boolean = !(key in target);
-                        if (empty) {
-                            Object.assign(output, { [key]: source[key] });
-                        } else {
-                            output[key] = this.mergeDeep(target[key], source[key]);
-                        }
-                    } else {
+            Object.keys(source).forEach((key: string): void => {
+                if (this.isObject(source[key])) {
+                    const empty: boolean = !(key in target);
+                    if (empty) {
                         Object.assign(output, { [key]: source[key] });
+                    } else {
+                        output[key] = this.mergeDeep(target[key], source[key]);
                     }
+                } else {
+                    Object.assign(output, { [key]: source[key] });
                 }
-            );
+            });
         }
 
         return output;
@@ -73,43 +71,24 @@ export class UtilsService implements UtilsInterface {
     }
 
     public requestAnimationFrame(callback: Fn): Promise<void> {
-        return new Promise(
-            (resolve: Fn): void => {
-                this.zone.runOutsideAngular(
-                    (): void => {
-                        window.requestAnimationFrame(
-                            (): void => {
-                                callback();
-                                resolve();
-                            }
-                        );
-                    }
-                );
-            }
-        );
+        return new Promise((resolve: Fn): void => {
+            this.zone.runOutsideAngular((): void => {
+                window.requestAnimationFrame((): void => {
+                    callback();
+                    resolve();
+                });
+            });
+        });
     }
 
-    public microtask(callback: Fn): Promise<void> {
-        return new Promise(
-            (resolve: Fn): void => {
-                callback();
-                resolve();
-            }
-        );
-    }
-
-    public macrotask(callback: Fn, time: number = 0): Promise<void> {
-        return new Promise(
-            (resolve: Fn): void => {
-                this.zone.runOutsideAngular(
-                    (): void => {
-                        window.setTimeout((): void => {
-                            callback();
-                            resolve();
-                        }, time);
-                    }
-                );
-            }
-        );
+    public macrotaskInZone(callback: Fn, time: number = 0): Promise<void> {
+        return new Promise((resolve: Fn): void => {
+            this.zone.run((): void => {
+                window.setTimeout((): void => {
+                    callback();
+                    resolve();
+                }, time);
+            });
+        });
     }
 }

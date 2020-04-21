@@ -5,8 +5,8 @@ import { KeyMap } from '../../interfaces/table-builder.internal';
 
 export abstract class TemplateCellCommon {
     public type: string = null;
-    @Input() public row: boolean = null;
-    @Input() public bold: boolean = null;
+    @Input() public row: boolean = false;
+    @Input() public bold: boolean = false;
     @Input() public nowrap: boolean = true;
     @Input() public width: number = null;
     @Input() public height: number = null;

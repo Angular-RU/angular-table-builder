@@ -48,17 +48,13 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     private createNewNodes(indexes: VirtualIndex[]): void {
-        indexes.forEach(
-            (index: VirtualIndex): void => {
-                if (this.virtualBufferIsOverloadOrNull) {
-                    this.createEmbeddedViewByIndex(index);
-                } else {
-                    this.createFrameId = window.requestAnimationFrame(
-                        (): void => this.createEmbeddedViewByIndex(index)
-                    );
-                }
+        indexes.forEach((index: VirtualIndex): void => {
+            if (this.virtualBufferIsOverloadOrNull) {
+                this.createEmbeddedViewByIndex(index);
+            } else {
+                this.createFrameId = window.requestAnimationFrame((): void => this.createEmbeddedViewByIndex(index));
             }
-        );
+        });
     }
 
     private createEmbeddedView(row: TableRow, index: VirtualIndex): void {
@@ -94,17 +90,13 @@ export class VirtualForDirective implements OnDestroy {
             return;
         }
 
-        this.virtualForDiffIndexes.forEach(
-            (index: number): void => {
-                if (this.virtualBufferIsOverloadOrNull) {
-                    this.removeEmbeddedViewByIndex(index);
-                } else {
-                    this.removeFrameId = window.requestAnimationFrame(
-                        (): void => this.removeEmbeddedViewByIndex(index)
-                    );
-                }
+        this.virtualForDiffIndexes.forEach((index: number): void => {
+            if (this.virtualBufferIsOverloadOrNull) {
+                this.removeEmbeddedViewByIndex(index);
+            } else {
+                this.removeFrameId = window.requestAnimationFrame((): void => this.removeEmbeddedViewByIndex(index));
             }
-        );
+        });
     }
 
     private get virtualBufferIsOverloadOrNull(): boolean {

@@ -18,10 +18,8 @@ export class GuideComponent implements AfterViewInit {
     ];
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 }

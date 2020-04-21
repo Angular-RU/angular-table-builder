@@ -53,7 +53,9 @@ export class TemplateParserService {
             onClick: cell.onClick,
             dblClick: cell.dblClick,
             useDeepPath: key.includes('.'),
-            context: cell.row ? ImplicitContext.ROW : ImplicitContext.CELL,
+            context: TemplateParserService.getValidHtmlBooleanAttribute(cell.row)
+                ? ImplicitContext.ROW
+                : ImplicitContext.CELL,
             nowrap: TemplateParserService.getValidPredicate(options.nowrap, cell.nowrap)
         };
     }
@@ -96,25 +98,23 @@ export class TemplateParserService {
             return;
         }
 
-        templates.forEach(
-            (column: NgxColumnComponent): void => {
-                const { key, customKey, importantTemplate }: NgxColumnComponent = column;
-                const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
+        templates.forEach((column: NgxColumnComponent): void => {
+            const { key, customKey, importantTemplate }: NgxColumnComponent = column;
+            const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
 
-                if (needTemplateCheck) {
-                    if (importantTemplate !== false) {
-                        this.templateKeys.delete(key);
-                        this.compileColumnMetadata(column);
-                        this.overrideTemplateKeys.add(key);
-                    } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
-                        this.compileColumnMetadata(column);
-                        this.templateKeys.add(key);
-                    }
-
-                    this.fullTemplateKeys.add(key);
+            if (needTemplateCheck) {
+                if (importantTemplate !== false) {
+                    this.templateKeys.delete(key);
+                    this.compileColumnMetadata(column);
+                    this.overrideTemplateKeys.add(key);
+                } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
+                    this.compileColumnMetadata(column);
+                    this.templateKeys.add(key);
                 }
+
+                this.fullTemplateKeys.add(key);
             }
-        );
+        });
     }
 
     public mutateColumnSchema(key: string, partialSchema: Partial<ColumnsSchema>): void {
@@ -139,8 +139,8 @@ export class TemplateParserService {
             key,
             isModel,
             isVisible: true,
-            verticalLine: column.verticalLine,
             excluded: !this.allowedKeyMap[key],
+            verticalLine: TemplateParserService.getValidHtmlBooleanAttribute(column.verticalLine),
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
@@ -171,10 +171,8 @@ export class TemplateParserService {
     }
 
     private synchronizedReference(): void {
-        this.schema.columns.forEach(
-            (column: ColumnsSchema): void => {
-                this.compiledTemplates[column.key] = column;
-            }
-        );
+        this.schema.columns.forEach((column: ColumnsSchema): void => {
+            this.compiledTemplates[column.key] = column;
+        });
     }
 }

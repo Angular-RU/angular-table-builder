@@ -31,15 +31,13 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
         this.updateTable();
 
         const DEFAULT_TIMEOUT: number = 14500;
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.idInterval = window.setInterval((): void => {
-                    if (this.regenerate) {
-                        this.updateTable();
-                    }
-                }, DEFAULT_TIMEOUT);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.idInterval = window.setInterval((): void => {
+                if (this.regenerate) {
+                    this.updateTable();
+                }
+            }, DEFAULT_TIMEOUT);
+        });
     }
 
     public ngOnDestroy(): void {
@@ -61,7 +59,6 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
                     `   [width]="width"\n` +
                     `   [height]="height"\n` +
                     `   [row-height]="rowHeight"\n` +
-                    `   [column-width]="columnWidth"\n` +
                     `></ngx-table-builder>\n`
             },
             height: '450px',

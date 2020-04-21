@@ -87,7 +87,7 @@ describe('[TEST]: auto height', () => {
         directive.recalculateTableSize();
         tick(100);
 
-        expect(style).toEqual(`display: block; height: calc(980px - 0px - 0px)`);
+        expect(style).toEqual(`display: block; height: calc(980px - 0px - 0px - 12px)`);
     }));
 
     it('should be correct hide height not in viewport', () => {

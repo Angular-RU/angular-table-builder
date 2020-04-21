@@ -13,6 +13,8 @@ export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;
     height: number;
+    footerHeight: number;
+    headerHeight: number;
     columnHeight: number;
     statusRendered: boolean;
     sourceLength: number;
@@ -70,7 +72,7 @@ export type DeepPartial<T = Any> = {
         ? DeepPartial<U>[]
         : T[P] extends readonly (infer R)[]
         ? readonly DeepPartial<R>[]
-        : DeepPartial<T[P]>
+        : DeepPartial<T[P]>;
 };
 
 export interface BoxView {

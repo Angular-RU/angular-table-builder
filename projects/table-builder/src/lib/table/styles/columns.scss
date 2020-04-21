@@ -39,7 +39,7 @@
             background: $selectionColor;
         }
 
-        &--default-width {
+        &--default-width:not(&--auto-width-reset-default-with) {
             min-width: $cellWidth;
         }
 

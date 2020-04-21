@@ -6,13 +6,11 @@
 @import './styles/icon';
 @import './styles/draggable';
 
-.table-grid__root--is-rendered .table-grid {
-    overflow: scroll;
-}
-
 .table-grid {
-    background: $backgroundColor;
     height: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: $backgroundColor;
 
     &__column-area-content {
         display: flex;

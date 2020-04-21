@@ -13,6 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -30,7 +31,8 @@ import { CodeDialogComponent } from './dialog/code-dialog.component';
         MatButtonModule,
         FormsModule,
         MatInputModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatMenuModule
     ],
     entryComponents: [CodeDialogComponent, DialogTemplateComponent],
     declarations: [CodeDialogComponent, DialogTemplateComponent],
@@ -54,7 +56,8 @@ import { CodeDialogComponent } from './dialog/code-dialog.component';
         CodeDialogComponent,
         MatIconModule,
         MatTableModule,
-        MatTabsModule
+        MatTabsModule,
+        MatMenuModule
     ]
 })
 export class SharedModule {}

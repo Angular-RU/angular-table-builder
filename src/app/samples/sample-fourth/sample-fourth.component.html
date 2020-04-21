@@ -42,7 +42,7 @@
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
 
-  &lt;ngx-table-builder [source]="data" [lazy]="false">
+  &lt;ngx-table-builder [source]="data" auto-width>
     &lt;ngx-column key="toppings" width="350">&lt;/ngx-column>
 
     &lt;ngx-column key="prices.small">
@@ -63,7 +63,7 @@
 
 </code></pre>
 
-        <ngx-table-builder [source]="data" [auto-width]="true">
+        <ngx-table-builder [source]="data" auto-width>
             <ngx-column key="toppings" width="350"></ngx-column>
 
             <ngx-column key="prices.small">
@@ -88,7 +88,7 @@
 
 <div class="column-samples">
     <div class="column">
-        <ngx-table-builder [source]="elements" [auto-width]="true">
+        <ngx-table-builder [source]="elements" auto-width>
             <ngx-column key="date.value" important-template [stub]="null">
                 <ng-template ngx-th>Date</ng-template>
                 <ng-template ngx-td let-date>
@@ -101,7 +101,7 @@
         <pre><code class="javascript" ngNonBindable>
    &lt;!-- app.component.html -->
 
-   &lt;ngx-table-builder [source]="data" [auto-width]="true" [lazy]="false">
+   &lt;ngx-table-builder [source]="data" auto-width>
      &lt;!-- important-template - keyword to override table column styles -->
      &lt;ngx-column key="date.value" important-template [stub]="null">
         &lt;ng-template ngx-th>Date&lt;/ng-template>
@@ -142,11 +142,6 @@
             <strong>Note</strong>: If you want to override the template body of the table, you just use only ng-template
             with ngx-td. If you use templating, then you need to specify the keys (example with toppings) in the
             template in the order in which you want to display your columns.
-        </p>
-
-        <p>
-            <strong>Note</strong>: As an example ([lazy]="false"), you can turn off asynchronous table rendering, and
-            show it only when it has been formed. This is mainly noticeable on a large number of columns of tables.
         </p>
 
         <p>

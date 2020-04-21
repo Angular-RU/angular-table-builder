@@ -113,19 +113,15 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     }
 
     private deferCloseMenu(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.taskId = window.setTimeout((): void => this.contextMenu.close());
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.taskId = window.setTimeout((): void => this.contextMenu.close());
+        });
     }
 
     private deferUpdateView(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.clearInterval(this.taskId);
-                this.taskId = window.setTimeout((): void => detectChanges(this.cd));
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.clearInterval(this.taskId);
+            this.taskId = window.setTimeout((): void => detectChanges(this.cd));
+        });
     }
 }

@@ -50,20 +50,16 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
     public ngOnInit(): void {
         const rows: number = 10000;
         const cols: number = 59;
-        MocksGenerator.generator(rows, cols).then(
-            (data: TableRow[]): void => {
-                this.data = data;
-                this.cd.detectChanges();
-            }
-        );
+        MocksGenerator.generator(rows, cols).then((data: TableRow[]): void => {
+            this.data = data;
+            this.cd.detectChanges();
+        });
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 
     public clearFilter(): void {
@@ -79,8 +75,8 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
                     'In order to use the API for string highlighting, you can use the table.selection service. <br>' +
                     'In more detail you can read in the guide.',
                 code: `
-<ngx-table-builder #table [source]="data" [enable-selection]="true">
-    <ngx-column key="selection" [sticky]="true" width="55" custom-key>
+<ngx-table-builder #table [source]="data" enable-selection>
+    <ngx-column key="selection" sticky width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox
                 (change)="table.selection.toggleAll(data)"
@@ -88,7 +84,7 @@ export class SampleFourteenComponent implements OnInit, AfterViewInit {
                 [checked]="table.selectionModel.isAll"
             ></mat-checkbox>
         </ng-template>
-        <ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+        <ng-template ngx-td row let-row (onClick)="$event.preventDefault()">
             <mat-checkbox
                 [checked]="table.selectionModel.get($any(row).id)"
                 (change)="table.selection.toggle(row)"

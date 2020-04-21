@@ -50,12 +50,10 @@ export class SampleTwelveComponent implements OnInit, AfterViewInit {
     public ngOnInit(): void {
         const rowNumber: number = 50;
         const colsNumber: number = 15;
-        MocksGenerator.generator(rowNumber, colsNumber).then(
-            (data: TableRow[]): void => {
-                this.data = data;
-                this.cd.detectChanges();
-            }
-        );
+        MocksGenerator.generator(rowNumber, colsNumber).then((data: TableRow[]): void => {
+            this.data = data;
+            this.cd.detectChanges();
+        });
     }
 
     public ngAfterViewInit(): void {
@@ -63,10 +61,8 @@ export class SampleTwelveComponent implements OnInit, AfterViewInit {
     }
 
     public update(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 }

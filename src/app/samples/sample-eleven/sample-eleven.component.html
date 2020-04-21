@@ -46,7 +46,7 @@
                     <div class="column">
                         <br />
 
-                        <ngx-table-builder #table1 [source]="licences" [enable-selection]="true">
+                        <ngx-table-builder #table1 [source]="licences" enable-selection>
                             <ngx-context-menu [height]="null">
                                 <ngx-context-menu-item contextTitle divider>
                                     <ngx-menu-content icon="https://angular.io/assets/images/logos/angular/angular.svg">
@@ -166,14 +166,14 @@
                         #table2
                         height="500"
                         [source]="data"
-                        [enable-selection]="true"
+                        enable-selection
                         (schemaChanges)="updatedSchema($event)"
                     >
                         <ngx-options [resizable]="true" [draggable]="true" [sortable]="true"></ngx-options>
 
-                        <ngx-column key="action" custom-key [sticky]="true" [resizable]="false" [width]="50">
+                        <ngx-column key="action" custom-key sticky [resizable]="false" [width]="50">
                             <ng-template ngx-th></ng-template>
-                            <ng-template ngx-td [row]="true" let-row>
+                            <ng-template ngx-td row let-row>
                                 {{ table2.selectionModel.get($any(row).id) ? 'x' : '-' }}
                             </ng-template>
                         </ngx-column>
@@ -268,16 +268,16 @@
 
                         <pre><code class="html" ngNonBindable>
   &lt;!-- app.component.html -->
-  &lt;ngx-table-builder #table [source]="data" height="500" [enable-selection]="true">
+  &lt;ngx-table-builder #table [source]="data" height="500" enable-selection>
     &lt;ngx-options [resizable]="true" [sortable]="true">&lt;/ngx-options>
 
     &lt;ngx-context-menu>
        &lt;my-menu [table]="table">&lt;/my-menu>
     &lt;/ngx-context-menu>
 
-    &lt;ngx-column key="action" custom-key [sticky]="true" [resizable]="false" [width]="50">
+    &lt;ngx-column key="action" custom-key sticky [resizable]="false" [width]="50">
         &lt;ng-template ngx-th>&lt;/ng-template>
-        &lt;ng-template ngx-td [row]="true" let-row>
+        &lt;ng-template ngx-td row let-row>
             &#123;&#123; table.selectionModel.get($any(row).id) ? 'x' : '-' }}
         &lt;/ng-template>
     &lt;/ngx-column>

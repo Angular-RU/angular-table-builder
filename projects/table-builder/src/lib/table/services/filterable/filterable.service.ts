@@ -111,26 +111,24 @@ export class FilterableService implements FilterableInterface {
                     }
                 };
 
-                this.thread.run<TableRow[], FilterableMessage>(filterAllWorker, message).then(
-                    (sorted: TableRow[]): void => {
-                        this.ngZone.runOutsideAngular(
-                            (): void => {
-                                window.setTimeout((): void => {
-                                    resolve({
-                                        source: sorted,
-                                        fireSelection: (): void => {
-                                            // eslint-disable-next-line max-nested-callbacks
-                                            window.setTimeout((): void => {
-                                                this.events.next({ value, type });
-                                                this.app.tick();
-                                            }, TIME_IDLE);
-                                        }
-                                    });
-                                }, TIME_IDLE);
-                            }
-                        );
-                    }
-                );
+                this.thread
+                    .run<TableRow[], FilterableMessage>(filterAllWorker, message)
+                    .then((sorted: TableRow[]): void => {
+                        this.ngZone.runOutsideAngular((): void => {
+                            window.setTimeout((): void => {
+                                resolve({
+                                    source: sorted,
+                                    fireSelection: (): void => {
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        window.setTimeout((): void => {
+                                            this.events.next({ value, type });
+                                            this.app.tick();
+                                        }, TIME_IDLE);
+                                    }
+                                });
+                            }, TIME_IDLE);
+                        });
+                    });
             }
         );
     }
