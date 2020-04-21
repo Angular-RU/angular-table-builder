@@ -117,6 +117,7 @@
 
         &--selected {
             background: $selectionColor;
+            transition: background 0.3s;
         }
 
         &--settings {
