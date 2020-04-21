@@ -68,8 +68,6 @@ export abstract class TableBuilderApiImpl
     @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
-    @Input('head-height') public headHeight: string | number = null;
-    @Input('row-height') public rowHeight: string | number = null;
     @Input('vertical-border') public verticalBorder: boolean = true;
     @Input('enable-selection') public enableSelection: boolean = false;
     @Input('enable-filtering') public enableFiltering: boolean = false;
@@ -79,36 +77,26 @@ export abstract class TableBuilderApiImpl
     @Output() public schemaChanges: EventEmitter<SimpleSchemaColumns> = new EventEmitter();
     @Output() public onChanges: EventEmitter<TableRow[] | null> = new EventEmitter();
     @Output() public sortChanges: EventEmitter<OrderedField[]> = new EventEmitter();
-
     @ContentChild(NgxOptionsComponent, { static: false })
     public columnOptions: NgxOptionsComponent = null;
-
     @ContentChildren(NgxColumnComponent)
     public columnTemplates: QueryListRef<NgxColumnComponent> = null;
-
     @ContentChild(NgxContextMenuComponent, { static: false })
     public contextMenuTemplate: NgxContextMenuComponent = null;
-
     @ContentChild(NgxHeaderComponent, { static: false })
     public headerTemplate: NgxHeaderComponent = null;
-
     @ContentChild(NgxFooterComponent, { static: false })
     public footerTemplate: NgxFooterComponent = null;
-
     @ContentChild(NgxFilterComponent, { static: false })
     public filterTemplate: NgxFilterComponent = null;
-
     @ViewChild('tableViewport', { static: true })
     public scrollContainer: ElementRef<HTMLElement>;
-
     @ViewChildren('column', { read: false })
     public columnList: QueryList<ElementRef<HTMLDivElement>>;
-
     public scrollbarWidth: number = SCROLLBAR_WIDTH;
     public columnListWidth: number = 0;
     public viewPortInfo: ViewPortInfo = {};
     public tableViewportChecked: boolean = true;
-
     /**
      * @description: the custom names of the column list to be displayed in the view.
      * @example:
@@ -121,7 +109,6 @@ export abstract class TableBuilderApiImpl
      *    modelColumnKeys === [ 'id', 'hello', 'value' ]
      */
     public modelColumnKeys: string[] = [];
-
     /**
      * @description: the custom names of the column list to be displayed in the view.
      * @example:
@@ -132,7 +119,6 @@ export abstract class TableBuilderApiImpl
      *    customModelColumnsKeys === [ 'name' ]
      */
     public customModelColumnsKeys: string[] = [];
-
     public isDragging: KeyMap<boolean> = {};
     public accessDragging: boolean = false;
     public abstract readonly templateParser: TemplateParserService;
@@ -146,12 +132,25 @@ export abstract class TableBuilderApiImpl
     public abstract readonly ngZone: NgZone;
     protected originalSource: TableRow[];
     protected renderedCountKeys: number;
+    protected isDragMoving: boolean = false;
     protected abstract readonly app: ApplicationRef;
     protected abstract readonly viewChanges: NgxTableViewChangesService;
     protected abstract readonly draggable: DraggableService;
     private filterIdTask: number = null;
     private idleDetectChangesId: number;
     private columnFrameId: number;
+    private _headHeight: number;
+    private _rowHeight: number = null;
+
+    @Input('head-height')
+    public set headHeight(val: string | number) {
+        this._headHeight = parseInt(val as string);
+    }
+
+    @Input('row-height')
+    public set rowHeight(val: string | number) {
+        this._rowHeight = parseInt(val as string);
+    }
 
     /**
      * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
@@ -204,7 +203,7 @@ export abstract class TableBuilderApiImpl
     }
 
     public get clientRowHeight(): number {
-        return (this.rowHeight as number) || ROW_HEIGHT;
+        return this._rowHeight || ROW_HEIGHT;
     }
 
     public get columnVirtualHeight(): number {
@@ -216,7 +215,7 @@ export abstract class TableBuilderApiImpl
     }
 
     public get headLineHeight(): number {
-        return this.headHeight ? (this.headHeight as number) : this.clientRowHeight;
+        return this._headHeight ? this._headHeight : this.clientRowHeight;
     }
 
     public get size(): number {
@@ -227,8 +226,20 @@ export abstract class TableBuilderApiImpl
         return this.source && this.source.length ? this.source : [];
     }
 
+    public get isEnableFiltering(): boolean {
+        return this.enableFiltering !== false;
+    }
+
+    public get isSkippedInternalSort(): boolean {
+        return this.skipSort !== false;
+    }
+
+    public get isEnableSelection(): boolean {
+        return this.enableSelection !== false;
+    }
+
     private get filterValueExist(): boolean {
-        return this.filterable.filterValueExist && this.enableFiltering;
+        return this.filterable.filterValueExist && this.isEnableFiltering;
     }
 
     private get notEmpty(): boolean {
@@ -276,10 +287,8 @@ export abstract class TableBuilderApiImpl
         this.ngZone.runOutsideAngular((): void => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout((): void => {
-                if (!this.enableFiltering) {
-                    throw new Error(
-                        'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
-                    );
+                if (!this.isEnableFiltering) {
+                    throw new Error('You forgot to enable filtering: \n <ngx-table-builder enable-filtering />');
                 }
 
                 this.sortAndFilter().then((): void => this.reCheckDefinitions());
@@ -301,6 +310,7 @@ export abstract class TableBuilderApiImpl
     public drop({ previousIndex, currentIndex }: CdkDragSortEvent): void {
         const previousKey: string = this.visibleColumns[previousIndex];
         const currentKey: string = this.visibleColumns[currentIndex];
+        this.isDragMoving = false;
         this.draggable.drop(previousKey, currentKey);
         this.changeSchema();
     }
@@ -381,6 +391,10 @@ export abstract class TableBuilderApiImpl
     }
 
     protected calculateColumnWidthSummary(): void {
+        if (this.isDragMoving) {
+            return;
+        }
+
         this.ngZone.runOutsideAngular((): void => {
             clearInterval(this.columnFrameId);
             this.columnFrameId = window.setTimeout((): void => {

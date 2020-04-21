@@ -6,14 +6,7 @@
     </div>
 </mat-toolbar>
 
-<ngx-table-builder
-    #table
-    [source]="data"
-    [row-height]="40"
-    class="filter-example"
-    [enable-filtering]="true"
-    [enable-selection]="true"
->
+<ngx-table-builder #table [source]="data" [row-height]="40" class="filter-example" enable-filtering enable-selection>
     <ngx-options [sortable]="true" [filterable]="true" [resizable]="true" [draggable]="true"></ngx-options>
     <ngx-source-null>Loading...</ngx-source-null>
     <ngx-empty>Not found</ngx-empty>
@@ -43,7 +36,7 @@
         </div>
     </ngx-header>
 
-    <ngx-column key="selection" [sticky]="true" width="55" custom-key>
+    <ngx-column key="selection" sticky width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox
                 (change)="table.selection.toggleAll(data)"
@@ -51,7 +44,7 @@
                 [checked]="table.selectionModel.isAll"
             ></mat-checkbox>
         </ng-template>
-        <ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+        <ng-template ngx-td row let-row (onClick)="$event.preventDefault()">
             <mat-checkbox
                 [checked]="table.selectionModel.get($any(row).id)"
                 (change)="table.selection.toggle(row)"

@@ -53,7 +53,9 @@ export class TemplateParserService {
             onClick: cell.onClick,
             dblClick: cell.dblClick,
             useDeepPath: key.includes('.'),
-            context: cell.row ? ImplicitContext.ROW : ImplicitContext.CELL,
+            context: TemplateParserService.getValidHtmlBooleanAttribute(cell.row)
+                ? ImplicitContext.ROW
+                : ImplicitContext.CELL,
             nowrap: TemplateParserService.getValidPredicate(options.nowrap, cell.nowrap)
         };
     }
@@ -137,8 +139,8 @@ export class TemplateParserService {
             key,
             isModel,
             isVisible: true,
-            verticalLine: column.verticalLine,
             excluded: !this.allowedKeyMap[key],
+            verticalLine: TemplateParserService.getValidHtmlBooleanAttribute(column.verticalLine),
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),

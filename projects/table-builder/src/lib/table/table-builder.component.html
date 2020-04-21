@@ -126,12 +126,13 @@
                             [table-viewport]="tableViewport"
                             [offset-top]="viewPortInfo.scrollTop"
                             [context-menu]="contextMenuTemplate"
-                            [enable-selection]="enableSelection"
-                            [enable-filtering]="enableFiltering"
+                            [enable-selection]="isEnableSelection"
+                            [enable-filtering]="isEnableFiltering"
                             [client-row-height]="clientRowHeight"
                             [selection-entries]="selectionEntries"
                             [produce-disable-fn]="produceDisableFn"
                             [column-virtual-height]="columnVirtualHeight"
+                            (changed)="idleDetectChanges()"
                         >
                         </table-tbody>
                     </div>

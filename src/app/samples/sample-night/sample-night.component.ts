@@ -62,7 +62,6 @@ export class SampleNightComponent implements OnInit, AfterViewInit {
         this.ngZone.runOutsideAngular((): void => {
             setTimeout((): void => {
                 this.cd.detectChanges();
-                this.app.tick();
             });
         });
     }

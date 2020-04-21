@@ -28,6 +28,7 @@ describe('[TEST]: Lifecycle table', () => {
         tick: (): void => {}
     };
     const mockNgZone: Partial<NgZone> = {
+        run: (callback: Fn): Any => callback(),
         runOutsideAngular: (callback: Fn): Any => callback()
     };
 
@@ -117,6 +118,12 @@ describe('[TEST]: Lifecycle table', () => {
         changes = {};
 
         table.columnList = new QueryList<ElementRef<HTMLDivElement>>();
+    });
+
+    it('should be basic api', () => {
+        table.source = JSON.parse(JSON.stringify(data));
+        expect(table.selectedItems).toEqual([]);
+        expect(table.lastItem).toEqual({ position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' });
     });
 
     it('should be unchecked state before ngOnChange', () => {

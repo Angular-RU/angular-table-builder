@@ -28,7 +28,9 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     public ngOnDestroy(): void {
         this.element = { nativeElement: null };
         cancelAnimationFrame(this.frameId);
-        this.observer.disconnect();
+        if (this.observer) {
+            this.observer.disconnect();
+        }
     }
 
     private observeChange(entry: IntersectionObserverEntry): void {

@@ -42,18 +42,18 @@
         key="id"
         custom-key
         width="100"
-        [vertical-line]="true"
+        vertical-line
         [resizable]="false"
         important-template
         sticky
     ></ngx-column>
 
-    <ngx-column key="reverseId" custom-key width="150" [vertical-line]="true" important-template></ngx-column>
+    <ngx-column key="reverseId" custom-key width="150" vertical-line important-template></ngx-column>
 
     <ngx-column *ngFor="let key of table.modelColumnKeys" [key]="key"></ngx-column>
 
-    <ngx-column key="edit" custom-key width="100" [vertical-line]="true" sticky-end empty-head>
-        <ng-template ngx-td [row]="true">
+    <ngx-column key="edit" custom-key width="100" vertical-line sticky-end empty-head>
+        <ng-template ngx-td row>
             <button mat-button><mat-icon>info</mat-icon></button>
         </ng-template>
     </ngx-column>

@@ -81,16 +81,9 @@ export class UtilsService implements UtilsInterface {
         });
     }
 
-    public microtask(callback: Fn): Promise<void> {
+    public macrotaskInZone(callback: Fn, time: number = 0): Promise<void> {
         return new Promise((resolve: Fn): void => {
-            callback();
-            resolve();
-        });
-    }
-
-    public macrotask(callback: Fn, time: number = 0): Promise<void> {
-        return new Promise((resolve: Fn): void => {
-            this.zone.runOutsideAngular((): void => {
+            this.zone.run((): void => {
                 window.setTimeout((): void => {
                     callback();
                     resolve();

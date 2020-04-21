@@ -93,7 +93,7 @@ export class SelectionService implements OnDestroy {
         if (checkValueIsEmpty(id)) {
             throw new Error(
                 `Can't select item, make sure you pass the correct primary key, or you forgot enable selection
-                <ngx-table-builder [enable-selection]="true" primary-key="fieldId" />
+                <ngx-table-builder enable-selection primary-key="fieldId" />
                 `
             );
         }

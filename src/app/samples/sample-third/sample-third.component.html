@@ -7,10 +7,10 @@
     <button class="show-simple" mat-raised-button (click)="showSample()">show code sample</button>
 </mat-toolbar>
 
-<ngx-table-builder #table [source]="data" [enable-selection]="true" [produce-disable-fn]="disableFn">
+<ngx-table-builder #table [source]="data" enable-selection [produce-disable-fn]="disableFn">
     <ngx-options [overflow-tooltip]="false"></ngx-options>
 
-    <ngx-column key="selection" [sticky]="true" width="55" custom-key>
+    <ngx-column key="selection" sticky width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox
                 (change)="table.selection.toggleAll(data)"
@@ -18,7 +18,7 @@
                 [checked]="table.selectionModel.isAll"
             ></mat-checkbox>
         </ng-template>
-        <ng-template ngx-td [row]="true" let-row (onClick)="$event.preventDefault()">
+        <ng-template ngx-td row let-row (onClick)="$event.preventDefault()">
             <mat-checkbox
                 [checked]="table.selectionModel.get($any(row).id)"
                 (change)="table.selection.toggle(row)"

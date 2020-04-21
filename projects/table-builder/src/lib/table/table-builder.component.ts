@@ -129,6 +129,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return this.scrollContainer.nativeElement.scrollTop;
     }
 
+    private get nonIdenticalStructure(): boolean {
+        return this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
+    }
+
     private static checkCorrectInitialSchema(changes: SimpleChanges = {}): void {
         if (TableSimpleChanges.SCHEMA_COLUMNS in changes) {
             const schemaChange: SimpleChange = changes[TableSimpleChanges.SCHEMA_COLUMNS];
@@ -152,13 +156,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public ngOnChanges(changes: SimpleChanges = {}): void {
         TableBuilderComponent.checkCorrectInitialSchema(changes);
 
-        const nonIdenticalStructure: boolean = this.sourceExists && this.getCountKeys() !== this.renderedCountKeys;
         this.sourceIsNull = this.checkSourceIsNull();
-        this.sortable.setDefinition(this.sortTypes);
-        this.sortable.setSkipSort(this.skipSort);
-        this.sortable.setSortChanges(this.sortChanges);
+        this.setSortTypes();
 
-        if (nonIdenticalStructure) {
+        if (this.nonIdenticalStructure) {
             this.preRenderTable();
         } else if (TableSimpleChanges.SOURCE_KEY in changes && this.isRendered) {
             this.preSortAndFilterTable(changes);
@@ -170,7 +171,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnInit(): void {
-        if (this.enableSelection) {
+        if (this.isEnableSelection) {
             this.selection.listenShiftKey();
             this.selection.primaryKey = this.primaryKey;
             this.selection.setProducerDisableFn(this.produceDisableFn);
@@ -201,6 +202,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public cdkDragMoved(event: CdkDragStart, root: HTMLElement): void {
+        this.isDragMoving = true;
         const preview: HTMLElement = event.source._dragRef['_preview'];
         const top: number = root.getBoundingClientRect().top;
         const transform: string = event.source._dragRef['_preview'].style.transform || '';
@@ -252,7 +254,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public render(): void {
         this.contentCheck = false;
-        this.utils.macrotask((): void => this.renderTable(), TIME_IDLE).then((): void => this.idleDetectChanges());
+        this.utils
+            .macrotaskInZone((): void => this.renderTable(), TIME_IDLE)
+            .then((): void => this.idleDetectChanges());
     }
 
     public renderTable(): void {
@@ -282,7 +286,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 this.changeSchema();
                 this.recheckViewportChecked();
             })
-            .then((): void => this.app.tick());
+            .then((): void => detectChanges(this.cd));
     }
 
     public resetSchema(): void {
@@ -385,6 +389,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.viewPortInfo.scrollTop = start * this.clientRowHeight;
     }
 
+    private setSortTypes(): void {
+        this.sortable.setDefinition({ ...this.sortTypes });
+        this.sortable.setSkipSort(this.isSkippedInternalSort);
+        this.sortable.setSortChanges(this.sortChanges);
+        this.sortTypes = {};
+    }
+
     private listenColumnListChanges(): void {
         this.columnList.changes
             .pipe(takeUntil(this.destroy$))
@@ -451,13 +462,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private cancelScrolling(): void {
         this.viewPortInfo.isScrolling = true;
         window.cancelAnimationFrame(this.frameCalculateViewportId);
-
-        window.clearTimeout(this.timeoutScrolledId);
-        this.timeoutScrolledId = window.setTimeout((): void => {
-            this.viewPortInfo.isScrolling = false;
-            detectChanges(this.cd);
-            window.requestAnimationFrame((): void => this.app.tick());
-        }, MACRO_TIME);
+        this.ngZone.runOutsideAngular((): void => {
+            window.clearTimeout(this.timeoutScrolledId);
+            this.timeoutScrolledId = window.setTimeout((): void => {
+                this.viewPortInfo.isScrolling = false;
+                detectChanges(this.cd);
+            }, MACRO_TIME);
+        });
     }
 
     private getOffsetVisibleEndIndex(): number {
@@ -503,13 +514,13 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private checkSelectionValue(): void {
-        if (this.enableSelection) {
+        if (this.isEnableSelection) {
             this.selection.invalidate();
         }
     }
 
     private checkFilterValues(): void {
-        if (this.enableFiltering) {
+        if (this.isEnableFiltering) {
             this.filterable.filterType =
                 this.filterable.filterType ||
                 (this.columnOptions && this.columnOptions.filterType) ||
@@ -524,23 +535,18 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private recheckTemplateChanges(): void {
         this.ngZone.runOutsideAngular((): void => {
-            window.setTimeout((): void => this.app.tick(), TIME_RELOAD);
+            window.setTimeout((): void => detectChanges(this.cd), TIME_RELOAD);
         });
     }
 
     private listenSelectionChanges(): void {
-        if (this.enableSelection) {
-            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe((): void => {
-                detectChanges(this.cd);
-                this.ngZone.runOutsideAngular((): void => {
-                    window.requestAnimationFrame((): void => this.app.tick());
-                });
-            });
+        if (this.isEnableSelection) {
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe((): void => detectChanges(this.cd));
         }
     }
 
     private viewForceRefresh(): void {
-        this.ngZone.runOutsideAngular((): void => {
+        this.ngZone.run((): void => {
             window.clearTimeout(this.timeoutCheckedTaskId);
             this.timeoutCheckedTaskId = window.setTimeout((): void => {
                 this.forcedRefresh = true;
@@ -616,7 +622,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.calculateViewport(true);
         this.recheckViewportChecked();
-        this.ngZone.runOutsideAngular((): void => {
+        this.ngZone.run((): void => {
             window.setTimeout((): void => {
                 this.isRendered = true;
                 detectChanges(this.cd);

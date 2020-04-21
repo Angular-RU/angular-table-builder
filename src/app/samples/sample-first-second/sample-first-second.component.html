@@ -13,7 +13,7 @@
     </ngx-column>
 
     <ngx-column custom-key key="action" sticky-end empty-head width="140">
-        <ng-template ngx-td let-row [row]="true">
+        <ng-template ngx-td let-row row>
             <button class="my-action" mat-button (click)="edit(row)"><mat-icon>edit</mat-icon></button>
             <button class="my-action" mat-button (click)="delete(row)"><mat-icon>delete</mat-icon></button>
         </ng-template>
