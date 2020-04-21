@@ -273,20 +273,18 @@ export abstract class TableBuilderApiImpl
     }
 
     public filter(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.clearInterval(this.filterIdTask);
-                this.filterIdTask = window.setTimeout((): void => {
-                    if (!this.enableFiltering) {
-                        throw new Error(
-                            'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
-                        );
-                    }
+        this.ngZone.runOutsideAngular((): void => {
+            window.clearInterval(this.filterIdTask);
+            this.filterIdTask = window.setTimeout((): void => {
+                if (!this.enableFiltering) {
+                    throw new Error(
+                        'You forgot to enable filtering: \n <ngx-table-builder [enable-filtering]="true" />'
+                    );
+                }
 
-                    this.sortAndFilter().then((): void => this.reCheckDefinitions());
-                }, MACRO_TIME);
-            }
-        );
+                this.sortAndFilter().then((): void => this.reCheckDefinitions());
+            }, MACRO_TIME);
+        });
     }
 
     public async sortAndFilter(): Promise<void> {
@@ -316,16 +314,12 @@ export abstract class TableBuilderApiImpl
     }
 
     public idleDetectChanges(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.cancelAnimationFrame(this.idleDetectChangesId);
-                this.idleDetectChangesId = window.requestAnimationFrame(
-                    (): void => {
-                        detectChanges(this.cd);
-                    }
-                );
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.cancelAnimationFrame(this.idleDetectChangesId);
+            this.idleDetectChangesId = window.requestAnimationFrame((): void => {
+                detectChanges(this.cd);
+            });
+        });
     }
 
     public abstract markDirtyCheck(): void;
@@ -351,11 +345,9 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => this.calculateViewport(true), TIME_RELOAD);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => this.calculateViewport(true), TIME_RELOAD);
+        });
     }
 
     protected forceCalculateViewport(): void {
@@ -389,21 +381,17 @@ export abstract class TableBuilderApiImpl
     }
 
     protected calculateColumnWidthSummary(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                clearInterval(this.columnFrameId);
-                this.columnFrameId = window.setTimeout((): void => {
-                    let width: number = 0;
-                    this.columnList.forEach(
-                        (element: ElementRef<HTMLDivElement>): void => {
-                            width += element.nativeElement.offsetWidth;
-                        }
-                    );
-                    this.columnListWidth = width;
-                    this.idleDetectChanges();
-                }, TIME_IDLE);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            clearInterval(this.columnFrameId);
+            this.columnFrameId = window.setTimeout((): void => {
+                let width: number = 0;
+                this.columnList.forEach((element: ElementRef<HTMLDivElement>): void => {
+                    width += element.nativeElement.offsetWidth;
+                });
+                this.columnListWidth = width;
+                this.idleDetectChanges();
+            }, TIME_IDLE);
+        });
     }
 
     protected abstract updateViewportInfo(start: number, end: number): void;
@@ -443,9 +431,8 @@ export abstract class TableBuilderApiImpl
         return this.excludeKeys.length
             ? keys.filter(
                   (key: string): boolean =>
-                      !this.excludeKeys.some(
-                          (excludeKey: string | RegExp): boolean =>
-                              excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey
+                      !this.excludeKeys.some((excludeKey: string | RegExp): boolean =>
+                          excludeKey instanceof RegExp ? !!key.match(excludeKey) : key === excludeKey
                       )
               )
             : keys;
