@@ -39,13 +39,6 @@
             </label>
         </mat-form-field>
 
-        <mat-form-field>
-            <mat-label>Table cell width</mat-label>
-            <label>
-                <input matInput name="columnWidth" type="number" [(ngModel)]="columnWidth" />
-            </label>
-        </mat-form-field>
-
         <mat-checkbox class="regenerate" [(ngModel)]="regenerate" [ngModelOptions]="{ standalone: true }">
             Auto regenerate (15sec)
         </mat-checkbox>
@@ -55,11 +48,5 @@
 </div>
 
 <div class="content-visible" [style.height]="'calc(100% - ' + header.offsetHeight + 'px)'">
-    <ngx-table-builder
-        [source]="simple"
-        [width]="width"
-        [height]="height"
-        [row-height]="rowHeight"
-        [column-width]="columnWidth"
-    ></ngx-table-builder>
+    <ngx-table-builder [source]="simple" [width]="width" [height]="height" [row-height]="rowHeight"></ngx-table-builder>
 </div>

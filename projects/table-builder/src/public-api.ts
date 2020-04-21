@@ -8,9 +8,7 @@ export { NgxTableViewChangesService } from './lib/table/services/table-view-chan
 /**
  *  Public component type
  */
-export {
-    NgxContextMenuItemComponent
-} from './lib/table/components/ngx-context-menu/ngx-context-menu-item/ngx-context-menu-item.component';
+export { NgxContextMenuItemComponent } from './lib/table/components/ngx-context-menu/ngx-context-menu-item/ngx-context-menu-item.component';
 export { TableBuilderComponent } from './lib/table/table-builder.component';
 export { NgxColumnComponent } from './lib/table/components/ngx-column/ngx-column.component';
 export { NgxFilterComponent } from './lib/table/components/ngx-filter/ngx-filter.component';

@@ -15,11 +15,9 @@ const targets: Any[] = [window, Document.prototype, HTMLBodyElement.prototype, H
 
 (window as Any)['__Zone_ignore_on_properties'] = [];
 
-targets.forEach(
-    (target: Any): void => {
-        (window as Any)['__Zone_ignore_on_properties'].push({
-            target,
-            ignoreProperties: ['scroll', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mousewheel']
-        });
-    }
-);
+targets.forEach((target: Any): void => {
+    (window as Any)['__Zone_ignore_on_properties'].push({
+        target,
+        ignoreProperties: ['scroll', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mousewheel']
+    });
+});

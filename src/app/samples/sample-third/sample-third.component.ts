@@ -20,12 +20,10 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
     public ngOnInit(): void {
         const rowNumber: number = 1000;
         const colsNumber: number = 59;
-        MocksGenerator.generator(rowNumber, colsNumber).then(
-            (data: TableRow[]): void => {
-                this.data = data;
-                this.cd.detectChanges();
-            }
-        );
+        MocksGenerator.generator(rowNumber, colsNumber).then((data: TableRow[]): void => {
+            this.data = data;
+            this.cd.detectChanges();
+        });
     }
 
     public disableFn(item: TableRow): boolean {
@@ -34,11 +32,9 @@ export class SampleThirdComponent implements OnInit, AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 
     // eslint-disable-next-line max-lines-per-function

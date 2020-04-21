@@ -27,25 +27,21 @@ describe('[TEST]: Selection service', () => {
         { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' }
     ];
 
-    (window as Any).addEventListener = jest.fn(
-        (type: string): void => {
-            if (type === 'keydown') {
-                listenKeydown = true;
-            } else if (type === 'keyup') {
-                listenKeyup = true;
-            }
+    (window as Any).addEventListener = jest.fn((type: string): void => {
+        if (type === 'keydown') {
+            listenKeydown = true;
+        } else if (type === 'keyup') {
+            listenKeyup = true;
         }
-    );
+    });
 
-    (window as Any).removeEventListener = jest.fn(
-        (type: string): void => {
-            if (type === 'keydown') {
-                listenKeydown = false;
-            } else if (type === 'keyup') {
-                listenKeyup = false;
-            }
+    (window as Any).removeEventListener = jest.fn((type: string): void => {
+        if (type === 'keydown') {
+            listenKeydown = false;
+        } else if (type === 'keyup') {
+            listenKeyup = false;
         }
-    );
+    });
 
     let selection: SelectionService;
 

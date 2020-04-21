@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { NgxColumnComponent, NgxTableViewChangesService, TableBuilderComponent } from '@angular-ru/ng-table-builder';
-import { ApplicationRef, ChangeDetectorRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, ElementRef, NgZone, QueryList, SimpleChanges } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Any, Fn } from '../../../table/interfaces/table-builder.internal';
 import { ContextMenuService } from '../../../table/services/context-menu/context-menu.service';
@@ -115,6 +115,8 @@ describe('[TEST]: Lifecycle table', () => {
 
         table.primaryKey = 'position';
         changes = {};
+
+        table.columnList = new QueryList<ElementRef<HTMLDivElement>>();
     });
 
     it('should be unchecked state before ngOnChange', () => {

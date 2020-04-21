@@ -106,14 +106,12 @@ export class SelectionService implements OnDestroy {
     }
 
     private listenShiftKeyByType(type: KeyType): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.handler[type] = ({ shiftKey }: KeyboardEvent): void => {
-                    this.selectionStart = { status: shiftKey };
-                };
-                window.addEventListener(type, this.handler[type], true);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.handler[type] = ({ shiftKey }: KeyboardEvent): void => {
+                this.selectionStart = { status: shiftKey };
+            };
+            window.addEventListener(type, this.handler[type], true);
+        });
     }
 
     private removeListenerByType(type: string): void {

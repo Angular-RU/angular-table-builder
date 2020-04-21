@@ -24,6 +24,7 @@ import { ObserverViewDirective } from './table/directives/observer-view.directiv
 import { TemplateBodyTdDirective } from './table/directives/rows/template-body-td.directive';
 import { TemplateHeadThDirective } from './table/directives/rows/template-head-th.directive';
 import { VirtualForDirective } from './table/directives/virtual-for.directive';
+import { Any } from './table/interfaces/table-builder.internal';
 import { DeepPathPipe } from './table/pipes/deep-path.pipe';
 import { DefaultValuePipe } from './table/pipes/default-value.pipe';
 import { DisableRowPipe } from './table/pipes/disable-row.pipe';
@@ -31,6 +32,10 @@ import { SelectedItemsPipe } from './table/pipes/selected-items.pipe';
 import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
+
+if (window['Zone']) {
+    (window as Any)[window['Zone'].__symbol__('MutationObserver')] = MutationObserver;
+}
 
 @NgModule({
     imports: [CommonModule, DragDropModule],

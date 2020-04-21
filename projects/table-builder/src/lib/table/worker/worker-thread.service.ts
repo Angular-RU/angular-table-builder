@@ -47,13 +47,11 @@ export class WebWorkerThreadService implements WebWorkerThread {
     }
 
     private createPromiseForWorker<T>(worker: Worker, data: Any): Promise<T> {
-        return new Promise<T>(
-            (resolve: Executor<Any>, reject: Executor<Any>): void => {
-                worker.addEventListener('message', (event: MessageEvent): boolean => resolve(event.data));
-                worker.addEventListener('error', reject);
-                worker.postMessage(data);
-            }
-        );
+        return new Promise<T>((resolve: Executor<Any>, reject: Executor<Any>): void => {
+            worker.addEventListener('message', (event: MessageEvent): boolean => resolve(event.data));
+            worker.addEventListener('error', reject);
+            worker.postMessage(data);
+        });
     }
 
     private getOrCreateWorkerUrl(fn: Fn): string {

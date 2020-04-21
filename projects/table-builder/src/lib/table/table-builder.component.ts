@@ -25,14 +25,7 @@ import { NGX_ANIMATION } from './animations/fade.animation';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
 import { CalculateRange, ColumnsSchema } from './interfaces/table-builder.external';
-import {
-    Any,
-    Fn,
-    KeyMap,
-    RecalculatedStatus,
-    TableSimpleChanges,
-    TemplateKeys
-} from './interfaces/table-builder.internal';
+import { Any, KeyMap, RecalculatedStatus, TableSimpleChanges, TemplateKeys } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { DraggableService } from './services/draggable/draggable.service';
@@ -186,7 +179,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
         column['visible'] = visible;
-        detectChanges(this.cd);
+        this.idleDetectChanges();
     }
 
     public ngAfterContentInit(): void {
@@ -202,6 +195,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.listenTemplateChanges();
         this.listenFilterResetChanges();
         this.listenSelectionChanges();
+        this.listenColumnListChanges();
         this.recheckTemplateChanges();
         this.afterViewInitChecked();
     }
@@ -270,16 +264,17 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         this.rendering = true;
         const columnList: string[] = this.generateDisplayedColumns();
-        const drawTask: Fn<string[], Promise<void>> = this.syncDrawColumns.bind(this);
 
         if (this.sortable.notEmpty) {
             this.sortAndFilter().then(
                 (): void => {
-                    drawTask(columnList).then((): void => this.emitRendered());
+                    this.syncDrawColumns(columnList);
+                    this.emitRendered();
                 }
             );
         } else {
-            drawTask(columnList).then((): void => this.emitRendered());
+            this.syncDrawColumns(columnList);
+            this.emitRendered();
         }
     }
 
@@ -313,7 +308,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         );
     }
 
-    protected calculateViewport(force: boolean = false): void {
+    public calculateViewport(force: boolean = false): void {
         if (this.ignoreCalculate()) {
             return;
         }
@@ -396,6 +391,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
         this.createDiffIndexes();
         this.viewPortInfo.scrollTop = start * this.clientRowHeight;
+    }
+
+    private listenColumnListChanges(): void {
+        this.columnList.changes
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((): void => this.calculateColumnWidthSummary());
     }
 
     private createDiffIndexes(): void {
@@ -592,19 +593,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         }
     }
 
-    /**
-     * @description: sync rendering of columns
-     */
-    private async syncDrawColumns(columnList: string[]): Promise<void> {
-        await this.utils.microtask(
-            (): void => {
-                for (let index: number = 0; index < columnList.length; index++) {
-                    const key: string = columnList[index];
-                    const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
-                    this.processedColumnList(schema, columnList[index]);
-                }
-            }
-        );
+    private syncDrawColumns(columnList: string[]): void {
+        for (let index: number = 0; index < columnList.length; index++) {
+            const key: string = columnList[index];
+            const schema: ColumnsSchema = this.mergeColumnSchema(key, index);
+            this.processedColumnList(schema, columnList[index]);
+        }
     }
 
     private getCustomColumnSchemaByIndex(index: number): Partial<ColumnsSchema> {

@@ -15,8 +15,10 @@ import {
     OnDestroy,
     OnInit,
     Output,
+    QueryList,
     SimpleChanges,
-    ViewChild
+    ViewChild,
+    ViewChildren
 } from '@angular/core';
 
 import { NgxTableViewChangesService } from '../table/services/table-view-changes/ngx-table-view-changes.service';
@@ -47,8 +49,9 @@ import { SelectionService } from './services/selection/selection.service';
 import { SortableService } from './services/sortable/sortable.service';
 import { TemplateParserService } from './services/template-parser/template-parser.service';
 import { UtilsService } from './services/utils/utils.service';
+import { SCROLLBAR_WIDTH } from './symbols';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE, TIME_RELOAD }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
+const { ROW_HEIGHT, MACRO_TIME, TIME_RELOAD, TIME_IDLE }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -65,7 +68,6 @@ export abstract class TableBuilderApiImpl
     @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
-    @Input('column-width') public columnWidth: string | number = null;
     @Input('head-height') public headHeight: string | number = null;
     @Input('row-height') public rowHeight: string | number = null;
     @Input('vertical-border') public verticalBorder: boolean = true;
@@ -99,9 +101,13 @@ export abstract class TableBuilderApiImpl
     @ViewChild('tableViewport', { static: true })
     public scrollContainer: ElementRef<HTMLElement>;
 
+    @ViewChildren('column', { read: false })
+    public columnList: QueryList<ElementRef<HTMLDivElement>>;
+
+    public scrollbarWidth: number = SCROLLBAR_WIDTH;
+    public columnListWidth: number = 0;
     public viewPortInfo: ViewPortInfo = {};
     public tableViewportChecked: boolean = true;
-    public isFrozenView: boolean = false;
 
     /**
      * @description: the custom names of the column list to be displayed in the view.
@@ -145,6 +151,7 @@ export abstract class TableBuilderApiImpl
     protected abstract readonly draggable: DraggableService;
     private filterIdTask: number = null;
     private idleDetectChangesId: number;
+    private columnFrameId: number;
 
     /**
      * @description - <table-builder [keys]=[ 'id', 'value', 'id', 'position', 'value' ] />
@@ -198,10 +205,6 @@ export abstract class TableBuilderApiImpl
 
     public get clientRowHeight(): number {
         return (this.rowHeight as number) || ROW_HEIGHT;
-    }
-
-    public get clientColWidth(): number {
-        return this.autoWidth ? null : (this.columnWidth as number) || null;
     }
 
     public get columnVirtualHeight(): number {
@@ -287,18 +290,9 @@ export abstract class TableBuilderApiImpl
     }
 
     public async sortAndFilter(): Promise<void> {
-        this.toggleFreeze(true);
         await this.recalculationSource();
         this.calculateViewport(true);
         this.onChanges.emit(this.sourceRef);
-
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => {
-                    this.toggleFreeze(false);
-                }, TIME_IDLE);
-            }
-        );
     }
 
     public sortByKey(key: string): void {
@@ -311,11 +305,6 @@ export abstract class TableBuilderApiImpl
         const currentKey: string = this.visibleColumns[currentIndex];
         this.draggable.drop(previousKey, currentKey);
         this.changeSchema();
-    }
-
-    public toggleFreeze(state: boolean): void {
-        this.isFrozenView = state;
-        detectChanges(this.cd);
     }
 
     public changeSchema(defaultColumns: SimpleSchemaColumns = null): void {
@@ -357,6 +346,8 @@ export abstract class TableBuilderApiImpl
 
     public abstract ngOnDestroy(): void;
 
+    public abstract calculateViewport(force: boolean): void;
+
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
@@ -397,7 +388,23 @@ export abstract class TableBuilderApiImpl
         return this.utils.flattenKeysByRow(this.firstItem);
     }
 
-    protected abstract calculateViewport(force: boolean): void;
+    protected calculateColumnWidthSummary(): void {
+        this.ngZone.runOutsideAngular(
+            (): void => {
+                clearInterval(this.columnFrameId);
+                this.columnFrameId = window.setTimeout((): void => {
+                    let width: number = 0;
+                    this.columnList.forEach(
+                        (element: ElementRef<HTMLDivElement>): void => {
+                            width += element.nativeElement.offsetWidth;
+                        }
+                    );
+                    this.columnListWidth = width;
+                    this.idleDetectChanges();
+                }, TIME_IDLE);
+            }
+        );
+    }
 
     protected abstract updateViewportInfo(start: number, end: number): void;
 
@@ -417,6 +424,7 @@ export abstract class TableBuilderApiImpl
 
     private calculateWidth(key: string, width: number): void {
         this.isDragging[key] = true;
+        this.calculateColumnWidthSummary();
         this.onMouseResizeColumn(key, width);
     }
 

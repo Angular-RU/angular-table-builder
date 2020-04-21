@@ -12,9 +12,7 @@ async function buildPackage(): Promise<void> {
     }
 }
 
-buildPackage().then(
-    (): void => {
-        // eslint-disable-next-line no-console
-        console.log('done');
-    }
-);
+buildPackage().then((): void => {
+    // eslint-disable-next-line no-console
+    console.log('done');
+});

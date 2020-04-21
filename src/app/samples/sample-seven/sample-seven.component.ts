@@ -19,20 +19,16 @@ export class SampleSevenComponent implements OnInit, AfterViewInit {
     public ngOnInit(): void {
         const rowsNumber: number = 10000;
         const cols: number = 30;
-        MocksGenerator.generator(rowsNumber, cols).then(
-            (data: TableRow[]): void => {
-                this.data = data;
-                this.cd.detectChanges();
-            }
-        );
+        MocksGenerator.generator(rowsNumber, cols).then((data: TableRow[]): void => {
+            this.data = data;
+            this.cd.detectChanges();
+        });
     }
 
     public ngAfterViewInit(): void {
-        document.querySelectorAll('pre code').forEach(
-            (block: Any): void => {
-                hljs.highlightBlock(block);
-            }
-        );
+        document.querySelectorAll('pre code').forEach((block: Any): void => {
+            hljs.highlightBlock(block);
+        });
     }
 
     public alert(row: TableRow): void {

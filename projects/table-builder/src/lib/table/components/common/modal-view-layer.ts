@@ -81,17 +81,13 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public updateView(): void {
         detectChanges(this.cd);
 
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.requestAnimationFrame(
-                    (): void => {
-                        detectChanges(this.cd);
-                        this.app.tick();
-                        this.refresh();
-                    }
-                );
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.requestAnimationFrame((): void => {
+                detectChanges(this.cd);
+                this.app.tick();
+                this.refresh();
+            });
+        });
     }
 
     public ngOnDestroy(): void {
@@ -103,28 +99,22 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public abstract close(event: MouseEvent): void;
 
     protected update(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout(
-                    (): void => {
-                        this.isViewed = this.state.opened;
-                        this.updateView();
-                        window.setTimeout((): void => this.updateView());
-                    }
-                );
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => {
+                this.isViewed = this.state.opened;
+                this.updateView();
+                window.setTimeout((): void => this.updateView());
+            });
+        });
     }
 
     private refresh(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => {
-                    this.isRendered = true;
-                    this.minHeight = this.calculatedHeight;
-                    detectChanges(this.cd);
-                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => {
+                this.isRendered = true;
+                this.minHeight = this.calculatedHeight;
+                detectChanges(this.cd);
+            }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+        });
     }
 }

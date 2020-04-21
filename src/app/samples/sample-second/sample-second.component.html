@@ -195,36 +195,21 @@
 
         <pre><code class="javascript" ngNonBindable>
   &lt;!-- app.component.html -->
-  &lt;ngx-table-builder
-          [source]="data"
-          [striped]="false"
-          [keys]="columns"
-          [async-columns]="false">
+  &lt;ngx-table-builder [source]="data" [striped]="false" [keys]="columns">
 
-      &lt;ngx-column key="name" [sticky]="true">&lt;/ngx-column>
+      &lt;ngx-column key="name" sticky>&lt;/ngx-column>
 
-      &lt;ngx-column
-          width="50"
-          key="status"
-          [sticky-end]="true"
-          [css-class]="['status-column']">
-
+      &lt;ngx-column width="50" key="status" sticky-end [css-class]="['status-column']">
           &lt;ng-template ngx-th>&lt;/ng-template>
           &lt;ng-template ngx-td>
               &lt;button class="button__done" mat-button>
                   &lt;mat-icon>done&lt;/mat-icon>
               &lt;/button>
           &lt;/ng-template>
-
       &lt;/ngx-column>
 
   &lt;/ngx-table-builder>
 </code></pre>
-
-        <p>
-            <strong>Note:</strong> If you always want the columns to be drawn regardless of their visibility in the
-            viewport, then you need to use the property [async-columns]="false"
-        </p>
 
         <hr />
 

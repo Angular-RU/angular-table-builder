@@ -14,6 +14,7 @@
     "devDependencies": {
         "@angular-devkit/build-angular": "0.803.25",
         "@angular-ru/eslint-config": "10.6.0",
+        "@angular-ru/prettier-config": "12.6.0",
         "@angular/animations": "8.2.14",
         "@angular/cdk": "8.2.3",
         "@angular/cli": "8.3.25",
@@ -42,7 +43,6 @@
         "jest-preset-angular": "7.1.0",
         "ng-packagr": "9.0.3",
         "ngx-toastr": "10.0.4",
-        "prettier": "1.17.1",
         "pretty": "2.0.0",
         "rxjs": "6.5.2",
         "sort-package-json": "1.40.0",

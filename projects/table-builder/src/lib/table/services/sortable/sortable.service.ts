@@ -26,18 +26,16 @@ export class SortableService {
     }
 
     public sort(data: TableRow[]): Promise<TableRow[]> {
-        return new Promise(
-            (resolve: Resolver<TableRow[]>): void => {
-                if (this.skipInternalSort) {
-                    resolve(data);
-                    return;
-                }
-
-                this.thread
-                    .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
-                    .then((sorted: TableRow[]): void => this.idleResolve(resolve, sorted));
+        return new Promise((resolve: Resolver<TableRow[]>): void => {
+            if (this.skipInternalSort) {
+                resolve(data);
+                return;
             }
-        );
+
+            this.thread
+                .run<TableRow[], SortableMessage>(sortWorker, { definition: this.definition, source: data })
+                .then((sorted: TableRow[]): void => this.idleResolve(resolve, sorted));
+        });
     }
 
     public setDefinition(definition: KeyMap<string>): void {
@@ -62,12 +60,10 @@ export class SortableService {
         this.positionMap = {};
 
         if (this.sortChanges) {
-            Object.entries(this.definition).forEach(
-                ([key, ordered]: [string, SortOrderType], index: number): void => {
-                    this.positionMap[key] = index + 1;
-                    orderedFields.push({ field: key, order: ordered.toLocaleUpperCase() as Any });
-                }
-            );
+            Object.entries(this.definition).forEach(([key, ordered]: [string, SortOrderType], index: number): void => {
+                this.positionMap[key] = index + 1;
+                orderedFields.push({ field: key, order: ordered.toLocaleUpperCase() as Any });
+            });
 
             this.sortableCount = orderedFields.length;
             this.sortChanges.emit(orderedFields);
@@ -75,11 +71,9 @@ export class SortableService {
     }
 
     private idleResolve(resolve: Resolver<TableRow[]>, sorted: TableRow[]): void {
-        this.zone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => resolve(sorted), TABLE_GLOBAL_OPTIONS.TIME_IDLE);
-            }
-        );
+        this.zone.runOutsideAngular((): void => {
+            window.setTimeout((): void => resolve(sorted), TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+        });
     }
 
     private updateImmutableDefinitions(key: string): KeyMap<SortOrderType> {

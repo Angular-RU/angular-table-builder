@@ -85,20 +85,18 @@ export class TableCellComponent implements OnDestroy {
 
     private detectCheckOverflow(element: HTMLDivElement, event: MouseEvent): void {
         window.clearInterval(this.timeoutShowedFrameId);
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.timeoutShowedFrameId = window.setTimeout((): void => {
-                    const canEnableTooltip: boolean = this.viewportInfo.isScrolling
-                        ? false
-                        : this.isEllipsisActive(element);
+        this.ngZone.runOutsideAngular((): void => {
+            this.timeoutShowedFrameId = window.setTimeout((): void => {
+                const canEnableTooltip: boolean = this.viewportInfo.isScrolling
+                    ? false
+                    : this.isEllipsisActive(element);
 
-                    if (canEnableTooltip) {
-                        this.removeElement();
-                        this.showTooltip(element, event);
-                    }
-                }, this.timeIdle);
-            }
-        );
+                if (canEnableTooltip) {
+                    this.removeElement();
+                    this.showTooltip(element, event);
+                }
+            }, this.timeIdle);
+        });
     }
 
     // eslint-disable-next-line max-lines-per-function
@@ -125,34 +123,30 @@ export class TableCellComponent implements OnDestroy {
         this.nodeSubscription = fromEvent(elem, 'mouseleave').subscribe((): void => this.removeElement());
         this.closeElemSub = fromEvent(this.overflowCloseElem, 'click').subscribe((): void => this.removeElement());
 
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.timeoutOverflowId = window.setTimeout((): void => {
-                    if (this.viewportInfo.isScrolling) {
-                        this.removeElement();
-                    } else {
-                        this.overflowContentElem.classList.add('visible');
-                    }
-                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.timeoutOverflowId = window.setTimeout((): void => {
+                if (this.viewportInfo.isScrolling) {
+                    this.removeElement();
+                } else {
+                    this.overflowContentElem.classList.add('visible');
+                }
+            }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+        });
     }
 
     private removeElement(): void {
         if (this.overflowContentElem) {
             this.overflowContentElem.classList.remove('visible');
-            this.ngZone.runOutsideAngular(
-                (): void => {
-                    window.setTimeout((): void => {
-                        if (this.overflowContentElem) {
-                            this.overflowContentElem.parentNode.removeChild(this.overflowContentElem);
-                        }
+            this.ngZone.runOutsideAngular((): void => {
+                window.setTimeout((): void => {
+                    if (this.overflowContentElem) {
+                        this.overflowContentElem.parentNode.removeChild(this.overflowContentElem);
+                    }
 
-                        this.nodeSubscription && this.nodeSubscription.unsubscribe();
-                        this.closeElemSub && this.closeElemSub.unsubscribe();
-                    }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
-                }
-            );
+                    this.nodeSubscription && this.nodeSubscription.unsubscribe();
+                    this.closeElemSub && this.closeElemSub.unsubscribe();
+                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+            });
         }
     }
 }
