@@ -243,11 +243,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     public generateColumnsKeyMap(keys: string[]): KeyMap<boolean> {
         const map: KeyMap<boolean> = {};
-        keys.forEach(
-            (key: string): void => {
-                map[key] = true;
-            }
-        );
+        keys.forEach((key: string): void => {
+            map[key] = true;
+        });
 
         return map;
     }
@@ -266,12 +264,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const columnList: string[] = this.generateDisplayedColumns();
 
         if (this.sortable.notEmpty) {
-            this.sortAndFilter().then(
-                (): void => {
-                    this.syncDrawColumns(columnList);
-                    this.emitRendered();
-                }
-            );
+            this.sortAndFilter().then((): void => {
+                this.syncDrawColumns(columnList);
+                this.emitRendered();
+            });
         } else {
             this.syncDrawColumns(columnList);
             this.emitRendered();
@@ -282,12 +278,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.recheckViewportChecked();
         this.templateParser.toggleColumnVisibility(key);
         this.utils
-            .requestAnimationFrame(
-                (): void => {
-                    this.changeSchema();
-                    this.recheckViewportChecked();
-                }
-            )
+            .requestAnimationFrame((): void => {
+                this.changeSchema();
+                this.recheckViewportChecked();
+            })
             .then((): void => this.app.tick());
     }
 
@@ -298,14 +292,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.renderTable();
         this.changeSchema([]);
 
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => {
-                    this.tableViewportChecked = true;
-                    detectChanges(this.cd);
-                }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => {
+                this.tableViewportChecked = true;
+                detectChanges(this.cd);
+            }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
+        });
     }
 
     public calculateViewport(force: boolean = false): void {
@@ -410,45 +402,39 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private listenFilterResetChanges(): void {
-        this.filterable.resetEvents.pipe(takeUntil(this.destroy$)).subscribe(
-            (): void => {
-                this.source = this.originalSource;
-                this.calculateViewport(true);
-            }
-        );
+        this.filterable.resetEvents.pipe(takeUntil(this.destroy$)).subscribe((): void => {
+            this.source = this.originalSource;
+            this.calculateViewport(true);
+        });
     }
 
     private afterViewInitChecked(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.timeoutViewCheckedId = window.setTimeout((): void => {
-                    this.afterViewInitDone = true;
-                    this.listenScroll();
-                    if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
-                        this.emitRendered();
-                        detectChanges(this.cd);
-                    }
-                }, MACRO_TIME);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.timeoutViewCheckedId = window.setTimeout((): void => {
+                this.afterViewInitDone = true;
+                this.listenScroll();
+                if (!this.isRendered && !this.rendering && this.sourceRef.length === 0) {
+                    this.emitRendered();
+                    detectChanges(this.cd);
+                }
+            }, MACRO_TIME);
+        });
     }
 
     private listenScroll(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                fromEvent(this.scrollContainer.nativeElement, 'scroll', { passive: true })
-                    .pipe(
-                        catchError(
-                            (): Observable<never> => {
-                                this.calculateViewport(true);
-                                return EMPTY;
-                            }
-                        ),
-                        takeUntil(this.destroy$)
-                    )
-                    .subscribe((): void => this.scrollHandler());
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            fromEvent(this.scrollContainer.nativeElement, 'scroll', { passive: true })
+                .pipe(
+                    catchError(
+                        (): Observable<never> => {
+                            this.calculateViewport(true);
+                            return EMPTY;
+                        }
+                    ),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe((): void => this.scrollHandler());
+        });
     }
 
     private scrollHandler(): void {
@@ -456,12 +442,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             return;
         }
 
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                this.cancelScrolling();
-                this.frameCalculateViewportId = window.requestAnimationFrame((): void => this.calculateViewport());
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            this.cancelScrolling();
+            this.frameCalculateViewportId = window.requestAnimationFrame((): void => this.calculateViewport());
+        });
     }
 
     private cancelScrolling(): void {
@@ -490,12 +474,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private preSortAndFilterTable(changes: SimpleChanges = {}): void {
         this.originalSource = changes[TableSimpleChanges.SOURCE_KEY].currentValue;
-        this.sortAndFilter().then(
-            (): void => {
-                this.reCheckDefinitions();
-                this.checkSelectionValue();
-            }
-        );
+        this.sortAndFilter().then((): void => {
+            this.reCheckDefinitions();
+            this.checkSelectionValue();
+        });
     }
 
     private preRenderTable(): void {
@@ -533,59 +515,47 @@ export class TableBuilderComponent extends TableBuilderApiImpl
                 (this.columnOptions && this.columnOptions.filterType) ||
                 TableFilterType.CONTAINS;
 
-            this.modelColumnKeys.forEach(
-                (key: string): void => {
-                    this.filterable.filterTypeDefinition[key] =
-                        this.filterable.filterTypeDefinition[key] || this.filterable.filterType;
-                }
-            );
+            this.modelColumnKeys.forEach((key: string): void => {
+                this.filterable.filterTypeDefinition[key] =
+                    this.filterable.filterTypeDefinition[key] || this.filterable.filterType;
+            });
         }
     }
 
     private recheckTemplateChanges(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => this.app.tick(), TIME_RELOAD);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => this.app.tick(), TIME_RELOAD);
+        });
     }
 
     private listenSelectionChanges(): void {
         if (this.enableSelection) {
-            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe(
-                (): void => {
-                    detectChanges(this.cd);
-                    this.ngZone.runOutsideAngular(
-                        (): void => {
-                            window.requestAnimationFrame((): void => this.app.tick());
-                        }
-                    );
-                }
-            );
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe((): void => {
+                detectChanges(this.cd);
+                this.ngZone.runOutsideAngular((): void => {
+                    window.requestAnimationFrame((): void => this.app.tick());
+                });
+            });
         }
     }
 
     private viewForceRefresh(): void {
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.clearTimeout(this.timeoutCheckedTaskId);
-                this.timeoutCheckedTaskId = window.setTimeout((): void => {
-                    this.forcedRefresh = true;
-                    this.markTemplateContentCheck();
-                    this.render();
-                }, FRAME_TIME);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.clearTimeout(this.timeoutCheckedTaskId);
+            this.timeoutCheckedTaskId = window.setTimeout((): void => {
+                this.forcedRefresh = true;
+                this.markTemplateContentCheck();
+                this.render();
+            }, FRAME_TIME);
+        });
     }
 
     private listenTemplateChanges(): void {
         if (this.columnTemplates) {
-            this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe(
-                (): void => {
-                    this.markForCheck();
-                    this.markTemplateContentCheck();
-                }
-            );
+            this.columnTemplates.changes.pipe(takeUntil(this.destroy$)).subscribe((): void => {
+                this.markForCheck();
+                this.markTemplateContentCheck();
+            });
         }
 
         if (this.contextMenuTemplate) {
@@ -646,17 +616,15 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.calculateViewport(true);
         this.recheckViewportChecked();
-        this.ngZone.runOutsideAngular(
-            (): void => {
-                window.setTimeout((): void => {
-                    this.isRendered = true;
-                    detectChanges(this.cd);
-                    this.recalculateHeight();
-                    this.afterRendered.emit(this.isRendered);
-                    this.onChanges.emit(this.source || null);
-                }, TIME_RELOAD);
-            }
-        );
+        this.ngZone.runOutsideAngular((): void => {
+            window.setTimeout((): void => {
+                this.isRendered = true;
+                detectChanges(this.cd);
+                this.recalculateHeight();
+                this.afterRendered.emit(this.isRendered);
+                this.onChanges.emit(this.source || null);
+            }, TIME_RELOAD);
+        });
     }
 
     /**
