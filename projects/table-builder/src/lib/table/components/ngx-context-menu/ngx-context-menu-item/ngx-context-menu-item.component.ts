@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    HostListener,
     Injector,
     Input,
     NgZone,
@@ -44,7 +45,6 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
     private subscription: Subscription;
     private taskId: number;
     private readonly contextMenu: ContextMenuService;
-
     private readonly utils: UtilsService;
     private readonly ngZone: NgZone;
 
@@ -52,6 +52,13 @@ export class NgxContextMenuItemComponent implements OnInit, OnDestroy {
         this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
         this.utils = injector.get<UtilsService>(UtilsService);
         this.ngZone = injector.get<NgZone>(NgZone);
+    }
+
+    @HostListener('mouseenter')
+    public mouseover(): void {
+        if (this.state.opened) {
+            detectChanges(this.cd);
+        }
     }
 
     public get state(): ContextMenuState {
