@@ -290,6 +290,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public resetSchema(): void {
+        this.columnListWidth = 0;
         this.schemaColumns = null;
         detectChanges(this.cd);
 
@@ -299,6 +300,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.ngZone.runOutsideAngular((): void => {
             window.setTimeout((): void => {
                 this.tableViewportChecked = true;
+                this.calculateColumnWidthSummary();
                 detectChanges(this.cd);
             }, TABLE_GLOBAL_OPTIONS.TIME_IDLE);
         });

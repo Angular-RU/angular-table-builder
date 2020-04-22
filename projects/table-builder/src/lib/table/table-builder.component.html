@@ -90,9 +90,11 @@
                     [class.table-grid__column--is-dragging]="isDragging[schema.key]"
                     [class.table-grid__column--with-footer-content]="footerTemplate"
                     [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
-                    [class.table-grid__column--vertical-line]="verticalBorder || schema?.verticalLine"
-                    [class.table-grid__column--auto-width-reset-default-with]="isEnableAutoWidthColumn"
                     [class.table-grid__column--is-draggable]="schema?.isModel && schema?.draggable"
+                    [class.table-grid__column--auto-width-reset-default-with]="isEnableAutoWidthColumn"
+                    [class.table-grid__column--vertical-line]="
+                        verticalBorder !== false || schema?.verticalLine !== false
+                    "
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
                     <div *ngIf="column['visible']" [@fadeAnimation]>
