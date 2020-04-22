@@ -16,7 +16,7 @@ import { delay, takeUntil } from 'rxjs/operators';
 import { TABLE_GLOBAL_OPTIONS } from '../config/table-global-options';
 import { TableRow } from '../interfaces/table-builder.external';
 import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
-import { HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
+import { BORDER_TOB_WITH_BOTTOM, HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
 
 const DELAY: number = 100;
 const MIN_RESIZE_DELAY: number = 200;
@@ -57,7 +57,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
             if (this.useOnlyAutoViewPort && this.columnHeight > this.parentOffsetHeight) {
                 height = this.getHeightByViewPort({ paddingTop, paddingBottom });
             } else if (this.parentOffsetHeight > this.columnHeight) {
-                height = this.getDefaultHeight();
+                height = this.getDefaultHeight(this.parentOffsetHeight);
             } else if (this.isNotEmptyParentHeight) {
                 height = this.getHeightByParent({ paddingTop, paddingBottom });
             } else {
@@ -73,7 +73,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private get parentOffsetHeight(): number {
-        return this.rootCurrentElement.clientHeight || this.minHeight;
+        return (this.rootCurrentElement.clientHeight || this.minHeight) - this.scrollbarHeight - BORDER_TOB_WITH_BOTTOM;
     }
 
     private get currentElement(): HTMLDivElement {
@@ -93,9 +93,11 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     private get scrollbarHeight(): number {
-        return this.sourceRef.length === 1
-            ? SCROLLBAR_WIDTH
-            : this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+        const scrollHeight: number =
+            this.sourceRef.length === 1
+                ? SCROLLBAR_WIDTH
+                : this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+        return scrollHeight + BORDER_TOB_WITH_BOTTOM;
     }
 
     private get headerHeight(): number {
@@ -171,8 +173,14 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    private getDefaultHeight(): string {
-        return `calc(${this.columnHeight + this.scrollbarHeight + this.headerHeight + this.footerHeight}px)`;
+    private getDefaultHeight(parentHeight?: number): string {
+        let height: number = this.columnHeight + this.scrollbarHeight + this.headerHeight + this.footerHeight;
+
+        if (parentHeight) {
+            height = height > parentHeight ? parentHeight : height;
+        }
+
+        return `calc(${height}px)`;
     }
 
     private getHeightByParent({ paddingTop, paddingBottom }: BoxView): string {
@@ -182,7 +190,6 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     private getHeightByViewPort({ paddingTop, paddingBottom }: BoxView): string {
         const viewportHeight: number = this.autoViewHeight - parseInt(HEAD_TOP);
-
         return this.columnHeight > viewportHeight
             ? `calc(${viewportHeight}px - ${paddingTop} - ${paddingBottom} - ${this.scrollbarHeight}px)`
             : this.getDefaultHeight();

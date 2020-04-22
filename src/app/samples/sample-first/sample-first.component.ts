@@ -14,7 +14,6 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
     public width: string = '100%';
     public height: number;
     public rowHeight: string;
-    public columnWidth: string;
     public dataSize: string = '100x20';
     public loading: boolean = false;
     public simple: TableRow[] = [];
