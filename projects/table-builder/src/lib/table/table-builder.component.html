@@ -64,41 +64,41 @@
                     : null
             "
         >
-            <ng-container *ngFor="let option of columnSchema; let index = index">
+            <ng-container *ngFor="let schema of columnSchema; let index = index">
                 <div
                     #column
                     cdkDrag
                     observerView
                     [cdkDragBoundary]="area"
                     class="table-grid__column"
-                    *ngIf="option.isVisible"
-                    [ngStyle]="option?.cssStyle"
-                    [ngClass]="option?.cssClass"
-                    [attr.column-id]="option.key"
+                    *ngIf="schema.isVisible"
+                    [ngStyle]="schema?.cssStyle"
+                    [ngClass]="schema?.cssClass"
+                    [attr.column-id]="schema.key"
+                    [style.width.px]="schema?.width"
                     [cdkDragDisabled]="!accessDragging"
+                    [style.max-width.px]="schema?.width"
+                    [style.min-width.px]="schema?.width"
                     (cdkDragMoved)="cdkDragMoved($event, root)"
-                    [style.max-width.px]="option?.width"
-                    [style.width.px]="option?.width"
-                    [style.min-width.px]="option?.width"
-                    [class.table-grid__column--with-footer-content]="footerTemplate"
-                    [class.table-grid__column--vertical-line]="verticalBorder || option?.verticalLine"
-                    [class.table-grid__column--custom-column]="option?.customColumn"
-                    [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
-                    [class.table-grid__column--sticky-left]="option?.stickyLeft"
-                    [class.table-grid__column--sticky-right]="option?.stickyRight"
-                    [class.table-grid__column--default-width]="!option?.width"
-                    [class.table-grid__column--auto-width-reset-default-with]="autoWidth !== false"
+                    [class.table-grid__column--sticky-left]="schema?.stickyLeft"
+                    [class.table-grid__column--default-width]="!schema?.width"
                     [class.table-grid__column--is-visible]="column['visible']"
                     [class.table-grid__column--is-invisible]="!column['visible']"
-                    [class.table-grid__column--is-draggable]="option?.isModel && option?.draggable"
-                    [class.table-grid__column--is-dragging]="isDragging[option.key]"
                     [class.table-grid__column--filter-enable]="filterTemplate"
+                    [class.table-grid__column--sticky-right]="schema?.stickyRight"
+                    [class.table-grid__column--custom-column]="schema?.customColumn"
+                    [class.table-grid__column--is-dragging]="isDragging[schema.key]"
+                    [class.table-grid__column--with-footer-content]="footerTemplate"
+                    [class.table-grid__column--selected-all]="selection.selectionModel.isAll"
+                    [class.table-grid__column--vertical-line]="verticalBorder || schema?.verticalLine"
+                    [class.table-grid__column--auto-width-reset-default-with]="isEnableAutoWidthColumn"
+                    [class.table-grid__column--is-draggable]="schema?.isModel && schema?.draggable"
                     (observeVisible)="markVisibleColumn(column, $event)"
                 >
                     <div *ngIf="column['visible']" [@fadeAnimation]>
                         <table-thead
                             cdkDragHandle
-                            [column-schema]="option"
+                            [column-schema]="schema"
                             (mouseleave)="disableDragging()"
                             [column-width]="column.offsetWidth"
                             [header-top]="headerRef?.nativeElement.offsetHeight || 0"
@@ -110,7 +110,7 @@
                             [head-height]="headLineHeight"
                             (resize)="resizeColumn($event, column)"
                             (sortByKey)="sortByKey($event)"
-                            (mouseenter)="enableDragging(option.key)"
+                            (mouseenter)="enableDragging(schema.key)"
                         >
                         </table-thead>
 
@@ -120,7 +120,7 @@
                             [primary-key]="primaryKey"
                             [isRendered]="isRendered"
                             [recalculated]="recalculated"
-                            [column-schema]="option"
+                            [column-schema]="schema"
                             [head-height]="headLineHeight"
                             [viewport-info]="viewPortInfo"
                             [table-viewport]="tableViewport"

@@ -169,9 +169,9 @@
                         enable-selection
                         (schemaChanges)="updatedSchema($event)"
                     >
-                        <ngx-options [resizable]="true" [draggable]="true" [sortable]="true"></ngx-options>
+                        <ngx-options is-draggable is-sortable></ngx-options>
 
-                        <ngx-column key="action" custom-key sticky [resizable]="false" [width]="50">
+                        <ngx-column key="action" custom-key sticky [is-draggable]="false" width="50">
                             <ng-template ngx-th></ng-template>
                             <ng-template ngx-td row let-row>
                                 {{ table2.selectionModel.get($any(row).id) ? 'x' : '-' }}

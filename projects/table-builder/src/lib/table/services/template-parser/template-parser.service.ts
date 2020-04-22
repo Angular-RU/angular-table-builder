@@ -7,6 +7,8 @@ import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { ColumnsSchema, ImplicitContext, TableCellOptions } from '../../interfaces/table-builder.external';
 import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
+import { getValidHtmlBooleanAttribute } from '../../operators/get-valid-html-boolean-attribute';
+import { getValidPredicate } from '../../operators/get-valid-predicate';
 import { SchemaBuilder } from './schema-builder.class';
 
 @Injectable()
@@ -53,19 +55,9 @@ export class TemplateParserService {
             onClick: cell.onClick,
             dblClick: cell.dblClick,
             useDeepPath: key.includes('.'),
-            context: TemplateParserService.getValidHtmlBooleanAttribute(cell.row)
-                ? ImplicitContext.ROW
-                : ImplicitContext.CELL,
-            nowrap: TemplateParserService.getValidPredicate(options.nowrap, cell.nowrap)
+            context: getValidHtmlBooleanAttribute(cell.row) ? ImplicitContext.ROW : ImplicitContext.CELL,
+            nowrap: getValidHtmlBooleanAttribute(getValidPredicate(options.nowrap, cell.nowrap))
         };
-    }
-
-    private static getValidHtmlBooleanAttribute(attribute: boolean): boolean {
-        return typeof attribute === 'string' ? true : attribute;
-    }
-
-    private static getValidPredicate<T>(leftPredicate: T, rightPredicate: T): T {
-        return leftPredicate === null ? rightPredicate : leftPredicate;
     }
 
     public toggleColumnVisibility(key: string): void {
@@ -128,10 +120,10 @@ export class TemplateParserService {
         const { key, th, td, emptyHead, headTitle }: NgxColumnComponent = column;
         const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
         const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
-        const isEmptyHead: boolean = TemplateParserService.getValidHtmlBooleanAttribute(emptyHead);
+        const isEmptyHead: boolean = getValidHtmlBooleanAttribute(emptyHead);
         const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
-        const stickyLeft: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft);
-        const stickyRight: boolean = TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight);
+        const stickyLeft: boolean = getValidHtmlBooleanAttribute(column.stickyLeft);
+        const stickyRight: boolean = getValidHtmlBooleanAttribute(column.stickyRight);
         const canBeAddDraggable: boolean = !(stickyLeft || stickyRight);
         const isModel: boolean = this.keyMap[key];
 
@@ -140,26 +132,29 @@ export class TemplateParserService {
             isModel,
             isVisible: true,
             excluded: !this.allowedKeyMap[key],
-            verticalLine: TemplateParserService.getValidHtmlBooleanAttribute(column.verticalLine),
+            verticalLine: getValidHtmlBooleanAttribute(column.verticalLine),
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
-            stickyLeft: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyLeft),
-            stickyRight: TemplateParserService.getValidHtmlBooleanAttribute(column.stickyRight),
-            customColumn: TemplateParserService.getValidHtmlBooleanAttribute(column.customKey),
-            width: TemplateParserService.getValidPredicate(column.width, this.columnOptions.width),
-            cssClass: TemplateParserService.getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
-            cssStyle: TemplateParserService.getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
-            resizable: TemplateParserService.getValidPredicate(column.resizable, this.columnOptions.resizable),
-            stub: TemplateParserService.getValidPredicate(this.columnOptions.stub, column.stub),
-            filterable: TemplateParserService.getValidPredicate(column.filterable, this.columnOptions.filterable),
+            stickyLeft: getValidHtmlBooleanAttribute(column.stickyLeft),
+            stickyRight: getValidHtmlBooleanAttribute(column.stickyRight),
+            customColumn: getValidHtmlBooleanAttribute(column.customKey),
+            width: getValidPredicate(column.width, this.columnOptions.width),
+            cssClass: getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
+            cssStyle: getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
+            resizable: getValidHtmlBooleanAttribute(
+                getValidPredicate(column.isDraggable, this.columnOptions.isDraggable)
+            ),
+            stub: getValidPredicate(this.columnOptions.stub, column.stub),
+            filterable: getValidHtmlBooleanAttribute(
+                getValidPredicate(column.isFilterable, this.columnOptions.isFilterable)
+            ),
             sortable: isModel
-                ? TemplateParserService.getValidPredicate(column.sortable, this.columnOptions.sortable)
+                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isSortable, this.columnOptions.isSortable))
                 : false,
             draggable: canBeAddDraggable
-                ? TemplateParserService.getValidPredicate(column.draggable, this.columnOptions.draggable)
+                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isDraggable, this.columnOptions.isDraggable))
                 : false,
-            overflowTooltip: TemplateParserService.getValidPredicate(
-                this.columnOptions.overflowTooltip,
-                column.overflowTooltip
+            overflowTooltip: getValidHtmlBooleanAttribute(
+                getValidPredicate(this.columnOptions.overflowTooltip, column.overflowTooltip)
             ),
             th: {
                 ...thOptions,

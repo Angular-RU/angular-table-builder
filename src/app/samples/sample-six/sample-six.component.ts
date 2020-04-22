@@ -43,18 +43,7 @@ export class SampleSixComponent implements OnInit, AfterViewInit {
             data: {
                 title: 'Overview sortable table',
                 description: '',
-                code: `
-<ngx-table-builder [source]="data">
-    <!--
-       <ngx-options /> - declaration common options for columns
-
-       Also you can customize your columns manually
-       <ngx-column key="myKey" [sortable]="'desc'">...</ngx-column>
-    -->
-    <ngx-options [sortable]="'asc'"></ngx-options>
-</ngx-table-builder>
-
-                `
+                code: `<ngx-table-builder [source]="data"  [sort-types]="{ myKey: 'asc' }"></ngx-table-builder>`
             },
             height: '350px',
             width: '700px'

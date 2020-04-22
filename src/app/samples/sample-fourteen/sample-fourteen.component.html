@@ -7,7 +7,7 @@
 </mat-toolbar>
 
 <ngx-table-builder #table [source]="data" [row-height]="40" class="filter-example" enable-filtering enable-selection>
-    <ngx-options [sortable]="true" [filterable]="true" [resizable]="true" [draggable]="true"></ngx-options>
+    <ngx-options is-sortable is-filterable is-draggable is-resizable></ngx-options>
     <ngx-source-null>Loading...</ngx-source-null>
     <ngx-empty>Not found</ngx-empty>
 

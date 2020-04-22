@@ -12,18 +12,11 @@
 
 <ngx-table-builder
     [source]="data"
-    [sort-types]="{ id: 'desc' }"
     [skip-sort]="skipSort"
+    [sort-types]="{ id: 'desc' }"
     (sortChanges)="sortChanges($event)"
 >
     <ngx-empty>No data</ngx-empty>
     <ngx-source-null>Loading</ngx-source-null>
-
-    <!--
-       <ngx-options /> - declaration common options for columns
-
-       Also you can customize your columns manually
-       <ngx-column key="myKey" [sortable]="true">...</ngx-column>
-    -->
-    <ngx-options [sortable]="true"></ngx-options>
+    <ngx-options is-sortable></ngx-options>
 </ngx-table-builder>

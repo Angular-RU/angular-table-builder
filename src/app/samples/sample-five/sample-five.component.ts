@@ -45,7 +45,7 @@ export class SampleFiveComponent implements OnInit, AfterViewInit {
        Also you can customize your columns manually
        <ngx-column key="myKey" [resizable]="true">...</ngx-column>
     -->
-    <ngx-options [resizable]="true"></ngx-options>
+    <ngx-options is-draggable></ngx-options>
 </ngx-table-builder>
 
                 `

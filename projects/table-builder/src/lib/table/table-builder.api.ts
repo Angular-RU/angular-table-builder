@@ -234,6 +234,10 @@ export abstract class TableBuilderApiImpl
         return this.skipSort !== false;
     }
 
+    public get isEnableAutoWidthColumn(): boolean {
+        return this.autoWidth !== false;
+    }
+
     public get isEnableSelection(): boolean {
         return this.enableSelection !== false;
     }

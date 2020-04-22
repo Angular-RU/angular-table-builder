@@ -11,7 +11,7 @@
     [vertical-border]="false"
     [exclude-keys]="['reverseId']"
 >
-    <ngx-options [draggable]="true" [sortable]="true" [resizable]="true"></ngx-options>
+    <ngx-options is-draggable is-filterable is-sortable></ngx-options>
 
     <ngx-context-menu>
         <ngx-context-menu-item contextTitle divider>
@@ -40,12 +40,12 @@
 
     <ngx-column
         key="id"
+        sticky
         custom-key
         width="100"
         vertical-line
-        [resizable]="false"
         important-template
-        sticky
+        [is-draggable]="false"
     ></ngx-column>
 
     <ngx-column key="reverseId" custom-key width="150" vertical-line important-template></ngx-column>
