@@ -18,18 +18,17 @@ import { TableRow } from '../interfaces/table-builder.external';
 import { Any, BoxView, DynamicHeightOptions } from '../interfaces/table-builder.internal';
 import { BORDER_TOB_WITH_BOTTOM, HEAD_TOP, SCROLLBAR_WIDTH } from '../symbols';
 
-const DELAY: number = 100;
-const MIN_RESIZE_DELAY: number = 200;
+const MIN_RESIZE_DELAY: number = 500;
+const RECALCULATE_HEIGHT: number = 100;
 
 @Directive({ selector: '[autoHeight]' })
 export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     @Input() public autoHeight: Partial<DynamicHeightOptions> = {};
     @Input() public tableViewport: Partial<HTMLDivElement> = {};
     @Input() public sourceRef: TableRow[] = [];
-    @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter();
+    @Output() public recalculatedHeight: EventEmitter<void> = new EventEmitter(true);
     private destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly minHeight: number = 0;
-    private readonly delay: number = DELAY;
     private useOnlyAutoViewPort: boolean = false;
     private isDirtyCheck: boolean;
     private taskId: number;
@@ -156,7 +155,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
                     this.calculateHeight();
                     this.recalculatedHeight.emit();
                 }
-            }, this.delay);
+            }, RECALCULATE_HEIGHT);
         });
     }
 

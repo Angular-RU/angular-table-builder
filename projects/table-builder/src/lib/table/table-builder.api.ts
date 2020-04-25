@@ -51,7 +51,7 @@ import { TemplateParserService } from './services/template-parser/template-parse
 import { UtilsService } from './services/utils/utils.service';
 import { SCROLLBAR_WIDTH } from './symbols';
 
-const { ROW_HEIGHT, MACRO_TIME, TIME_RELOAD, TIME_IDLE }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
+const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
@@ -302,7 +302,6 @@ export abstract class TableBuilderApiImpl
 
     public async sortAndFilter(): Promise<void> {
         await this.recalculationSource();
-        this.calculateViewport(true);
         this.onChanges.emit(this.sourceRef);
     }
 
@@ -330,9 +329,7 @@ export abstract class TableBuilderApiImpl
     public idleDetectChanges(): void {
         this.ngZone.runOutsideAngular((): void => {
             window.cancelAnimationFrame(this.idleDetectChangesId);
-            this.idleDetectChangesId = window.requestAnimationFrame((): void => {
-                detectChanges(this.cd);
-            });
+            this.idleDetectChangesId = window.requestAnimationFrame((): void => detectChanges(this.cd));
         });
     }
 
@@ -359,9 +356,7 @@ export abstract class TableBuilderApiImpl
     protected reCheckDefinitions(): void {
         this.filterable.definition = { ...this.filterable.definition };
         this.filterable.changeFilteringStatus();
-        this.ngZone.runOutsideAngular((): void => {
-            window.setTimeout((): void => this.calculateViewport(true), TIME_RELOAD);
-        });
+        this.calculateViewport(true);
     }
 
     protected forceCalculateViewport(): void {

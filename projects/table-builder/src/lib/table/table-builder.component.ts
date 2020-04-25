@@ -151,6 +151,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public recalculateHeight(): void {
         this.recalculated = { recalculateHeight: true };
         this.forceCalculateViewport();
+        this.idleDetectChanges();
     }
 
     public ngOnChanges(changes: SimpleChanges = {}): void {
@@ -316,19 +317,19 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const start: number = this.getOffsetVisibleStartIndex();
         const end: number = this.calculateEndIndex(start);
         const bufferOffset: number = this.calculateBuffer(isDownMoved, start, end);
-        this.calculateViewPortByRange({ start, end, bufferOffset, force, isDownMoved });
+        this.calculateViewPortByRange({ start, end, bufferOffset, force });
         this.viewPortInfo.bufferOffset = bufferOffset;
     }
 
-    protected calculateViewPortByRange({ start, end, bufferOffset, force, isDownMoved }: CalculateRange): void {
+    protected calculateViewPortByRange({ start, end, bufferOffset, force }: CalculateRange): void {
         if (this.startIndexIsNull()) {
             this.updateViewportInfo(start, end);
         } else if (this.needRecalculateBuffer(bufferOffset)) {
-            start = this.recalculateStartIndex(start, isDownMoved);
+            start = this.recalculateStartIndex(start);
             this.updateViewportInfo(start, end);
             detectChanges(this.cd);
         } else if (bufferOffset < 0 || force) {
-            start = this.recalculateStartIndex(start, isDownMoved);
+            start = this.recalculateStartIndex(start);
             this.updateViewportInfo(start, end);
             detectChanges(this.cd);
             return;
@@ -347,8 +348,8 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         return bufferOffset <= TABLE_GLOBAL_OPTIONS.BUFFER_OFFSET && bufferOffset >= 0;
     }
 
-    protected recalculateStartIndex(start: number, isDownMoved: boolean): number {
-        const newStart: number = start - (isDownMoved ? 1 : TABLE_GLOBAL_OPTIONS.MIN_BUFFER);
+    protected recalculateStartIndex(start: number): number {
+        const newStart: number = start - TABLE_GLOBAL_OPTIONS.MIN_BUFFER;
         return newStart >= 0 ? newStart : 0;
     }
 
@@ -469,7 +470,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             this.timeoutScrolledId = window.setTimeout((): void => {
                 this.viewPortInfo.isScrolling = false;
                 detectChanges(this.cd);
-            }, MACRO_TIME);
+            }, TIME_RELOAD);
         });
     }
 

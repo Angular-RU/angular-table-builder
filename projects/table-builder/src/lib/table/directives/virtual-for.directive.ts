@@ -3,16 +3,13 @@ import { Directive, EmbeddedViewRef, Input, OnDestroy, TemplateRef, ViewContaine
 import { InternalVirtualRef, TableRow, VirtualContext, VirtualIndex } from '../interfaces/table-builder.external';
 import { detectChanges } from '../operators/detect-changes';
 
-@Directive({
-    selector: '[virtualFor][virtualForOf]'
-})
+@Directive({ selector: '[virtualFor][virtualForOf]' })
 export class VirtualForDirective implements OnDestroy {
     @Input() public virtualForDiffIndexes: number[] = [];
-    @Input() public virtualForBufferOffset: number | null = null;
     private cache: Map<number, InternalVirtualRef> = new Map();
     private _source: TableRow[] = [];
     private _indexes: VirtualIndex[] = [];
-    private createFrameId: number;
+    private readonly createFrameId: number;
     private removeFrameId: number;
     private dirty: boolean = false;
 
@@ -48,13 +45,7 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     private createNewNodes(indexes: VirtualIndex[]): void {
-        indexes.forEach((index: VirtualIndex): void => {
-            if (this.virtualBufferIsOverloadOrNull) {
-                this.createEmbeddedViewByIndex(index);
-            } else {
-                this.createFrameId = window.requestAnimationFrame((): void => this.createEmbeddedViewByIndex(index));
-            }
-        });
+        (indexes || []).forEach((index: VirtualIndex): void => this.createEmbeddedViewByIndex(index));
     }
 
     private createEmbeddedView(row: TableRow, index: VirtualIndex): void {
@@ -91,16 +82,8 @@ export class VirtualForDirective implements OnDestroy {
         }
 
         this.virtualForDiffIndexes.forEach((index: number): void => {
-            if (this.virtualBufferIsOverloadOrNull) {
-                this.removeEmbeddedViewByIndex(index);
-            } else {
-                this.removeFrameId = window.requestAnimationFrame((): void => this.removeEmbeddedViewByIndex(index));
-            }
+            this.removeFrameId = window.requestAnimationFrame((): void => this.removeEmbeddedViewByIndex(index));
         });
-    }
-
-    private get virtualBufferIsOverloadOrNull(): boolean {
-        return this.virtualForBufferOffset < 0 || !Number.isInteger(this.virtualForBufferOffset);
     }
 
     private removeEmbeddedViewByIndex(index: number): void {

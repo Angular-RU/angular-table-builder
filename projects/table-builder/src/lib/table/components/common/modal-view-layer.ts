@@ -81,10 +81,9 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     public updateView(): void {
         detectChanges(this.cd);
 
-        this.ngZone.run((): void => {
+        this.ngZone.runOutsideAngular((): void => {
             window.requestAnimationFrame((): void => {
                 detectChanges(this.cd);
-                this.app.tick();
                 this.refresh();
             });
         });
