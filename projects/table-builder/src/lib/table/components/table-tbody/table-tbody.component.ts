@@ -18,7 +18,8 @@ import {
     TableClickEventEmitter,
     TableEvent,
     TableRow,
-    ViewPortInfo
+    ViewPortInfo,
+    VirtualIndex
 } from '../../interfaces/table-builder.external';
 import { KeyMap, RecalculatedStatus, TableBrowserEvent } from '../../interfaces/table-builder.internal';
 import { getDeepValue } from '../../operators/deep-value';
@@ -45,6 +46,7 @@ export class TableTbodyComponent {
     @Input() public recalculated: RecalculatedStatus;
     @Input('head-height') public headLineHeight: number;
     @Input('viewport-info') public viewportInfo: ViewPortInfo;
+    @Input('virtual-indexes') public virtualIndexes: VirtualIndex[];
     @Input('enable-selection') public enableSelection: boolean;
     @Input('enable-filtering') public enableFiltering: boolean;
     @Input('table-viewport') public tableViewport: HTMLElement;
@@ -71,13 +73,16 @@ export class TableTbodyComponent {
 
     public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
         if (this.contextMenuTemplate) {
-            const selectOnlyUnSelectedRow: boolean = this.enableSelection && !this.checkSelectedItem(row);
+            this.ngZone.run((): void => {
+                const selectOnlyUnSelectedRow: boolean = this.enableSelection && !this.checkSelectedItem(row);
 
-            if (selectOnlyUnSelectedRow) {
-                this.selection.selectRow(row, event, this.source);
-            }
+                if (selectOnlyUnSelectedRow) {
+                    this.selection.selectRow(row, event, this.source);
+                }
 
-            this.contextMenu.openContextMenu(event, key, row);
+                this.contextMenu.openContextMenu(event, key, row);
+                this.changed.emit();
+            });
         }
     }
 

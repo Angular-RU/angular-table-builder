@@ -106,7 +106,6 @@ export interface CalculateRange {
     end: number;
     bufferOffset: number;
     force: boolean;
-    isDownMoved: boolean;
 }
 
 export type ProduceDisableFn = ((item: TableRow) => boolean) | null;

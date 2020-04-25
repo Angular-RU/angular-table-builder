@@ -66,18 +66,15 @@
 .cdk-drag-preview .scrollable-viewport-content {
     top: 0 !important;
     backface-visibility: hidden;
-    will-change: transform;
 }
 
 .scrollable-viewport-content {
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
-    will-change: transform;
     position: absolute;
     overflow: hidden;
     width: 100%;
     left: 0;
-    zoom: 1;
     top: 0;
 }
 

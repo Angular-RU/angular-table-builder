@@ -60,7 +60,6 @@
 
         &--body {
             position: absolute;
-            will-change: transform;
         }
 
         &--custom-cell:not(&--is-model-cell) {
@@ -83,7 +82,6 @@
             }
 
             .table-grid__cell--inner-content {
-                will-change: opacity;
                 overflow: hidden;
             }
         }

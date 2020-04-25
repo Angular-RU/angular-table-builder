@@ -39,10 +39,6 @@
         }
     }
 
-    &__column--with-footer-content table-tbody .table-grid__cell:last-child {
-        border-bottom: none;
-    }
-
     &__table-content-place {
         color: #000;
         border-bottom: 1px solid $borderColor;
@@ -77,7 +73,6 @@
 }
 
 .table-grid__cell--inner-content {
-    will-change: opacity;
 }
 
 .table-grid__scroll-offset {
