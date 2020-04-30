@@ -549,7 +549,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     private viewForceRefresh(): void {
-        this.ngZone.run((): void => {
+        this.ngZone.runOutsideAngular((): void => {
             window.clearTimeout(this.timeoutCheckedTaskId);
             this.timeoutCheckedTaskId = window.setTimeout((): void => {
                 this.forcedRefresh = true;
@@ -625,7 +625,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         this.rendering = false;
         this.calculateViewport(true);
         this.recheckViewportChecked();
-        this.ngZone.run((): void => {
+        this.ngZone.runOutsideAngular((): void => {
             window.setTimeout((): void => {
                 this.isRendered = true;
                 detectChanges(this.cd);
