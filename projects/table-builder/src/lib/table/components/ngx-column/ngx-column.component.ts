@@ -19,7 +19,7 @@ export class NgxColumnComponent extends ColumnOptions {
     @Input('custom-key') public customKey: boolean = false;
     @Input('sticky-end') public stickyRight: boolean = false;
     @Input('vertical-line') public verticalLine: boolean = false;
-    @Input('overflow-tooltip') public overflowTooltip: boolean = true;
+    @Input('overflow-tooltip') public overflowTooltip: boolean | undefined = undefined;
     @Input('important-template') public importantTemplate: boolean = false;
     @ContentChild(TemplateHeadThDirective, { static: false }) public th: TemplateHeadThDirective;
     @ContentChild(TemplateBodyTdDirective, { static: false }) public td: TemplateBodyTdDirective;

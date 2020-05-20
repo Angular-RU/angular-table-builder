@@ -544,7 +544,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private listenSelectionChanges(): void {
         if (this.isEnableSelection) {
-            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe((): void => detectChanges(this.cd));
+            this.selection.onChanges.pipe(takeUntil(this.destroy$)).subscribe((): void => {
+                detectChanges(this.cd);
+                this.ngZone.runOutsideAngular((): void => {
+                    window.requestAnimationFrame((): void => this.app.tick());
+                });
+            });
         }
     }
 

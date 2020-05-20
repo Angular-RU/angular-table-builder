@@ -124,6 +124,7 @@ export class TemplateParserService {
         const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
         const stickyLeft: boolean = getValidHtmlBooleanAttribute(column.stickyLeft);
         const stickyRight: boolean = getValidHtmlBooleanAttribute(column.stickyRight);
+        const isCustomKey: boolean = getValidHtmlBooleanAttribute(column.customKey);
         const canBeAddDraggable: boolean = !(stickyLeft || stickyRight);
         const isModel: boolean = this.keyMap[key];
 
@@ -136,7 +137,7 @@ export class TemplateParserService {
             td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
             stickyLeft: getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: getValidHtmlBooleanAttribute(column.stickyRight),
-            customColumn: getValidHtmlBooleanAttribute(column.customKey),
+            customColumn: isCustomKey,
             width: getValidPredicate(column.width, this.columnOptions.width),
             cssClass: getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
             cssStyle: getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
@@ -154,7 +155,10 @@ export class TemplateParserService {
                 ? getValidHtmlBooleanAttribute(getValidPredicate(column.isDraggable, this.columnOptions.isDraggable))
                 : false,
             overflowTooltip: getValidHtmlBooleanAttribute(
-                getValidPredicate(this.columnOptions.overflowTooltip, column.overflowTooltip)
+                getValidPredicate(
+                    this.columnOptions.overflowTooltip,
+                    typeof column.overflowTooltip === 'boolean' ? column.overflowTooltip : !isCustomKey
+                )
             ),
             th: {
                 ...thOptions,

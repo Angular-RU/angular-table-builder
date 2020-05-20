@@ -22,8 +22,8 @@
     }
 
     .table-grid {
-        box-shadow: 0 0 10px -2px #e0e0e0;
         border: 1px solid #e0e0e0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0);
     }
 
     &.table-grid__root--content-is-init {
@@ -33,6 +33,7 @@
     &.table-grid__root--is-rendered {
         opacity: 1;
         transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0);
     }
 }
 

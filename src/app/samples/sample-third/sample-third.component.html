@@ -8,8 +8,6 @@
 </mat-toolbar>
 
 <ngx-table-builder #table [source]="data" enable-selection [produce-disable-fn]="disableFn">
-    <ngx-options [overflow-tooltip]="false"></ngx-options>
-
     <ngx-column key="selection" sticky width="55" custom-key>
         <ng-template ngx-th>
             <mat-checkbox
