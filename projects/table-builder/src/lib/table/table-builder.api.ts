@@ -338,6 +338,8 @@ export abstract class TableBuilderApiImpl
         });
     }
 
+    public abstract setSource(source: TableRow[]): void;
+
     public abstract markDirtyCheck(): void;
 
     public abstract markForCheck(): void;

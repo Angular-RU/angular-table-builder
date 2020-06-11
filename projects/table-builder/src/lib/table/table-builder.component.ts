@@ -24,7 +24,7 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { NGX_ANIMATION } from './animations/fade.animation';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
-import { CalculateRange, ColumnsSchema } from './interfaces/table-builder.external';
+import { CalculateRange, ColumnsSchema, TableRow } from './interfaces/table-builder.external';
 import { Any, KeyMap, RecalculatedStatus, TableSimpleChanges, TemplateKeys } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
@@ -319,6 +319,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const bufferOffset: number = this.calculateBuffer(isDownMoved, start, end);
         this.calculateViewPortByRange({ start, end, bufferOffset, force });
         this.viewPortInfo.bufferOffset = bufferOffset;
+    }
+
+    public setSource(source: TableRow[]): void {
+        this.originalSource = source;
+        this.source = source;
     }
 
     protected calculateViewPortByRange({ start, end, bufferOffset, force }: CalculateRange): void {
