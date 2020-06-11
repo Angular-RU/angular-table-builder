@@ -37,7 +37,7 @@ import {
     TableRow,
     ViewPortInfo
 } from './interfaces/table-builder.external';
-import { KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
+import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { DraggableService } from './services/draggable/draggable.service';
@@ -287,7 +287,7 @@ export abstract class TableBuilderApiImpl
         event.preventDefault();
     }
 
-    public filter(): void {
+    public filter(after?: Fn): void {
         this.ngZone.runOutsideAngular((): void => {
             window.clearInterval(this.filterIdTask);
             this.filterIdTask = window.setTimeout((): void => {
@@ -295,7 +295,12 @@ export abstract class TableBuilderApiImpl
                     throw new Error('You forgot to enable filtering: \n <ngx-table-builder enable-filtering />');
                 }
 
-                this.sortAndFilter().then((): void => this.reCheckDefinitions());
+                this.sortAndFilter().then((): void => {
+                    this.reCheckDefinitions();
+                    if (after) {
+                        after();
+                    }
+                });
             }, MACRO_TIME);
         });
     }
