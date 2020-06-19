@@ -14,7 +14,7 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFiveComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public data: TableRow[] = [];
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {

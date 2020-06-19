@@ -1,5 +1,4 @@
 import {
-    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -38,32 +37,30 @@ const SELECTION_DELAY: number = 100;
 export class TableTbodyComponent {
     public selection: SelectionService;
     public contextMenu: ContextMenuService;
-    @Input() public source: TableRow[];
-    @Input() public striped: boolean;
-    @Input() public isRendered: boolean;
-    @Input('offset-top') public offsetTop: number;
-    @Input('primary-key') public primaryKey: string;
-    @Input() public recalculated: RecalculatedStatus;
-    @Input('head-height') public headLineHeight: number;
-    @Input('viewport-info') public viewportInfo: ViewPortInfo;
-    @Input('virtual-indexes') public virtualIndexes: VirtualIndex[];
-    @Input('enable-selection') public enableSelection: boolean;
-    @Input('enable-filtering') public enableFiltering: boolean;
-    @Input('table-viewport') public tableViewport: HTMLElement;
-    @Input('column-virtual-height') public columnVirtualHeight: number;
-    @Input('selection-entries') public selectionEntries: KeyMap<boolean>;
-    @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent;
+    @Input() public source: TableRow[] | null = null;
+    @Input() public striped: boolean = false;
+    @Input() public isRendered: boolean = false;
+    @Input('offset-top') public offsetTop: number | null = null;
+    @Input('primary-key') public primaryKey: string | null = null;
+    @Input() public recalculated: RecalculatedStatus | null = null;
+    @Input('head-height') public headLineHeight: number | null = null;
+    @Input('viewport-info') public viewportInfo: ViewPortInfo | null = null;
+    @Input('virtual-indexes') public virtualIndexes: VirtualIndex[] = [];
+    @Input('enable-selection') public enableSelection: boolean = false;
+    @Input('enable-filtering') public enableFiltering: boolean = false;
+    @Input('table-viewport') public tableViewport: HTMLElement | null = null;
+    @Input('column-virtual-height') public columnVirtualHeight: number | null = null;
+    @Input('selection-entries') public selectionEntries: KeyMap<boolean> = {};
+    @Input('context-menu') public contextMenuTemplate: NgxContextMenuComponent | null = null;
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
-    @Input('client-row-height') public clientRowHeight: number;
-    @Input('column-schema') public columnSchema: ColumnsSchema;
+    @Input('client-row-height') public clientRowHeight: number | null = null;
+    @Input('column-schema') public columnSchema: ColumnsSchema | null = null;
     @Output() public changed: EventEmitter<void> = new EventEmitter(true);
-    private readonly app: ApplicationRef;
     private readonly ngZone: NgZone;
 
     constructor(public cd: ChangeDetectorRef, injector: Injector) {
         this.selection = injector.get<SelectionService>(SelectionService);
         this.contextMenu = injector.get<ContextMenuService>(ContextMenuService);
-        this.app = injector.get<ApplicationRef>(ApplicationRef);
         this.ngZone = injector.get<NgZone>(NgZone);
     }
 
@@ -71,13 +68,13 @@ export class TableTbodyComponent {
         return !this.selection.selectionStart.status;
     }
 
-    public openContextMenu(event: MouseEvent, key: string, row: TableRow): void {
+    public openContextMenu(event: MouseEvent, key: string | null | undefined, row: TableRow): void {
         if (this.contextMenuTemplate) {
             this.ngZone.run((): void => {
                 const selectOnlyUnSelectedRow: boolean = this.enableSelection && !this.checkSelectedItem(row);
 
                 if (selectOnlyUnSelectedRow) {
-                    this.selection.selectRow(row, event, this.source);
+                    this.selection.selectRow(row, event, this.source ?? []);
                 }
 
                 this.contextMenu.openContextMenu(event, key, row);
@@ -88,7 +85,7 @@ export class TableTbodyComponent {
 
     // eslint-disable-next-line max-params
     public handleDblClick(row: TableRow, key: string, event: MouseEvent, emitter: TableClickEventEmitter): void {
-        window.clearInterval(this.selection.selectionTaskIdle);
+        window.clearInterval(this.selection.selectionTaskIdle!);
         this.handleEventEmitter(row, key, event, emitter);
     }
 
@@ -97,7 +94,7 @@ export class TableTbodyComponent {
         this.ngZone.run((): void => {
             if (this.enableSelection) {
                 this.selection.selectionTaskIdle = window.setTimeout((): void => {
-                    this.selection.selectRow(row, event, this.source);
+                    this.selection.selectRow(row, event, this.source ?? []);
                     this.changed.emit();
                 }, SELECTION_DELAY);
             }
@@ -112,7 +109,7 @@ export class TableTbodyComponent {
             event: $event,
             value: getDeepValue(item, key),
             preventDefault: (): void => {
-                window.clearInterval(this.selection.selectionTaskIdle);
+                window.clearInterval(this.selection.selectionTaskIdle!);
             }
         };
     }
@@ -129,6 +126,6 @@ export class TableTbodyComponent {
     }
 
     private checkSelectedItem(row: TableRow): boolean {
-        return this.selection.selectionModel.get(row[this.primaryKey]);
+        return this.selection.selectionModel.get(row[this.primaryKey!]);
     }
 }

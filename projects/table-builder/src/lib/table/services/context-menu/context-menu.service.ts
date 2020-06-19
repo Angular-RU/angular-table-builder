@@ -11,7 +11,7 @@ export class ContextMenuService {
     public state: ContextMenuState = ({} as Any) as ContextMenuState;
     public readonly events: Subject<void> = new Subject();
 
-    public openContextMenu(event: MouseEvent, key: string = null, row: TableRow = null): void {
+    public openContextMenu(event: MouseEvent, key: string | null = null, row: TableRow | null = null): void {
         this.state = new ContextMenuState({
             key,
             item: row,

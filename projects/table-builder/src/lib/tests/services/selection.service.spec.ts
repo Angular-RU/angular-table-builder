@@ -7,6 +7,7 @@ import { SelectionMap } from '../../table/services/selection/selection';
 import { SelectionService } from '../../table/services/selection/selection.service';
 
 describe('[TEST]: Selection service', () => {
+    // @ts-ignore
     let preventDefaultInvoked: number = 0;
     let listenKeydown: boolean = false;
     let listenKeyup: boolean = false;

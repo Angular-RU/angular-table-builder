@@ -42,9 +42,9 @@ declare const hljs: Any;
 })
 export class SampleFourteenComponent implements OnInit, AfterViewInit {
     @ViewChild('table', { static: false })
-    public table: TableBuilderComponent;
+    public table!: TableBuilderComponent;
 
-    public data: TableRow[];
+    public data: TableRow[] = [];
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {

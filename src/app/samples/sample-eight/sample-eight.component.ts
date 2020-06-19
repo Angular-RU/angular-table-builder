@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
@@ -76,10 +77,10 @@ function replaceAt(array: Any[], index: number, value: Any): Any[] {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
-    public data: TableRow[];
+    public data: TableRow[] = [];
     public regenerate: boolean = false;
-    private idInterval: number = null;
-    private timeout: number;
+    private idInterval: number | null = null;
+    private timeout: number | null = null;
 
     constructor(private readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {}
 
@@ -98,7 +99,7 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        window.clearInterval(this.idInterval);
+        window.clearInterval(this.idInterval!);
     }
 
     public updateRow(row: TableRow, key: string, value: Any): void {
@@ -109,8 +110,8 @@ export class SampleEightComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public asyncRow(row: TableRow, key: string, value: Any): void {
         const time: number = 500;
-        window.clearTimeout(this.timeout);
-        this.timeout = setTimeout((): void => this.updateRow(row, key, value), time);
+        window.clearTimeout(this.timeout!);
+        this.timeout = window.setTimeout((): void => this.updateRow(row, key, value), time);
     }
 
     public ngAfterViewInit(): void {

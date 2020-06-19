@@ -26,13 +26,11 @@ const FILTER_MIN_TOP_Y: number = 50;
 })
 export class NgxFilterComponent extends ModalViewLayer<FilterStateEvent> implements OnInit {
     @Input() public width: number = FILTER_WIDTH;
-    @Input() public height: number = null;
-    @Input('max-height') public maxHeight: number = null;
+    @Input() public height: number | null = null;
+    @Input('max-height') public maxHeight: number | null = null;
+    @ContentChild(NgxFilterDirective, { static: false }) public filter!: NgxFilterDirective;
     public readonly leftX: number = FILTER_MIN_LEFT_X;
     public readonly topY: number = FILTER_MIN_TOP_Y;
-
-    @ContentChild(NgxFilterDirective, { static: false })
-    public filter: NgxFilterDirective;
 
     constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
         super(cd, injector);

@@ -37,7 +37,7 @@ import {
     TableRow,
     ViewPortInfo
 } from './interfaces/table-builder.external';
-import { Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
+import { Any, Fn, KeyMap, PrimaryKey, QueryListRef, ResizeEvent } from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { DraggableService } from './services/draggable/draggable.service';
@@ -53,24 +53,25 @@ import { SCROLLBAR_WIDTH } from './symbols';
 
 const { ROW_HEIGHT, MACRO_TIME, TIME_IDLE }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
+// eslint-disable-next-line
 export abstract class TableBuilderApiImpl
     implements OnChanges, OnInit, AfterViewInit, AfterContentInit, AfterViewChecked, OnDestroy {
-    @Input() public height: number;
-    @Input() public width: string;
-    @Input() public source: TableRow[] = null;
+    @Input() public height: number | null = null;
+    @Input() public width: string | null = null;
+    @Input() public source: TableRow[] | null = null;
     @Input() public keys: string[] = [];
     @Input() public striped: boolean = true;
-    @Input() public name: string = null;
-    @Input('skip-sort') public skipSort: boolean = false;
-    @Input('sort-types') public sortTypes: KeyMap = null;
+    @Input() public name: string | null = null;
+    @Input('skip-sort') public skipSort: boolean | string = false;
+    @Input('sort-types') public sortTypes: KeyMap | null = null;
     @Input('exclude-keys') public excludeKeys: (string | RegExp)[] = [];
-    @Input('auto-width') public autoWidth: boolean = false;
+    @Input('auto-width') public autoWidth: boolean | string = false;
     @Input('auto-height') public autoHeightDetect: boolean = true;
     @Input('native-scrollbar') public nativeScrollbar: boolean = false;
     @Input('primary-key') public primaryKey: string = PrimaryKey.ID;
     @Input('vertical-border') public verticalBorder: boolean = true;
-    @Input('enable-selection') public enableSelection: boolean = false;
-    @Input('enable-filtering') public enableFiltering: boolean = false;
+    @Input('enable-selection') public enableSelection: boolean | string = false;
+    @Input('enable-filtering') public enableFiltering: boolean | string = false;
     @Input('produce-disable-fn') public produceDisableFn: ProduceDisableFn = null;
     @Input('schema-columns') public schemaColumns: SimpleSchemaColumns = [];
     @Output() public afterRendered: EventEmitter<boolean> = new EventEmitter();
@@ -78,21 +79,21 @@ export abstract class TableBuilderApiImpl
     @Output() public onChanges: EventEmitter<TableRow[] | null> = new EventEmitter();
     @Output() public sortChanges: EventEmitter<OrderedField[]> = new EventEmitter();
     @ContentChild(NgxOptionsComponent, { static: false })
-    public columnOptions: NgxOptionsComponent = null;
+    public columnOptions: NgxOptionsComponent | null = null;
     @ContentChildren(NgxColumnComponent)
-    public columnTemplates: QueryListRef<NgxColumnComponent> = null;
+    public columnTemplates: QueryListRef<NgxColumnComponent> | null = null;
     @ContentChild(NgxContextMenuComponent, { static: false })
-    public contextMenuTemplate: NgxContextMenuComponent = null;
+    public contextMenuTemplate: NgxContextMenuComponent | null = null;
     @ContentChild(NgxHeaderComponent, { static: false })
-    public headerTemplate: NgxHeaderComponent = null;
+    public headerTemplate: NgxHeaderComponent | null = null;
     @ContentChild(NgxFooterComponent, { static: false })
-    public footerTemplate: NgxFooterComponent = null;
+    public footerTemplate: NgxFooterComponent | null = null;
     @ContentChild(NgxFilterComponent, { static: false })
-    public filterTemplate: NgxFilterComponent = null;
+    public filterTemplate: NgxFilterComponent | null = null;
     @ViewChild('tableViewport', { static: true })
-    public scrollContainer: ElementRef<HTMLElement>;
+    public scrollContainer!: ElementRef<HTMLElement>;
     @ViewChildren('column', { read: false })
-    public columnList: QueryList<ElementRef<HTMLDivElement>>;
+    public columnList!: QueryList<ElementRef<HTMLDivElement>>;
     public scrollbarWidth: number = SCROLLBAR_WIDTH;
     public columnListWidth: number = 0;
     public viewPortInfo: ViewPortInfo = {};
@@ -130,17 +131,17 @@ export abstract class TableBuilderApiImpl
     public abstract readonly contextMenu: ContextMenuService;
     public abstract readonly filterable: FilterableService;
     public abstract readonly ngZone: NgZone;
-    protected originalSource: TableRow[];
-    protected renderedCountKeys: number;
+    protected originalSource: TableRow[] | null = null;
+    protected renderedCountKeys: number | null = null;
     protected isDragMoving: boolean = false;
     protected abstract readonly app: ApplicationRef;
     protected abstract readonly viewChanges: NgxTableViewChangesService;
     protected abstract readonly draggable: DraggableService;
-    private filterIdTask: number = null;
-    private idleDetectChangesId: number;
-    private columnFrameId: number;
-    private _headHeight: number;
-    private _rowHeight: number = null;
+    private filterIdTask: number | null = null;
+    private idleDetectChangesId: number | null = null;
+    private columnFrameId: number | null = null;
+    private _headHeight: number | null = null;
+    private _rowHeight: number | null = null;
 
     @Input('head-height')
     public set headHeight(val: string | number) {
@@ -163,7 +164,7 @@ export abstract class TableBuilderApiImpl
     public get visibleColumns(): string[] {
         return this.columnSchema
             .filter((column: ColumnsSchema): boolean => column.isVisible)
-            .map((column: ColumnsSchema): string => column.key);
+            .map((column: ColumnsSchema): string => column.key!);
     }
 
     /**
@@ -171,7 +172,7 @@ export abstract class TableBuilderApiImpl
      * returned ordered displayed columns [ 'id', 'value', 'id', 'position', 'value' ]
      */
     public get positionColumns(): string[] {
-        return this.columnSchema.map((column: ColumnsSchema): string => column.key);
+        return this.columnSchema.map((column: ColumnsSchema): string => column.key!);
     }
 
     public get columnSchema(): ColumnsSchema[] {
@@ -186,7 +187,7 @@ export abstract class TableBuilderApiImpl
      */
     public get selectedItems(): TableRow[] {
         return this.sourceRef.filter(
-            (item: TableRow[]): TableRow => this.selectionModel.entries[item[this.primaryKey]]
+            (item: TableRow[]): TableRow => this.selectionModel.entries[(item as Any)[this.primaryKey]]
         );
     }
 
@@ -289,7 +290,7 @@ export abstract class TableBuilderApiImpl
 
     public filter(after?: Fn): void {
         this.ngZone.runOutsideAngular((): void => {
-            window.clearInterval(this.filterIdTask);
+            window.clearInterval(this.filterIdTask!);
             this.filterIdTask = window.setTimeout((): void => {
                 if (!this.isEnableFiltering) {
                     throw new Error('You forgot to enable filtering: \n <ngx-table-builder enable-filtering />');
@@ -323,17 +324,20 @@ export abstract class TableBuilderApiImpl
         this.changeSchema();
     }
 
-    public changeSchema(defaultColumns: SimpleSchemaColumns = null): void {
-        const renderedColumns: SimpleSchemaColumns = this.templateParser.schema.exportColumns();
-        const columns: SimpleSchemaColumns = defaultColumns || renderedColumns;
-        this.viewChanges.update({ name: this.name, columns });
-        this.schemaChanges.emit(columns);
-        this.idleDetectChanges();
+    public changeSchema(defaultColumns: SimpleSchemaColumns | null = null): void {
+        const renderedColumns: SimpleSchemaColumns | undefined = this.templateParser.schema?.exportColumns();
+        const columns: SimpleSchemaColumns | undefined = defaultColumns || renderedColumns;
+
+        if (columns) {
+            this.viewChanges.update({ name: this.name, columns });
+            this.schemaChanges.emit(columns);
+            this.idleDetectChanges();
+        }
     }
 
     public idleDetectChanges(): void {
         this.ngZone.runOutsideAngular((): void => {
-            window.cancelAnimationFrame(this.idleDetectChangesId);
+            window.cancelAnimationFrame(this.idleDetectChangesId!);
             this.idleDetectChangesId = window.requestAnimationFrame((): void => detectChanges(this.cd));
         });
     }
@@ -367,7 +371,7 @@ export abstract class TableBuilderApiImpl
     }
 
     protected forceCalculateViewport(): void {
-        this.updateViewportInfo(this.viewPortInfo.startIndex, this.viewPortInfo.endIndex);
+        this.updateViewportInfo(this.viewPortInfo.startIndex!, this.viewPortInfo.endIndex!);
     }
 
     /**
@@ -402,7 +406,7 @@ export abstract class TableBuilderApiImpl
         }
 
         this.ngZone.runOutsideAngular((): void => {
-            clearInterval(this.columnFrameId);
+            clearInterval(this.columnFrameId!);
             this.columnFrameId = window.setTimeout((): void => {
                 let width: number = 0;
                 this.columnList.forEach((element: ElementRef<HTMLDivElement>): void => {
@@ -418,11 +422,11 @@ export abstract class TableBuilderApiImpl
 
     private async recalculationSource(): Promise<void> {
         if (this.filterValueExist) {
-            const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource);
+            const filter: FilterWorkerEvent = await this.filterable.filter(this.originalSource ?? []);
             this.source = await this.sortable.sort(filter.source);
             filter.fireSelection();
         } else if (this.notEmpty) {
-            this.source = await this.sortable.sort(this.originalSource);
+            this.source = await this.sortable.sort(this.originalSource ?? []);
         }
 
         if (this.notChanges) {

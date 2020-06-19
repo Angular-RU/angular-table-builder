@@ -5,7 +5,7 @@ import { UtilsService } from '../../table/services/utils/utils.service';
 
 describe('UtilsService', () => {
     let utils: UtilsService;
-    beforeEach(() => (utils = new UtilsService(null)));
+    beforeEach(() => (utils = new UtilsService()));
 
     it('should be created', () => {
         expect(utils).toBeTruthy();
@@ -41,6 +41,7 @@ describe('UtilsService', () => {
             constructor(public name: string, public city: string) {}
         }
 
+        // @ts-ignore
         Person.prototype['age'] = 25;
         const willem: Person = new Person('Willem', 'Groningen');
 

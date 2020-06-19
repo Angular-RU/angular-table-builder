@@ -25,7 +25,14 @@ import { NGX_ANIMATION } from './animations/fade.animation';
 import { NgxColumnComponent } from './components/ngx-column/ngx-column.component';
 import { TABLE_GLOBAL_OPTIONS } from './config/table-global-options';
 import { CalculateRange, ColumnsSchema, TableRow } from './interfaces/table-builder.external';
-import { Any, KeyMap, RecalculatedStatus, TableSimpleChanges, TemplateKeys } from './interfaces/table-builder.internal';
+import {
+    Any,
+    DeepPartial,
+    KeyMap,
+    RecalculatedStatus,
+    TableSimpleChanges,
+    TemplateKeys
+} from './interfaces/table-builder.internal';
 import { detectChanges } from './operators/detect-changes';
 import { ContextMenuService } from './services/context-menu/context-menu.service';
 import { DraggableService } from './services/draggable/draggable.service';
@@ -67,10 +74,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     public contentCheck: boolean = false;
     public recalculated: RecalculatedStatus = { recalculateHeight: false };
     @ViewChild('header', { static: false })
-    public headerRef: ElementRef<HTMLDivElement>;
+    public headerRef!: ElementRef<HTMLDivElement>;
     @ViewChild('footer', { static: false })
-    public footerRef: ElementRef<HTMLDivElement>;
-    public sourceIsNull: boolean;
+    public footerRef!: ElementRef<HTMLDivElement>;
+    public sourceIsNull: boolean = false;
     public afterViewInitDone: boolean = false;
     public readonly selection: SelectionService;
     public readonly templateParser: TemplateParserService;
@@ -85,10 +92,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     protected readonly viewChanges: NgxTableViewChangesService;
     private forcedRefresh: boolean = false;
     private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-    private timeoutCheckedTaskId: number = null;
-    private timeoutScrolledId: number;
-    private timeoutViewCheckedId: number;
-    private frameCalculateViewportId: number;
+    private timeoutCheckedTaskId: number | null = null;
+    private timeoutScrolledId: number | null = null;
+    private timeoutViewCheckedId: number | null = null;
+    private frameCalculateViewportId: number | null = null;
 
     constructor(public readonly cd: ChangeDetectorRef, injector: Injector) {
         super();
@@ -145,6 +152,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public checkSourceIsNull(): boolean {
+        // eslint-disable-next-line
         return !('length' in (this.source || {}));
     }
 
@@ -180,7 +188,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public markVisibleColumn(column: HTMLDivElement, visible: boolean): void {
-        column['visible'] = visible;
+        (column as Any)['visible'] = visible;
         this.idleDetectChanges();
     }
 
@@ -222,10 +230,10 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     public ngOnDestroy(): void {
-        window.clearTimeout(this.timeoutScrolledId);
-        window.clearTimeout(this.timeoutViewCheckedId);
-        window.clearTimeout(this.timeoutCheckedTaskId);
-        window.cancelAnimationFrame(this.frameCalculateViewportId);
+        window.clearTimeout(this.timeoutScrolledId!);
+        window.clearTimeout(this.timeoutViewCheckedId!);
+        window.clearTimeout(this.timeoutCheckedTaskId!);
+        window.cancelAnimationFrame(this.frameCalculateViewportId!);
         this.templateParser.schema = null;
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
@@ -292,7 +300,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     public resetSchema(): void {
         this.columnListWidth = 0;
-        this.schemaColumns = null;
+        this.schemaColumns = [];
         detectChanges(this.cd);
 
         this.renderTable();
@@ -362,7 +370,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
         const lastVisibleIndex: number = this.getOffsetVisibleEndIndex();
         return isDownMoved
             ? (this.viewPortInfo.endIndex || end) - lastVisibleIndex
-            : start - this.viewPortInfo.startIndex;
+            : start - this.viewPortInfo.startIndex!;
     }
 
     protected calculateEndIndex(start: number): number {
@@ -375,7 +383,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     }
 
     protected isDownMoved(): boolean {
-        return this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop;
+        return this.scrollOffsetTop > this.viewPortInfo.prevScrollOffsetTop!;
     }
 
     protected updateViewportInfo(start: number, end: number): void {
@@ -413,7 +421,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
     private createDiffIndexes(): void {
         this.viewPortInfo.diffIndexes = this.viewPortInfo.oldIndexes
             ? this.viewPortInfo.oldIndexes.filter(
-                  (index: number): boolean => !this.viewPortInfo.indexes.includes(index)
+                  (index: number): boolean => !this.viewPortInfo.indexes?.includes(index)
               )
             : [];
 
@@ -469,9 +477,9 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private cancelScrolling(): void {
         this.viewPortInfo.isScrolling = true;
-        window.cancelAnimationFrame(this.frameCalculateViewportId);
+        window.cancelAnimationFrame(this.frameCalculateViewportId!);
         this.ngZone.runOutsideAngular((): void => {
-            window.clearTimeout(this.timeoutScrolledId);
+            window.clearTimeout(this.timeoutScrolledId!);
             this.timeoutScrolledId = window.setTimeout((): void => {
                 this.viewPortInfo.isScrolling = false;
                 detectChanges(this.cd);
@@ -560,7 +568,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
 
     private viewForceRefresh(): void {
         this.ngZone.runOutsideAngular((): void => {
-            window.clearTimeout(this.timeoutCheckedTaskId);
+            window.clearTimeout(this.timeoutCheckedTaskId!);
             this.timeoutCheckedTaskId = window.setTimeout((): void => {
                 this.forcedRefresh = true;
                 this.markTemplateContentCheck();
@@ -623,7 +631,7 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     private processedColumnList(schema: ColumnsSchema, key: string): void {
         if (this.templateParser.schema || schema) {
-            this.templateParser.schema.columns.push(this.templateParser.compiledTemplates[key]);
+            this.templateParser.schema?.columns.push(this.templateParser.compiledTemplates[key]);
         }
     }
 
@@ -651,11 +659,11 @@ export class TableBuilderComponent extends TableBuilderApiImpl
      */
     private generateDisplayedColumns(): string[] {
         let generatedList: string[] = [];
-        this.templateParser.initialSchema(this.columnOptions);
+        this.templateParser.initialSchema(this.columnOptions!);
         const { simpleRenderedKeys, allRenderedKeys }: TemplateKeys = this.parseTemplateKeys();
 
         if (this.schemaColumns && this.schemaColumns.length) {
-            generatedList = this.schemaColumns.map((column: ColumnsSchema): string => column.key);
+            generatedList = this.schemaColumns.map((column: DeepPartial<ColumnsSchema>): string => column.key!);
         } else if (this.keys.length) {
             generatedList = this.customModelColumnsKeys;
         } else if (simpleRenderedKeys.size) {
@@ -679,12 +687,12 @@ export class TableBuilderComponent extends TableBuilderApiImpl
             ? this.generateColumnsKeyMap(this.customModelColumnsKeys)
             : this.generateColumnsKeyMap(this.modelColumnKeys);
 
-        this.templateParser.parse(this.columnTemplates);
+        this.templateParser.parse(this.columnTemplates!);
 
         return {
-            allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys),
-            overridingRenderedKeys: this.templateParser.overrideTemplateKeys,
-            simpleRenderedKeys: this.templateParser.templateKeys
+            allRenderedKeys: Array.from(this.templateParser.fullTemplateKeys!),
+            overridingRenderedKeys: this.templateParser.overrideTemplateKeys!,
+            simpleRenderedKeys: this.templateParser.templateKeys!
         };
     }
 }

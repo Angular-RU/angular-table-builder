@@ -22,40 +22,40 @@ const TIME_IDLE: number = 1500;
     encapsulation: ViewEncapsulation.None
 })
 export class TableCellComponent implements OnDestroy {
-    @Input() public item: TableRow;
-    @Input() public index: number;
-    @Input() public parent: HTMLDivElement;
-    @Input() public isRendered: boolean;
-    @Input('is-filterable') public isFilterable: boolean;
-    @Input('column-schema') public columnSchema: ColumnsSchema;
-    @Input('enable-filtering') public enableFiltering: boolean;
-    @Input('viewport-info') public viewportInfo: ViewPortInfo;
+    @Input() public item: TableRow | null = null;
+    @Input() public index: number | null = null;
+    @Input() public parent: HTMLDivElement | null = null;
+    @Input() public isRendered: boolean = false;
+    @Input('is-filterable') public isFilterable: boolean = false;
+    @Input('column-schema') public columnSchema: ColumnsSchema | null = null;
+    @Input('enable-filtering') public enableFiltering: boolean = false;
+    @Input('viewport-info') public viewportInfo: ViewPortInfo | null = null;
     public contextType: typeof ImplicitContext = ImplicitContext;
     private readonly closeButtonSelector: string = 'table-close__button';
     private readonly overflowSelector: string = 'table-grid__cell-overflow-content';
     private readonly timeIdle: number = TIME_IDLE;
-    private nodeSubscription: Subscription;
-    private closeElemSub: Subscription;
-    private timeoutShowedFrameId: number = null;
-    private timeoutOverflowId: number = null;
+    private nodeSubscription: Subscription | null = null;
+    private closeElemSub: Subscription | null = null;
+    private timeoutShowedFrameId: number | null = null;
+    private timeoutOverflowId: number | null = null;
 
     constructor(public readonly cd: ChangeDetectorRef, private readonly ngZone: NgZone) {}
 
     private get overflowContentElem(): HTMLDivElement {
-        return document.querySelector(`.${this.overflowSelector}`);
+        return document.querySelector(`.${this.overflowSelector}`) as HTMLDivElement;
     }
 
     private get overflowCloseElem(): HTMLDivElement {
-        return document.querySelector(`.${this.closeButtonSelector}`);
+        return document.querySelector(`.${this.closeButtonSelector}`) as HTMLDivElement;
     }
 
     private get disableTooltip(): boolean {
-        return this.viewportInfo.isScrolling || !this.columnSchema.overflowTooltip;
+        return this.viewportInfo?.isScrolling || !this.columnSchema?.overflowTooltip;
     }
 
     public ngOnDestroy(): void {
-        window.clearTimeout(this.timeoutOverflowId);
-        window.clearTimeout(this.timeoutShowedFrameId);
+        window.clearTimeout(this.timeoutOverflowId!);
+        window.clearTimeout(this.timeoutShowedFrameId!);
     }
 
     public mouseEnterCell(element: HTMLDivElement, event: MouseEvent): void {
@@ -71,23 +71,23 @@ export class TableCellComponent implements OnDestroy {
             return;
         }
 
-        window.clearInterval(this.timeoutShowedFrameId);
+        window.clearInterval(this.timeoutShowedFrameId!);
     }
 
     private isEllipsisActive(element: HTMLElement): boolean {
         return (
-            element.offsetWidth > this.parent.offsetWidth ||
-            element.offsetHeight > this.parent.offsetHeight ||
+            element.offsetWidth > this.parent?.offsetWidth! ||
+            element.offsetHeight > this.parent?.offsetHeight! ||
             element.scrollWidth > element.offsetWidth ||
             element.scrollHeight > element.offsetHeight
         );
     }
 
     private detectCheckOverflow(element: HTMLDivElement, event: MouseEvent): void {
-        window.clearInterval(this.timeoutShowedFrameId);
+        window.clearInterval(this.timeoutShowedFrameId!);
         this.ngZone.runOutsideAngular((): void => {
             this.timeoutShowedFrameId = window.setTimeout((): void => {
-                const canEnableTooltip: boolean = this.viewportInfo.isScrolling
+                const canEnableTooltip: boolean = this.viewportInfo?.isScrolling
                     ? false
                     : this.isEllipsisActive(element);
 
@@ -125,7 +125,7 @@ export class TableCellComponent implements OnDestroy {
 
         this.ngZone.runOutsideAngular((): void => {
             this.timeoutOverflowId = window.setTimeout((): void => {
-                if (this.viewportInfo.isScrolling) {
+                if (this.viewportInfo?.isScrolling) {
                     this.removeElement();
                 } else {
                     this.overflowContentElem.classList.add('visible');
@@ -140,7 +140,7 @@ export class TableCellComponent implements OnDestroy {
             this.ngZone.runOutsideAngular((): void => {
                 window.setTimeout((): void => {
                     if (this.overflowContentElem) {
-                        this.overflowContentElem.parentNode.removeChild(this.overflowContentElem);
+                        this.overflowContentElem.parentNode?.removeChild(this.overflowContentElem);
                     }
 
                     this.nodeSubscription && this.nodeSubscription.unsubscribe();

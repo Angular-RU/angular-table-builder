@@ -9,27 +9,27 @@ export class VirtualForDirective implements OnDestroy {
     private cache: Map<number, InternalVirtualRef> = new Map();
     private _source: TableRow[] = [];
     private _indexes: VirtualIndex[] = [];
-    private readonly createFrameId: number;
-    private removeFrameId: number;
+    private readonly createFrameId: number | null = null;
+    private removeFrameId: number | null = null;
     private dirty: boolean = false;
 
     constructor(private readonly view: ViewContainerRef, private readonly template: TemplateRef<VirtualContext>) {}
 
     @Input()
-    public set virtualForOriginSource(origin: TableRow[]) {
+    public set virtualForOriginSource(origin: TableRow[] | null) {
         if (this._source !== origin) {
-            this._source = origin;
+            this._source = origin ?? [];
             this.dirty = true;
         }
     }
 
     @Input()
-    public set virtualForOf(indexes: VirtualIndex[]) {
+    public set virtualForOf(indexes: VirtualIndex[] | null) {
         if (!this._source || this._indexes === indexes) {
             return;
         }
 
-        this._indexes = indexes;
+        this._indexes = indexes ?? [];
         this.removeOldNodes();
         this.createNewNodes(this._indexes);
     }
@@ -39,8 +39,8 @@ export class VirtualForDirective implements OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        window.cancelAnimationFrame(this.createFrameId);
-        window.cancelAnimationFrame(this.removeFrameId);
+        window.cancelAnimationFrame(this.createFrameId!);
+        window.cancelAnimationFrame(this.removeFrameId!);
         this.view.clear();
     }
 
@@ -61,7 +61,7 @@ export class VirtualForDirective implements OnDestroy {
 
     private createEmbeddedViewByIndex(index: VirtualIndex): void {
         const row: TableRow = this.sourceRef[index.position];
-        const virtualRef: InternalVirtualRef = this.cache.get(index.position);
+        const virtualRef: InternalVirtualRef | undefined = this.cache.get(index.position);
 
         if (virtualRef) {
             const [oldRow, viewRef]: InternalVirtualRef = virtualRef;

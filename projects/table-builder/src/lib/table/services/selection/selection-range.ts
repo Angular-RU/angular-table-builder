@@ -1,8 +1,8 @@
 import { Any } from '../../interfaces/table-builder.internal';
 
 export class SelectionRange {
-    public start: number = null;
-    public end: number = null;
+    public start: number | null = null;
+    public end: number | null = null;
 
     public put(index: number): void {
         if (this.start === null) {
@@ -18,7 +18,9 @@ export class SelectionRange {
     }
 
     public sortKeys(): SelectionRange {
-        const [start, end]: number[] = [this.start, this.end].sort((a: number, b: number): Any => a - b);
+        const [start, end]: (number | null)[] = [this.start, this.end].sort(
+            (a: number | null, b: number | null): Any => (a ?? 0) - (b ?? 0)
+        );
         this.start = start;
         this.end = end;
 

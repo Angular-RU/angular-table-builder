@@ -59,7 +59,7 @@ export class SampleSecondComponent implements AfterViewInit {
         { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' }
     ];
 
-    constructor(private readonly cd: ChangeDetectorRef) {}
+    constructor(public readonly cd: ChangeDetectorRef) {}
 
     // eslint-disable-next-line max-lines-per-function
     public ngAfterViewInit(): void {

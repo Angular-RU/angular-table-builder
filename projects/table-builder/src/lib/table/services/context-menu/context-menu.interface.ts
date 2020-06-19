@@ -3,10 +3,10 @@ import { Any, MousePosition } from '../../interfaces/table-builder.internal';
 export class ContextMenuState {
     public opened: boolean = false;
     public position: MousePosition = { left: null, top: null };
-    public key: string = null;
-    public item: Any = null;
-    public value: Any = null;
-    public textContent: string = null;
+    public key: string | null = null;
+    public item: Any | null = null;
+    public value: Any | null = null;
+    public textContent: string | null = null;
 
     constructor(state: ContextMenuState | null = null) {
         if (state) {

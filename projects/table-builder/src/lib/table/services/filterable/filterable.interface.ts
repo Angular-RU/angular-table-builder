@@ -2,8 +2,8 @@ import { TableRow } from '../../interfaces/table-builder.external';
 import { Fn, KeyMap, MousePosition } from '../../interfaces/table-builder.internal';
 
 export interface FilterGlobalOpts {
-    value: string;
-    type: TableFilterType;
+    value: string | null;
+    type: TableFilterType | null;
 }
 
 export interface FilterColumnsOpts {
@@ -12,6 +12,7 @@ export interface FilterColumnsOpts {
     types: KeyMap<TableFilterType>;
 }
 
+// eslint-disable-next-line
 export enum TableFilterType {
     START_WITH = 'START_WITH',
     END_WITH = 'END_WITH',
@@ -24,18 +25,18 @@ export enum TableFilterType {
 export interface FilterableMessage {
     source: TableRow[];
     types: typeof TableFilterType;
-    global: FilterGlobalOpts;
-    columns: FilterColumnsOpts;
+    global: FilterGlobalOpts | null;
+    columns: FilterColumnsOpts | null;
 }
 
 export interface FilterEvent {
-    value: string;
-    type: TableFilterType;
+    value: string | null;
+    type: TableFilterType | null;
 }
 
 export class FilterStateEvent {
-    public key: string = null;
-    public opened: boolean = null;
+    public key: string | null = null;
+    public opened: boolean | null = null;
     public position: MousePosition = { left: null, top: null };
 }
 

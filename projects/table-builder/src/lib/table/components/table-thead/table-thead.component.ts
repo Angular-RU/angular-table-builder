@@ -15,15 +15,15 @@ import { OVERLOAD_WIDTH_TABLE_HEAD_CELL } from '../../symbols';
     animations: [NGX_ANIMATION]
 })
 export class TableTheadComponent {
-    @Input('header-top') public headerTop: number;
-    @Input('column-width') public columnWidth: number;
-    @Input('head-height') public headHeight: string | number;
-    @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType>;
-    @Input('sortable-position') public positionMap: KeyMap<number>;
-    @Input('sortable-count') public sortableCount: number;
-    @Input('filterable-definition') public filterableDefinition: KeyMap<string>;
-    @Input('client-row-height') public clientRowHeight: number;
-    @Input('column-schema') public columnSchema: ColumnsSchema;
+    @Input('header-top') public headerTop: number | null = null;
+    @Input('column-width') public columnWidth: number = 0;
+    @Input('head-height') public headHeight: string | number | null = null;
+    @Input('sortable-definition') public sortableDefinition: KeyMap<SortOrderType> = {};
+    @Input('sortable-position') public positionMap: KeyMap<number> = {};
+    @Input('sortable-count') public sortableCount: number = 0;
+    @Input('filterable-definition') public filterableDefinition: KeyMap<string> = {};
+    @Input('client-row-height') public clientRowHeight: number | null = null;
+    @Input('column-schema') public columnSchema: ColumnsSchema | null = null;
     @Output() public resize: EventEmitter<ResizeEvent> = new EventEmitter();
     @Output() public sortByKey: EventEmitter<string> = new EventEmitter();
     public orderType: typeof SortOrderType = SortOrderType;

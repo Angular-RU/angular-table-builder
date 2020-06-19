@@ -13,7 +13,7 @@ export class SelectionService implements OnDestroy {
     public range: SelectionRange = new SelectionRange();
     public selectionStart: SelectionStatus = { status: false };
     public primaryKey: string = PrimaryKey.ID;
-    public selectionTaskIdle: number;
+    public selectionTaskIdle: number | null = null;
     public onChanges: Subject<void> = new Subject<void>();
     private readonly handler: KeyMap<Fn> = {};
 
@@ -45,7 +45,7 @@ export class SelectionService implements OnDestroy {
     }
 
     public toggleAll(rows: TableRow[]): void {
-        clearInterval(this.selectionTaskIdle);
+        window.clearInterval(this.selectionTaskIdle!);
 
         if (this.selectionModel.toggledAll) {
             this.selectionModel.toggledAll = false;
@@ -65,7 +65,7 @@ export class SelectionService implements OnDestroy {
     }
 
     public toggle(row: TableRow): void {
-        this.ngZone.runOutsideAngular((): void => window.clearInterval(this.selectionTaskIdle));
+        this.ngZone.runOutsideAngular((): void => window.clearInterval(this.selectionTaskIdle!));
         this.selectionModel.toggle(this.getIdByRow(row), row, true);
         this.onChanges.next();
     }
@@ -131,7 +131,7 @@ export class SelectionService implements OnDestroy {
 
         if (selectedRange) {
             const { start, end }: SelectionRange = this.range.sortKeys();
-            for (let i: number = start; i <= end; ++i) {
+            for (let i: number = start!; i <= end!; ++i) {
                 this.selectionModel.select(this.getIdByRow(rows[i]), rows[i], false);
             }
         }

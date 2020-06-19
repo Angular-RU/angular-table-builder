@@ -13,7 +13,7 @@ export class SortableService {
     public positionMap: KeyMap<number> = {};
     public sortableCount: number = 0;
     private skipInternalSort: boolean = false;
-    private sortChanges: EventEmitter<OrderedField[]> | null;
+    private sortChanges: EventEmitter<OrderedField[]> | null = null;
 
     constructor(private readonly thread: WebWorkerThreadService, private readonly zone: NgZone) {}
 

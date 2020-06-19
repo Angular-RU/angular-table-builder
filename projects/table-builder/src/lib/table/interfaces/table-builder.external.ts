@@ -8,6 +8,7 @@ export type TableRow<T = Any> =
           [key: string]: T;
       };
 
+// eslint-disable-next-line
 export enum ImplicitContext {
     ROW = 'ROW',
     CELL = 'CELL'
@@ -16,29 +17,30 @@ export enum ImplicitContext {
 export type TableClickEventEmitter = EventEmitter<TableEvent> | null;
 
 export interface TableCellOptions<T = Any> {
-    class: string | string[] | KeyMap;
+    // eslint-disable-next-line @typescript-eslint/tslint/config
+    class: string | string[] | KeyMap | null;
     textBold: boolean;
     nowrap: boolean;
     useDeepPath: boolean;
-    style: KeyMap;
-    width: number;
-    height: number;
-    template: TemplateRef<T>;
+    style: KeyMap | null;
+    width: number | null;
+    height: number | null;
+    template?: TemplateRef<T> | null;
     context: ImplicitContext;
     onClick: EventEmitter<Any>;
     dblClick: EventEmitter<Any>;
 }
 
-export interface TableHeadCellOptions<T = Any> {
-    headTitle: string;
+export interface TableHeadCellOptions {
+    headTitle: string | null;
     emptyHead: boolean;
 }
 
 export interface ColumnsSchema<T = Any> {
-    key: string;
+    key: string | null;
     td: TableCellOptions<T>;
     th: TableCellOptions<T> & TableHeadCellOptions;
-    width: number;
+    width?: number | null;
     cssStyle: string[];
     cssClass: string[];
     stickyLeft: boolean;
@@ -53,10 +55,10 @@ export interface ColumnsSchema<T = Any> {
     excluded: boolean;
     isVisible: boolean;
     overflowTooltip: boolean;
-    stub: string;
+    stub?: string;
 }
 
-export interface TableUpdateSchema<T = Any> {
+export interface TableUpdateSchema {
     columns: SimpleSchemaColumns;
     name: string | null;
 }

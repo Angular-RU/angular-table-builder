@@ -6,18 +6,18 @@ import { TemplateBodyTdDirective } from '../../directives/rows/template-body-td.
 import { TemplateCellCommon } from '../../directives/rows/template-cell.common';
 import { TemplateHeadThDirective } from '../../directives/rows/template-head-th.directive';
 import { ColumnsSchema, ImplicitContext, TableCellOptions } from '../../interfaces/table-builder.external';
-import { KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
+import { Any, KeyMap, QueryListRef } from '../../interfaces/table-builder.internal';
 import { getValidHtmlBooleanAttribute } from '../../operators/get-valid-html-boolean-attribute';
 import { getValidPredicate } from '../../operators/get-valid-predicate';
 import { SchemaBuilder } from './schema-builder.class';
 
 @Injectable()
 export class TemplateParserService {
-    public schema: SchemaBuilder;
-    public templateKeys: Set<string>;
-    public fullTemplateKeys: Set<string>;
-    public overrideTemplateKeys: Set<string>;
-    public columnOptions: ColumnOptions;
+    public schema: SchemaBuilder | null = null;
+    public templateKeys: Set<string> | null = null;
+    public fullTemplateKeys: Set<string> | null = null;
+    public overrideTemplateKeys: Set<string> | null = null;
+    public columnOptions: ColumnOptions | null = null;
     public compiledTemplates: KeyMap<ColumnsSchema> = {};
 
     /**
@@ -61,17 +61,19 @@ export class TemplateParserService {
     }
 
     public toggleColumnVisibility(key: string): void {
-        this.schema.columns = this.schema.columns.map(
-            (column: ColumnsSchema): ColumnsSchema =>
-                key === column.key
-                    ? {
-                          ...column,
-                          isVisible: !column.isVisible
-                      }
-                    : column
-        );
+        if (this.schema) {
+            this.schema.columns = this.schema.columns.map(
+                (column: ColumnsSchema): ColumnsSchema =>
+                    key === column.key
+                        ? {
+                              ...column,
+                              isVisible: !column.isVisible
+                          }
+                        : column
+            );
 
-        this.synchronizedReference();
+            this.synchronizedReference();
+        }
     }
 
     public initialSchema(columnOptions: ColumnOptions): void {
@@ -92,71 +94,75 @@ export class TemplateParserService {
 
         templates.forEach((column: NgxColumnComponent): void => {
             const { key, customKey, importantTemplate }: NgxColumnComponent = column;
-            const needTemplateCheck: boolean = this.allowedKeyMap[key] || customKey !== false;
+            const needTemplateCheck: boolean = this.allowedKeyMap[key!] || customKey !== false;
 
             if (needTemplateCheck) {
                 if (importantTemplate !== false) {
-                    this.templateKeys.delete(key);
+                    this.templateKeys?.delete(key!);
                     this.compileColumnMetadata(column);
-                    this.overrideTemplateKeys.add(key);
-                } else if (!this.templateKeys.has(key) && !this.overrideTemplateKeys.has(key)) {
+                    this.overrideTemplateKeys?.add(key!);
+                } else if (!this.templateKeys?.has(key!) && !this.overrideTemplateKeys?.has(key!)) {
                     this.compileColumnMetadata(column);
-                    this.templateKeys.add(key);
+                    this.templateKeys?.add(key!);
                 }
 
-                this.fullTemplateKeys.add(key);
+                this.fullTemplateKeys?.add(key!);
             }
         });
     }
 
     public mutateColumnSchema(key: string, partialSchema: Partial<ColumnsSchema>): void {
         for (const option of Object.keys(partialSchema)) {
-            this.compiledTemplates[key][option] = partialSchema[option];
+            (this.compiledTemplates[key] as Any)[option] = (partialSchema as Any)[option];
         }
     }
 
     // eslint-disable-next-line complexity,max-lines-per-function
     public compileColumnMetadata(column: NgxColumnComponent): void {
         const { key, th, td, emptyHead, headTitle }: NgxColumnComponent = column;
-        const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective(null);
-        const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective(null);
+        const thTemplate: TemplateCellCommon = th || new TemplateHeadThDirective();
+        const tdTemplate: TemplateCellCommon = td || new TemplateBodyTdDirective();
         const isEmptyHead: boolean = getValidHtmlBooleanAttribute(emptyHead);
-        const thOptions: TableCellOptions = TemplateParserService.templateContext(key, thTemplate, this.columnOptions);
+        const thOptions: TableCellOptions = TemplateParserService.templateContext(
+            key!,
+            thTemplate,
+            this.columnOptions!
+        );
         const stickyLeft: boolean = getValidHtmlBooleanAttribute(column.stickyLeft);
         const stickyRight: boolean = getValidHtmlBooleanAttribute(column.stickyRight);
         const isCustomKey: boolean = getValidHtmlBooleanAttribute(column.customKey);
         const canBeAddDraggable: boolean = !(stickyLeft || stickyRight);
-        const isModel: boolean = this.keyMap[key];
+        const isModel: boolean = this.keyMap[key!];
 
-        this.compiledTemplates[key] = {
+        this.compiledTemplates[key!] = {
             key,
             isModel,
             isVisible: true,
-            excluded: !this.allowedKeyMap[key],
+            excluded: !this.allowedKeyMap[key!],
             verticalLine: getValidHtmlBooleanAttribute(column.verticalLine),
-            td: TemplateParserService.templateContext(key, tdTemplate, this.columnOptions),
+            td: TemplateParserService.templateContext(key!, tdTemplate, this.columnOptions!),
             stickyLeft: getValidHtmlBooleanAttribute(column.stickyLeft),
             stickyRight: getValidHtmlBooleanAttribute(column.stickyRight),
             customColumn: isCustomKey,
-            width: getValidPredicate(column.width, this.columnOptions.width),
-            cssClass: getValidPredicate(column.cssClass, this.columnOptions.cssClass) || [],
-            cssStyle: getValidPredicate(column.cssStyle, this.columnOptions.cssStyle) || [],
+            width: getValidPredicate(column.width, this.columnOptions?.width),
+            cssClass: getValidPredicate(column.cssClass, this.columnOptions?.cssClass) || [],
+            cssStyle: getValidPredicate(column.cssStyle, this.columnOptions?.cssStyle) || [],
             resizable: getValidHtmlBooleanAttribute(
-                getValidPredicate(column.isDraggable, this.columnOptions.isDraggable)
+                getValidPredicate(column.isDraggable, this.columnOptions?.isDraggable!)
             ),
-            stub: getValidPredicate(this.columnOptions.stub, column.stub),
+            stub: getValidPredicate(this.columnOptions?.stub, column.stub),
             filterable: getValidHtmlBooleanAttribute(
-                getValidPredicate(column.isFilterable, this.columnOptions.isFilterable)
+                getValidPredicate(column.isFilterable, this.columnOptions?.isFilterable!)
             ),
             sortable: isModel
-                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isSortable, this.columnOptions.isSortable))
+                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isSortable, this.columnOptions?.isSortable!))
                 : false,
             draggable: canBeAddDraggable
-                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isDraggable, this.columnOptions.isDraggable))
+                ? getValidHtmlBooleanAttribute(getValidPredicate(column.isDraggable, this.columnOptions?.isDraggable!))
                 : false,
             overflowTooltip: getValidHtmlBooleanAttribute(
                 getValidPredicate(
-                    this.columnOptions.overflowTooltip,
+                    this.columnOptions?.overflowTooltip!,
                     typeof column.overflowTooltip === 'boolean' ? column.overflowTooltip : !isCustomKey
                 )
             ),
@@ -170,8 +176,8 @@ export class TemplateParserService {
     }
 
     private synchronizedReference(): void {
-        this.schema.columns.forEach((column: ColumnsSchema): void => {
-            this.compiledTemplates[column.key] = column;
+        this.schema?.columns.forEach((column: ColumnsSchema): void => {
+            this.compiledTemplates[column.key!] = column;
         });
     }
 }

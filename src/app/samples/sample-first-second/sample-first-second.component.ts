@@ -13,7 +13,7 @@ import { DialogTemplateComponent } from '../../shared/dialog-template/dialog-tem
 })
 export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     public data: TableRow[] = [];
-    private idInterval: number = null;
+    private idInterval: number | null = null;
 
     constructor(
         private readonly cd: ChangeDetectorRef,
@@ -31,7 +31,7 @@ export class SampleFirstSecondComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        window.clearInterval(this.idInterval);
+        window.clearInterval(this.idInterval!);
     }
 
     public add(): void {

@@ -9,7 +9,7 @@ export class DraggableService {
     constructor(private readonly parser: TemplateParserService) {}
 
     private get columns(): ColumnsSchema[] {
-        return this.parser.schema.columns;
+        return this.parser.schema?.columns ?? [];
     }
 
     public drop(previousKey: string, currentKey: string): void {

@@ -1,7 +1,6 @@
 import { TableRow } from '@angular-ru/ng-table-builder';
 import {
     AfterViewInit,
-    ApplicationRef,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -23,16 +22,14 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleNightComponent implements OnInit, AfterViewInit {
-    public dataFirst: TableRow[];
-    public dataSecond: TableRow[];
+    public dataFirst: TableRow[] = [];
+    public dataSecond: TableRow[] = [];
     public nativeScrollbar: boolean = false;
     public readonly dialog: MatDialog;
-    private readonly app: ApplicationRef;
     private readonly ngZone: NgZone;
 
     constructor(private readonly cd: ChangeDetectorRef, injector: Injector) {
         this.dialog = injector.get<MatDialog>(MatDialog);
-        this.app = injector.get<ApplicationRef>(ApplicationRef);
         this.ngZone = injector.get<NgZone>(NgZone);
     }
 

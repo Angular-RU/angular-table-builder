@@ -12,13 +12,13 @@ import { CodeDialogComponent } from '../../shared/dialog/code-dialog.component';
 })
 export class SampleFirstComponent implements OnInit, OnDestroy {
     public width: string = '100%';
-    public height: number;
-    public rowHeight: string;
+    public height: number | null = null;
+    public rowHeight: string | null = null;
     public dataSize: string = '100x20';
     public loading: boolean = false;
     public simple: TableRow[] = [];
     public regenerate: boolean = false;
-    private idInterval: number = null;
+    private idInterval: number | null = null;
 
     constructor(
         private readonly cd: ChangeDetectorRef,
@@ -40,7 +40,7 @@ export class SampleFirstComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        window.clearInterval(this.idInterval);
+        window.clearInterval(this.idInterval!);
     }
 
     // eslint-disable-next-line max-lines-per-function

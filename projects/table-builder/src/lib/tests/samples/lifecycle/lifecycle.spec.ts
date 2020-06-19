@@ -67,7 +67,7 @@ describe('[TEST]: Lifecycle table', () => {
         sortable = new SortableService(worker, zone);
 
         table = new TableBuilderComponent(mockChangeDetector as ChangeDetectorRef, {
-            get<T>(token: Any) {
+            get(token: Any): Any {
                 switch (token) {
                     case SelectionService:
                         return new SelectionService(zone);
@@ -87,7 +87,7 @@ describe('[TEST]: Lifecycle table', () => {
                         return app;
                     case FilterableService:
                         return new FilterableService({
-                            get<T>(token: Any) {
+                            get(token: Any): Any {
                                 switch (token) {
                                     case ApplicationRef:
                                         return app;

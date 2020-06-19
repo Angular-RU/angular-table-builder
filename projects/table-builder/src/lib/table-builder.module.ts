@@ -33,8 +33,8 @@ import { UtilsService } from './table/services/utils/utils.service';
 import { TableBuilderComponent } from './table/table-builder.component';
 import { WebWorkerThreadService } from './table/worker/worker-thread.service';
 
-if (window['Zone']) {
-    (window as Any)[window['Zone'].__symbol__('MutationObserver')] = MutationObserver;
+if ((window as Any)['Zone']) {
+    (window as Any)[(window as Any)['Zone'].__symbol__('MutationObserver')] = MutationObserver;
 }
 
 @NgModule({

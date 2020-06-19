@@ -1,9 +1,11 @@
 import { QueryList } from '@angular/core';
 
+// eslint-disable-next-line
 export enum PrimaryKey {
     ID = 'id'
 }
 
+// eslint-disable-next-line
 export enum TableSimpleChanges {
     SOURCE_KEY = 'source',
     SCHEMA_COLUMNS = 'schemaColumns'
@@ -12,7 +14,7 @@ export enum TableSimpleChanges {
 export interface DynamicHeightOptions {
     detect: boolean;
     inViewport: boolean;
-    height: number;
+    height: number | null;
     footerHeight: number;
     headerHeight: number;
     columnHeight: number;
@@ -39,6 +41,7 @@ export interface SelectionStatus {
     status: boolean;
 }
 
+// eslint-disable-next-line
 export enum KeyType {
     KEYDOWN = 'keydown',
     KEYUP = 'keyup'
@@ -63,8 +66,8 @@ export interface TemplateKeys {
 export type Resolver<T> = (value?: T | PromiseLike<T>) => void;
 
 export interface MousePosition {
-    left: number;
-    top: number;
+    left: number | null;
+    top: number | null;
 }
 
 export type DeepPartial<T = Any> = {

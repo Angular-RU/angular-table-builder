@@ -14,7 +14,7 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleSixComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public data: TableRow[] = [];
     public skipSort: boolean = false;
     constructor(public readonly dialog: MatDialog, private readonly cd: ChangeDetectorRef) {}
 

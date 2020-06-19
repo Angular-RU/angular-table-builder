@@ -28,13 +28,13 @@ const { TIME_RELOAD }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
     encapsulation: ViewEncapsulation.None
 })
 export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
-    @Input() public text: string = null;
-    @Input() public key: string = null;
+    @Input() public text: string | null = null;
+    @Input() public key: string | null = null;
     @Input() public index: number = 0;
-    public html: string | SafeHtml;
+    public html: string | SafeHtml | null = null;
     public founded: boolean = false;
-    private subscription: Subscription;
-    private taskId: number;
+    private subscription: Subscription | null = null;
+    private taskId: number | null = null;
     private readonly ngZone: NgZone;
     private readonly filterable: FilterableService;
 
@@ -56,7 +56,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.subscription = this.filterable.events.subscribe((event: FilterEvent): void => {
-            if (this.filterable.definition[this.key] || this.filterable.globalFilterValue) {
+            if (this.filterable.definition[this.key!] || this.filterable.globalFilterValue) {
                 this.changeSelection(event);
             } else {
                 this.defaultHtmlValue();
@@ -67,14 +67,14 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.subscription?.unsubscribe();
     }
 
     private changeSelection(event: FilterEvent): void {
         this.ngZone.runOutsideAngular((): void => {
-            window.clearInterval(this.taskId);
+            window.clearInterval(this.taskId!);
             this.taskId = window.setTimeout((): void => {
-                if (event.value || this.filterable.definition[this.key]) {
+                if (event.value || this.filterable.definition[this.key!]) {
                     this.selected(event);
                 } else {
                     this.defaultHtmlValue();
@@ -87,9 +87,9 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
 
     // eslint-disable-next-line max-lines-per-function,complexity
     private selected(event: FilterEvent): void {
-        const value: string = this.filterable.definition[this.key] || event.value;
-        const type: TableFilterType = this.filterable.definition[this.key]
-            ? this.filterable.filterTypeDefinition[this.key]
+        const value: string | null = this.filterable.definition[this.key!] || event.value;
+        const type: TableFilterType | null = this.filterable.definition[this.key!]
+            ? this.filterable.filterTypeDefinition[this.key!]
             : event.type;
 
         if (type === TableFilterType.DOES_NOT_EQUAL || type === TableFilterType.DOES_NOT_CONTAIN) {
@@ -97,7 +97,7 @@ export class NgxFilterViewerComponent implements OnChanges, OnInit, OnDestroy {
         }
 
         let regexp: RegExp;
-        const escapedValue: string = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const escapedValue: string | undefined = value?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
         if (type === TableFilterType.START_WITH) {
             regexp = new RegExp(`^${escapedValue}`, 'i');

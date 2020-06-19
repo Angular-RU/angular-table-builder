@@ -10,18 +10,19 @@ import { UtilsService } from '../../services/utils/utils.service';
 import { SCROLLBAR_WIDTH } from '../../symbols';
 
 export interface PositionState {
-    key: string;
-    opened: boolean;
+    key: string | null;
+    opened: boolean | null;
     position: MousePosition;
 }
 
+// eslint-disable-next-line
 export abstract class ModalViewLayer<T extends PositionState> implements OnDestroy {
-    public width: number = null;
-    public height: number = null;
+    public width: number | null = null;
+    public height: number | null = null;
     public isViewed: boolean = false;
     public isRendered: boolean = false;
-    public minHeight: number;
-    protected subscription: Subscription = null;
+    public minHeight: number | null = null;
+    protected subscription: Subscription | null = null;
     protected readonly app: ApplicationRef;
     protected readonly utils: UtilsService;
     protected readonly filterable: FilterableService;
@@ -29,7 +30,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     protected readonly contextMenu: ContextMenuService;
 
     @ViewChild('menu', { static: false })
-    protected menu: ElementRef<HTMLDivElement>;
+    protected menu!: ElementRef<HTMLDivElement>;
 
     protected constructor(protected readonly cd: ChangeDetectorRef, injector: Injector) {
         this.app = injector.get<ApplicationRef>(ApplicationRef);
@@ -48,19 +49,19 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     }
 
     public get overflowX(): number {
-        const overflowX: number = this.width + this.left - this.utils.bodyRect.width;
+        const overflowX: number = this.width! + this.left - this.utils.bodyRect?.width!;
         return overflowX > 0 ? overflowX + SCROLLBAR_WIDTH : 0;
     }
 
     public get overflowY(): number {
-        const overflowY: number = this.calculatedHeight + this.top - this.utils.bodyRect.height;
+        const overflowY: number = this.calculatedHeight + this.top - this.utils.bodyRect?.height!;
         return overflowY > 0 ? overflowY + SCROLLBAR_WIDTH : 0;
     }
 
     public abstract get state(): Partial<T>;
 
     public get calculatedHeight(): number {
-        let height: number;
+        let height: number | null;
 
         try {
             if (this.height) {
@@ -75,7 +76,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
             height = this.height;
         }
 
-        return height;
+        return height!;
     }
 
     public updateView(): void {
@@ -90,8 +91,8 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     }
 
     public ngOnDestroy(): void {
-        if (!this.subscription.closed) {
-            this.subscription.unsubscribe();
+        if (!this.subscription?.closed) {
+            this.subscription?.unsubscribe();
         }
     }
 
@@ -100,7 +101,7 @@ export abstract class ModalViewLayer<T extends PositionState> implements OnDestr
     protected update(): void {
         this.ngZone.runOutsideAngular((): void => {
             window.setTimeout((): void => {
-                this.isViewed = this.state.opened;
+                this.isViewed = !!this.state.opened;
                 this.updateView();
                 window.setTimeout((): void => this.updateView());
             });

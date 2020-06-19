@@ -1,19 +1,22 @@
 {
-    "compileOnSave": false,
+    "extends": "@angular-ru/tsconfig",
+    "angularCompilerOptions": {
+        "fullTemplateTypeCheck": true,
+        "annotateForClosureCompiler": true,
+        "strictInjectionParameters": true,
+        "skipTemplateCodegen": false,
+        "preserveWhitespaces": true,
+        "skipMetadataEmit": false,
+        "disableTypeScriptVersionCheck": true
+    },
     "compilerOptions": {
+        "rootDir": ".",
         "baseUrl": "./",
-        "outDir": "./dist/out-tsc",
-        "sourceMap": true,
-        "declaration": false,
         "module": "esnext",
-        "resolveJsonModule": true,
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "importHelpers": true,
+        "outDir": "./dist/out-tsc",
         "target": "es2015",
-        "typeRoots": ["node_modules/@types"],
+        "types": ["node"],
+        "typeRoots": ["./node_modules/@types"],
         "lib": ["es2018", "dom"],
         "paths": {
             "@angular-ru/ng-table-builder": ["./projects/table-builder/src/public-api"]

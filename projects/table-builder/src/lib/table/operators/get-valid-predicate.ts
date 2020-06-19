@@ -1,3 +1,3 @@
-export function getValidPredicate<T>(leftPredicate: T, rightPredicate: T): T {
+export function getValidPredicate<T>(leftPredicate: T | null, rightPredicate: T): T {
     return leftPredicate === null ? rightPredicate : leftPredicate;
 }

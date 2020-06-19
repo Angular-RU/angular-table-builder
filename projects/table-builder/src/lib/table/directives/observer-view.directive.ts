@@ -3,9 +3,9 @@ import { AfterViewInit, Directive, ElementRef, EventEmitter, NgZone, OnDestroy, 
 @Directive({ selector: '[observerView]' })
 export class ObserverViewDirective implements AfterViewInit, OnDestroy {
     @Output() public observeVisible: EventEmitter<boolean> = new EventEmitter(true);
-    private observer: IntersectionObserver = null;
+    private observer: IntersectionObserver | null = null;
     private previousRation: number = 0.0;
-    private frameId: number;
+    private frameId: number | null = null;
 
     constructor(private element: ElementRef, private readonly ngZone: NgZone) {}
 
@@ -27,7 +27,7 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
 
     public ngOnDestroy(): void {
         this.element = { nativeElement: null };
-        cancelAnimationFrame(this.frameId);
+        cancelAnimationFrame(this.frameId!);
         if (this.observer) {
             this.observer.disconnect();
         }
@@ -35,7 +35,7 @@ export class ObserverViewDirective implements AfterViewInit, OnDestroy {
 
     private observeChange(entry: IntersectionObserverEntry): void {
         const isVisible: boolean = entry.intersectionRatio > this.previousRation || entry.isIntersecting;
-        cancelAnimationFrame(this.frameId);
+        cancelAnimationFrame(this.frameId!);
         this.frameId = window.requestAnimationFrame((): void => this.observeVisible.emit(isVisible));
     }
 }

@@ -23,14 +23,14 @@ interface FilterableInterface {
 
 @Injectable()
 export class FilterableService implements FilterableInterface {
-    public filterValue: string = null;
+    public filterValue: string | null = null;
     public definition: KeyMap<string> = {};
     public state: FilterStateEvent = new FilterStateEvent();
     public types: KeyMap = TableFilterType;
     public readonly filterOpenEvents: Subject<void> = new Subject();
     public readonly events: Subject<FilterEvent> = new ReplaySubject();
     public readonly resetEvents: Subject<void> = new Subject<void>();
-    public filterType: TableFilterType;
+    public filterType: TableFilterType | null = null;
     public filterTypeDefinition: KeyMap<TableFilterType> = {};
     public filtering: boolean = false;
     private previousFiltering: boolean = false;
@@ -46,7 +46,7 @@ export class FilterableService implements FilterableInterface {
         this.thread = injector.get<WebWorkerThreadService>(WebWorkerThreadService);
     }
 
-    public get globalFilterValue(): string {
+    public get globalFilterValue(): string | null {
         return this.filterValue ? String(this.filterValue).trim() : null;
     }
 
@@ -94,8 +94,8 @@ export class FilterableService implements FilterableInterface {
 
     // eslint-disable-next-line max-lines-per-function
     public filter(source: TableRow[]): Promise<FilterWorkerEvent> {
-        const type: TableFilterType = this.filterType;
-        const value: string = this.globalFilterValue ? String(this.globalFilterValue).trim() : null;
+        const type: TableFilterType | null = this.filterType;
+        const value: string | null = this.globalFilterValue ? String(this.globalFilterValue).trim() : null;
 
         return new Promise(
             // eslint-disable-next-line max-lines-per-function

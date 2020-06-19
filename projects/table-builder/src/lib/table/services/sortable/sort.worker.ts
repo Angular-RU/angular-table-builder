@@ -4,13 +4,18 @@ import { SortableMessage } from './sortable.interfaces';
 
 // eslint-disable-next-line max-lines-per-function
 export function sortWorker(message: SortableMessage): TableRow[] {
+    // eslint-disable-next-line
     enum OrderType {
         DESC = 'desc',
         SKIP = 'skip'
     }
 
     function getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
-        return path ? path.split('.').reduce((value: string, key: string): Any => value && value[key], object) : object;
+        return path
+            ? path
+                  .split('.')
+                  .reduce((value: KeyMap | undefined, key: string): Any => value && (value as Any)[key], object as Any)
+            : object;
     }
 
     function checkValueIsEmpty(value: Any): boolean {
@@ -36,7 +41,7 @@ export function sortWorker(message: SortableMessage): TableRow[] {
             let ix: number = 0;
 
             while (sorted === 0 && ix < countKeys) {
-                const key: string = Sortable.observeKey(matches, ix);
+                const key: string | null = Sortable.observeKey(matches, ix);
                 if (key) {
                     const depth: number = matches[key];
                     sorted = Sortable.deepSort(key, a, b, depth);
@@ -75,17 +80,17 @@ export function sortWorker(message: SortableMessage): TableRow[] {
 
         private static shallowSort(a: Any, b: Any, depth?: number): number {
             // eslint-disable-next-line no-negated-condition
-            const currentDepth: number = depth !== null ? depth : 1;
+            const currentDepth: number | undefined = depth !== null ? depth : 1;
             b = checkValueIsEmpty(b) ? '' : b;
 
             if (a === b) {
                 return 0;
             }
 
-            return a > b ? currentDepth : -1 * currentDepth;
+            return a > b ? currentDepth! : -1 * currentDepth!;
         }
 
-        private static observeKey(keys: KeyMap<number>, count: number): string {
+        private static observeKey(keys: KeyMap<number>, count: number): string | null {
             let key: string;
             let size: number = 0;
 

@@ -19,10 +19,10 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy {
-    public data: TableRow[];
-    public schema: SimpleSchemaColumns = null;
+    public data: TableRow[] = [];
+    public schema: SimpleSchemaColumns | null = null;
     public readonly testName: string = 'test';
-    private sub: Subscription;
+    private sub: Subscription | null = null;
 
     constructor(
         public readonly dialog: MatDialog,
@@ -31,8 +31,10 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
     ) {}
 
     public ngOnInit(): void {
-        const schema: TableUpdateSchema =
-            (JSON.parse(window.localStorage.getItem(this.testName)) as TableUpdateSchema) || null;
+        const schema: TableUpdateSchema = JSON.parse(
+            window.localStorage.getItem(this.testName) ?? '{}'
+        ) as TableUpdateSchema;
+
         this.schema = (schema && schema.columns) || [];
 
         const rowNumber: number = 1000;
@@ -53,7 +55,7 @@ export class SampleSixteenComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     public ngOnDestroy(): void {
-        this.sub.unsubscribe();
+        this.sub?.unsubscribe();
     }
 
     private save(event: TableUpdateSchema): void {

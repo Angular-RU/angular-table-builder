@@ -44,7 +44,7 @@ declare const hljs: Any;
     ]
 })
 export class SampleElevenComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public data: TableRow[] = [];
 
     public licences: TableRow[] = [
         {
@@ -94,7 +94,7 @@ export class SampleElevenComponent implements OnInit, AfterViewInit {
         window.alert('export excel - ' + JSON.stringify(data));
     }
 
-    public showLine(key: string, item: TableRow): void {
+    public showLine(key: string | null, item: TableRow | null): void {
         window.alert('key - ' + key + ' item - ' + JSON.stringify(item));
     }
 

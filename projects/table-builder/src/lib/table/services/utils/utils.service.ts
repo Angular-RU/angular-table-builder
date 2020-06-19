@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, Optional } from '@angular/core';
 
 import { TableRow } from '../../interfaces/table-builder.external';
 import { Any, Fn, KeyMap } from '../../interfaces/table-builder.internal';
@@ -7,10 +7,10 @@ import { UtilsInterface } from './utils.interface';
 
 @Injectable()
 export class UtilsService implements UtilsInterface {
-    constructor(private readonly zone: NgZone) {}
+    constructor(@Optional() private readonly zone?: NgZone) {}
 
-    public get bodyRect(): ClientRect | DOMRect {
-        return document.querySelector('body').getBoundingClientRect();
+    public get bodyRect(): ClientRect | DOMRect | undefined {
+        return document.querySelector('body')?.getBoundingClientRect();
     }
 
     private static replaceUndefinedOrNull(_: string, value: unknown): unknown {
@@ -29,15 +29,15 @@ export class UtilsService implements UtilsInterface {
         const output: T = { ...target };
         if (this.isObject(target) && this.isObject(source)) {
             Object.keys(source).forEach((key: string): void => {
-                if (this.isObject(source[key])) {
+                if (this.isObject((source as Any)[key])) {
                     const empty: boolean = !(key in target);
                     if (empty) {
-                        Object.assign(output, { [key]: source[key] });
+                        Object.assign(output, { [key]: (source as Any)[key] });
                     } else {
-                        output[key] = this.mergeDeep(target[key], source[key]);
+                        (output as Any)[key] = this.mergeDeep((source as Any)[key], (source as Any)[key]);
                     }
                 } else {
-                    Object.assign(output, { [key]: source[key] });
+                    Object.assign(output, { [key]: (source as Any)[key] });
                 }
             });
         }
@@ -46,7 +46,7 @@ export class UtilsService implements UtilsInterface {
     }
 
     // eslint-disable-next-line complexity
-    public flattenKeysByRow(row: TableRow, parentKey: string = null, keys: string[] = []): string[] {
+    public flattenKeysByRow(row: TableRow, parentKey: string | null = null, keys: string[] = []): string[] {
         for (const key in row) {
             if (!row.hasOwnProperty(key)) {
                 continue;
@@ -72,7 +72,7 @@ export class UtilsService implements UtilsInterface {
 
     public requestAnimationFrame(callback: Fn): Promise<void> {
         return new Promise((resolve: Fn): void => {
-            this.zone.runOutsideAngular((): void => {
+            this.zone?.runOutsideAngular((): void => {
                 window.requestAnimationFrame((): void => {
                     callback();
                     resolve();
@@ -83,7 +83,7 @@ export class UtilsService implements UtilsInterface {
 
     public macrotaskInZone(callback: Fn, time: number = 0): Promise<void> {
         return new Promise((resolve: Fn): void => {
-            this.zone.run((): void => {
+            this.zone?.run((): void => {
                 window.setTimeout((): void => {
                     callback();
                     resolve();

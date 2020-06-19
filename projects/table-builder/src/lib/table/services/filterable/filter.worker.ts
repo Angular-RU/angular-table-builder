@@ -4,13 +4,14 @@ import { FilterableMessage, FilterGlobalOpts, TableFilterType } from './filterab
 
 // eslint-disable-next-line max-lines-per-function
 export function filterAllWorker({ source, global, types, columns }: FilterableMessage): TableRow[] {
+    // eslint-disable-next-line
     enum Terminate {
         CONTINUE = -1,
         BREAK = 0,
         NEXT = 1
     }
 
-    const { value, type }: FilterGlobalOpts = global;
+    const { value, type }: FilterGlobalOpts = global!;
     let result: TableRow[] = source;
 
     if (value) {
@@ -19,7 +20,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
         );
     }
 
-    if (!columns.isEmpty) {
+    if (!columns!.isEmpty) {
         result = result.filter((item: TableRow): boolean => multipleFilter(item));
     }
 
@@ -29,7 +30,7 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
 
         for (const keyModel of Object.keys(flattenedItem)) {
             const fieldValue: string = String(flattenedItem[keyModel]);
-            const [terminate, satisfies]: Satisfies = getSatisfies(fieldValue, value, type);
+            const [terminate, satisfies]: Satisfies = getSatisfies(fieldValue, value!, type!);
 
             satisfiesItem = satisfies;
 
@@ -50,10 +51,10 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     function multipleFilter(item: TableRow): boolean {
         let matches: boolean = true;
 
-        for (const fieldKey of Object.keys(columns.values)) {
+        for (const fieldKey of Object.keys(columns!.values)) {
             const fieldValue: string = String(getValueByPath(item, fieldKey) || '').trim();
-            const findKeyValue: string = String(columns.values[fieldKey]);
-            const fieldType: TableFilterType = columns.types[fieldKey];
+            const findKeyValue: string = String(columns!.values[fieldKey]);
+            const fieldType: TableFilterType = columns!.types[fieldKey];
             const [terminate, satisfies]: Satisfies = getSatisfies(fieldValue, findKeyValue, fieldType);
             matches = matches && satisfies;
 
@@ -115,7 +116,14 @@ export function filterAllWorker({ source, global, types, columns }: FilterableMe
     }
 
     function getValueByPath(object: KeyMap, path: string): KeyMap | undefined {
-        return path ? path.split('.').reduce((str: string, key: string): Any => str && str[key], object) : object;
+        return path
+            ? path
+                  .split('.')
+                  .reduce(
+                      (str: string | KeyMap | undefined, key: string): KeyMap | undefined => str && (str as Any)[key],
+                      object
+                  )
+            : object;
     }
 
     function mutate<T>(object: KeyMap, depthGraph: KeyMap<T>, key: string): void {

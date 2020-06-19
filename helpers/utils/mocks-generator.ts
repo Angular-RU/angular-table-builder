@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers,@typescript-eslint/no-magic-numbers */
 import { TableRow } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.external';
 import { Any } from '../../projects/table-builder/src/lib/table/interfaces/table-builder.internal';
 import { WebWorkerThreadService } from '../../projects/table-builder/src/lib/table/worker/worker-thread.service';

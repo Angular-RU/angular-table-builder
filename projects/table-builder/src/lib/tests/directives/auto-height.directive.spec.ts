@@ -7,9 +7,12 @@ import { Any, Fn } from '../../table/interfaces/table-builder.internal';
 
 describe('[TEST]: auto height', () => {
     let directive: AutoHeightDirective;
-    let recalculateDispatcher: Fn;
+    // @ts-ignore
+    let recalculateDispatcher: Fn | null = null;
     let addedEvent: boolean = false;
+    // @ts-ignore
     let removeEvent: boolean = false;
+    // @ts-ignore
     let ticked: number = 0;
     let style: string;
 

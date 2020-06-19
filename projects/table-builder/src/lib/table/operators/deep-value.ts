@@ -1,6 +1,6 @@
 import { Any } from '../interfaces/table-builder.internal';
 
-export function getDeepValue(obj: Any, path: string): Any {
+export function getDeepValue(obj: Any, path: string | null | undefined): Any {
     if (!(path && path.length)) {
         return obj;
     }

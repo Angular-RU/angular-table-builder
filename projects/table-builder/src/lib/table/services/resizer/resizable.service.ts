@@ -3,21 +3,21 @@ import { fromEvent, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { TABLE_GLOBAL_OPTIONS } from '../../config/table-global-options';
-import { Fn } from '../../interfaces/table-builder.internal';
+import { Any, Fn } from '../../interfaces/table-builder.internal';
 
 const { COLUMN_RESIZE_MIN_WIDTH }: typeof TABLE_GLOBAL_OPTIONS = TABLE_GLOBAL_OPTIONS;
 
 @Injectable()
 export class ResizableService {
-    public startX: number;
-    public startWidth: number;
-    private destroyed$: ReplaySubject<boolean>;
+    public startX: number | null = null;
+    public startWidth: number | null = null;
+    private destroyed$: ReplaySubject<boolean> | null = null;
 
     private static clearSelection(): void {
         if (window.getSelection) {
-            window.getSelection().removeAllRanges();
-        } else if (document['selection']) {
-            document['selection'].empty();
+            window.getSelection()?.removeAllRanges();
+        } else if ((document as Any)['selection']) {
+            (document as Any)['selection']?.empty();
         }
     }
 
@@ -29,24 +29,24 @@ export class ResizableService {
 
         fromEvent(document, 'mousemove')
             .pipe(takeUntil(this.destroyed$))
-            .subscribe((e: MouseEvent): void => this.computeEvent(e, mousemove));
+            .subscribe((e: Event): void => this.computeEvent(e as MouseEvent, mousemove));
 
         fromEvent(document, 'mouseup')
             .pipe(takeUntil(this.destroyed$))
-            .subscribe((e: MouseEvent): void => this.unsubscribe(e, mouseup));
+            .subscribe((e: Event): void => this.unsubscribe(e as MouseEvent, mouseup));
     }
 
     private computeEvent(event: MouseEvent, mousemove: Fn): void {
         ResizableService.clearSelection();
-        const width: number = this.startWidth + (event.pageX - this.startX);
+        const width: number = this.startWidth! + (event.pageX - this.startX!);
         if (width >= COLUMN_RESIZE_MIN_WIDTH) {
             mousemove(width);
         }
     }
 
     private unsubscribe(event: MouseEvent, mouseup: Fn): void {
-        this.destroyed$.next(true);
-        this.destroyed$.complete();
+        this.destroyed$?.next(true);
+        this.destroyed$?.complete();
         mouseup(event);
     }
 }

@@ -30,22 +30,22 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
     private destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly minHeight: number = 0;
     private useOnlyAutoViewPort: boolean = false;
-    private isDirtyCheck: boolean;
-    private taskId: number;
+    private isDirtyCheck: boolean | null = null;
+    private taskId: number | null = null;
 
     constructor(private readonly element: ElementRef, public readonly ngZone: NgZone) {}
 
     private get height(): number {
-        return this.autoHeight.height;
+        return this.autoHeight.height!;
     }
 
     private get canCalculated(): boolean {
-        return this.autoHeight.inViewport && this.autoHeight.sourceLength > 0 && this.sourceRef.length > 0;
+        return !!this.autoHeight.inViewport && this.autoHeight.sourceLength! > 0 && this.sourceRef.length > 0;
     }
 
     // eslint-disable-next-line complexity
     private get style(): string {
-        let height: string;
+        let height: string | null = null;
 
         if (this.height) {
             height = `${this.height}px`;
@@ -64,7 +64,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        return height ? `display: block; height: ${height}` : '';
+        return height ? `display: block; height: ${height ?? 0}` : '';
     }
 
     private get isNotEmptyParentHeight(): boolean {
@@ -95,7 +95,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
         const scrollHeight: number =
             this.sourceRef.length === 1
                 ? SCROLLBAR_WIDTH
-                : this.tableViewport.offsetHeight - this.tableViewport.clientHeight || 0;
+                : (this.tableViewport.offsetHeight ?? 0) - (this.tableViewport.clientHeight ?? 0);
         return scrollHeight + BORDER_TOB_WITH_BOTTOM;
     }
 
@@ -117,7 +117,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
                 strValue = '0px';
             }
         } else if (element.currentStyle) {
-            strCssRule = strCssRule.replace(/\-(\w)/g, (strMatch: string, p1: string): string => p1.toUpperCase());
+            strCssRule = strCssRule.replace(/\-(\w)/g, (_: string, p1: string): string => p1.toUpperCase());
             strValue = element.currentStyle[strCssRule];
         }
 
@@ -145,7 +145,7 @@ export class AutoHeightDirective implements OnInit, OnChanges, OnDestroy {
 
     public recalculateTableSize(): void {
         this.ngZone.runOutsideAngular((): void => {
-            clearTimeout(this.taskId);
+            window.clearTimeout(this.taskId!);
             this.taskId = window.setTimeout((): void => {
                 if (this.canCalculated && !this.isDirtyCheck) {
                     this.markForCheck();

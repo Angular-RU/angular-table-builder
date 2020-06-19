@@ -11,8 +11,8 @@ declare const hljs: Any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SampleFourthComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
-    public elements: TableRow[];
+    public data: TableRow[] = [];
+    public elements: TableRow[] = [];
 
     // eslint-disable-next-line max-lines-per-function
     public ngOnInit(): void {

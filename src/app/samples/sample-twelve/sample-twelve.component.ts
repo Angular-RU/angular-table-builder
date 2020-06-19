@@ -20,7 +20,7 @@ declare const hljs: Any;
     encapsulation: ViewEncapsulation.None
 })
 export class SampleTwelveComponent implements OnInit, AfterViewInit {
-    public data: TableRow[];
+    public data: TableRow[] = [];
 
     public licences: TableRow[] = [
         {

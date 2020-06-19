@@ -5,7 +5,7 @@ import { TableRow } from '../../projects/table-builder/src/lib/table/interfaces/
 // noinspection AngularMissingOrInvalidDeclarationInModule
 @Component({
     selector: 'app',
-    template: ` <ngx-table-builder [source]="data" [buffer-amount]="5"></ngx-table-builder> `
+    template: ` <ngx-table-builder [source]="data"></ngx-table-builder> `
 })
 export class SimpleMockComponent {
     public data: TableRow[] = [
