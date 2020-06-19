@@ -44,7 +44,7 @@ export class SelectionService implements OnDestroy {
         this.onChanges.next();
     }
 
-    public toggleAll(rows: TableRow[]): void {
+    public toggleAll(rows: TableRow[] | null): void {
         window.clearInterval(this.selectionTaskIdle!);
 
         if (this.selectionModel.toggledAll) {
@@ -52,10 +52,10 @@ export class SelectionService implements OnDestroy {
             this.selectionModel.clear();
         } else {
             this.selectionModel.toggledAll = true;
-            rows.forEach((row: TableRow): void => this.selectionModel.select(this.getIdByRow(row), row, false));
+            (rows ?? []).forEach((row: TableRow): void => this.selectionModel.select(this.getIdByRow(row), row, false));
         }
 
-        this.checkIsAllSelected(rows);
+        this.checkIsAllSelected(rows ?? []);
     }
 
     public reset(): void {
