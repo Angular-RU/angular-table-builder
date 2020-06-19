@@ -11,10 +11,11 @@
         "start": "ng serve --open --aot=false --port 4300",
         "test": "jest --config ./jest.config.js"
     },
+    "prettier": "@angular-ru/prettier-config",
     "devDependencies": {
         "@angular-devkit/build-angular": "0.803.26",
         "@angular-ru/eslint-config": "12.3.0",
-        "@angular-ru/prettier-config": "12.6.0",
+        "@angular-ru/prettier-config": "12.19.1",
         "@angular/animations": "8.2.14",
         "@angular/cdk": "8.2.3",
         "@angular/cli": "8.3.26",
